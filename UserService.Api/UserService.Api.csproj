@@ -9,7 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="Serilog.AspNetCore" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
@@ -24,6 +30,7 @@
     <ItemGroup>
         <ProjectReference Include="..\UserService.Application\UserService.Application.csproj"/>
         <ProjectReference Include="..\UserService.DAL\UserService.DAL.csproj"/>
+        <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
     </ItemGroup>
 
 </Project>

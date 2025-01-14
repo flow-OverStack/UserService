@@ -1,8 +1,10 @@
 using Serilog;
+using UserService.Api;
 using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
+using UserService.Keycloak.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,9 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddAuthenticationAndAuthorization(builder);
+builder.Services.AddIdentityServer();
+builder.Services.AddSwagger(builder.Configuration);
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -34,5 +38,10 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.MapControllers();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.LogListeningUrls();
 
 await app.RunAsync();
