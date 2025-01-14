@@ -9,12 +9,12 @@
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: Diary
+      POSTGRES_DB: flowOverStack
     volumes:
       - postgres_data:/var/lib/postgresql/data
   pgadmin:
     image: dpage/pgadmin4
-    container_name: pgadmin4
+    container_name: pgadmin
     ports:
       - "8888:80"
     networks:

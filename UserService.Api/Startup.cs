@@ -1,10 +1,12 @@
 using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using UserService.DAL;
 using UserService.Domain.Settings;
 using Path = System.IO.Path;
 
@@ -130,5 +132,16 @@ public static class Startup
                 Log.Information(fullUrlLog);
             });
         });
+    }
+
+    /// <summary>
+    ///     Migrates the database
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="services"></param>
+    public static async Task MigrateDatabaseAsync(this WebApplication app, IServiceCollection services)
+    {
+        var dbContext = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync();
     }
 }

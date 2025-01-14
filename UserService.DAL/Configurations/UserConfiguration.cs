@@ -17,9 +17,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         //Email constraint
         builder.ToTable(t =>
-            t.HasCheckConstraint("CK_User_Email", @"Email ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'"));
+            t.HasCheckConstraint("CK_User_Email", """
+                                                  "Email" ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+                                                  """));
         //Reputation constraint
-        builder.ToTable(t => t.HasCheckConstraint("CK_User_Reputation", "Reputation >= 0"));
+        builder.ToTable(t => t.HasCheckConstraint("CK_User_Reputation", """
+                                                                        "Reputation" >= 0
+                                                                        """));
         //Unique username and email
         builder.HasIndex(x => x.Username).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
