@@ -148,7 +148,7 @@ public class AuthService(
 
         var userToken = await userTokenRepository.GetAll().FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-        var keycloakDto = mapper.Map<KeycloakLoginUserDto>(userToken);
+        var keycloakDto = mapper.Map<KeycloakLoginUserDto>(user);
         keycloakDto.Password = password;
 
         var keycloakResponse = await identityServer.LoginUserAsync(keycloakDto);
