@@ -166,8 +166,15 @@ public class KeycloakServer : IIdentityServer
         {
             await LoginAsServiceIfNeeded();
 
-            var json = JsonConvert.SerializeObject(
-                new KeycloakAttributes().AddRoles(_keycloakSettings.RolesAttributeName, dto.newRoles));
+
+            var attributes =
+                new KeycloakAttributes().AddRoles(_keycloakSettings.RolesAttributeName, dto.newRoles);
+            var requestPayload = new Dictionary<string, KeycloakAttributes>
+            {
+                { "attributes", attributes }
+            };
+
+            var json = JsonConvert.SerializeObject(requestPayload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.keycloakUserId.ToString()}",
