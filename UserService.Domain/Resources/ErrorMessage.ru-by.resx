@@ -54,4 +54,7 @@
     <data name="IdentityServerError" xml:space="preserve">
         <value>Внутренняя ошибка сервера идентификации</value>
     </data>
+    <data name="EmailNotValid" xml:space="preserve">
+        <value>Невалидный email</value>
+    </data>
 </root>

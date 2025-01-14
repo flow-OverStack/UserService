@@ -63,4 +63,7 @@
     <data name="IdentityServerError" xml:space="preserve">
         <value>Identity server error</value>
     </data>
+    <data name="EmailNotValid" xml:space="preserve">
+        <value>Not valid email</value>
+    </data>
 </root>

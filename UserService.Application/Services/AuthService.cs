@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Dto.Keycloak.User;
@@ -25,6 +26,13 @@ public class AuthService(
 {
     public async Task<BaseResult<UserDto>> Register(RegisterUserDto dto)
     {
+        if (!IsEmail(dto.Email))
+            return new BaseResult<UserDto>
+            {
+                ErrorMessage = ErrorMessage.EmailNotValid,
+                ErrorCode = (int)ErrorCodes.EmailNotValid
+            };
+
         if (dto.Password != dto.PasswordConfirm)
             return new BaseResult<UserDto>
             {
@@ -178,5 +186,12 @@ public class AuthService(
     {
         var hash = HashPassword(userPassword);
         return userPasswordHash == hash;
+    }
+
+    private static bool IsEmail(string email)
+    {
+        var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        return emailRegex.IsMatch(email);
     }
 }

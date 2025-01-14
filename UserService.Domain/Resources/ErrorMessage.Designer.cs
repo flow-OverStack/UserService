@@ -60,6 +60,15 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not valid email.
+        /// </summary>
+        public static string EmailNotValid {
+            get {
+                return ResourceManager.GetString("EmailNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Identity server error.
         /// </summary>
         public static string IdentityServerError {
