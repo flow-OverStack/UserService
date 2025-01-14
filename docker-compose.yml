@@ -1,0 +1,44 @@
+﻿services:
+  postgres-db:
+    image: postgres:latest
+    container_name: postgres-user-db
+    ports:
+      - "5433:5432"
+    networks:
+      - pg-network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: Diary
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    ports:
+      - "8888:80"
+    networks:
+      - pg-network
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres-db
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: identity-server
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    command: start-dev
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+
+
+networks:
+  pg-network:
+volumes:
+  postgres_data:
+  keycloak_data:

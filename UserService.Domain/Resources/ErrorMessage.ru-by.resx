@@ -1,0 +1,57 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="InternalServerError" xml:space="preserve">
+        <value>Внутреняя ошибка сервера</value>
+    </data>
+    <data name="UserNotFound" xml:space="preserve">
+        <value>Пользователь не найден</value>
+    </data>
+    <data name="PasswordMismatch" xml:space="preserve">
+        <value>Пароли не совпадают</value>
+    </data>
+    <data name="UserAlreadyExists" xml:space="preserve">
+        <value>Пользователь уже существует</value>
+    </data>
+    <data name="PasswordIsWrong" xml:space="preserve">
+        <value>Неверный пароль</value>
+    </data>
+    <data name="InvalidToken" xml:space="preserve">
+        <value>Невалидныйй токен</value>
+    </data>
+    <data name="InvalidClientRequest" xml:space="preserve">
+        <value>Невалидный запрос клиента</value>
+    </data>
+    <data name="RoleAlreadyExists" xml:space="preserve">
+        <value>Роль уже существует</value>
+    </data>
+    <data name="RoleNotFound" xml:space="preserve">
+        <value>Роль не найдена</value>
+    </data>
+    <data name="UserAlreadyHasThisRole" xml:space="preserve">
+        <value>Пользователь уже имеет эту роль</value>
+    </data>
+    <data name="RoleToUpdateIsNotFound" xml:space="preserve">
+        <value>Обновляемая роль не найдена</value>
+    </data>
+    <data name="RoleToBeUpdatedIsNotFound" xml:space="preserve">
+        <value>Роль для обновления не найдена</value>
+    </data>
+    <data name="IdentityServerError" xml:space="preserve">
+        <value>Внутренняя ошибка сервера идентификации</value>
+    </data>
+</root>
