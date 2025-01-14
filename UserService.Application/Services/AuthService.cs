@@ -43,53 +43,53 @@ public class AuthService(
 
         var hashUserPassword = HashPassword(dto.Password);
 
-        await using var transaction = await unitOfWork.BeginTransactionAsync();
-
-        try
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
-            user = new User
+            try
             {
-                Username = dto.Username,
-                Email = dto.Email,
-                Password = hashUserPassword
-            };
-
-            await unitOfWork.Users.CreateAsync(user);
-
-            await unitOfWork.SaveChangesAsync();
-
-            var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == nameof(Roles.User));
-            if (role == null)
-                return new BaseResult<UserDto>
+                user = new User
                 {
-                    ErrorMessage = ErrorMessage.RoleNotFound,
-                    ErrorCode = (int)ErrorCodes.RoleNotFound
+                    Username = dto.Username,
+                    Email = dto.Email,
+                    Password = hashUserPassword
                 };
 
-            var userRole = new UserRole
+                await unitOfWork.Users.CreateAsync(user);
+
+                await unitOfWork.SaveChangesAsync();
+
+                var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == nameof(Roles.User));
+                if (role == null)
+                    return new BaseResult<UserDto>
+                    {
+                        ErrorMessage = ErrorMessage.RoleNotFound,
+                        ErrorCode = (int)ErrorCodes.RoleNotFound
+                    };
+
+                var userRole = new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = role.Id
+                };
+                await unitOfWork.UserRoles.CreateAsync(userRole);
+
+                await unitOfWork.SaveChangesAsync();
+
+                var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
+
+                var keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
+
+                user.KeycloakId = keycloakResponse.KeycloakId;
+                await unitOfWork.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
             {
-                UserId = user.Id,
-                RoleId = role.Id
-            };
-            await unitOfWork.UserRoles.CreateAsync(userRole);
-
-            await unitOfWork.SaveChangesAsync();
-
-            var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
-
-            var keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
-
-            user.KeycloakId = keycloakResponse.KeycloakId;
-            await unitOfWork.SaveChangesAsync();
-
-            await transaction.CommitAsync();
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync();
-            throw;
-        }
-
 
         return new BaseResult<UserDto>
         {
