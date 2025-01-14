@@ -21,7 +21,7 @@ namespace UserService.Api.Controllers;
 public class AuthController(IAuthService authService) : ControllerBase
 {
     /// <summary>
-    ///     user registartion
+    ///     user registration
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
@@ -35,7 +35,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     /// <summary>
-    ///     user login
+    ///     user login with email
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
@@ -49,7 +49,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     /// <summary>
-    ///     user login
+    ///     user login with username
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>

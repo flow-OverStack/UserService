@@ -17,6 +17,11 @@ namespace UserService.Api.Controllers;
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 public class TokenController(ITokenService tokenService) : ControllerBase
 {
+    /// <summary>
+    ///     Refreshes user's token
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
     [HttpPost("refresh")]
     public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenDto dto)
     {
