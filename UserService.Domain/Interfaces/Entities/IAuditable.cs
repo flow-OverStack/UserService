@@ -1,4 +1,4 @@
-namespace UserService.Domain.Interfaces;
+namespace UserService.Domain.Interfaces.Entities;
 
 public interface IAuditable
 {

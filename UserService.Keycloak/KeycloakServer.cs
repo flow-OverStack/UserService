@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using UserService.Domain.Dto.Keycloak.Roles;
 using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
@@ -19,7 +20,6 @@ public class KeycloakServer : IIdentityServer
     private const string IdentityServerName = "Keycloak";
     private readonly HttpClient _httpClient;
     private readonly KeycloakSettings _keycloakSettings;
-
 
     public KeycloakServer(IOptions<KeycloakSettings> keycloakSettings)
     {
@@ -55,7 +55,10 @@ public class KeycloakServer : IIdentityServer
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
 
-            var json = JsonConvert.SerializeObject(registerUserRequest);
+            var json = JsonConvert.SerializeObject(registerUserRequest, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(_keycloakSettings.UsersUrl, content);
@@ -174,7 +177,10 @@ public class KeycloakServer : IIdentityServer
                 { "attributes", attributes }
             };
 
-            var json = JsonConvert.SerializeObject(requestPayload);
+            var json = JsonConvert.SerializeObject(requestPayload, new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.keycloakUserId.ToString()}",
@@ -234,21 +240,21 @@ public class KeycloakServer : IIdentityServer
 
     private sealed class ServiceTokenResponse
     {
-        public string AccessToken { get; }
-        public int ExpiresIn { get; }
+        [JsonProperty("access_token")] public string AccessToken { get; set; }
+        [JsonProperty("expires_in")] public int ExpiresIn { get; set; }
     }
 
     private sealed class UserTokenResponse
     {
-        public string AccessToken { get; }
-        public string RefreshToken { get; }
-        public int ExpiresIn { get; }
+        [JsonProperty("access_token")] public string AccessToken { get; set; }
+        [JsonProperty("refresh_token")] public string RefreshToken { get; set; }
+        [JsonProperty("expires_in")] public int ExpiresIn { get; set; }
     }
 
     private sealed class KeycloakUser
     {
-        public string Id { get; }
-        public string Username { get; }
+        public string Id { get; set; }
+        public string Username { get; set;}
     }
 
     private sealed class RegisterUserRequest

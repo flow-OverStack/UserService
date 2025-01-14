@@ -1,4 +1,4 @@
-using UserService.Domain.Interfaces;
+using UserService.Domain.Interfaces.Entities;
 
 namespace UserService.Domain.Entity;
 

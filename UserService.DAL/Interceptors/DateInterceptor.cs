@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using UserService.Domain.Interfaces;
+using UserService.Domain.Interfaces.Entities;
 
 namespace UserService.DAL.Interceptors;
 

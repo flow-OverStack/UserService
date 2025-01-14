@@ -76,6 +76,7 @@ public class AuthService(
                 await unitOfWork.SaveChangesAsync();
 
                 var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
+                keycloakDto.Password = dto.Password;
 
                 var keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
 

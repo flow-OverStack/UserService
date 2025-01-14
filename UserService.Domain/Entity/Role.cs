@@ -1,8 +1,9 @@
-using UserService.Domain.Interfaces;
+using UserService.Domain.Interfaces.Entities;
+using UserService.Domain.Interfaces.Entities.Role;
 
 namespace UserService.Domain.Entity;
 
-public class Role : IEntityId<long>
+public class Role : IEntityId<long>, IRoleNameProvider
 {
     public string Name { get; set; }
 
@@ -10,7 +11,7 @@ public class Role : IEntityId<long>
     public long Id { get; set; }
 
     //Added for role mapping in keycloak service
-    public override string ToString()
+    public string GetRoleName()
     {
         return Name;
     }

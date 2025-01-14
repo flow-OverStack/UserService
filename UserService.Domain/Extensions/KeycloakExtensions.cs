@@ -1,3 +1,4 @@
+using UserService.Domain.Interfaces.Entities.Role;
 using UserService.Domain.Keycloak;
 
 namespace UserService.Domain.Extensions;
@@ -29,9 +30,9 @@ public static class KeycloakExtensions
     }
 
     public static KeycloakAttributes AddRoles(this KeycloakAttributes keycloakAttributes, string key,
-        params object[] roles)
+        IEnumerable<IRoleNameProvider> roles)
     {
-        var stringRoles = roles.Select(role => role.ToString()!).ToArray();
+        var stringRoles = roles.Select(role => role.GetRoleName()).ToArray();
 
         return AddRoles(keycloakAttributes, key, stringRoles);
     }
