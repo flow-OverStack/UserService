@@ -16,19 +16,13 @@ using UserService.Domain.Settings;
 
 namespace UserService.Application.Services;
 
-public class TokenService : ITokenService
+public class TokenService(
+    IBaseRepository<User> userRepository,
+    IOptions<KeycloakSettings> keycloakSettings,
+    IIdentityServer identityServer)
+    : ITokenService
 {
-    private readonly IIdentityServer _identityServer;
-    private readonly KeycloakSettings _keycloakSettings;
-    private readonly IBaseRepository<User> _userRepository;
-
-    public TokenService(IBaseRepository<User> userRepository, IOptions<KeycloakSettings> keycloakSettings,
-        IIdentityServer identityServer)
-    {
-        _userRepository = userRepository;
-        _identityServer = identityServer;
-        _keycloakSettings = keycloakSettings.Value;
-    }
+    private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
 
     public async Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string accessToken)
     {
@@ -76,7 +70,7 @@ public class TokenService : ITokenService
         var claimsPrincipal = await GetPrincipalFromExpiredToken(dto.AccessToken);
         var username = claimsPrincipal.Identity?.Name;
 
-        var user = await _userRepository.GetAll()
+        var user = await userRepository.GetAll()
             .Include(x => x.UserToken)
             .FirstOrDefaultAsync(x => x.Username == username);
 
@@ -88,14 +82,14 @@ public class TokenService : ITokenService
             };
 
 
-        var keycloakResponse = await _identityServer.RefreshTokenAsync(new KeycloakRefreshTokenDto(dto.RefreshToken));
+        var keycloakResponse = await identityServer.RefreshTokenAsync(new KeycloakRefreshTokenDto(dto.RefreshToken));
 
         var newAccessToken = keycloakResponse.AccessToken;
         var newRefreshToken = keycloakResponse.RefreshToken;
 
         user.UserToken.RefreshToken = newRefreshToken;
-        _userRepository.Update(user);
-        await _userRepository.SaveChangesAsync();
+        userRepository.Update(user);
+        await userRepository.SaveChangesAsync();
 
         return new BaseResult<TokenDto>
         {

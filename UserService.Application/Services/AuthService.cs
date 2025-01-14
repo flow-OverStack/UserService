@@ -14,28 +14,15 @@ using UserService.Domain.Result;
 
 namespace UserService.Application.Services;
 
-public class AuthService : IAuthService
+public class AuthService(
+    IBaseRepository<User> userRepository,
+    IMapper mapper,
+    IIdentityServer identityServer,
+    IBaseRepository<Role> roleRepository,
+    IUnitOfWork unitOfWork,
+    IBaseRepository<UserToken> userTokenRepository)
+    : IAuthService
 {
-    private readonly IIdentityServer _identityServer;
-    private readonly IMapper _mapper;
-    private readonly IBaseRepository<Role> _roleRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserToken> _userTokenRepository;
-
-    public AuthService(IBaseRepository<User> userRepository, IMapper mapper,
-        IIdentityServer identityServer,
-        IBaseRepository<Role> roleRepository, IUnitOfWork unitOfWork,
-        IBaseRepository<UserToken> userTokenRepository)
-    {
-        _userRepository = userRepository;
-        _mapper = mapper;
-        _identityServer = identityServer;
-        _roleRepository = roleRepository;
-        _unitOfWork = unitOfWork;
-        _userTokenRepository = userTokenRepository;
-    }
-
     public async Task<BaseResult<UserDto>> Register(RegisterUserDto dto)
     {
         if (dto.Password != dto.PasswordConfirm)
@@ -45,8 +32,8 @@ public class AuthService : IAuthService
                 ErrorCode = (int)ErrorCodes.PasswordMismatch
             };
 
-        var user = await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Username == dto.Username) ??
-                   await _userRepository.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email);
+        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Username == dto.Username) ??
+                   await userRepository.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email);
         if (user != null)
             return new BaseResult<UserDto>
             {
@@ -56,7 +43,7 @@ public class AuthService : IAuthService
 
         var hashUserPassword = HashPassword(dto.Password);
 
-        await using var transaction = await _unitOfWork.BeginTransactionAsync();
+        await using var transaction = await unitOfWork.BeginTransactionAsync();
 
         try
         {
@@ -67,11 +54,11 @@ public class AuthService : IAuthService
                 Password = hashUserPassword
             };
 
-            await _unitOfWork.Users.CreateAsync(user);
+            await unitOfWork.Users.CreateAsync(user);
 
-            await _unitOfWork.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync();
 
-            var role = await _roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == nameof(Roles.User));
+            var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == nameof(Roles.User));
             if (role == null)
                 return new BaseResult<UserDto>
                 {
@@ -84,16 +71,16 @@ public class AuthService : IAuthService
                 UserId = user.Id,
                 RoleId = role.Id
             };
-            await _unitOfWork.UserRoles.CreateAsync(userRole);
+            await unitOfWork.UserRoles.CreateAsync(userRole);
 
-            await _unitOfWork.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync();
 
-            var keycloakDto = _mapper.Map<KeycloakRegisterUserDto>(user);
+            var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
 
-            var keycloakResponse = await _identityServer.RegisterUserAsync(keycloakDto);
+            var keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
 
             user.KeycloakId = keycloakResponse.KeycloakId;
-            await _unitOfWork.SaveChangesAsync();
+            await unitOfWork.SaveChangesAsync();
 
             await transaction.CommitAsync();
         }
@@ -106,13 +93,13 @@ public class AuthService : IAuthService
 
         return new BaseResult<UserDto>
         {
-            Data = _mapper.Map<UserDto>(user)
+            Data = mapper.Map<UserDto>(user)
         };
     }
 
     public async Task<BaseResult<TokenDto>> LoginWithUsername(LoginUsernameUserDto dto)
     {
-        var user = await _userRepository.GetAll()
+        var user = await userRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Username == dto.Username);
 
         return await Login(user, dto.Password);
@@ -120,7 +107,7 @@ public class AuthService : IAuthService
 
     public async Task<BaseResult<TokenDto>> LoginWithEmail(LoginEmailUserDto dto)
     {
-        var user = await _userRepository.GetAll()
+        var user = await userRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
         return await Login(user, dto.Password);
@@ -143,9 +130,9 @@ public class AuthService : IAuthService
                 ErrorCode = (int)ErrorCodes.PasswordIsWrong
             };
 
-        var userToken = await _userTokenRepository.GetAll().FirstOrDefaultAsync(x => x.UserId == user.Id);
+        var userToken = await userTokenRepository.GetAll().FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-        var keycloakResponse = await _identityServer.LoginUserAsync(_mapper.Map<KeycloakLoginUserDto>(user));
+        var keycloakResponse = await identityServer.LoginUserAsync(mapper.Map<KeycloakLoginUserDto>(user));
 
         if (userToken == null)
         {
@@ -156,17 +143,17 @@ public class AuthService : IAuthService
                 RefreshTokenExpiryTime = keycloakResponse.Expires
             };
 
-            await _userTokenRepository.CreateAsync(userToken);
+            await userTokenRepository.CreateAsync(userToken);
         }
         else
         {
             userToken.RefreshToken = keycloakResponse.RefreshToken;
             userToken.RefreshTokenExpiryTime = keycloakResponse.Expires;
 
-            _userTokenRepository.Update(userToken);
+            userTokenRepository.Update(userToken);
         }
 
-        await _userTokenRepository.SaveChangesAsync();
+        await userTokenRepository.SaveChangesAsync();
 
         return new BaseResult<TokenDto>
         {

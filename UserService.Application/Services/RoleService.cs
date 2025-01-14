@@ -12,30 +12,18 @@ using UserService.Domain.Result;
 
 namespace UserService.Application.Services;
 
-public class RoleService : IRoleService
+public class RoleService(
+    IBaseRepository<User> userRepository,
+    IBaseRepository<Role> roleRepository,
+    IMapper mapper,
+    IBaseRepository<UserRole> userRoleRepository,
+    IUnitOfWork unitOfWork,
+    IIdentityServer identityServer)
+    : IRoleService
 {
-    private readonly IIdentityServer _identityServer;
-    private readonly IMapper _mapper;
-    private readonly IBaseRepository<Role> _roleRepository;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IBaseRepository<User> _userRepository;
-    private readonly IBaseRepository<UserRole> _userRoleRepository;
-
-    public RoleService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository, IMapper mapper,
-        IBaseRepository<UserRole> userRoleRepository, IUnitOfWork unitOfWork, IIdentityServer identityServer)
-    {
-        _userRepository = userRepository;
-        _roleRepository = roleRepository;
-        _mapper = mapper;
-        _userRoleRepository = userRoleRepository;
-        _unitOfWork = unitOfWork;
-        _identityServer = identityServer;
-        throw new NotImplementedException();
-    }
-
     public async Task<BaseResult<RoleDto>> CreateRoleAsync(CreateRoleDto dto)
     {
-        var role = await _roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name);
         if (role != null)
             return new BaseResult<RoleDto>
             {
@@ -47,17 +35,17 @@ public class RoleService : IRoleService
         {
             Name = dto.Name
         };
-        await _roleRepository.CreateAsync(role);
-        await _roleRepository.SaveChangesAsync();
+        await roleRepository.CreateAsync(role);
+        await roleRepository.SaveChangesAsync();
         return new BaseResult<RoleDto>
         {
-            Data = _mapper.Map<RoleDto>(role)
+            Data = mapper.Map<RoleDto>(role)
         };
     }
 
     public async Task<BaseResult<RoleDto>> DeleteRoleAsync(long id)
     {
-        var role = await _roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
         if (role == null)
             return new BaseResult<RoleDto>
             {
@@ -65,17 +53,17 @@ public class RoleService : IRoleService
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
 
-        _roleRepository.Remove(role);
-        await _roleRepository.SaveChangesAsync();
+        roleRepository.Remove(role);
+        await roleRepository.SaveChangesAsync();
         return new BaseResult<RoleDto>
         {
-            Data = _mapper.Map<RoleDto>(role)
+            Data = mapper.Map<RoleDto>(role)
         };
     }
 
     public async Task<BaseResult<RoleDto>> UpdateRoleAsync(RoleDto dto)
     {
-        var role = await _roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id);
         if (role == null)
             return new BaseResult<RoleDto>
             {
@@ -84,17 +72,17 @@ public class RoleService : IRoleService
             };
 
         role.Name = dto.Name;
-        var updatedRole = _roleRepository.Update(role);
-        await _roleRepository.SaveChangesAsync();
+        var updatedRole = roleRepository.Update(role);
+        await roleRepository.SaveChangesAsync();
         return new BaseResult<RoleDto>
         {
-            Data = _mapper.Map<RoleDto>(updatedRole)
+            Data = mapper.Map<RoleDto>(updatedRole)
         };
     }
 
     public async Task<BaseResult<UserRoleDto>> AddRoleForUserAsync(UserRoleDto dto)
     {
-        var user = await _userRepository.GetAll()
+        var user = await userRepository.GetAll()
             .Include(x => x.Roles)
             .FirstOrDefaultAsync(x => x.Username == dto.Username);
 
@@ -114,7 +102,7 @@ public class RoleService : IRoleService
                 ErrorCode = (int)ErrorCodes.UserAlreadyHasThisRole
             };
 
-        var role = await _roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.RoleName);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.RoleName);
         if (role == null)
             return new BaseResult<UserRoleDto>
             {
@@ -122,7 +110,7 @@ public class RoleService : IRoleService
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
 
-        await using (var transaction = await _unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
             {
@@ -132,16 +120,16 @@ public class RoleService : IRoleService
                     UserId = user.Id
                 };
 
-                await _userRoleRepository.CreateAsync(userRole);
-                await _userRoleRepository.SaveChangesAsync();
+                await userRoleRepository.CreateAsync(userRole);
+                await userRoleRepository.SaveChangesAsync();
 
-                var userWithUpdatedRoles = await _userRepository.GetAll()
+                var userWithUpdatedRoles = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
                     .Select(x => new { x.Id, x.Roles })
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
 
-                await _identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
+                await identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
                     userWithUpdatedRoles!.Roles));
 
                 await transaction.CommitAsync();
@@ -165,7 +153,7 @@ public class RoleService : IRoleService
 
     public async Task<BaseResult<UserRoleDto>> DeleteRoleForUserAsync(DeleteUserRoleDto dto)
     {
-        var user = await _userRepository.GetAll()
+        var user = await userRepository.GetAll()
             .Include(x => x.Roles)
             .FirstOrDefaultAsync(x => x.Username == dto.Username);
 
@@ -185,24 +173,24 @@ public class RoleService : IRoleService
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
 
-        await using (var transaction = await _unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
             {
-                var userRole = await _userRoleRepository.GetAll()
+                var userRole = await userRoleRepository.GetAll()
                     .Where(x => x.RoleId == role.Id)
                     .FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-                _userRoleRepository.Remove(userRole!);
-                await _userRoleRepository.SaveChangesAsync();
+                userRoleRepository.Remove(userRole!);
+                await userRoleRepository.SaveChangesAsync();
 
-                var userWithUpdatedRoles = await _userRepository.GetAll()
+                var userWithUpdatedRoles = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
                     .Select(x => new { x.Id, x.Roles })
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
 
-                await _identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
+                await identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
                     userWithUpdatedRoles!.Roles));
 
                 await transaction.CommitAsync();
@@ -226,7 +214,7 @@ public class RoleService : IRoleService
 
     public async Task<BaseResult<UserRoleDto>> UpdateRoleForUserAsync(UpdateUserRoleDto dto)
     {
-        var user = await _userRepository.GetAll()
+        var user = await userRepository.GetAll()
             .Include(x => x.Roles)
             .FirstOrDefaultAsync(x => x.Username == dto.Username);
 
@@ -246,7 +234,7 @@ public class RoleService : IRoleService
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
 
-        var newRoleForUser = await _roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.ToRoleId);
+        var newRoleForUser = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.ToRoleId);
 
         if (newRoleForUser == null)
             return new BaseResult<UserRoleDto>
@@ -255,7 +243,7 @@ public class RoleService : IRoleService
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
 
-        await using (var transaction = await _unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
             {
@@ -265,7 +253,7 @@ public class RoleService : IRoleService
                     RoleId = newRoleForUser.Id
                 };
 
-                var isNewUserRoleExists = await _unitOfWork.UserRoles.GetAll()
+                var isNewUserRoleExists = await unitOfWork.UserRoles.GetAll()
                     .FirstOrDefaultAsync(x => x.UserId == newUserRole.UserId && x.RoleId == newUserRole.RoleId) != null;
 
                 if (isNewUserRoleExists)
@@ -275,23 +263,23 @@ public class RoleService : IRoleService
                         ErrorCode = (int)ErrorCodes.UserAlreadyHasThisRole
                     };
 
-                var userRole = await _unitOfWork.UserRoles.GetAll()
+                var userRole = await unitOfWork.UserRoles.GetAll()
                     .Where(x => x.RoleId == role.Id)
                     .FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-                _unitOfWork.UserRoles.Remove(userRole!);
-                await _unitOfWork.SaveChangesAsync();
+                unitOfWork.UserRoles.Remove(userRole!);
+                await unitOfWork.SaveChangesAsync();
 
-                await _unitOfWork.UserRoles.CreateAsync(newUserRole);
-                await _unitOfWork.SaveChangesAsync();
+                await unitOfWork.UserRoles.CreateAsync(newUserRole);
+                await unitOfWork.SaveChangesAsync();
 
-                var userWithUpdatedRoles = await _userRepository.GetAll()
+                var userWithUpdatedRoles = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
                     .Select(x => new { x.Id, x.Roles })
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
 
-                await _identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
+                await identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
                     userWithUpdatedRoles!.Roles));
 
                 await transaction.CommitAsync();
