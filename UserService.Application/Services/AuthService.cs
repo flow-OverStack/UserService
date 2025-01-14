@@ -116,6 +116,13 @@ public class AuthService(
 
     public async Task<BaseResult<TokenDto>> LoginWithEmail(LoginEmailUserDto dto)
     {
+        if (!IsEmail(dto.Email))
+            return new BaseResult<TokenDto>
+            {
+                ErrorMessage = ErrorMessage.EmailNotValid,
+                ErrorCode = (int)ErrorCodes.EmailNotValid
+            };
+
         var user = await userRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
@@ -141,7 +148,10 @@ public class AuthService(
 
         var userToken = await userTokenRepository.GetAll().FirstOrDefaultAsync(x => x.UserId == user.Id);
 
-        var keycloakResponse = await identityServer.LoginUserAsync(mapper.Map<KeycloakLoginUserDto>(user));
+        var keycloakDto = mapper.Map<KeycloakLoginUserDto>(userToken);
+        keycloakDto.Password = password;
+
+        var keycloakResponse = await identityServer.LoginUserAsync(keycloakDto);
 
         if (userToken == null)
         {
