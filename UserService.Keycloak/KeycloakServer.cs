@@ -15,17 +15,13 @@ using UserService.Domain.Settings;
 
 namespace UserService.Keycloak;
 
-public class KeycloakServer : IIdentityServer
+public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
-    private readonly HttpClient _httpClient;
-    private readonly KeycloakSettings _keycloakSettings;
+    private readonly HttpClient _httpClient = new();
 
-    public KeycloakServer(IOptions<KeycloakSettings> keycloakSettings)
-    {
-        _httpClient = new HttpClient();
-        _keycloakSettings = keycloakSettings.Value;
-    }
+    private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
+    //TODO class singleton with separated for each method http context and with updating token using lock
 
     private static KeycloakServiceTokenDto? Token { get; set; }
 
@@ -118,7 +114,8 @@ public class KeycloakServer : IIdentityServer
             {
                 AccessToken = responseToken!.AccessToken,
                 RefreshToken = responseToken.RefreshToken,
-                Expires = DateTime.UtcNow.AddSeconds(responseToken.ExpiresIn)
+                AccessExpires = DateTime.UtcNow.AddSeconds(responseToken.AccessExpiresIn),
+                RefreshExpires = DateTime.UtcNow.AddSeconds(responseToken.RefreshExpiresIn)
             };
         }
         catch (Exception e)
@@ -154,7 +151,8 @@ public class KeycloakServer : IIdentityServer
             {
                 AccessToken = responseToken!.AccessToken,
                 RefreshToken = responseToken.RefreshToken,
-                Expires = DateTime.UtcNow.AddSeconds(responseToken.ExpiresIn)
+                AccessExpires = DateTime.UtcNow.AddSeconds(responseToken.AccessExpiresIn),
+                RefreshExpires = DateTime.UtcNow.AddSeconds(responseToken.RefreshExpiresIn)
             };
         }
         catch (Exception e)
@@ -248,7 +246,9 @@ public class KeycloakServer : IIdentityServer
     {
         [JsonProperty("access_token")] public string AccessToken { get; set; }
         [JsonProperty("refresh_token")] public string RefreshToken { get; set; }
-        [JsonProperty("expires_in")] public int ExpiresIn { get; set; }
+        [JsonProperty("expires_in")] public int AccessExpiresIn { get; set; }
+        [JsonProperty("refresh_expires_in")] public int RefreshExpiresIn { get; set; }
+        
     }
 
     private sealed class KeycloakUser

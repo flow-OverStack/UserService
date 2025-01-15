@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols;
@@ -19,7 +20,8 @@ namespace UserService.Application.Services;
 public class TokenService(
     IBaseRepository<User> userRepository,
     IOptions<KeycloakSettings> keycloakSettings,
-    IIdentityServer identityServer)
+    IIdentityServer identityServer,
+    IMapper mapper)
     : ITokenService
 {
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
@@ -88,22 +90,16 @@ public class TokenService(
 
         var keycloakResponse = await identityServer.RefreshTokenAsync(new KeycloakRefreshTokenDto(dto.RefreshToken));
 
-        var newAccessToken = keycloakResponse.AccessToken;
-        var newRefreshToken = keycloakResponse.RefreshToken;
-
-        user.UserToken.RefreshToken = newRefreshToken;
+        user.UserToken.RefreshToken = keycloakResponse.RefreshToken;
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();
 
+        var tokenDto = mapper.Map<TokenDto>(keycloakResponse);
+        tokenDto.UserId = user.Id;
+
         return new BaseResult<TokenDto>
         {
-            Data = new TokenDto
-            {
-                RefreshToken = newRefreshToken,
-                AccessToken = newAccessToken,
-                Expires = keycloakResponse.Expires,
-                UserId = user.Id
-            }
+            Data = tokenDto
         };
     }
 }

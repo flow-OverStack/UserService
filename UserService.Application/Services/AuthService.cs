@@ -159,7 +159,7 @@ public class AuthService(
             {
                 UserId = user.Id,
                 RefreshToken = keycloakResponse.RefreshToken,
-                RefreshTokenExpiryTime = keycloakResponse.Expires
+                RefreshTokenExpiryTime = keycloakResponse.RefreshExpires
             };
 
             await userTokenRepository.CreateAsync(userToken);
@@ -167,22 +167,19 @@ public class AuthService(
         else
         {
             userToken.RefreshToken = keycloakResponse.RefreshToken;
-            userToken.RefreshTokenExpiryTime = keycloakResponse.Expires;
+            userToken.RefreshTokenExpiryTime = keycloakResponse.RefreshExpires;
 
             userTokenRepository.Update(userToken);
         }
 
         await userTokenRepository.SaveChangesAsync();
 
+        var tokenDto = mapper.Map<TokenDto>(keycloakResponse);
+        tokenDto.UserId = user.Id;
+
         return new BaseResult<TokenDto>
         {
-            Data = new TokenDto
-            {
-                AccessToken = keycloakResponse.AccessToken,
-                RefreshToken = keycloakResponse.RefreshToken,
-                Expires = keycloakResponse.Expires,
-                UserId = user.Id
-            }
+            Data = tokenDto
         };
     }
 
