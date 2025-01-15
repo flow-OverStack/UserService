@@ -21,7 +21,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     private readonly HttpClient _httpClient = new();
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
 
-    private static readonly SemaphoreSlim _tokenSemaphore = new(1, 1);
+    private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
     private static KeycloakServiceTokenDto? Token { get; set; }
 
 
@@ -221,7 +221,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private async Task LoginAsServiceIfNeeded()
     {
-        await _tokenSemaphore.WaitAsync();
+        await TokenSemaphore.WaitAsync();
         try
         {
             if (Token == null ||
@@ -230,7 +230,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
         finally
         {
-            _tokenSemaphore.Release();
+            TokenSemaphore.Release();
         }
        
     }
