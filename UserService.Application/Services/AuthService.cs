@@ -174,6 +174,10 @@ public class AuthService(
 
         await userTokenRepository.SaveChangesAsync();
 
+        user.LastLoginAt = DateTime.UtcNow;
+        userRepository.Update(user);
+        await userRepository.SaveChangesAsync();
+
         var tokenDto = mapper.Map<TokenDto>(keycloakResponse);
         tokenDto.UserId = user.Id;
 
