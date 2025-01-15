@@ -165,8 +165,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         try
         {
             await LoginAsServiceIfNeeded();
-
-
+            
             var attributes =
                 new KeycloakAttributes().AddRoles(_keycloakSettings.RolesAttributeName, dto.newRoles);
             var requestPayload = new Dictionary<string, KeycloakAttributes>
@@ -179,6 +178,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
 
             var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.keycloakUserId.ToString()}",
                 content);
