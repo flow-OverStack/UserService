@@ -27,15 +27,16 @@ namespace UserService.Api.Controllers;
 public class RoleController(IRoleService roleService) : ControllerBase
 {
     /// <summary>
-    ///     Create role
+    /// Create role
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
     /// <remarks>
-    ///     Request for create role:
+    /// Request for create role:
+    /// 
     ///     POST
     ///     {
-    ///     "name":"Admin"
+    ///         "name":"Admin"
     ///     }
     /// </remarks>
     [HttpPost]
@@ -48,16 +49,16 @@ public class RoleController(IRoleService roleService) : ControllerBase
     }
 
     /// <summary>
-    ///     Deletes role by its id
+    /// Deletes role by its id
     /// </summary>
     /// <param name="id">role's id</param>
     /// <returns></returns>
-    /// ///
-    /// <remarks>
-    ///     Request for deleting role:
+    /// /// <remarks>
+    /// Request for deleting role:
+    /// 
     ///     DELETE
     ///     {
-    ///     "id":1
+    ///         "id":1
     ///     }
     /// </remarks>
     [HttpDelete("{id:int:min(1)}")]
@@ -70,16 +71,17 @@ public class RoleController(IRoleService roleService) : ControllerBase
     }
 
     /// <summary>
-    ///     Updates role
+    /// Updates role
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
     /// <remarks>
-    ///     Request for updating role:
+    /// Request for updating role:
+    /// 
     ///     UPDATE
     ///     {
-    ///     "id":1,
-    ///     "name":"Admin"
+    ///         "id":1,
+    ///         "name":"Admin"
     ///     }
     /// </remarks>
     [HttpPut]
@@ -92,16 +94,17 @@ public class RoleController(IRoleService roleService) : ControllerBase
     }
 
     /// <summary>
-    ///     Adding role for user
+    /// Adding role for user
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
     /// <remarks>
-    ///     Request for add role for user:
+    /// Request for add role for user:
+    /// 
     ///     POST
     ///     {
-    ///     "login":"user1",
-    ///     "roleName":"Admin"
+    ///         "username":"user1",
+    ///         "roleName":"Admin"
     ///     }
     /// </remarks>
     [HttpPost("add-role")]
@@ -114,17 +117,17 @@ public class RoleController(IRoleService roleService) : ControllerBase
     }
 
     /// <summary>
-    ///     Deletes role of user by user's login and role's id
+    /// Deletes role of user by username and role's id
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    /// ///
     /// <remarks>
-    ///     Request for deleting role:
+    /// Request for deleting role:
+    /// 
     ///     DELETE
     ///     {
-    ///     "login":"user1",
-    ///     "roleId":2
+    ///         "username":"user1",
+    ///         "roleId":2
     ///     }
     /// </remarks>
     [HttpDelete("delete-role")]
@@ -137,17 +140,18 @@ public class RoleController(IRoleService roleService) : ControllerBase
     }
 
     /// <summary>
-    ///     Updates role for user
+    /// Updates role for user
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
     /// <remarks>
-    ///     Request for updating user's role:
+    /// Request for updating user's role:
+    /// 
     ///     UPDATE
     ///     {
-    ///     "Login":"user1",
-    ///     "FromRoleId":1,
-    ///     "ToRoleId":2
+    ///         "username":"user1",
+    ///         "fromRoleId":1,
+    ///         "toRoleId":2
     ///     }
     /// </remarks>
     [HttpPut("update-role")]
