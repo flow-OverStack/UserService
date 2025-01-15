@@ -28,7 +28,11 @@ public class TokenService(
     {
         var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
             _keycloakSettings.MetadataAddress,
-            new OpenIdConnectConfigurationRetriever());
+            new OpenIdConnectConfigurationRetriever(),
+            new HttpDocumentRetriever
+            {
+                RequireHttps = false
+            });
 
         var openIdConfiguration = await configurationManager.GetConfigurationAsync();
 
@@ -49,8 +53,8 @@ public class TokenService(
             var claimsPrincipal =
                 tokenHandler.ValidateToken(accessToken, tokenValidationParameters, out var securityToken);
             if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                    StringComparison.InvariantCultureIgnoreCase)) //Check what is jwtSecurityToken
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException();
 
             return claimsPrincipal;
