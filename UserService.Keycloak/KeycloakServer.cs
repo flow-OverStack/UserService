@@ -19,10 +19,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 {
     private const string IdentityServerName = "Keycloak";
     private readonly HttpClient _httpClient = new();
-
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
-    //TODO class singleton with separated for each method http context and with updating token using lock
 
+    private static readonly SemaphoreSlim _tokenSemaphore = new(1, 1);
     private static KeycloakServiceTokenDto? Token { get; set; }
 
 
@@ -222,9 +221,18 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private async Task LoginAsServiceIfNeeded()
     {
-        if (Token == null ||
-            Token.Expires <= DateTime.UtcNow)
-            await LoginAsService();
+        await _tokenSemaphore.WaitAsync();
+        try
+        {
+            if (Token == null ||
+                Token.Expires <= DateTime.UtcNow)
+                await LoginAsService();
+        }
+        finally
+        {
+            _tokenSemaphore.Release();
+        }
+       
     }
 
     #region Classes for http requests
@@ -248,13 +256,12 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         [JsonProperty("refresh_token")] public string RefreshToken { get; set; }
         [JsonProperty("expires_in")] public int AccessExpiresIn { get; set; }
         [JsonProperty("refresh_expires_in")] public int RefreshExpiresIn { get; set; }
-        
     }
 
     private sealed class KeycloakUser
     {
         public string Id { get; set; }
-        public string Username { get; set;}
+        public string Username { get; }
     }
 
     private sealed class RegisterUserRequest
