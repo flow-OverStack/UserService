@@ -14,7 +14,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddAuthenticationAndAuthorization(builder);
+builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddIdentityServer();
 builder.Services.AddSwagger(builder.Configuration);
 

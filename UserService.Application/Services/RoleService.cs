@@ -53,8 +53,36 @@ public class RoleService(
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
 
-        roleRepository.Remove(role);
-        await roleRepository.SaveChangesAsync();
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        {
+            try
+            {
+                var usersWithDeletedRole = await userRepository.GetAll()
+                    .AsNoTracking()
+                    .Include(x => x.Roles)
+                    .Where(x => x.Roles.Contains(role))
+                    .ToArrayAsync();
+
+                roleRepository.Remove(role);
+                await roleRepository.SaveChangesAsync();
+
+                foreach (var user in usersWithDeletedRole)
+                {
+                    var roleToDelete = user.Roles.First(x => x.Id == role.Id);
+                    user.Roles.Remove(roleToDelete);
+                    var keycloakDto = mapper.Map<KeycloakUpdateRolesDto>(user);
+                    await identityServer.UpdateRolesAsync(keycloakDto);
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         return new BaseResult<RoleDto>
         {
             Data = mapper.Map<RoleDto>(role)
@@ -70,10 +98,36 @@ public class RoleService(
                 ErrorMessage = ErrorMessage.RoleNotFound,
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
+        Role updatedRole;
+        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        {
+            try
+            {
+                role.Name = dto.Name;
+                updatedRole = roleRepository.Update(role);
+                await roleRepository.SaveChangesAsync();
 
-        role.Name = dto.Name;
-        var updatedRole = roleRepository.Update(role);
-        await roleRepository.SaveChangesAsync();
+                var usersWithRole = await userRepository.GetAll()
+                    .AsNoTracking()
+                    .Include(x => x.Roles)
+                    .Where(x => x.Roles.Contains(updatedRole))
+                    .ToArrayAsync();
+
+                foreach (var user in usersWithRole)
+                {
+                    var keycloakDto = mapper.Map<KeycloakUpdateRolesDto>(user);
+                    await identityServer.UpdateRolesAsync(keycloakDto);
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+
         return new BaseResult<RoleDto>
         {
             Data = mapper.Map<RoleDto>(updatedRole)
@@ -126,11 +180,11 @@ public class RoleService(
                 var userWithUpdatedRoles = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
-                    .Select(x => new { x.Id, x.Roles })
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
 
-                await identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
-                    userWithUpdatedRoles!.Roles));
+                var keycloakDto = mapper.Map<KeycloakUpdateRolesDto>(userWithUpdatedRoles);
+
+                await identityServer.UpdateRolesAsync(keycloakDto);
 
                 await transaction.CommitAsync();
             }
@@ -187,11 +241,11 @@ public class RoleService(
                 var userWithUpdatedRoles = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
-                    .Select(x => new { x.Id, x.Roles })
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
 
-                await identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
-                    userWithUpdatedRoles!.Roles));
+                var keycloakDto = mapper.Map<KeycloakUpdateRolesDto>(userWithUpdatedRoles);
+
+                await identityServer.UpdateRolesAsync(keycloakDto);
 
                 await transaction.CommitAsync();
             }
@@ -276,11 +330,11 @@ public class RoleService(
                 var userWithUpdatedRoles = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
-                    .Select(x => new { x.Id, x.Roles })
                     .FirstOrDefaultAsync(x => x.Id == user.Id);
 
-                await identityServer.UpdateRolesAsync(new KeycloakUpdateRolesDto(user.KeycloakId,
-                    userWithUpdatedRoles!.Roles));
+                var keycloakDto = mapper.Map<KeycloakUpdateRolesDto>(userWithUpdatedRoles);
+
+                await identityServer.UpdateRolesAsync(keycloakDto);
 
                 await transaction.CommitAsync();
             }

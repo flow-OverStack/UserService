@@ -18,12 +18,11 @@ namespace UserService.Keycloak;
 public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
-    private readonly HttpClient _httpClient = new();
-    private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
+    private readonly HttpClient _httpClient = new();
+    private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceTokenDto? Token { get; set; }
-
 
     public async Task<KeycloakUserDto> RegisterUserAsync(KeycloakRegisterUserDto dto)
     {
@@ -33,7 +32,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             #region Create register request
 
-            var registerUserRequest = new RegisterUserRequest
+            var userPayload = new RegisterUserPayload
             {
                 Username = dto.Username,
                 Email = dto.Email,
@@ -50,25 +49,25 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
 
-            var json = JsonConvert.SerializeObject(registerUserRequest, new JsonSerializerSettings
+            var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync(_keycloakSettings.UsersUrl, content);
+            var createResponse = await _httpClient.PostAsync(_keycloakSettings.UsersUrl, content);
 
-            response.EnsureSuccessStatusCode();
+            createResponse.EnsureSuccessStatusCode();
 
             #endregion
 
             #region Get created user
 
-            response = await _httpClient.GetAsync($"{_keycloakSettings.UsersUrl}?username={dto.Username}");
+            var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersUrl}?username={dto.Username}");
 
-            response.EnsureSuccessStatusCode();
+            getResponse.EnsureSuccessStatusCode();
 
-            var body = await response.Content.ReadAsStringAsync();
+            var body = await createResponse.Content.ReadAsStringAsync();
             var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
             var exactUser = responseUsers!.FirstOrDefault(x => x.Username == dto.Username);
 
@@ -165,15 +164,15 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         try
         {
             await LoginAsServiceIfNeeded();
-            
-            var attributes =
-                new KeycloakAttributes().AddRoles(_keycloakSettings.RolesAttributeName, dto.newRoles);
-            var requestPayload = new Dictionary<string, KeycloakAttributes>
+
+            var userPayload = new UpdateUserPayload
             {
-                { "attributes", attributes }
+                Email = dto.Email,
+                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdAttributeName, dto.UserId)
+                    .AddRoles(_keycloakSettings.RolesAttributeName, dto.NewRoles)
             };
 
-            var json = JsonConvert.SerializeObject(requestPayload, new JsonSerializerSettings
+            var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
@@ -182,7 +181,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
 
-            var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.keycloakUserId.ToString()}",
+            var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
                 content);
 
             response.EnsureSuccessStatusCode();
@@ -234,7 +233,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         {
             TokenSemaphore.Release();
         }
-       
     }
 
     #region Classes for http requests
@@ -266,7 +264,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         public string Username { get; }
     }
 
-    private sealed class RegisterUserRequest
+    private sealed class RegisterUserPayload
     {
         public string Username { get; set; }
         public string Email { get; set; }
@@ -274,6 +272,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         public bool Enabled { get; set; } = true;
 
         public List<KeycloakCredentials> Credentials { get; set; }
+        public KeycloakAttributes Attributes { get; set; }
+    }
+
+    private sealed class UpdateUserPayload
+    {
+        public string Email { get; set; }
+
         public KeycloakAttributes Attributes { get; set; }
     }
 

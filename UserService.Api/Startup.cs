@@ -23,9 +23,7 @@ public static class Startup
     ///     Sets up authentication and authorization
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="builder"></param>
-    public static void AddAuthenticationAndAuthorization(this IServiceCollection services,
-        WebApplicationBuilder builder)
+    public static void AddAuthenticationAndAuthorization(this IServiceCollection services)
     {
         var keycloakSettings = services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
         services.AddAuthorization();
