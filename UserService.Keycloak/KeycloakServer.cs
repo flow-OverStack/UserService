@@ -260,7 +260,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private sealed class KeycloakUser
     {
-        public string Id { get; set; }
+        public string Id { get; }
         public string Username { get; }
     }
 
