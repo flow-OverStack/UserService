@@ -1,7 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using UserService.Domain.Dto.Keycloak.Roles;
@@ -11,6 +16,7 @@ using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Keycloak;
+using UserService.Domain.Resources;
 using UserService.Domain.Settings;
 
 namespace UserService.Keycloak;
@@ -189,6 +195,62 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         catch (Exception e)
         {
             throw new IdentityServerException(IdentityServerName, e.Message, e);
+        }
+    }
+
+    public async Task<ClaimsPrincipal> GetPrincipalFromExpiredTokenAsync(string token)
+    {
+        TokenValidationParameters tokenValidationParameters;
+        JwtSecurityTokenHandler tokenHandler;
+
+        try
+        {
+            var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                _keycloakSettings.MetadataAddress,
+                new OpenIdConnectConfigurationRetriever(),
+                new HttpDocumentRetriever
+                {
+                    RequireHttps = false
+                });
+
+            var openIdConfiguration = await configurationManager.GetConfigurationAsync();
+
+
+            tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKeys = openIdConfiguration.SigningKeys,
+                ValidateLifetime = false,
+                ValidAudience = _keycloakSettings.Audience,
+                ValidIssuer = openIdConfiguration.Issuer
+            };
+            tokenHandler = new JwtSecurityTokenHandler();
+        }
+        catch (Exception e)
+        {
+            throw new IdentityServerException(IdentityServerName, e.Message, e);
+        }
+
+        try
+        {
+            var claimsPrincipal =
+                tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException();
+
+            return claimsPrincipal;
+        }
+        catch (SecurityTokenException)
+        {
+            throw new SecurityTokenException(ErrorMessage.InvalidToken);
+        }
+        catch (Exception exception)
+        {
+            throw new SecurityTokenException(ErrorMessage.InvalidToken + exception.Message);
         }
     }
 
