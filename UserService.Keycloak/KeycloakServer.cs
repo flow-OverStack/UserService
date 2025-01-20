@@ -1,6 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -16,7 +14,6 @@ using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Keycloak;
-using UserService.Domain.Resources;
 using UserService.Domain.Settings;
 
 namespace UserService.Keycloak;
@@ -198,11 +195,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
     }
 
-    public async Task<ClaimsPrincipal> GetPrincipalFromExpiredTokenAsync(string token)
+    public async Task<TokenValidationParameters> GetTokenValidationParametersAsync()
     {
-        TokenValidationParameters tokenValidationParameters;
-        JwtSecurityTokenHandler tokenHandler;
-
         try
         {
             var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
@@ -216,7 +210,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
             var openIdConfiguration = await configurationManager.GetConfigurationAsync();
 
 
-            tokenValidationParameters = new TokenValidationParameters
+            var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = true,
                 ValidateIssuer = true,
@@ -226,31 +220,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
                 ValidAudience = _keycloakSettings.Audience,
                 ValidIssuer = openIdConfiguration.Issuer
             };
-            tokenHandler = new JwtSecurityTokenHandler();
+
+
+            return tokenValidationParameters;
         }
         catch (Exception e)
         {
             throw new IdentityServerException(IdentityServerName, e.Message, e);
-        }
-
-        try
-        {
-            var claimsPrincipal =
-                tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256,
-                    StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException();
-
-            return claimsPrincipal;
-        }
-        catch (SecurityTokenException)
-        {
-            throw new SecurityTokenException(ErrorMessage.InvalidToken);
-        }
-        catch (Exception exception)
-        {
-            throw new SecurityTokenException(ErrorMessage.InvalidToken + exception.Message);
         }
     }
 

@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Moq;
 using UserService.Domain.Dto.Keycloak.Roles;
 using UserService.Domain.Dto.Keycloak.Token;
@@ -27,9 +26,7 @@ public static class IdentityServerConfiguration
             new KeycloakUserDto(Guid.NewGuid()));
         mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<KeycloakRefreshTokenDto>()))
             .ReturnsAsync(randomKeycloakUserTokenDto);
-        mockIdentityServer.Setup(x => x.GetPrincipalFromExpiredTokenAsync(It.IsAny<string>())).ReturnsAsync(
-            new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "TestUser1")], //test user's name
-                "AuthType")));
+        mockIdentityServer.Setup(x => x.GetTokenValidationParametersAsync());
         mockIdentityServer.Setup(x => x.UpdateRolesAsync(It.IsAny<KeycloakUpdateRolesDto>()))
             .Returns(Task.CompletedTask);
 

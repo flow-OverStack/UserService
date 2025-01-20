@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <Folder Include="FunctionalTests\"/>
-        <Folder Include="IntegrationTests\"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -1,5 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Token;
 using UserService.Domain.Entity;
@@ -16,9 +19,37 @@ public class TokenService(
     IMapper mapper)
     : ITokenService
 {
+    public Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token,
+        TokenValidationParameters tokenValidationParameters)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var claimsPrincipal =
+                tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException();
+
+            return Task.FromResult(claimsPrincipal);
+        }
+        catch (SecurityTokenException)
+        {
+            throw new SecurityTokenException(ErrorMessage.InvalidToken);
+        }
+        catch (Exception exception)
+        {
+            throw new SecurityTokenException(ErrorMessage.InvalidToken + exception.Message);
+        }
+    }
+
     public async Task<BaseResult<TokenDto>> RefreshToken(RefreshTokenDto dto)
     {
-        var claimsPrincipal = await identityServer.GetPrincipalFromExpiredTokenAsync(dto.AccessToken);
+        var tokenValidationParameters = await identityServer.GetTokenValidationParametersAsync();
+
+        var claimsPrincipal = await GetPrincipalFromExpiredToken(dto.AccessToken, tokenValidationParameters);
         var username = claimsPrincipal.Identity?.Name;
 
         var user = await userRepository.GetAll()

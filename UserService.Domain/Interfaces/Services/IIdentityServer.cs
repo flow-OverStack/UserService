@@ -1,4 +1,4 @@
-using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 using UserService.Domain.Dto.Keycloak.Roles;
 using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
@@ -39,9 +39,9 @@ public interface IIdentityServer
     Task UpdateRolesAsync(KeycloakUpdateRolesDto dto);
 
     /// <summary>
-    ///     Gets principals from token
+    ///     Get validation parameters for keycloak token 
     /// </summary>
-    /// <param name="accessToken"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    Task<ClaimsPrincipal> GetPrincipalFromExpiredTokenAsync(string token);
+    Task<TokenValidationParameters> GetTokenValidationParametersAsync();
 }
