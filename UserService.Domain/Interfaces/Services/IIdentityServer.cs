@@ -41,7 +41,6 @@ public interface IIdentityServer
     /// <summary>
     ///     Get validation parameters for keycloak token 
     /// </summary>
-    /// <param name="token"></param>
     /// <returns></returns>
     Task<TokenValidationParameters> GetTokenValidationParametersAsync();
 }
