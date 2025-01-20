@@ -19,32 +19,6 @@ public class TokenService(
     IMapper mapper)
     : ITokenService
 {
-    public Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token,
-        TokenValidationParameters tokenValidationParameters)
-    {
-        try
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var claimsPrincipal =
-                tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
-                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256,
-                    StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException();
-
-            return Task.FromResult(claimsPrincipal);
-        }
-        catch (SecurityTokenException)
-        {
-            throw new SecurityTokenException(ErrorMessage.InvalidToken);
-        }
-        catch (Exception exception)
-        {
-            throw new SecurityTokenException(ErrorMessage.InvalidToken + exception.Message);
-        }
-    }
-
     public async Task<BaseResult<TokenDto>> RefreshToken(RefreshTokenDto dto)
     {
         var tokenValidationParameters = await identityServer.GetTokenValidationParametersAsync();
@@ -77,5 +51,31 @@ public class TokenService(
         {
             Data = tokenDto
         };
+    }
+
+    private static Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token,
+        TokenValidationParameters tokenValidationParameters)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var claimsPrincipal =
+                tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.RsaSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException();
+
+            return Task.FromResult(claimsPrincipal);
+        }
+        catch (SecurityTokenException)
+        {
+            throw new SecurityTokenException(ErrorMessage.InvalidToken);
+        }
+        catch (Exception exception)
+        {
+            throw new SecurityTokenException(ErrorMessage.InvalidToken + exception.Message);
+        }
     }
 }
