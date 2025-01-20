@@ -21,9 +21,20 @@ public class TokenService(
 {
     public async Task<BaseResult<TokenDto>> RefreshToken(RefreshTokenDto dto)
     {
+        ClaimsPrincipal claimsPrincipal;
         var tokenValidationParameters = await identityServer.GetTokenValidationParametersAsync();
+        try
+        {
+            claimsPrincipal = await GetPrincipalFromExpiredToken(dto.AccessToken, tokenValidationParameters);
+        }
+        catch (Exception e)
+        {
+            return new BaseResult<TokenDto>
+            {
+                ErrorMessage = e.Message
+            };
+        }
 
-        var claimsPrincipal = await GetPrincipalFromExpiredToken(dto.AccessToken, tokenValidationParameters);
         var username = claimsPrincipal.Identity?.Name;
 
         var user = await userRepository.GetAll()
