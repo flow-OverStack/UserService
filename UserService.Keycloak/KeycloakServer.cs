@@ -233,6 +233,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private async Task LoginAsService()
     {
+        if (IsTokenExpired())
+            return; //double check is here if 2 or more threads are updating the token at the same time after the first check
+
         const string grantType = "client_credentials";
 
         var parameters = new Dictionary<string, string>
@@ -260,18 +263,24 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private async Task LoginAsServiceIfNeeded()
     {
-        await TokenSemaphore.WaitAsync();
-        try
-        {
-            if (Token == null ||
-                Token.Expires <= DateTime.UtcNow)
+        if (IsTokenExpired())
+            try
+            {
+                await TokenSemaphore.WaitAsync();
                 await LoginAsService();
-        }
-        finally
-        {
-            TokenSemaphore.Release();
-        }
+            }
+            finally
+            {
+                TokenSemaphore.Release();
+            }
     }
+
+    private static bool IsTokenExpired()
+    {
+        return Token == null ||
+               Token.Expires <= DateTime.UtcNow;
+    }
+
 
     #region Classes for http requests
 
