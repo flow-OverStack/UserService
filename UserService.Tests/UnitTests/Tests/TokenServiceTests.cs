@@ -8,23 +8,31 @@ namespace UserService.Tests.UnitTests.Tests;
 
 public class TokenServiceTests
 {
-    public static IEnumerable<object[]> GetRefreshTokenData()
+    public static IEnumerable<object[]> GetAccessTokensForValidUser()
     {
         return
         [
-            [SigningKeyExtensions.GetRsaToken(), true],
-            [SigningKeyExtensions.GetHmacToken(), false]
+            [SigningKeyExtensions.GetRsaToken("TestUser1").GetAwaiter().GetResult(), true],
+            [SigningKeyExtensions.GetHmacToken("TestUser1").GetAwaiter().GetResult(), false]
         ];
     }
 
+    public static IEnumerable<object[]> GetAccessTokensForInvalidUser()
+    {
+        return
+        [
+            [SigningKeyExtensions.GetRsaToken("TestUser2").GetAwaiter().GetResult(), "TestRefreshToken2"],
+            [SigningKeyExtensions.GetRsaToken("TestUser3").GetAwaiter().GetResult(), "WrongRefreshToken2"]
+        ];
+    }
+
+
     [Trait("Category", "Unit")]
     [Theory]
-    [MemberData(nameof(GetRefreshTokenData))]
+    [MemberData(nameof(GetAccessTokensForValidUser))]
     public async Task RefreshToken_ShouldBe_NewToken_Or_InvalidToken(string accessToken, bool isTokenValid)
     {
         //Arrange
-        await Task.Delay(TimeSpan.FromSeconds(1)); //wait for tokens to expire
-
         var tokenService = new TokenServiceFactory().GetService();
 
         //Act
@@ -46,5 +54,26 @@ public class TokenServiceTests
             Assert.StartsWith(ErrorMessage.InvalidToken, result.ErrorMessage);
             Assert.Null(result.Data);
         }
+    }
+
+    [Trait("Category", "Unit")]
+    [Theory]
+    [MemberData(nameof(GetAccessTokensForInvalidUser))]
+    public async Task RefreshToken_ShouldBe_InvalidClientRequest_When_UserToken_IsNull_Or_IsExpired(string accessToken,
+        string refreshToken)
+    {
+        //Arrange
+        var tokenService = new TokenServiceFactory().GetService();
+
+        //Act
+        var result = await tokenService.RefreshToken(new RefreshTokenDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        });
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.InvalidClientRequest, result.ErrorMessage);
+        Assert.Null(result.Data);
     }
 }
