@@ -9,6 +9,31 @@ namespace UserService.Tests.UnitTests.Configurations;
 
 public static class MockRepositoriesGetters
 {
+    private static readonly UserToken UserToken1 = new()
+    {
+        Id = 1,
+        RefreshToken = "TestRefreshToken1",
+        RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(300), //random value
+        UserId = 1
+    };
+
+    private static readonly UserToken UserToken2 = new()
+    {
+        Id = 2,
+        RefreshToken = "TestRefreshToken2",
+        RefreshTokenExpiryTime = DateTime.UtcNow.AddMicroseconds(-1), //expired
+        UserId = 2
+    };
+
+    private static readonly UserToken UserToken3 = new()
+    {
+        Id = 3,
+        RefreshToken = "TestRefreshToken3",
+        RefreshTokenExpiryTime = DateTime.UtcNow,
+        UserId = 3
+    };
+
+
     private static Mock<IDbContextTransaction> GetMockTransaction()
     {
         var transaction = new Mock<IDbContextTransaction>();
@@ -98,7 +123,8 @@ public static class MockRepositoriesGetters
                 Password = "TestPassword1".HashPassword(),
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0
+                Reputation = 0,
+                UserToken = UserToken1
             },
             new()
             {
@@ -109,7 +135,8 @@ public static class MockRepositoriesGetters
                 Password = "TestPassword2".HashPassword(),
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0
+                Reputation = 0,
+                UserToken = UserToken2
             },
             new()
             {
@@ -120,7 +147,8 @@ public static class MockRepositoriesGetters
                 Password = "TestPassword3".HashPassword(),
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0
+                Reputation = 0,
+                UserToken = UserToken3
             }
         }.AsQueryable();
     }
@@ -149,23 +177,7 @@ public static class MockRepositoriesGetters
 
     public static IQueryable<UserToken> GetUserTokens()
     {
-        return new UserToken[]
-        {
-            new()
-            {
-                Id = 1,
-                RefreshToken = "TestRefreshToken1",
-                RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(300), //just a random value
-                UserId = 1
-            },
-            new()
-            {
-                Id = 2,
-                RefreshToken = "TestRefreshToken2",
-                RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(-1),
-                UserId = 2
-            }
-        }.AsQueryable();
+        return new[] { UserToken1, UserToken2, UserToken3 }.AsQueryable();
     }
 
     public static IQueryable<UserRole> GetUserRoles()
