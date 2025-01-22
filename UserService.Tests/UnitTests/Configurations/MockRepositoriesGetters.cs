@@ -9,30 +9,65 @@ namespace UserService.Tests.UnitTests.Configurations;
 
 public static class MockRepositoriesGetters
 {
-    private static readonly UserToken UserToken1 = new()
+    private static UserToken GetUserToken1()
     {
-        Id = 1,
-        RefreshToken = "TestRefreshToken1",
-        RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(300), //random value
-        UserId = 1
-    };
+        return new UserToken
+        {
+            Id = 1,
+            RefreshToken = "TestRefreshToken1",
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(300), //random value
+            UserId = 1
+        };
+    }
 
-    private static readonly UserToken UserToken2 = new()
+    private static UserToken GetUserToken2()
     {
-        Id = 2,
-        RefreshToken = "TestRefreshToken2",
-        RefreshTokenExpiryTime = DateTime.UtcNow.AddMicroseconds(-1), //expired
-        UserId = 2
-    };
+        return new UserToken
+        {
+            Id = 2,
+            RefreshToken = "TestRefreshToken2",
+            RefreshTokenExpiryTime = DateTime.UtcNow.AddMicroseconds(-1), //expired
+            UserId = 2
+        };
+    }
 
-    private static readonly UserToken UserToken3 = new()
+    private static UserToken GetUserToken3()
     {
-        Id = 3,
-        RefreshToken = "TestRefreshToken3",
-        RefreshTokenExpiryTime = DateTime.UtcNow,
-        UserId = 3
-    };
+        return new UserToken
+        {
+            Id = 3,
+            RefreshToken = "TestRefreshToken3", //will be given wrong token in tests
+            RefreshTokenExpiryTime = DateTime.UtcNow,
+            UserId = 3
+        };
+    }
 
+    private static Role GetRoleUser()
+    {
+        return new Role
+        {
+            Id = 1,
+            Name = "User"
+        };
+    }
+
+    private static Role GetRoleAdmin()
+    {
+        return new Role
+        {
+            Id = 2,
+            Name = "Admin"
+        };
+    }
+
+    private static Role GetRoleModer()
+    {
+        return new Role
+        {
+            Id = 3,
+            Name = "Moderator"
+        };
+    }
 
     private static Mock<IDbContextTransaction> GetMockTransaction()
     {
@@ -124,7 +159,8 @@ public static class MockRepositoriesGetters
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
-                UserToken = UserToken1
+                UserToken = GetUserToken1(),
+                Roles = [GetRoleUser(), GetRoleAdmin()]
             },
             new()
             {
@@ -136,7 +172,8 @@ public static class MockRepositoriesGetters
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
-                UserToken = UserToken2
+                UserToken = GetUserToken2(),
+                Roles = [GetRoleUser(), GetRoleModer()]
             },
             new()
             {
@@ -148,36 +185,20 @@ public static class MockRepositoriesGetters
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
-                UserToken = UserToken3
+                UserToken = GetUserToken3(),
+                Roles = [GetRoleModer()]
             }
         }.AsQueryable();
     }
 
     public static IQueryable<Role> GetRoles()
     {
-        return new Role[]
-        {
-            new()
-            {
-                Id = 1,
-                Name = "User"
-            },
-            new()
-            {
-                Id = 2,
-                Name = "Admin"
-            },
-            new()
-            {
-                Id = 3,
-                Name = "Moderator"
-            }
-        }.AsQueryable();
+        return new[] { GetRoleUser(), GetRoleAdmin(), GetRoleModer() }.AsQueryable();
     }
 
     public static IQueryable<UserToken> GetUserTokens()
     {
-        return new[] { UserToken1, UserToken2, UserToken3 }.AsQueryable();
+        return new[] { GetUserToken1(), GetUserToken2(), GetUserToken3() }.AsQueryable();
     }
 
     public static IQueryable<UserRole> GetUserRoles()
@@ -197,16 +218,16 @@ public static class MockRepositoriesGetters
             new()
             {
                 RoleId = 1,
-                UserId = 1
+                UserId = 2
             },
             new()
             {
                 RoleId = 3,
-                UserId = 1
+                UserId = 2
             },
             new()
             {
-                RoleId = 2,
+                RoleId = 3,
                 UserId = 3
             }
         }.AsQueryable();

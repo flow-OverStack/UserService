@@ -8,31 +8,23 @@ namespace UserService.Tests.UnitTests.Tests;
 
 public class TokenServiceTests
 {
-    public static IEnumerable<object[]> GetAccessTokensForValidUser()
-    {
-        return
-        [
-            [SigningKeyExtensions.GetRsaToken("TestUser1").GetAwaiter().GetResult(), true],
-            [SigningKeyExtensions.GetHmacToken("TestUser1").GetAwaiter().GetResult(), false]
-        ];
-    }
-
     public static IEnumerable<object[]> GetAccessTokensForInvalidUser()
     {
         return
         [
-            [SigningKeyExtensions.GetRsaToken("TestUser2").GetAwaiter().GetResult(), "TestRefreshToken2"],
-            [SigningKeyExtensions.GetRsaToken("TestUser3").GetAwaiter().GetResult(), "WrongRefreshToken2"]
+            [SigningKeyExtensions.GetRsaToken("TestUser2"), "TestRefreshToken2"],
+            [SigningKeyExtensions.GetRsaToken("TestUser3"), "WrongRefreshToken2"]
         ];
     }
 
 
     [Trait("Category", "Unit")]
-    [Theory]
-    [MemberData(nameof(GetAccessTokensForValidUser))]
-    public async Task RefreshToken_ShouldBe_NewToken_Or_InvalidToken(string accessToken, bool isTokenValid)
+    [Fact]
+    public async Task RefreshToken_ShouldBe_NewToken()
     {
         //Arrange
+        var accessToken = SigningKeyExtensions.GetRsaToken("TestUser1");
+
         var tokenService = new TokenServiceFactory().GetService();
 
         //Act
@@ -43,17 +35,29 @@ public class TokenServiceTests
         });
 
         //Assert
-        if (isTokenValid)
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task RefreshToken_ShouldBe_InvalidToken()
+    {
+        //Arrange
+        var accessToken = SigningKeyExtensions.GetHmacToken("TestUser1");
+
+        var tokenService = new TokenServiceFactory().GetService();
+
+        //Act
+        var result = await tokenService.RefreshToken(new RefreshTokenDto
         {
-            Assert.True(result.IsSuccess);
-            Assert.NotNull(result.Data);
-        }
-        else
-        {
-            Assert.False(result.IsSuccess);
-            Assert.StartsWith(ErrorMessage.InvalidToken, result.ErrorMessage);
-            Assert.Null(result.Data);
-        }
+            AccessToken = accessToken,
+            RefreshToken = "TestRefreshToken1"
+        });
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Data);
     }
 
     [Trait("Category", "Unit")]

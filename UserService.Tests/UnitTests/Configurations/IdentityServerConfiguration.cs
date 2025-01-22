@@ -38,8 +38,7 @@ public static class IdentityServerConfiguration
             ValidAudience = SigningKeyExtensions.GetAudience(),
             ValidateLifetime = false
         });
-        mockIdentityServer.Setup(x => x.UpdateRolesAsync(It.IsAny<KeycloakUpdateRolesDto>()))
-            .Returns(Task.CompletedTask);
+        mockIdentityServer.Setup(x => x.UpdateRolesAsync(It.IsAny<KeycloakUpdateRolesDto>()));
 
         return mockIdentityServer.Object;
     }
