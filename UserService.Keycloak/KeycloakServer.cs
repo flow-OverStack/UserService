@@ -233,7 +233,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private async Task LoginAsService()
     {
-        if (IsTokenExpired())
+        if (!IsTokenExpired())
             return; //double check is here if 2 or more threads are updating the token at the same time after the first check
 
         const string grantType = "client_credentials";
