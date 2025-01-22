@@ -1,0 +1,44 @@
+name: Tests Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - "feature/*"
+      - "Diary-add-*"
+  pull_request:
+    branches:
+      - master
+      - "feature/*"
+      - "Diary-add-*"
+
+jobs:
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4.1.0
+        with:
+          dotnet-version: '8.0'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Run Unit Tests
+        run: dotnet test --no-restore --filter "Category=Unit"
+
+      - name: Run Unit Tests (detailed)
+        run: dotnet test --no-restore --filter "Category=Unit" --verbosity detailed
