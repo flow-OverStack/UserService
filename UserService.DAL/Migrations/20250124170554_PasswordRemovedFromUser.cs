@@ -12,21 +12,6 @@ namespace UserService.DAL.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Role",
-                keyColumn: "Id",
-                keyValue: 1L);
-
-            migrationBuilder.DeleteData(
-                table: "Role",
-                keyColumn: "Id",
-                keyValue: 2L);
-
-            migrationBuilder.DeleteData(
-                table: "Role",
-                keyColumn: "Id",
-                keyValue: 3L);
-
             migrationBuilder.DropColumn(
                 name: "Password",
                 table: "User");
@@ -41,16 +26,6 @@ namespace UserService.DAL.Migrations
                 type: "text",
                 nullable: false,
                 defaultValue: "");
-
-            migrationBuilder.InsertData(
-                table: "Role",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1L, "User" },
-                    { 2L, "Admin" },
-                    { 3L, "Moderator" }
-                });
         }
     }
 }
