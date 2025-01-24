@@ -47,7 +47,7 @@ public class ExceptionHandlingMiddleware
 
         var response = exception switch
         {
-            IdentityServerException _ => new BaseResult
+            IdentityServerInternalException _ => new BaseResult
             {
                 ErrorMessage = $"{ErrorMessage.IdentityServerError}: {errorMessage}",
                 ErrorCode = (int)HttpStatusCode.InternalServerError

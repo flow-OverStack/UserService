@@ -1,4 +1,5 @@
 using UserService.Domain.Dto.User;
+using UserService.Tests.Extensions;
 using UserService.Tests.UnitTests.ServiceFactories;
 using Xunit;
 using ErrorMessage = UserService.Domain.Resources.ErrorMessage;
@@ -47,7 +48,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            "TestPassword4", "TheOtherPassword"));
+            "TestPassword4", TestConstants.WrongPassword));
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -136,7 +137,8 @@ public class AuthServiceTests
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
         //Act
-        var result = await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser1", "WrongPassword"));
+        var result =
+            await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser1", TestConstants.WrongPassword));
 
         //Assert
         Assert.False(result.IsSuccess);

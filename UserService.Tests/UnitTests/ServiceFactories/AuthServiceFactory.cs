@@ -8,7 +8,7 @@ using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperCon
 
 namespace UserService.Tests.UnitTests.ServiceFactories;
 
-public class AuthServiceFactory
+internal class AuthServiceFactory
 {
     private readonly IAuthService _authService;
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();

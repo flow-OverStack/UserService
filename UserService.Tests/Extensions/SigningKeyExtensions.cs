@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace UserService.Tests.Extensions;
 
-public static class SigningKeyExtensions
+internal static class SigningKeyExtensions
 {
     private const string Audience = "TestAudience";
     private const string Issuer = "TestIssuer";

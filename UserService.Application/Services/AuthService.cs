@@ -1,13 +1,13 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
 using UserService.Domain.Dto.Token;
 using UserService.Domain.Dto.User;
 using UserService.Domain.Entity;
 using UserService.Domain.Enum;
+using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Resources;
@@ -49,8 +49,6 @@ public class AuthService(
                 ErrorCode = (int)ErrorCodes.UserAlreadyExists
             };
 
-        var hashUserPassword = HashPassword(dto.Password);
-
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -58,8 +56,7 @@ public class AuthService(
                 user = new User
                 {
                     Username = dto.Username,
-                    Email = dto.Email,
-                    Password = hashUserPassword
+                    Email = dto.Email
                 };
 
                 await unitOfWork.Users.CreateAsync(user);
@@ -138,20 +135,21 @@ public class AuthService(
                 ErrorCode = (int)ErrorCodes.UserNotFound
             };
 
-
-        if (!IsVerifiedPassword(user.Password, password))
-            return new BaseResult<TokenDto>
-            {
-                ErrorMessage = ErrorMessage.PasswordIsWrong,
-                ErrorCode = (int)ErrorCodes.PasswordIsWrong
-            };
-
         var userToken = await userTokenRepository.GetAll().FirstOrDefaultAsync(x => x.UserId == user.Id);
 
         var keycloakDto = mapper.Map<KeycloakLoginUserDto>(user);
         keycloakDto.Password = password;
 
-        var keycloakResponse = await identityServer.LoginUserAsync(keycloakDto);
+        var keycloakSafeResponse = await SafeLoginUser(identityServer, keycloakDto);
+
+        if (!keycloakSafeResponse.IsSuccess)
+            return new BaseResult<TokenDto>
+            {
+                ErrorMessage = keycloakSafeResponse.ErrorMessage,
+                ErrorCode = keycloakSafeResponse.ErrorCode
+            };
+
+        var keycloakResponse = keycloakSafeResponse.Data;
 
         if (userToken == null)
         {
@@ -187,22 +185,33 @@ public class AuthService(
         };
     }
 
-    private static string HashPassword(string password)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(bytes);
-    }
-
-    private static bool IsVerifiedPassword(string userPasswordHash, string userPassword)
-    {
-        var hash = HashPassword(userPassword);
-        return userPasswordHash == hash;
-    }
-
     private static bool IsEmail(string email)
     {
         var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
         return emailRegex.IsMatch(email);
+    }
+
+    private static async Task<BaseResult<KeycloakUserTokenDto>> SafeLoginUser(IIdentityServer identityServer,
+        KeycloakLoginUserDto userDto)
+    {
+        try
+        {
+            var response = await identityServer.LoginUserAsync(userDto);
+            return new BaseResult<KeycloakUserTokenDto>
+            {
+                Data = response
+            };
+        }
+        catch (IdentityServerBusinessException e)
+        {
+            var baseResult = e.GetBaseResult();
+
+            return new BaseResult<KeycloakUserTokenDto>
+            {
+                ErrorMessage = baseResult.ErrorMessage,
+                ErrorCode = baseResult.ErrorCode
+            };
+        }
     }
 }

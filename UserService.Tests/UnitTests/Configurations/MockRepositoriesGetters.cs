@@ -3,11 +3,10 @@ using MockQueryable.Moq;
 using Moq;
 using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.Tests.Extensions;
 
 namespace UserService.Tests.UnitTests.Configurations;
 
-public static class MockRepositoriesGetters
+internal static class MockRepositoriesGetters
 {
     private static UserToken GetUserToken1()
     {
@@ -155,7 +154,6 @@ public static class MockRepositoriesGetters
                 KeycloakId = Guid.NewGuid(),
                 Username = "TestUser1",
                 Email = "TestUser1@test.com",
-                Password = "TestPassword1".HashPassword(),
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
@@ -168,7 +166,6 @@ public static class MockRepositoriesGetters
                 KeycloakId = Guid.NewGuid(),
                 Username = "TestUser2",
                 Email = "TestUser2@test.com",
-                Password = "TestPassword2".HashPassword(),
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
@@ -181,7 +178,6 @@ public static class MockRepositoriesGetters
                 KeycloakId = Guid.NewGuid(),
                 Username = "TestUser3",
                 Email = "TestUser3@test.com",
-                Password = "TestPassword3".HashPassword(),
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,

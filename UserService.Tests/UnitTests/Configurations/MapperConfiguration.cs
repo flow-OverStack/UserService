@@ -3,7 +3,7 @@ using UserService.Application.Mapping;
 
 namespace UserService.Tests.UnitTests.Configurations;
 
-public static class MapperConfiguration
+internal static class MapperConfiguration
 {
     public static IMapper GetMapperConfiguration()
     {

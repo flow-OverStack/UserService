@@ -3,12 +3,13 @@ using Moq;
 using UserService.Domain.Dto.Keycloak.Roles;
 using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
+using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Interfaces.Services;
 using UserService.Tests.Extensions;
 
 namespace UserService.Tests.UnitTests.Configurations;
 
-public static class IdentityServerConfiguration
+internal static class IdentityServerConfiguration
 {
     public static IIdentityServer GetIdentityServerConfiguration()
     {
@@ -23,7 +24,13 @@ public static class IdentityServerConfiguration
         };
 
         mockIdentityServer.Setup(x => x.LoginUserAsync(It.IsAny<KeycloakLoginUserDto>()))
-            .ReturnsAsync(randomKeycloakUserTokenDto);
+            .Returns((KeycloakLoginUserDto dto) =>
+            {
+                if (dto.Password == TestConstants.WrongPassword)
+                    throw new IdentityServerPasswordIsWrongException("TestsIdentityServer", "Wrong password");
+
+                return Task.FromResult(randomKeycloakUserTokenDto);
+            });
         mockIdentityServer.Setup(x => x.RegisterUserAsync(It.IsAny<KeycloakRegisterUserDto>())).ReturnsAsync(
             new KeycloakUserDto(Guid.NewGuid()));
         mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<KeycloakRefreshTokenDto>()))

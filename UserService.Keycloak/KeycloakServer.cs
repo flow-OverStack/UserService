@@ -11,6 +11,7 @@ using UserService.Domain.Dto.Keycloak.Roles;
 using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
 using UserService.Domain.Exceptions.IdentityServer;
+using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Keycloak;
@@ -84,7 +85,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
         catch (Exception e)
         {
-            throw new IdentityServerException(IdentityServerName, e.Message, e);
+            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
     }
 
@@ -106,10 +107,20 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             var response = await _httpClient.PostAsync(_keycloakSettings.LoginUrl, content);
 
-            response.EnsureSuccessStatusCode();
-
             var body = await response.Content.ReadAsStringAsync();
             var responseToken = JsonConvert.DeserializeObject<UserTokenResponse>(body);
+
+            if (!responseToken!.IsValid())
+            {
+                const string wrongPasswordErrorMessage = "invalid_grant";
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(body);
+
+                if (errorResponse!.Error == wrongPasswordErrorMessage)
+                    throw new IdentityServerPasswordIsWrongException(IdentityServerName,
+                        errorResponse.ErrorDescription);
+            }
+
+            response.EnsureSuccessStatusCode();
 
             return new KeycloakUserTokenDto
             {
@@ -119,9 +130,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
                 RefreshExpires = DateTime.UtcNow.AddSeconds(responseToken.RefreshExpiresIn)
             };
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not IdentityServerBusinessException)
         {
-            throw new IdentityServerException(IdentityServerName, e.Message, e);
+            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
     }
 
@@ -158,7 +169,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
         catch (Exception e)
         {
-            throw new IdentityServerException(IdentityServerName, e.Message, e);
+            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
     }
 
@@ -191,7 +202,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
         catch (Exception e)
         {
-            throw new IdentityServerException(IdentityServerName, e.Message, e);
+            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
     }
 
@@ -226,7 +237,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
         catch (Exception e)
         {
-            throw new IdentityServerException(IdentityServerName, e.Message, e);
+            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
     }
 
@@ -303,6 +314,14 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         [JsonProperty("refresh_token")] public string RefreshToken { get; set; }
         [JsonProperty("expires_in")] public int AccessExpiresIn { get; set; }
         [JsonProperty("refresh_expires_in")] public int RefreshExpiresIn { get; set; }
+
+        public bool IsValid()
+        {
+            return AccessToken != null
+                   && RefreshToken != null
+                   && AccessExpiresIn > 0
+                   && RefreshExpiresIn > 0;
+        }
     }
 
     private sealed class KeycloakUser
@@ -327,6 +346,12 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         public string Email { get; set; }
 
         public KeycloakAttributes Attributes { get; set; }
+    }
+
+    private sealed class ErrorResponse
+    {
+        [JsonProperty("error")] public string Error { get; set; }
+        [JsonProperty("error_description")] public string ErrorDescription { get; set; }
     }
 
     #endregion

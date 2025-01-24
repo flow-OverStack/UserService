@@ -3,7 +3,7 @@ using System.Text;
 
 namespace UserService.Tests.Extensions;
 
-public static class UserExtensions
+internal static class UserExtensions
 {
     public static string HashPassword(this string password)
     {
