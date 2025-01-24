@@ -62,23 +62,6 @@ namespace UserService.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Role");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Name = "User"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Name = "Moderator"
-                        });
                 });
 
             modelBuilder.Entity("UserService.Domain.Entity.User", b =>
@@ -102,10 +85,6 @@ namespace UserService.DAL.Migrations
 
                     b.Property<DateTime>("LastLoginAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("Reputation")
                         .ValueGeneratedOnAdd()
