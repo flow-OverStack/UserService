@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="FunctionalTests\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="AutoMapper" Version="12.0.0"/>
         <PackageReference Include="FluentAssertions" Version="8.0.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
@@ -26,6 +22,18 @@
     <ItemGroup>
         <ProjectReference Include="..\UserService.Application\UserService.Application.csproj"/>
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="FunctionalTests\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="FunctionalTests\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="FunctionalTests\**"/>
     </ItemGroup>
 
 </Project>
