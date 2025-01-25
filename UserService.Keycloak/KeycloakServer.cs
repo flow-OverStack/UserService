@@ -83,7 +83,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             #endregion
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not IdentityServerBusinessException)
         {
             throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
@@ -167,7 +167,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
                 RefreshExpires = DateTime.UtcNow.AddSeconds(responseToken.RefreshExpiresIn)
             };
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not IdentityServerBusinessException)
         {
             throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
@@ -200,7 +200,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             response.EnsureSuccessStatusCode();
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not IdentityServerBusinessException)
         {
             throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
@@ -235,7 +235,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             return tokenValidationParameters;
         }
-        catch (Exception e)
+        catch (Exception e) when (e is not IdentityServerBusinessException)
         {
             throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
         }
