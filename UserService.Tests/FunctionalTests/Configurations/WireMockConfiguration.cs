@@ -1,4 +1,5 @@
 using System.Reflection;
+using Newtonsoft.Json;
 using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -27,6 +28,7 @@ internal static class WireMockConfiguration
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(GetMetadata()).WithSuccess());
+
         _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
@@ -78,9 +80,40 @@ internal static class WireMockConfiguration
                                 DetectedBodyType = BodyType.String
                             }
                         },
+                        "refresh_token" => new ResponseMessage
+                        {
+                            StatusCode = 200,
+                            BodyData = new BodyData
+                            {
+                                BodyAsString = """
+                                               {
+                                                   "access_token": "newAccessToken",
+                                                   "expires_in": 300,
+                                                   "refresh_expires_in": 1800,
+                                                   "refresh_token": "newRefreshToken"
+                                               }
+                                               """,
+                                DetectedBodyType = BodyType.String
+                            }
+                        },
                         _ => new ResponseMessage { StatusCode = 400 }
                     };
                 }));
+
+        _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingPost())
+            .RespondWith(Response.Create()
+                .WithStatusCode(201));
+
+        _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingGet())
+            .RespondWith(Response.Create()
+                .WithHeader("Content-Type", "application/json")
+                .WithBody(JsonConvert.SerializeObject(new { Id = Guid.NewGuid(), Username = "newKeycloakUser" }))
+                .WithSuccess());
+
+        _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingPut())
+            .RespondWith(Response.Create()
+                .WithStatusCode(204));
+
 
         return _server;
     }
