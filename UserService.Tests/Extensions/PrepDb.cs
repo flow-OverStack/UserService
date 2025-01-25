@@ -26,12 +26,10 @@ internal static class PrepDb
             CreatedAt = x.CreatedAt,
             LastLoginAt = x.LastLoginAt
         });
-        var roles = MockRepositoriesGetters.GetRoles();
         var userRoles = MockRepositoriesGetters.GetUserRoles();
         var userTokens = MockRepositoriesGetters.GetUserTokens();
 
         dbContext.Set<User>().AddRange(users);
-        dbContext.Set<Role>().AddRange(roles);
         dbContext.Set<UserRole>().AddRange(userRoles);
         dbContext.Set<UserToken>().AddRange(userTokens);
 

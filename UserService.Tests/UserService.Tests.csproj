@@ -30,8 +30,4 @@
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Compile Include="FunctionalTests\FunctionalTestWebAppFactory.cs"/>
-    </ItemGroup>
-
 </Project>

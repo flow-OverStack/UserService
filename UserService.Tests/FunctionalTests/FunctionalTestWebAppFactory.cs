@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
 using UserService.DAL;
 using UserService.Tests.Extensions;
+using UserService.Tests.FunctionalTests.Configurations;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests;
@@ -23,11 +24,13 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
     public async Task InitializeAsync()
     {
         await _postgreSqlContainer.StartAsync();
+        WireMockConfiguration.StartServer();
     }
 
     public new async Task DisposeAsync()
     {
         await _postgreSqlContainer.StopAsync();
+        WireMockConfiguration.StopServer();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)

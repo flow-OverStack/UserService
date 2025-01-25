@@ -13,18 +13,26 @@ public static class WireMockConfiguration
     private const string FunctionalTestsDirectoryName = "FunctionalTests";
     private const string ResponsesDirectoryName = "TestServerResponses";
 
-    public static WireMockServer GetServer()
+    private static WireMockServer _server = null!;
+
+    public static WireMockServer StartServer()
     {
-        var server = WireMockServer.Start(Port);
+        _server = WireMockServer.Start(Port);
 
 
-        server.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
+        _server.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(GetMetadata()).WithSuccess());
 
-        return server;
+        return _server;
     }
+
+    public static void StopServer()
+    {
+        _server.Stop();
+    }
+
 
     private static string GetMetadata()
     {

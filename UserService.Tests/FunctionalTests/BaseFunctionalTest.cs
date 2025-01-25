@@ -2,9 +2,9 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests;
 
-public class BaseReportFunctionalTest : IClassFixture<FunctionalTestWebAppFactory>
+public class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFactory>
 {
-    public BaseReportFunctionalTest(FunctionalTestWebAppFactory factory)
+    public BaseFunctionalTest(FunctionalTestWebAppFactory factory)
     {
         HttpClient = factory.CreateClient();
     }
