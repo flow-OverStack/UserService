@@ -5,9 +5,9 @@ using WireMock.Server;
 
 namespace UserService.Tests.FunctionalTests.Configurations;
 
-public static class WireMockConfiguration
+internal static class WireMockConfiguration
 {
-    private const int Port = 5001;
+    public const int Port = 5001;
     private const string RealmName = "flowOverStack";
 
     private const string FunctionalTestsDirectoryName = "FunctionalTests";
@@ -52,6 +52,8 @@ public static class WireMockConfiguration
         var filePath = GetPath(projectDirectory!, currentProjectName, fileName);
 
         var response = File.ReadAllText(filePath);
+
+        response = response.Replace("{{Port}}", Port.ToString());
 
         return response;
     }
