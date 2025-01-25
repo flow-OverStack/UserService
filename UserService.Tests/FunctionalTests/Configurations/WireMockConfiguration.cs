@@ -1,7 +1,10 @@
 using System.Reflection;
+using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
+using WireMock.Types;
+using WireMock.Util;
 
 namespace UserService.Tests.FunctionalTests.Configurations;
 
@@ -24,6 +27,60 @@ internal static class WireMockConfiguration
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(GetMetadata()).WithSuccess());
+        _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
+            .RespondWith(Response.Create()
+                .WithHeader("Content-Type", "application/json")
+                .WithCallback(message =>
+                {
+                    var body = message.BodyData!.BodyAsFormUrlEncoded;
+                    if (body == null)
+                        return new ResponseMessage
+                        {
+                            StatusCode = 400
+                        };
+
+                    if (!body.TryGetValue("grant_type", out var grantType))
+                        return new ResponseMessage
+                        {
+                            StatusCode = 400
+                        };
+
+                    return grantType switch
+                    {
+                        "password" => new ResponseMessage
+                        {
+                            StatusCode = 200,
+                            BodyData = new BodyData
+                            {
+                                BodyAsString = """
+                                               {
+                                                   "access_token": "newAccessToken",
+                                                   "expires_in": 300,
+                                                   "refresh_expires_in": 1800,
+                                                   "refresh_token": "newRefreshToken"
+                                               }
+                                               """,
+                                DetectedBodyType = BodyType.String
+                            }
+                        },
+                        "client_credentials" => new ResponseMessage
+                        {
+                            StatusCode = 200,
+                            BodyData = new BodyData
+                            {
+                                BodyAsString = """
+                                               {
+                                                   "access_token": "newAccessToken",
+                                                   "expires_in": 300,
+                                                   "refresh_expires_in": 0,
+                                               }
+                                               """,
+                                DetectedBodyType = BodyType.String
+                            }
+                        },
+                        _ => new ResponseMessage { StatusCode = 400 }
+                    };
+                }));
 
         return _server;
     }
