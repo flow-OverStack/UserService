@@ -3,6 +3,9 @@ using UserService.Domain.Result;
 
 namespace UserService.Domain.Exceptions.IdentityServer.Base;
 
+/// <summary>
+///     Represents any identity server business logic exception
+/// </summary>
 public abstract class IdentityServerBusinessException : IdentityServerException, IBaseResultProvider
 {
     protected IdentityServerBusinessException(string identityServerName, string message) : base(identityServerName,

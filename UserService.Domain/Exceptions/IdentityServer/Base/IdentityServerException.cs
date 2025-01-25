@@ -1,5 +1,8 @@
 namespace UserService.Domain.Exceptions.IdentityServer.Base;
 
+/// <summary>
+///     Represents any identity server error
+/// </summary>
 public abstract class IdentityServerException : Exception
 {
     protected IdentityServerException(string identityServerName, string message) : base(message)

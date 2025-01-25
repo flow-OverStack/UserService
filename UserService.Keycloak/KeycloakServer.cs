@@ -124,7 +124,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             return new KeycloakUserTokenDto
             {
-                AccessToken = responseToken!.AccessToken,
+                AccessToken = responseToken.AccessToken,
                 RefreshToken = responseToken.RefreshToken,
                 AccessExpires = DateTime.UtcNow.AddSeconds(responseToken.AccessExpiresIn),
                 RefreshExpires = DateTime.UtcNow.AddSeconds(responseToken.RefreshExpiresIn)
