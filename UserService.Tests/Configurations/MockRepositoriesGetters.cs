@@ -30,17 +30,6 @@ internal static class MockRepositoriesGetters
         };
     }
 
-    private static UserToken GetUserToken3()
-    {
-        return new UserToken
-        {
-            Id = 3,
-            RefreshToken = "TestRefreshToken3", //will be given wrong token in tests
-            RefreshTokenExpiryTime = DateTime.UtcNow,
-            UserId = 3
-        };
-    }
-
     private static Role GetRoleUser()
     {
         return new Role
@@ -152,7 +141,7 @@ internal static class MockRepositoriesGetters
             {
                 Id = 1,
                 KeycloakId = Guid.NewGuid(),
-                Username = "TestUser1",
+                Username = "testuser1",
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
@@ -164,7 +153,7 @@ internal static class MockRepositoriesGetters
             {
                 Id = 2,
                 KeycloakId = Guid.NewGuid(),
-                Username = "TestUser2",
+                Username = "testuser2",
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
@@ -176,12 +165,11 @@ internal static class MockRepositoriesGetters
             {
                 Id = 3,
                 KeycloakId = Guid.NewGuid(),
-                Username = "TestUser3",
+                Username = "testuser3",
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
-                UserToken = GetUserToken3(),
                 Roles = [GetRoleModer()]
             }
         }.AsQueryable();
@@ -194,7 +182,7 @@ internal static class MockRepositoriesGetters
 
     public static IQueryable<UserToken> GetUserTokens()
     {
-        return new[] { GetUserToken1(), GetUserToken2(), GetUserToken3() }.AsQueryable();
+        return new[] { GetUserToken1(), GetUserToken2() }.AsQueryable();
     }
 
     public static IQueryable<UserRole> GetUserRoles()

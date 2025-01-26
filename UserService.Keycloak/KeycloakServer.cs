@@ -71,7 +71,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             getResponse.EnsureSuccessStatusCode();
 
-            var body = await createResponse.Content.ReadAsStringAsync();
+            var body = await getResponse.Content.ReadAsStringAsync();
             var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
             var exactUser = responseUsers!.FirstOrDefault(x => x.Username == dto.Username);
 
@@ -326,8 +326,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
     private sealed class KeycloakUser
     {
-        public string Id { get; }
-        public string Username { get; }
+        [JsonProperty("id")] public string Id { get; set; }
+        [JsonProperty("username")] public string Username { get; set; }
     }
 
     private sealed class RegisterUserPayload

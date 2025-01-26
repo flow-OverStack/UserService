@@ -98,19 +98,19 @@ public class RoleService(
                 ErrorMessage = ErrorMessage.RoleNotFound,
                 ErrorCode = (int)ErrorCodes.RoleNotFound
             };
-        Role updatedRole;
+
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
             {
                 role.Name = dto.Name;
-                updatedRole = roleRepository.Update(role);
+                roleRepository.Update(role);
                 await roleRepository.SaveChangesAsync();
 
                 var usersWithRole = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
-                    .Where(x => x.Roles.Contains(updatedRole))
+                    .Where(x => x.Roles.Contains(role))
                     .ToArrayAsync();
 
                 foreach (var user in usersWithRole)
@@ -130,7 +130,7 @@ public class RoleService(
 
         return new BaseResult<RoleDto>
         {
-            Data = mapper.Map<RoleDto>(updatedRole)
+            Data = mapper.Map<RoleDto>(role)
         };
     }
 
@@ -138,7 +138,7 @@ public class RoleService(
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username == dto.Username);
+            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
 
         if (user == null)
             return new BaseResult<UserRoleDto>
@@ -209,7 +209,7 @@ public class RoleService(
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username == dto.Username);
+            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
 
         if (user == null)
             return new BaseResult<UserRoleDto>
@@ -270,7 +270,7 @@ public class RoleService(
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username == dto.Username);
+            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
 
         if (user == null)
             return new BaseResult<UserRoleDto>

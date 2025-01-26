@@ -40,7 +40,9 @@ public class AuthService(
                 ErrorCode = (int)ErrorCodes.PasswordMismatch
             };
 
-        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Username == dto.Username) ??
+        var lowerUsername = dto.Username.ToLowerInvariant();
+
+        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Username == lowerUsername) ??
                    await userRepository.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email);
         if (user != null)
             return new BaseResult<UserDto>
@@ -55,7 +57,7 @@ public class AuthService(
             {
                 user = new User
                 {
-                    Username = dto.Username,
+                    Username = lowerUsername,
                     Email = dto.Email
                 };
 
@@ -106,7 +108,7 @@ public class AuthService(
     public async Task<BaseResult<TokenDto>> LoginWithUsername(LoginUsernameUserDto dto)
     {
         var user = await userRepository.GetAll()
-            .FirstOrDefaultAsync(x => x.Username == dto.Username);
+            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
 
         return await Login(user, dto.Password);
     }

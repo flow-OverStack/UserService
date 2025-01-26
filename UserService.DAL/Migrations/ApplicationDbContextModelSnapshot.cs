@@ -109,6 +109,8 @@ namespace UserService.DAL.Migrations
                             t.HasCheckConstraint("CK_User_Email", "\"Email\" ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
 
                             t.HasCheckConstraint("CK_User_Reputation", "\"Reputation\" >= 0");
+
+                            t.HasCheckConstraint("CK_User_Username_LowerCase", "\"Username\" = LOWER(\"Username\")");
                         });
                 });
 

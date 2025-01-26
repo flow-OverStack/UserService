@@ -23,6 +23,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.ToTable(t => t.HasCheckConstraint("CK_User_Reputation", """
                                                                         "Reputation" >= 0
                                                                         """));
+        //Username constraint
+        builder.ToTable(t => t.HasCheckConstraint("CK_User_Username_LowerCase", """
+            "Username" = LOWER("Username")
+            """));
         //Unique username and email
         builder.HasIndex(x => x.Username).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
