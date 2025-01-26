@@ -3,6 +3,7 @@ using UserService.Application.Services;
 using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Interfaces.Services;
+using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Configurations;
 using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;
 

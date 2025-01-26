@@ -4,7 +4,7 @@ using Moq;
 using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
 
-namespace UserService.Tests.UnitTests.Configurations;
+namespace UserService.Tests.Configurations;
 
 internal static class MockRepositoriesGetters
 {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
 using UserService.DAL;
+using UserService.Domain.Settings;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations;
 using Xunit;
@@ -41,6 +42,18 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 
             var connectionString = _postgreSqlContainer.GetConnectionString();
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+
+            services.RemoveAll<KeycloakSettings>();
+            services.Configure<KeycloakSettings>(x =>
+            {
+                x.Url = "http://localhost:" + WireMockConfiguration.Port;
+                x.Realm = WireMockConfiguration.RealmName;
+                x.AdminToken = "TestAdminToken";
+                x.Audience = "TestAudience";
+                x.ClientId = "TestClientId";
+                x.RolesAttributeName = "roles";
+                x.UserIdAttributeName = "userId";
+            });
 
             services.PrepPopulation();
         });

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL;
 using UserService.Domain.Entity;
-using UserService.Tests.UnitTests.Configurations;
+using UserService.Tests.Configurations;
 
 namespace UserService.Tests.Extensions;
 

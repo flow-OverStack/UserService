@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace UserService.Tests.Extensions;
 
@@ -9,21 +10,52 @@ internal static class SigningKeyExtensions
 {
     private const string Audience = "TestAudience";
     private const string Issuer = "TestIssuer";
+    private const string Kid = "test-key-id";
+
+    private static readonly RsaSecurityKey PublicKey;
+
+    private static readonly RsaSecurityKey PrivateKey;
+
+    private static readonly string PublicJwk;
 
     static SigningKeyExtensions()
     {
         var rsa = RSA.Create();
         PrivateKey = new RsaSecurityKey(rsa);
         PublicKey = new RsaSecurityKey(rsa.ExportParameters(false));
+
+        var rsaParams = PublicKey.Parameters;
+
+        var modulus = Base64UrlEncode(rsaParams.Modulus!);
+        var exponent = Base64UrlEncode(rsaParams.Exponent!);
+
+        var jwks = new
+        {
+            keys = new[]
+            {
+                new
+                {
+                    kty = "RSA",
+                    use = "sig",
+                    alg = "RS256",
+                    kid = Kid,
+                    n = modulus,
+                    e = exponent
+                }
+            }
+        };
+
+        PublicJwk = JsonConvert.SerializeObject(jwks);
     }
-
-    private static RsaSecurityKey PublicKey { get; }
-
-    private static RsaSecurityKey PrivateKey { get; }
 
     public static RsaSecurityKey GetPublicSigningKey()
     {
         return PublicKey;
+    }
+
+    public static string GetJwk()
+    {
+        return PublicJwk;
     }
 
     public static string GetAudience()
@@ -72,5 +104,13 @@ internal static class SigningKeyExtensions
         var tokenString = tokenHandler.WriteToken(token);
 
         return tokenString;
+    }
+
+    private static string Base64UrlEncode(byte[] input)
+    {
+        return Convert.ToBase64String(input)
+            .TrimEnd('=')
+            .Replace('+', '-')
+            .Replace('/', '_');
     }
 }

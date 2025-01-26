@@ -1,5 +1,6 @@
 using System.Reflection;
 using Newtonsoft.Json;
+using UserService.Tests.Extensions;
 using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -12,7 +13,7 @@ namespace UserService.Tests.FunctionalTests.Configurations;
 internal static class WireMockConfiguration
 {
     public const int Port = 5001;
-    private const string RealmName = "flowOverStack";
+    public const string RealmName = "TestRealm";
 
     private const string FunctionalTestsDirectoryName = "FunctionalTests";
     private const string ResponsesDirectoryName = "TestServerResponses";
@@ -28,6 +29,11 @@ internal static class WireMockConfiguration
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(GetMetadata()).WithSuccess());
+
+        _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/certs").UsingGet())
+            .RespondWith(Response.Create()
+                .WithHeader("Content-Type", "application/json")
+                .WithBody(SigningKeyExtensions.GetJwk()).WithSuccess());
 
         _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
             .RespondWith(Response.Create()
@@ -127,7 +133,14 @@ internal static class WireMockConfiguration
     private static string GetMetadata()
     {
         const string metadataFileName = "MetadataResponse.json";
-        return GetResponse(metadataFileName);
+
+        var response = GetResponse(metadataFileName);
+
+        response = response.Replace("{{Port}}", Port.ToString());
+        response = response.Replace("{{Realm}}", RealmName);
+        response = response.Replace("{{Issuer}}", SigningKeyExtensions.GetIssuer());
+
+        return response;
     }
 
     private static string GetResponse(string fileName)
@@ -142,8 +155,6 @@ internal static class WireMockConfiguration
         var filePath = GetPath(projectDirectory!, currentProjectName, fileName);
 
         var response = File.ReadAllText(filePath);
-
-        response = response.Replace("{{Port}}", Port.ToString());
 
         return response;
     }
