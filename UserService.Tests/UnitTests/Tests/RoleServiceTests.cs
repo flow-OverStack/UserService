@@ -282,6 +282,25 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task UpdateRoleForUser_ShouldBe_UserAlreadyHasThisRole()
+    {
+        //Arrange
+        var roleService = new RoleServiceFactory().GetService();
+        //Act
+        var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        {
+            Username = "TestUser1",
+            FromRoleId = 2,
+            ToRoleId = 1
+        });
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task UpdateRoleForUser_ShouldBe_RoleToUpdateIsNotFound()
     {
         //Arrange
