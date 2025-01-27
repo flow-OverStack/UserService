@@ -1,6 +1,4 @@
-using UserService.Domain.Result;
-
-namespace Diary.Domain.Result;
+namespace UserService.Domain.Result;
 
 public class CollectionResult<T> : BaseResult<IEnumerable<T>>
 {
