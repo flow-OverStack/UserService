@@ -20,7 +20,7 @@ public class TokenServiceTests : BaseFunctionalTest
         //Arrange
         var dto = new RefreshTokenDto
         {
-            AccessToken = SigningKeyExtensions.GetRsaToken("TestUser1"),
+            AccessToken = SigningKeyExtensions.GetRsaToken("testuser1"),
             RefreshToken = "TestRefreshToken1"
         };
 
