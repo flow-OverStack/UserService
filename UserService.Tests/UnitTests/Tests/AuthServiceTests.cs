@@ -79,7 +79,7 @@ public class AuthServiceTests
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
         //Act
-        var result = await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser1", "TestPassword1"));
+        var result = await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser3", "TestPassword3"));
 
         //Assert
         Assert.True(result.IsSuccess);
