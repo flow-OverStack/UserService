@@ -57,6 +57,7 @@ public class TokenServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.StartsWith(result.ErrorMessage, ErrorMessage.InvalidToken);
         Assert.Null(result.Data);
     }
 

@@ -1,5 +1,6 @@
 using UserService.Domain.Dto.Role;
 using UserService.Domain.Dto.UserRole;
+using UserService.Domain.Resources;
 using UserService.Tests.UnitTests.ServiceFactories;
 using Xunit;
 
@@ -32,6 +33,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleAlreadyExists);
         Assert.Null(result.Data);
     }
 
@@ -60,6 +62,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
         Assert.Null(result.Data);
     }
 
@@ -88,6 +91,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
         Assert.Null(result.Data);
     }
 
@@ -126,6 +130,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
         Assert.Null(result.Data);
     }
 
@@ -144,6 +149,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.UserAlreadyHasThisRole);
         Assert.Null(result.Data);
     }
 
@@ -162,6 +168,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
         Assert.Null(result.Data);
     }
 
@@ -200,6 +207,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
         Assert.Null(result.Data);
     }
 
@@ -218,6 +226,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
         Assert.Null(result.Data);
     }
 
@@ -258,6 +267,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
         Assert.Null(result.Data);
     }
 
@@ -277,6 +287,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleToBeUpdatedIsNotFound);
         Assert.Null(result.Data);
     }
 
@@ -296,6 +307,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.UserAlreadyHasThisRole);
         Assert.Null(result.Data);
     }
 
@@ -315,6 +327,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleToUpdateIsNotFound);
         Assert.Null(result.Data);
     }
 }
