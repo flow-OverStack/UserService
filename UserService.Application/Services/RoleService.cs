@@ -60,7 +60,7 @@ public class RoleService(
                 var usersWithDeletedRole = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
-                    .Where(x => x.Roles.Contains(role))
+                    .Where(x => x.Roles.Any(y => y.Id == role.Id))
                     .ToArrayAsync();
 
                 roleRepository.Remove(role);
@@ -110,7 +110,7 @@ public class RoleService(
                 var usersWithRole = await userRepository.GetAll()
                     .AsNoTracking()
                     .Include(x => x.Roles)
-                    .Where(x => x.Roles.Contains(role))
+                    .Where(x => x.Roles.Any(y => y.Id == role.Id))
                     .ToArrayAsync();
 
                 foreach (var user in usersWithRole)
