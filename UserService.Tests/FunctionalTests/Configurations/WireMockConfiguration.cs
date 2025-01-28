@@ -20,7 +20,7 @@ internal static class WireMockConfiguration
 
     private static WireMockServer _server = null!;
 
-    public static WireMockServer StartServer()
+    public static void StartServer()
     {
         _server = WireMockServer.Start(Port);
 
@@ -119,9 +119,6 @@ internal static class WireMockConfiguration
         _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingPut())
             .RespondWith(Response.Create()
                 .WithStatusCode(204));
-
-
-        return _server;
     }
 
     public static void StopServer()
