@@ -58,7 +58,8 @@ public class AuthService(
                 user = new User
                 {
                     Username = lowerUsername,
-                    Email = dto.Email
+                    Email = dto.Email,
+                    LastLoginAt = DateTime.UtcNow
                 };
 
                 await unitOfWork.Users.CreateAsync(user);
@@ -108,7 +109,7 @@ public class AuthService(
     public async Task<BaseResult<TokenDto>> LoginWithUsername(LoginUsernameUserDto dto)
     {
         var user = await userRepository.GetAll()
-            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         return await Login(user, dto.Password);
     }

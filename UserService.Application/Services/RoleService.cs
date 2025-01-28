@@ -138,7 +138,7 @@ public class RoleService(
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         if (user == null)
             return new BaseResult<UserRoleDto>
@@ -209,7 +209,7 @@ public class RoleService(
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         if (user == null)
             return new BaseResult<UserRoleDto>
@@ -270,7 +270,7 @@ public class RoleService(
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username.Equals(dto.Username, StringComparison.InvariantCultureIgnoreCase));
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         if (user == null)
             return new BaseResult<UserRoleDto>
