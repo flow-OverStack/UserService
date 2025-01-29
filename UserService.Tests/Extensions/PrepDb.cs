@@ -18,7 +18,6 @@ internal static class PrepDb
 
         var users = MockRepositoriesGetters.GetUsers().Select(x => new User
         {
-            Id = x.Id,
             KeycloakId = x.KeycloakId,
             Username = x.Username,
             Email = x.Email,

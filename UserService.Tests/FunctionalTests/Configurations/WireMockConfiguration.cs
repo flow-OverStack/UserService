@@ -106,17 +106,20 @@ internal static class WireMockConfiguration
                     };
                 }));
 
-        _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingPost())
+        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
             .RespondWith(Response.Create()
                 .WithStatusCode(201));
 
-        _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingGet())
+        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
-                .WithBody(JsonConvert.SerializeObject(new { Id = Guid.NewGuid(), Username = "newKeycloakUser" }))
+                .WithBody(JsonConvert.SerializeObject(new
+                {
+                    Id = Guid.NewGuid(), Username = "newKeycloakUser"
+                }))
                 .WithSuccess());
 
-        _server.Given(Request.Create().WithPath("/admin/realms/flowOverStack/users").UsingPut())
+        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPut())
             .RespondWith(Response.Create()
                 .WithStatusCode(204));
     }
