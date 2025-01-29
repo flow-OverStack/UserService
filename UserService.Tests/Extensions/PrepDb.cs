@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL;
 using UserService.Domain.Entity;
 using UserService.Tests.Configurations;
+using UserService.Tests.Configurations.TestDbContexts;
 
 namespace UserService.Tests.Extensions;
 
@@ -33,5 +34,15 @@ internal static class PrepDb
         dbContext.Set<UserToken>().AddRange(userTokens);
 
         dbContext.SaveChanges();
+
+        PrepareKeycloak(services);
+    }
+
+    private static void PrepareKeycloak(this IServiceCollection services)
+    {
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+
+        dbContext.Database.EnsureCreated();
     }
 }

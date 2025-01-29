@@ -1,5 +1,7 @@
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using UserService.Tests.Configurations.TestDbContexts;
 using UserService.Tests.Extensions;
 using WireMock;
 using WireMock.RequestBuilders;
@@ -20,7 +22,7 @@ internal static class WireMockConfiguration
 
     private static WireMockServer _server = null!;
 
-    public static void StartServer()
+    public static void StartServer(IServiceCollection services)
     {
         _server = WireMockServer.Start(Port);
 
@@ -107,16 +109,51 @@ internal static class WireMockConfiguration
                 }));
 
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
-            .RespondWith(Response.Create()
-                .WithStatusCode(201));
+            .RespondWith(Response.Create().WithCallback(message =>
+            {
+                var body = message.BodyData?.BodyAsString;
+                var user = JsonConvert.DeserializeObject<KeycloakUser>(body!);
+                if (user == null)
+                    return new ResponseMessage { StatusCode = 400 };
 
-        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet())
+                using var scope = services.BuildServiceProvider().CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+
+                user.Id = Guid.NewGuid();
+                dbContext.Set<KeycloakUser>().Add(user);
+                dbContext.SaveChanges();
+
+                return new ResponseMessage { StatusCode = 201 };
+            }));
+
+        const string usernameParam = "username";
+        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam(usernameParam))
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
-                .WithBody(JsonConvert.SerializeObject(new
+                .WithCallback(message =>
                 {
-                    Id = Guid.NewGuid(), Username = "newKeycloakUser"
-                }))
+                    var username = message.GetParameter(usernameParam)?.FirstOrDefault();
+                    if (username == null)
+                        return new ResponseMessage
+                        {
+                            StatusCode = 400
+                        };
+
+                    using var scope = services.BuildServiceProvider().CreateScope();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+                    var users = dbContext.Set<KeycloakUser>().AsQueryable().Where(x => x.Username.StartsWith(username))
+                        .ToArray();
+
+                    return new ResponseMessage
+                    {
+                        StatusCode = 200,
+                        BodyData = new BodyData
+                        {
+                            BodyAsJson = users,
+                            DetectedBodyType = BodyType.Json
+                        }
+                    };
+                })
                 .WithSuccess());
 
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPut())

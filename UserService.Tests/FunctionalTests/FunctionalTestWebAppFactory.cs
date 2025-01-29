@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
 using UserService.DAL;
 using UserService.Domain.Settings;
+using UserService.Tests.Configurations.TestDbContexts;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations;
 using Xunit;
@@ -15,7 +16,14 @@ namespace UserService.Tests.FunctionalTests;
 
 public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
+    private readonly PostgreSqlContainer _keycloakPostgreSql = new PostgreSqlBuilder()
+        .WithImage("postgres:latest")
+        .WithDatabase("keycloak-db")
+        .WithUsername("postgres")
+        .WithPassword("root")
+        .Build();
+
+    private readonly PostgreSqlContainer _userServicePostgreSql = new PostgreSqlBuilder()
         .WithImage("postgres:latest")
         .WithDatabase("user-service-db")
         .WithUsername("postgres")
@@ -24,13 +32,14 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 
     public async Task InitializeAsync()
     {
-        await _postgreSqlContainer.StartAsync();
-        WireMockConfiguration.StartServer();
+        await _userServicePostgreSql.StartAsync();
+        await _keycloakPostgreSql.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
-        await _postgreSqlContainer.StopAsync();
+        await _userServicePostgreSql.StopAsync();
+        await _keycloakPostgreSql.StopAsync();
         WireMockConfiguration.StopServer();
     }
 
@@ -40,8 +49,11 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
         {
             services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
 
-            var connectionString = _postgreSqlContainer.GetConnectionString();
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+            var userServiceConnectionString = _userServicePostgreSql.GetConnectionString();
+            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(userServiceConnectionString));
+
+            var keycloakConnectionString = _keycloakPostgreSql.GetConnectionString();
+            services.AddDbContext<KeycloakDbContext>(options => options.UseNpgsql(keycloakConnectionString));
 
             services.RemoveAll<KeycloakSettings>();
             services.Configure<KeycloakSettings>(x =>
@@ -56,6 +68,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             });
 
             services.PrepPopulation();
+            WireMockConfiguration.StartServer(services);
         });
     }
 }
