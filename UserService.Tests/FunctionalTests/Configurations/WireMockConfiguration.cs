@@ -14,17 +14,19 @@ namespace UserService.Tests.FunctionalTests.Configurations;
 
 internal static class WireMockConfiguration
 {
-    public const int Port = 5001;
     public const string RealmName = "TestRealm";
 
     private const string FunctionalTestsDirectoryName = "FunctionalTests";
     private const string ResponsesDirectoryName = "TestServerResponses";
 
-    private static WireMockServer _server = null!;
+    private static WireMockServer? _server;
+    public static int Port { get; private set; }
 
     public static void StartServer(IServiceCollection services)
     {
-        _server = WireMockServer.Start(Port);
+        _server?.Stop();
+        _server = WireMockServer.Start();
+        Port = _server.Ports[0]; //First port
 
 
         _server.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
@@ -163,7 +165,7 @@ internal static class WireMockConfiguration
 
     public static void StopServer()
     {
-        _server.Stop();
+        _server?.Stop();
     }
 
 
