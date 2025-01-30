@@ -24,9 +24,11 @@ internal static class WireMockConfiguration
 
     public static void StartServer(IServiceCollection services)
     {
-        _server?.Stop();
-        _server = WireMockServer.Start();
-        Port = _server.Ports[0]; //First port
+        if (_server is not { IsStarted: true }) //Equals to (_server == null || !_server.IsStarted)
+        {
+            _server = WireMockServer.Start();
+            Port = _server.Ports[0]; //First port
+        }
 
 
         _server.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
