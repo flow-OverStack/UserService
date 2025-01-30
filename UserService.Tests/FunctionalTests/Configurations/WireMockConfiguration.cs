@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Tests.Configurations.TestDbContexts;
 using UserService.Tests.Extensions;
+using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -58,6 +59,22 @@ internal static class WireMockConfiguration
                         {
                             StatusCode = 400
                         };
+
+                    if (grantType == "password")
+                    {
+                        using var scope = services.BuildServiceProvider().CreateScope();
+                        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+
+                        if (!body.TryGetValue("password", out var reqPassword) ||
+                            !body.TryGetValue("username", out var username))
+                            return new ResponseMessage { StatusCode = 400 };
+
+                        //simulating password verification
+                        var password =
+                            dbContext.Set<KeycloakUser>().FirstOrDefault(x => x.Username == username)!.Password;
+                        if (password != reqPassword)
+                            return new ResponseMessage { StatusCode = 400 };
+                    }
 
                     return grantType switch
                     {
@@ -115,17 +132,36 @@ internal static class WireMockConfiguration
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
             .RespondWith(Response.Create().WithCallback(message =>
             {
+                const string passwordType = "password";
+
                 var body = message.BodyData?.BodyAsString;
-                var user = JsonConvert.DeserializeObject<KeycloakUser>(body!);
+                var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(body!);
                 if (user == null)
                     return new ResponseMessage { StatusCode = 400 };
 
                 using var scope = services.BuildServiceProvider().CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
-                user.Id = Guid.NewGuid();
-                dbContext.Set<KeycloakUser>().Add(user);
-                dbContext.SaveChanges();
+                var passwordCredential = user.Credentials.FirstOrDefault(x => x.Type == passwordType);
+                if (passwordCredential == null)
+                    return new ResponseMessage { StatusCode = 400 };
+
+                var keycloakUser = new KeycloakUser
+                {
+                    Id = Guid.NewGuid(),
+                    Username = user.Username,
+                    Password = passwordCredential.Value
+                };
+
+                dbContext.Set<KeycloakUser>().Add(keycloakUser);
+                try
+                {
+                    dbContext.SaveChanges();
+                }
+                catch (Exception)
+                {
+                    return new ResponseMessage { StatusCode = 400 };
+                }
 
                 return new ResponseMessage { StatusCode = 201 };
             }));

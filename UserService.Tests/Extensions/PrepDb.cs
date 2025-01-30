@@ -35,14 +35,25 @@ internal static class PrepDb
 
         dbContext.SaveChanges();
 
-        PrepareKeycloak(services);
+        PrepareKeycloak(services, users);
     }
 
-    private static void PrepareKeycloak(this IServiceCollection services)
+    private static void PrepareKeycloak(this IServiceCollection services, IEnumerable<User> users)
     {
         using var scope = services.BuildServiceProvider().CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         dbContext.Database.EnsureCreated();
+
+        var keycloakUsers = users.Select((x, index) => new KeycloakUser
+        {
+            Id = Guid.NewGuid(),
+            Username = x.Username,
+            Password = TestConstants.TestPassword + (index + 1) //e.g. TestPassword1
+        });
+
+        dbContext.Set<KeycloakUser>().AddRange(keycloakUsers);
+
+        dbContext.SaveChanges();
     }
 }

@@ -16,7 +16,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            "TestPassword4", "TestPassword4"));
+            TestConstants.TestPassword + "4", TestConstants.TestPassword + "4"));
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -31,7 +31,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result =
-            await reportService.Register(new RegisterUserDto("TestUser4", "NotEmail", "TestPassword4",
+            await reportService.Register(new RegisterUserDto("TestUser4", "NotEmail", TestConstants.TestPassword + "4",
                 "TheOtherPassword"));
 
         //Assert
@@ -48,7 +48,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            "TestPassword4", TestConstants.WrongPassword));
+            TestConstants.TestPassword + "4", TestConstants.WrongPassword));
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -64,7 +64,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result = await reportService.Register(new RegisterUserDto("TestUser1", "TestsUser1@test.com",
-            "TestPassword1", "TestPassword1"));
+            TestConstants.TestPassword + "1", TestConstants.TestPassword + "1"));
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -79,7 +79,9 @@ public class AuthServiceTests
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
         //Act
-        var result = await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser3", "TestPassword3"));
+        var result =
+            await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser3",
+                TestConstants.TestPassword + "3"));
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -93,7 +95,9 @@ public class AuthServiceTests
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
         //Act
-        var result = await reportService.LoginWithEmail(new LoginEmailUserDto("TestUser1@test.com", "TestPassword1"));
+        var result =
+            await reportService.LoginWithEmail(new LoginEmailUserDto("TestUser1@test.com",
+                TestConstants.TestPassword + "1"));
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -107,7 +111,8 @@ public class AuthServiceTests
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
         //Act
-        var result = await reportService.LoginWithEmail(new LoginEmailUserDto("NotEmail", "TestPassword1"));
+        var result =
+            await reportService.LoginWithEmail(new LoginEmailUserDto("NotEmail", TestConstants.TestPassword + "1"));
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
@@ -122,7 +127,8 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result =
-            await reportService.LoginWithUsername(new LoginUsernameUserDto("NotExistingUser", "TestPassword1"));
+            await reportService.LoginWithUsername(new LoginUsernameUserDto("NotExistingUser",
+                TestConstants.TestPassword + "1"));
 
         //Assert
         Assert.False(result.IsSuccess);

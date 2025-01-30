@@ -12,5 +12,6 @@ public class KeycloakDbContext : DbContext
     {
         modelBuilder.Entity<KeycloakUser>().Property(x => x.Id).IsRequired();
         modelBuilder.Entity<KeycloakUser>().Property(x => x.Username).IsRequired();
+        modelBuilder.Entity<KeycloakUser>().Property(x => x.Password).IsRequired();
     }
 }
