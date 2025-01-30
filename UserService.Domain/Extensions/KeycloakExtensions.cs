@@ -84,12 +84,12 @@ public static class KeycloakExtensions
     /// <param name="credentials">List of KeycloakCredentials</param>
     /// <param name="password">User's password (not hashed)</param>
     /// <returns>this KeycloakAttributes class</returns>
-    public static List<KeycloakCredentials> AddPassword(this List<KeycloakCredentials> credentials, string password)
+    public static List<KeycloakCredential> AddPassword(this List<KeycloakCredential> credentials, string password)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(password);
 
         const string passwordType = "password";
-        credentials.Add(new KeycloakCredentials
+        credentials.Add(new KeycloakCredential
         {
             Type = passwordType,
             Value = password

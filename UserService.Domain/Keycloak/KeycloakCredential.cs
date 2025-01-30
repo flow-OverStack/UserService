@@ -1,6 +1,6 @@
 namespace UserService.Domain.Keycloak;
 
-public class KeycloakCredentials
+public class KeycloakCredential
 {
     public string Type { get; set; }
     public string Value { get; set; }

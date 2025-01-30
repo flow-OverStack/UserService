@@ -41,7 +41,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
                 Username = dto.Username,
                 Email = dto.Email,
 
-                Credentials = new List<KeycloakCredentials>().AddPassword(dto.Password),
+                Credentials = new List<KeycloakCredential>().AddPassword(dto.Password),
                 Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdAttributeName, dto.Id)
                     .AddRoles(_keycloakSettings.RolesAttributeName, dto.Roles)
             };
@@ -245,7 +245,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     private async Task LoginAsService()
     {
         if (!IsTokenExpired())
-            return; //double check is here if 2 or more threads are updating the token at the same time after the first check
+            return; //double check is here to check if 2 or more threads are updating the token at the same time after the first check
 
         const string grantType = "client_credentials";
 
@@ -337,7 +337,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
         public bool Enabled { get; set; } = true;
 
-        public List<KeycloakCredentials> Credentials { get; set; }
+        public List<KeycloakCredential> Credentials { get; set; }
         public KeycloakAttributes Attributes { get; set; }
     }
 
