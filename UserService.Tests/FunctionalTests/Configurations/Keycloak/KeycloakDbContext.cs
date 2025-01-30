@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace UserService.Tests.Configurations.TestDbContexts;
+namespace UserService.Tests.FunctionalTests.Configurations.Keycloak;
 
 public class KeycloakDbContext : DbContext
 {

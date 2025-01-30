@@ -1,7 +1,6 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using UserService.Tests.Configurations.TestDbContexts;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using WireMock;
@@ -18,6 +17,7 @@ internal static class WireMockConfiguration
     public const string RealmName = "TestRealm";
 
     private const string FunctionalTestsDirectoryName = "FunctionalTests";
+    private const string ConfigurationsDirectoryName = "Configurations";
     private const string ResponsesDirectoryName = "TestServerResponses";
 
     private static WireMockServer? _server;
@@ -218,8 +218,7 @@ internal static class WireMockConfiguration
 
 
         var filePath = Path.Combine(currentProjectDirectory.FullName, FunctionalTestsDirectoryName,
-            ResponsesDirectoryName,
-            fileName);
+            ConfigurationsDirectoryName, ResponsesDirectoryName, fileName);
 
         return filePath;
     }
