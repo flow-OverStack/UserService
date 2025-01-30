@@ -25,14 +25,16 @@ internal static class WireMockConfiguration
 
     public static void StartServer(IServiceCollection services)
     {
-        if (_server is not { IsStarted: true }) //Equals to (_server == null || !_server.IsStarted)
-        {
-            _server = WireMockServer.Start();
-            Port = _server.Ports[0]; //First port
-        }
+        SafeStartServer();
 
+        ConfigureWellKnownEndpoints();
+        ConfigureTokenEndpoint(services);
+        ConfigureUserManagementEndpoints(services);
+    }
 
-        _server.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
+    private static void ConfigureWellKnownEndpoints()
+    {
+        _server!.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(GetMetadata()).WithSuccess());
@@ -41,165 +43,135 @@ internal static class WireMockConfiguration
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(SigningKeyExtensions.GetJwk()).WithSuccess());
+    }
 
-        _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
-            .RespondWith(Response.Create()
-                .WithHeader("Content-Type", "application/json")
-                .WithCallback(message =>
-                {
-                    var body = message.BodyData!.BodyAsFormUrlEncoded;
-                    if (body == null)
-                        return new ResponseMessage
-                        {
-                            StatusCode = 400
-                        };
+    private static void ConfigureTokenEndpoint(IServiceCollection services)
+    {
+        _server!.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
+            .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
+                .WithCallback(message => HandleTokenRequest(message, services)));
+    }
 
-                    if (!body.TryGetValue("grant_type", out var grantType))
-                        return new ResponseMessage
-                        {
-                            StatusCode = 400
-                        };
+    private static ResponseMessage HandleTokenRequest(IRequestMessage message, IServiceCollection services)
+    {
+        var body = message.BodyData?.BodyAsFormUrlEncoded;
+        if (body == null || !body.TryGetValue("grant_type", out var grantType))
+            return BadRequest();
 
-                    if (grantType == "password")
-                    {
-                        using var scope = services.BuildServiceProvider().CreateScope();
-                        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        if (grantType == "password" && !ValidateUserCredentials(body, services))
+            return BadRequest();
 
-                        if (!body.TryGetValue("password", out var reqPassword) ||
-                            !body.TryGetValue("username", out var username))
-                            return new ResponseMessage { StatusCode = 400 };
-
-                        //simulating password verification
-                        var password =
-                            dbContext.Set<KeycloakUser>().FirstOrDefault(x => x.Username == username)!.Password;
-                        if (password != reqPassword)
-                            return new ResponseMessage { StatusCode = 400 };
-                    }
-
-                    return grantType switch
-                    {
-                        "password" => new ResponseMessage
-                        {
-                            StatusCode = 200,
-                            BodyData = new BodyData
-                            {
-                                BodyAsString = """
-                                               {
-                                                   "access_token": "newAccessToken",
-                                                   "expires_in": 300,
-                                                   "refresh_expires_in": 1800,
-                                                   "refresh_token": "newRefreshToken"
-                                               }
-                                               """,
-                                DetectedBodyType = BodyType.String
-                            }
-                        },
-                        "client_credentials" => new ResponseMessage
-                        {
-                            StatusCode = 200,
-                            BodyData = new BodyData
-                            {
-                                BodyAsString = """
-                                               {
-                                                   "access_token": "newAccessToken",
-                                                   "expires_in": 300,
-                                                   "refresh_expires_in": 0,
-                                               }
-                                               """,
-                                DetectedBodyType = BodyType.String
-                            }
-                        },
-                        "refresh_token" => new ResponseMessage
-                        {
-                            StatusCode = 200,
-                            BodyData = new BodyData
-                            {
-                                BodyAsString = """
-                                               {
-                                                   "access_token": "newAccessToken",
-                                                   "expires_in": 300,
-                                                   "refresh_expires_in": 1800,
-                                                   "refresh_token": "newRefreshToken"
-                                               }
-                                               """,
-                                DetectedBodyType = BodyType.String
-                            }
-                        },
-                        _ => new ResponseMessage { StatusCode = 400 }
-                    };
-                }));
-
-        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
-            .RespondWith(Response.Create().WithCallback(message =>
+        return grantType switch
+        {
+            "password" or "refresh_token" => JsonResponse(new
             {
-                const string passwordType = "password";
+                access_token = "newAccessToken",
+                expires_in = 300,
+                refresh_expires_in = 1800,
+                refresh_token = "newRefreshToken"
+            }),
+            "client_credentials" => JsonResponse(new
+            {
+                access_token = "newAccessToken",
+                expires_in = 300,
+                refresh_expires_in = 0
+            }),
+            _ => BadRequest()
+        };
+    }
 
-                var body = message.BodyData?.BodyAsString;
-                var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(body!);
-                if (user == null)
-                    return new ResponseMessage { StatusCode = 400 };
+    private static bool ValidateUserCredentials(IDictionary<string, string> body, IServiceCollection services)
+    {
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
-                using var scope = services.BuildServiceProvider().CreateScope();
-                var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        if (!body.TryGetValue("password", out var reqPassword) ||
+            !body.TryGetValue("username", out var username))
+            return false;
 
-                var passwordCredential = user.Credentials.FirstOrDefault(x => x.Type == passwordType);
-                if (passwordCredential == null)
-                    return new ResponseMessage { StatusCode = 400 };
+        var user = dbContext.Set<KeycloakUser>().FirstOrDefault(x => x.Username == username);
+        return user?.Password == reqPassword;
+    }
 
-                var keycloakUser = new KeycloakUser
-                {
-                    Id = Guid.NewGuid(),
-                    Username = user.Username,
-                    Password = passwordCredential.Value
-                };
+    private static void ConfigureUserManagementEndpoints(IServiceCollection services)
+    {
+        _server!.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
+            .RespondWith(Response.Create().WithCallback(message => HandleUserCreation(message, services)));
 
-                dbContext.Set<KeycloakUser>().Add(keycloakUser);
-                try
-                {
-                    dbContext.SaveChanges();
-                }
-                catch (Exception)
-                {
-                    return new ResponseMessage { StatusCode = 400 };
-                }
-
-                return new ResponseMessage { StatusCode = 201 };
-            }));
-
-        const string usernameParam = "username";
-        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam(usernameParam))
-            .RespondWith(Response.Create()
-                .WithHeader("Content-Type", "application/json")
-                .WithCallback(message =>
-                {
-                    var username = message.GetParameter(usernameParam)?.FirstOrDefault();
-                    if (username == null)
-                        return new ResponseMessage
-                        {
-                            StatusCode = 400
-                        };
-
-                    using var scope = services.BuildServiceProvider().CreateScope();
-                    var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
-                    var users = dbContext.Set<KeycloakUser>().AsQueryable().Where(x => x.Username.StartsWith(username))
-                        .ToArray();
-
-                    return new ResponseMessage
-                    {
-                        StatusCode = 200,
-                        BodyData = new BodyData
-                        {
-                            BodyAsJson = users,
-                            DetectedBodyType = BodyType.Json
-                        }
-                    };
-                })
+        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam("username"))
+            .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
+                .WithCallback(message => HandleUserSearch(message, services))
                 .WithSuccess());
 
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPut())
-            .RespondWith(Response.Create()
-                .WithStatusCode(204));
+            .RespondWith(Response.Create().WithStatusCode(204));
     }
+
+    private static ResponseMessage HandleUserCreation(IRequestMessage message, IServiceCollection services)
+    {
+        var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(message.BodyData?.BodyAsString ?? "");
+        if (user == null || user.Credentials.All(x => x.Type != "password"))
+            return BadRequest();
+
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+
+        dbContext.Set<KeycloakUser>().Add(new KeycloakUser
+        {
+            Id = Guid.NewGuid(),
+            Username = user.Username,
+            Password = user.Credentials.First(x => x.Type == "password").Value
+        });
+
+        try
+        {
+            dbContext.SaveChanges();
+            return new ResponseMessage { StatusCode = 201 };
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
+    }
+
+    private static ResponseMessage HandleUserSearch(IRequestMessage message, IServiceCollection services)
+    {
+        var username = message.GetParameter("username")?.FirstOrDefault();
+        if (username == null)
+            return BadRequest();
+
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToArray();
+
+        return JsonResponse(users);
+    }
+
+    private static ResponseMessage JsonResponse(object data)
+    {
+        return new ResponseMessage
+        {
+            StatusCode = 200,
+            BodyData = new BodyData
+            {
+                BodyAsJson = data,
+                DetectedBodyType = BodyType.Json
+            }
+        };
+    }
+
+    private static ResponseMessage BadRequest()
+    {
+        return new ResponseMessage { StatusCode = 400 };
+    }
+
+    private static void SafeStartServer()
+    {
+        if (_server is { IsStarted: true }) return; //Equals to (_server == null || !_server.IsStarted)
+        _server = WireMockServer.Start();
+        Port = _server.Ports[0]; //First port
+    }
+
 
     public static void StopServer()
     {
