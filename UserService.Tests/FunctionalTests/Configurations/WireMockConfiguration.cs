@@ -59,7 +59,20 @@ internal static class WireMockConfiguration
             return BadRequest();
 
         if (grantType == "password" && !ValidateUserCredentials(body, services))
-            return BadRequest();
+            return new ResponseMessage
+            {
+                StatusCode = 400,
+                BodyData = new BodyData
+                {
+                    BodyAsString = """
+                                   {
+                                       "error": "invalid_grant",
+                                       "error_description": "Invalid user credentials"
+                                   }
+                                   """,
+                    DetectedBodyType = BodyType.String
+                }
+            };
 
         return grantType switch
         {
