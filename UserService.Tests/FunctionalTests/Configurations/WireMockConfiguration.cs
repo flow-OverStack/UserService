@@ -122,7 +122,7 @@ internal static class WireMockConfiguration
 
     private static ResponseMessage HandleUserCreation(IRequestMessage message, IServiceCollection services)
     {
-        var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(message.BodyData?.BodyAsString ?? "");
+        var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(message.BodyData?.BodyAsString ?? string.Empty);
         if (user == null || user.Credentials.All(x => x.Type != "password"))
             return BadRequest();
 
