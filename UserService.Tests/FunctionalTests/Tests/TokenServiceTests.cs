@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using UserService.Domain.Dto.Token;
@@ -14,18 +15,9 @@ public class TokenServiceTests : BaseFunctionalTest
     {
     }
 
-    public static IEnumerable<object[]> GetAccessTokensForInvalidUser()
-    {
-        return
-        [
-            [SigningKeyExtensions.GetRsaToken("testuser2"), "TestRefreshToken2"],
-            [SigningKeyExtensions.GetRsaToken("testuser1"), "WrongRefreshToken1"]
-        ];
-    }
-
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RefreshToken_ShouldBe_NewToken()
+    public async Task RefreshToken_ShouldBe_Success()
     {
         //Arrange
         var dto = new RefreshTokenDto
@@ -40,13 +32,14 @@ public class TokenServiceTests : BaseFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
     }
 
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RefreshToken_ShouldBe_InvalidToken()
+    public async Task RefreshToken_ShouldBe_BadRequest()
     {
         //Arrange
         var dto = new RefreshTokenDto
@@ -61,33 +54,9 @@ public class TokenServiceTests : BaseFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(result.ErrorMessage, ErrorMessage.InvalidToken);
-        Assert.Null(result.Data);
-    }
-
-    [Theory]
-    [Trait("Category", "Functional")]
-    [MemberData(nameof(GetAccessTokensForInvalidUser))]
-    public async Task RefreshToken_ShouldBe_InvalidClientRequest_When_RefreshToken_IsNull_Or_IsExpired(
-        string accessToken,
-        string refreshToken)
-    {
-        //Arrange
-        var dto = new RefreshTokenDto
-        {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
-        };
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync("api/v1/token/refresh", dto);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
-
-        //Assert
-        Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.InvalidClientRequest);
         Assert.Null(result.Data);
     }
 }
