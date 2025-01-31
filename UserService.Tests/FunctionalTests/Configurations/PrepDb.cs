@@ -12,12 +12,6 @@ internal static class PrepDb
 {
     internal static void PrepPopulation(this IServiceCollection services)
     {
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.Migrate();
-
         var users = MockRepositoriesGetters.GetUsers().Select(x => new User
         {
             KeycloakId = x.KeycloakId,
@@ -27,6 +21,21 @@ internal static class PrepDb
             CreatedAt = x.CreatedAt,
             LastLoginAt = x.LastLoginAt
         });
+
+        PrepAppDb(services, users);
+
+        PrepareKeycloakDb(services, users);
+    }
+
+    private static void PrepAppDb(this IServiceCollection services, IEnumerable<User> users)
+    {
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.Migrate();
+
+
         var userRoles = MockRepositoriesGetters.GetUserRoles();
         var userTokens = MockRepositoriesGetters.GetUserTokens().Select(x => new UserToken
         {
@@ -40,11 +49,9 @@ internal static class PrepDb
         dbContext.Set<UserToken>().AddRange(userTokens);
 
         dbContext.SaveChanges();
-
-        PrepareKeycloak(services, users);
     }
 
-    private static void PrepareKeycloak(this IServiceCollection services, IEnumerable<User> users)
+    private static void PrepareKeycloakDb(this IServiceCollection services, IEnumerable<User> users)
     {
         using var scope = services.BuildServiceProvider().CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
