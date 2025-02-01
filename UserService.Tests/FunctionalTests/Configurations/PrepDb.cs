@@ -10,6 +10,23 @@ namespace UserService.Tests.FunctionalTests.Configurations;
 
 internal static class PrepDb
 {
+    public static void PrepPopulation(this IServiceScope serviceScope)
+    {
+        var users = MockRepositoriesGetters.GetUsers().Select(x => new User
+        {
+            KeycloakId = x.KeycloakId,
+            Username = x.Username,
+            Email = x.Email,
+            Reputation = x.Reputation,
+            CreatedAt = x.CreatedAt,
+            LastLoginAt = x.LastLoginAt
+        });
+
+        PrepAppDb(serviceScope, users);
+
+        PrepKeycloakDb(serviceScope, users);
+    }
+
     public static void PrepPopulation(this IServiceCollection services)
     {
         var users = MockRepositoriesGetters.GetUsers().Select(x => new User
@@ -22,15 +39,14 @@ internal static class PrepDb
             LastLoginAt = x.LastLoginAt
         });
 
-        PrepAppDb(services, users);
+        PrepAppDb(services.BuildServiceProvider().CreateScope(), users);
 
-        PrepKeycloakDb(services, users);
+        PrepKeycloakDb(services.BuildServiceProvider().CreateScope(), users);
     }
 
-    private static void PrepAppDb(this IServiceCollection services, IEnumerable<User> users)
+    private static void PrepAppDb(this IServiceScope serviceScope, IEnumerable<User> users)
     {
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         dbContext.Database.EnsureDeleted();
         dbContext.Database.Migrate();
@@ -51,10 +67,9 @@ internal static class PrepDb
         dbContext.SaveChanges();
     }
 
-    private static void PrepKeycloakDb(this IServiceCollection services, IEnumerable<User> users)
+    private static void PrepKeycloakDb(this IServiceScope serviceScope, IEnumerable<User> users)
     {
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        var dbContext = serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         dbContext.Database.EnsureCreated();
 
