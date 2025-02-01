@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace UserService.Tests.Extensions;
 
-internal static class SigningKeyExtensions
+internal static class TokenExtensions
 {
     private const string Audience = "TestAudience";
     private const string Issuer = "TestIssuer";
@@ -18,7 +18,7 @@ internal static class SigningKeyExtensions
 
     private static readonly string PublicJwk;
 
-    static SigningKeyExtensions()
+    static TokenExtensions()
     {
         var rsa = RSA.Create();
         PrivateKey = new RsaSecurityKey(rsa);

@@ -45,7 +45,7 @@ internal static class WireMockConfiguration
         _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/certs").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
-                .WithBody(SigningKeyExtensions.GetJwk()).WithSuccess());
+                .WithBody(TokenExtensions.GetJwk()).WithSuccess());
     }
 
     private static void ConfigureTokenEndpoint()
@@ -198,7 +198,7 @@ internal static class WireMockConfiguration
 
         response = response.Replace("{{Port}}", Port.ToString());
         response = response.Replace("{{Realm}}", RealmName);
-        response = response.Replace("{{Issuer}}", SigningKeyExtensions.GetIssuer());
+        response = response.Replace("{{Issuer}}", TokenExtensions.GetIssuer());
 
         return response;
     }

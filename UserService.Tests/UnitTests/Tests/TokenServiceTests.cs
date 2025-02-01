@@ -12,8 +12,8 @@ public class TokenServiceTests
     {
         return
         [
-            [SigningKeyExtensions.GetRsaToken("testuser2"), "TestRefreshToken2"],
-            [SigningKeyExtensions.GetRsaToken("testuser1"), "WrongRefreshToken1"]
+            [TokenExtensions.GetRsaToken("testuser2"), "TestRefreshToken2"],
+            [TokenExtensions.GetRsaToken("testuser1"), "WrongRefreshToken1"]
         ];
     }
 
@@ -23,7 +23,7 @@ public class TokenServiceTests
     public async Task RefreshToken_ShouldBe_NewToken()
     {
         //Arrange
-        var accessToken = SigningKeyExtensions.GetRsaToken("testuser1");
+        var accessToken = TokenExtensions.GetRsaToken("testuser1");
 
         var tokenService = new TokenServiceFactory().GetService();
 
@@ -44,7 +44,7 @@ public class TokenServiceTests
     public async Task RefreshToken_ShouldBe_InvalidToken()
     {
         //Arrange
-        var accessToken = SigningKeyExtensions.GetHmacToken("testuser1");
+        var accessToken = TokenExtensions.GetHmacToken("testuser1");
 
         var tokenService = new TokenServiceFactory().GetService();
 

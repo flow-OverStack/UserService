@@ -38,11 +38,11 @@ internal static class IdentityServerConfiguration
         mockIdentityServer.Setup(x => x.GetTokenValidationParametersAsync()).ReturnsAsync(new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = SigningKeyExtensions.GetPublicSigningKey(),
+            IssuerSigningKey = TokenExtensions.GetPublicSigningKey(),
             ValidateIssuer = true,
-            ValidIssuer = SigningKeyExtensions.GetIssuer(),
+            ValidIssuer = TokenExtensions.GetIssuer(),
             ValidateAudience = true,
-            ValidAudience = SigningKeyExtensions.GetAudience(),
+            ValidAudience = TokenExtensions.GetAudience(),
             ValidateLifetime = false
         });
         mockIdentityServer.Setup(x => x.UpdateRolesAsync(It.IsAny<KeycloakUpdateRolesDto>()));
