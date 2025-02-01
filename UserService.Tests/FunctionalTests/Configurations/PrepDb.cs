@@ -10,7 +10,7 @@ namespace UserService.Tests.FunctionalTests.Configurations;
 
 internal static class PrepDb
 {
-    internal static void PrepPopulation(this IServiceCollection services)
+    public static void PrepPopulation(this IServiceCollection services)
     {
         var users = MockRepositoriesGetters.GetUsers().Select(x => new User
         {
