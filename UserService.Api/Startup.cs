@@ -25,7 +25,6 @@ public static class Startup
     /// <param name="services"></param>
     public static void AddAuthenticationAndAuthorization(this IServiceCollection services)
     {
-        var keycloakSettings = services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
         services.AddAuthorization();
         services.AddAuthentication(options =>
         {
@@ -34,6 +33,9 @@ public static class Startup
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
+            var keycloakSettings =
+                services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
+
             options.Audience = keycloakSettings.Audience;
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
@@ -51,8 +53,7 @@ public static class Startup
     ///     Swagger set up
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="builder"></param>
-    public static void AddSwagger(this IServiceCollection services, IConfiguration configuration)
+    public static void AddSwagger(this IServiceCollection services)
     {
         services.AddApiVersioning()
             .AddApiExplorer(options =>

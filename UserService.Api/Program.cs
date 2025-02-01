@@ -16,7 +16,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddIdentityServer();
-builder.Services.AddSwagger(builder.Configuration);
+builder.Services.AddSwagger();
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using UserService.Domain.Entity;
 
 namespace UserService.Tests.Extensions;
 
@@ -23,6 +24,8 @@ internal static class TokenExtensions
         var rsa = RSA.Create();
         PrivateKey = new RsaSecurityKey(rsa);
         PublicKey = new RsaSecurityKey(rsa.ExportParameters(false));
+
+        PrivateKey.KeyId = Kid;
 
         var rsaParams = PublicKey.Parameters;
 
@@ -78,6 +81,30 @@ internal static class TokenExtensions
             SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
             Audience = Audience,
             Issuer = Issuer
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
+
+        return tokenString;
+    }
+
+    public static string GetRsaTokenWithRoleClaims(string username, IEnumerable<Role> roles)
+    {
+        var claims = new Dictionary<string, object>
+        {
+            { ClaimTypes.Role, roles.Select(x => x.Name).ToArray() }
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]),
+            //expired is not listed because it is not validated
+            SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
+            Audience = Audience,
+            Issuer = Issuer,
+            Claims = claims
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);

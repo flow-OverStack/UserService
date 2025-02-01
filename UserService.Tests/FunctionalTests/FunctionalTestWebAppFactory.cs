@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
 using UserService.DAL;
 using UserService.Domain.Settings;
+using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using Xunit;
@@ -60,7 +61,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
                 x.Url = "http://localhost:" + WireMockConfiguration.Port;
                 x.Realm = WireMockConfiguration.RealmName;
                 x.AdminToken = "TestAdminToken";
-                x.Audience = "TestAudience";
+                x.Audience = TokenExtensions.GetAudience();
                 x.ClientId = "TestClientId";
                 x.RolesAttributeName = "roles";
                 x.UserIdAttributeName = "userId";
