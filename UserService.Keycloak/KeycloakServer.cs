@@ -22,17 +22,22 @@ namespace UserService.Keycloak;
 public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
+    private const string WrongPasswordErrorMessage = "invalid_grant";
+    private const string PasswordGrantType = "password";
+    private const string RefreshTokenGrantType = "refresh_token";
+    private const string ClientCredentialsGrantType = "client_credentials";
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
     private readonly HttpClient _httpClient = new();
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceTokenDto? Token { get; set; }
 
+
     public async Task<KeycloakUserDto> RegisterUserAsync(KeycloakRegisterUserDto dto)
     {
         try
         {
-            await LoginAsServiceIfNeeded();
+            await UpdateServiceTokenIfNeeded();
 
             #region Create register request
 
@@ -93,12 +98,11 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     {
         try
         {
-            const string grantType = "password";
             var parameters = new Dictionary<string, string>
             {
                 { "client_id", _keycloakSettings.ClientId },
                 { "client_secret", _keycloakSettings.AdminToken },
-                { "grant_type", grantType },
+                { "grant_type", PasswordGrantType },
                 { "username", dto.Username },
                 { "password", dto.Password }
             };
@@ -112,10 +116,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             if (!responseToken!.IsValid())
             {
-                const string wrongPasswordErrorMessage = "invalid_grant";
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(body);
 
-                if (errorResponse!.Error == wrongPasswordErrorMessage)
+                if (errorResponse!.Error == WrongPasswordErrorMessage)
                     throw new IdentityServerPasswordIsWrongException(IdentityServerName,
                         errorResponse.ErrorDescription);
             }
@@ -140,13 +143,11 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     {
         try
         {
-            const string grantType = "refresh_token";
-
             var parameters = new Dictionary<string, string>
             {
                 { "client_id", _keycloakSettings.ClientId },
                 { "client_secret", _keycloakSettings.AdminToken },
-                { "grant_type", grantType },
+                { "grant_type", RefreshTokenGrantType },
                 { "refresh_token", dto.RefreshToken }
             };
 
@@ -177,7 +178,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     {
         try
         {
-            await LoginAsServiceIfNeeded();
+            await UpdateServiceTokenIfNeeded();
 
             var userPayload = new UpdateUserPayload
             {
@@ -242,18 +243,16 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     }
 
 
-    private async Task LoginAsService()
+    private async Task UpdateServiceToken()
     {
         if (!IsTokenExpired())
             return; //double check is here to check if 2 or more threads are updating the token at the same time after the first check
-
-        const string grantType = "client_credentials";
 
         var parameters = new Dictionary<string, string>
         {
             { "client_id", _keycloakSettings.ClientId },
             { "client_secret", _keycloakSettings.AdminToken },
-            { "grant_type", grantType }
+            { "grant_type", ClientCredentialsGrantType }
         };
 
         var content = new FormUrlEncodedContent(parameters);
@@ -272,13 +271,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         };
     }
 
-    private async Task LoginAsServiceIfNeeded()
+    private async Task UpdateServiceTokenIfNeeded()
     {
         if (IsTokenExpired())
             try
             {
                 await TokenSemaphore.WaitAsync();
-                await LoginAsService();
+                await UpdateServiceToken();
             }
             finally
             {
