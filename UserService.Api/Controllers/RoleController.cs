@@ -131,8 +131,15 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpDelete("delete-role")]
-    public async Task<ActionResult<BaseResult<Role>>> DeleteRoleForUser([FromBody] DeleteUserRoleDto dto)
+    public async Task<ActionResult<BaseResult<Role>>> DeleteRoleForUser([FromQuery] string username,
+        [FromQuery] long roleId)
     {
+        var dto = new DeleteUserRoleDto
+        {
+            Username = username,
+            RoleId = roleId
+        };
+
         var response = await roleService.DeleteRoleForUserAsync(dto);
         if (response.IsSuccess) return Ok(response);
 
