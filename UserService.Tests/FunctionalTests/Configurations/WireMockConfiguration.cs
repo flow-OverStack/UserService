@@ -21,15 +21,18 @@ internal static class WireMockConfiguration
     private const string ResponsesDirectoryName = "TestServerResponses";
 
     private static WireMockServer? _server;
+    private static IServiceScope _serviceScope = null!;
     public static int Port { get; private set; }
 
     public static void StartServer(IServiceCollection services)
     {
+        _serviceScope = services.BuildServiceProvider().CreateScope();
+
         SafeStartServer();
 
         ConfigureWellKnownEndpoints();
-        ConfigureTokenEndpoint(services);
-        ConfigureUserManagementEndpoints(services);
+        ConfigureTokenEndpoint();
+        ConfigureUserManagementEndpoints();
     }
 
     private static void ConfigureWellKnownEndpoints()
@@ -45,20 +48,20 @@ internal static class WireMockConfiguration
                 .WithBody(SigningKeyExtensions.GetJwk()).WithSuccess());
     }
 
-    private static void ConfigureTokenEndpoint(IServiceCollection services)
+    private static void ConfigureTokenEndpoint()
     {
         _server!.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
             .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
-                .WithCallback(message => HandleTokenRequest(message, services)));
+                .WithCallback(HandleTokenRequest));
     }
 
-    private static ResponseMessage HandleTokenRequest(IRequestMessage message, IServiceCollection services)
+    private static ResponseMessage HandleTokenRequest(IRequestMessage message)
     {
         var body = message.BodyData?.BodyAsFormUrlEncoded;
         if (body == null || !body.TryGetValue("grant_type", out var grantType))
             return BadRequest();
 
-        if (grantType == "password" && !ValidateUserCredentials(body, services))
+        if (grantType == "password" && !ValidateUserCredentials(body))
             return new ResponseMessage
             {
                 StatusCode = 400,
@@ -93,41 +96,36 @@ internal static class WireMockConfiguration
         };
     }
 
-    private static bool ValidateUserCredentials(IDictionary<string, string> body, IServiceCollection services)
+    private static bool ValidateUserCredentials(IDictionary<string, string> body)
     {
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        var dbContext = _serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
-        if (!body.TryGetValue("password", out var reqPassword) ||
-            !body.TryGetValue("username", out var username))
-            return false;
-
-        var user = dbContext.Set<KeycloakUser>().FirstOrDefault(x => x.Username == username);
-        return user?.Password == reqPassword;
+        return body.TryGetValue("username", out var username) &&
+               body.TryGetValue("password", out var reqPassword) &&
+               dbContext.Set<KeycloakUser>().Any(x => x.Username == username && x.Password == reqPassword);
     }
 
-    private static void ConfigureUserManagementEndpoints(IServiceCollection services)
+    private static void ConfigureUserManagementEndpoints()
     {
         _server!.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
-            .RespondWith(Response.Create().WithCallback(message => HandleUserCreation(message, services)));
+            .RespondWith(Response.Create().WithCallback(HandleUserCreation));
 
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam("username"))
             .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
-                .WithCallback(message => HandleUserSearch(message, services))
+                .WithCallback(HandleUserSearch)
                 .WithSuccess());
 
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPut())
             .RespondWith(Response.Create().WithStatusCode(204));
     }
 
-    private static ResponseMessage HandleUserCreation(IRequestMessage message, IServiceCollection services)
+    private static ResponseMessage HandleUserCreation(IRequestMessage message)
     {
         var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(message.BodyData?.BodyAsString ?? string.Empty);
         if (user == null || user.Credentials.All(x => x.Type != "password"))
             return BadRequest();
 
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        var dbContext = _serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         dbContext.Set<KeycloakUser>().Add(new KeycloakUser
         {
@@ -147,14 +145,14 @@ internal static class WireMockConfiguration
         }
     }
 
-    private static ResponseMessage HandleUserSearch(IRequestMessage message, IServiceCollection services)
+    private static ResponseMessage HandleUserSearch(IRequestMessage message)
     {
         var username = message.GetParameter("username")?.FirstOrDefault();
         if (username == null)
             return BadRequest();
 
-        using var scope = services.BuildServiceProvider().CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        var dbContext = _serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+
         var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToArray();
 
         return JsonResponse(users);
