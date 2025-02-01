@@ -115,7 +115,7 @@ internal static class WireMockConfiguration
                 .WithCallback(HandleUserSearch)
                 .WithSuccess());
 
-        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPut())
+        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users/*").UsingPut())
             .RespondWith(Response.Create().WithStatusCode(204));
     }
 
