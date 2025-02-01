@@ -1,3 +1,4 @@
+using System.Net;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -64,7 +65,7 @@ internal static class WireMockConfiguration
         if (grantType == "password" && !ValidateUserCredentials(body))
             return new ResponseMessage
             {
-                StatusCode = 400,
+                StatusCode = HttpStatusCode.BadRequest,
                 BodyData = new BodyData
                 {
                     BodyAsString = """
@@ -116,7 +117,7 @@ internal static class WireMockConfiguration
                 .WithSuccess());
 
         _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users/*").UsingPut())
-            .RespondWith(Response.Create().WithStatusCode(204));
+            .RespondWith(Response.Create().WithStatusCode(HttpStatusCode.NoContent));
     }
 
     private static ResponseMessage HandleUserCreation(IRequestMessage message)
@@ -137,7 +138,7 @@ internal static class WireMockConfiguration
         try
         {
             dbContext.SaveChanges();
-            return new ResponseMessage { StatusCode = 201 };
+            return new ResponseMessage { StatusCode = HttpStatusCode.Created };
         }
         catch (Exception)
         {
@@ -162,7 +163,7 @@ internal static class WireMockConfiguration
     {
         return new ResponseMessage
         {
-            StatusCode = 200,
+            StatusCode = HttpStatusCode.OK,
             BodyData = new BodyData
             {
                 BodyAsJson = data,
@@ -173,7 +174,7 @@ internal static class WireMockConfiguration
 
     private static ResponseMessage BadRequest()
     {
-        return new ResponseMessage { StatusCode = 400 };
+        return new ResponseMessage { StatusCode = HttpStatusCode.BadRequest };
     }
 
     private static void SafeStartServer()
