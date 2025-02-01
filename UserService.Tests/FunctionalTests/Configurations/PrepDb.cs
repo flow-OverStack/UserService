@@ -24,7 +24,7 @@ internal static class PrepDb
 
         PrepAppDb(services, users);
 
-        PrepareKeycloakDb(services, users);
+        PrepKeycloakDb(services, users);
     }
 
     private static void PrepAppDb(this IServiceCollection services, IEnumerable<User> users)
@@ -51,7 +51,7 @@ internal static class PrepDb
         dbContext.SaveChanges();
     }
 
-    private static void PrepareKeycloakDb(this IServiceCollection services, IEnumerable<User> users)
+    private static void PrepKeycloakDb(this IServiceCollection services, IEnumerable<User> users)
     {
         using var scope = services.BuildServiceProvider().CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
