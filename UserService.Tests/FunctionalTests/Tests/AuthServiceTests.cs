@@ -112,8 +112,8 @@ public class AuthServiceTests : BaseFunctionalTest
     public async Task LoginUserWithUsername_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new LoginUsernameUserDto("NotExistingUser",
-            TestConstants.TestPassword + "1");
+        var dto = new LoginUsernameUserDto("TestUser1",
+            TestConstants.WrongPassword);
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -122,7 +122,7 @@ public class AuthServiceTests : BaseFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.PasswordIsWrong, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }
