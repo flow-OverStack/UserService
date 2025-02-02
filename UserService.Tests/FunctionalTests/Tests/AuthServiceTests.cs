@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
+using UserService.Domain.Dto.Token;
 using UserService.Domain.Dto.User;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
@@ -62,7 +63,7 @@ public class AuthServiceTests : BaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -80,7 +81,7 @@ public class AuthServiceTests : BaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-email", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -97,7 +98,7 @@ public class AuthServiceTests : BaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-email", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -116,7 +117,7 @@ public class AuthServiceTests : BaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
