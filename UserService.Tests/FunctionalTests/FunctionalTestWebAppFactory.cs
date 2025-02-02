@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Testcontainers.PostgreSql;
 using UserService.DAL;
 using UserService.Domain.Settings;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
+using UserService.Tests.FunctionalTests.Extensions;
+using WireMock.Server;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests;
@@ -30,6 +33,8 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
         .WithPassword("root")
         .Build();
 
+    private WireMockServer _wireMockServer = null!;
+
     public async Task InitializeAsync()
     {
         await _userServicePostgreSql.StartAsync();
@@ -40,7 +45,8 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
     {
         await _userServicePostgreSql.StopAsync();
         await _keycloakPostgreSql.StopAsync();
-        WireMockConfiguration.StopServer();
+        _wireMockServer.StopServer();
+        _wireMockServer.Dispose();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -48,27 +54,30 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
-
             var userServiceConnectionString = _userServicePostgreSql.GetConnectionString();
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(userServiceConnectionString));
 
+            services.RemoveAll(typeof(DbContextOptions<KeycloakDbContext>));
             var keycloakConnectionString = _keycloakPostgreSql.GetConnectionString();
             services.AddDbContext<KeycloakDbContext>(options => options.UseNpgsql(keycloakConnectionString));
 
-            services.RemoveAll<KeycloakSettings>();
+            using var serviceProvider = services.BuildServiceProvider();
+            using var scope = serviceProvider.CreateScope();
+            scope.PrepPopulation();
+
+            _wireMockServer = _wireMockServer.StartServer(services);
+
+            services.RemoveAll<IOptions<KeycloakSettings>>();
             services.Configure<KeycloakSettings>(x =>
             {
-                x.Url = "http://localhost:" + WireMockConfiguration.Port;
-                x.Realm = WireMockConfiguration.RealmName;
+                x.Url = "http://localhost:" + _wireMockServer.Port;
+                x.Realm = WireMockExtensions.RealmName;
                 x.AdminToken = "TestAdminToken";
                 x.Audience = TokenExtensions.GetAudience();
                 x.ClientId = "TestClientId";
                 x.RolesAttributeName = "roles";
                 x.UserIdAttributeName = "userId";
             });
-
-            services.PrepPopulation();
-            WireMockConfiguration.StartServer(services);
         });
     }
 }

@@ -18,10 +18,10 @@ public class RoleServiceTests : SequentialFunctionalTest
     public RoleServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
         var accessToken = TokenExtensions.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "User" }, new Role { Name = "Admin" }
+            new Role { Name = "User" },
+            new Role { Name = "Admin" }
         ]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        ResetDb();
     }
 
 

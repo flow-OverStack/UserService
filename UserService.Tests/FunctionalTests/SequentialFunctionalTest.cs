@@ -1,19 +1,32 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Tests.FunctionalTests.Configurations;
+using Xunit;
 
 namespace UserService.Tests.FunctionalTests;
 
-public class SequentialFunctionalTest : BaseFunctionalTest
+public class SequentialFunctionalTest : BaseFunctionalTest, IAsyncLifetime
 {
+    private readonly IServiceProvider _servicesProvider;
+
     protected SequentialFunctionalTest(FunctionalTestWebAppFactory factory) : base(factory)
     {
-        ServiceScope = factory.Services.CreateScope();
+        _servicesProvider = factory.Services;
     }
 
-    private static IServiceScope ServiceScope { get; set; }
-
-    protected static void ResetDb()
+    public Task InitializeAsync()
     {
-        ServiceScope.PrepPopulation();
+        using var scope = _servicesProvider.CreateScope();
+        ResetDb(scope);
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    private static void ResetDb(IServiceScope scope)
+    {
+        scope.PrepPopulation();
     }
 }

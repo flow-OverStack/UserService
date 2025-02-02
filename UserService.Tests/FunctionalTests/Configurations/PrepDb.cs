@@ -27,23 +27,6 @@ internal static class PrepDb
         PrepKeycloakDb(serviceScope, users);
     }
 
-    public static void PrepPopulation(this IServiceCollection services)
-    {
-        var users = MockRepositoriesGetters.GetUsers().Select(x => new User
-        {
-            KeycloakId = x.KeycloakId,
-            Username = x.Username,
-            Email = x.Email,
-            Reputation = x.Reputation,
-            CreatedAt = x.CreatedAt,
-            LastLoginAt = x.LastLoginAt
-        });
-
-        PrepAppDb(services.BuildServiceProvider().CreateScope(), users);
-
-        PrepKeycloakDb(services.BuildServiceProvider().CreateScope(), users);
-    }
-
     private static void PrepAppDb(this IServiceScope serviceScope, IEnumerable<User> users)
     {
         var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

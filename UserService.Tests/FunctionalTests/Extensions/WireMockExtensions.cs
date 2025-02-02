@@ -11,9 +11,9 @@ using WireMock.Server;
 using WireMock.Types;
 using WireMock.Util;
 
-namespace UserService.Tests.FunctionalTests.Configurations;
+namespace UserService.Tests.FunctionalTests.Extensions;
 
-internal static class WireMockConfiguration
+internal static class WireMockExtensions
 {
     public const string RealmName = "TestRealm";
 
@@ -21,48 +21,45 @@ internal static class WireMockConfiguration
     private const string ConfigurationsDirectoryName = "Configurations";
     private const string ResponsesDirectoryName = "TestServerResponses";
 
-    private static WireMockServer? _server;
-    private static IServiceScope _serviceScope = null!;
-    public static int Port { get; private set; }
-
-    public static void StartServer(IServiceCollection services)
+    public static WireMockServer StartServer(this WireMockServer server, IServiceCollection services)
     {
-        _serviceScope = services.BuildServiceProvider().CreateScope();
+        server = server.SafeStartServer();
 
-        SafeStartServer();
 
-        ConfigureWellKnownEndpoints();
-        ConfigureTokenEndpoint();
-        ConfigureUserManagementEndpoints();
+        server.ConfigureWellKnownEndpoints();
+        server.ConfigureTokenEndpoint(services);
+        server.ConfigureUserManagementEndpoints(services);
+
+        return server;
     }
 
-    private static void ConfigureWellKnownEndpoints()
+    private static void ConfigureWellKnownEndpoints(this WireMockServer server)
     {
-        _server!.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
+        server.Given(Request.Create().WithPath($"/realms/{RealmName}/.well-known/openid-configuration").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
-                .WithBody(GetMetadata()).WithSuccess());
+                .WithBody(GetMetadata(server.Port)).WithSuccess());
 
-        _server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/certs").UsingGet())
+        server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/certs").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
                 .WithBody(TokenExtensions.GetJwk()).WithSuccess());
     }
 
-    private static void ConfigureTokenEndpoint()
+    private static void ConfigureTokenEndpoint(this WireMockServer server, IServiceCollection services)
     {
-        _server!.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
+        server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/token").UsingPost())
             .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
-                .WithCallback(HandleTokenRequest));
+                .WithCallback(message => HandleTokenRequest(message, services)));
     }
 
-    private static ResponseMessage HandleTokenRequest(IRequestMessage message)
+    private static ResponseMessage HandleTokenRequest(IRequestMessage message, IServiceCollection services)
     {
         var body = message.BodyData?.BodyAsFormUrlEncoded;
         if (body == null || !body.TryGetValue("grant_type", out var grantType))
             return BadRequest();
 
-        if (grantType == "password" && !ValidateUserCredentials(body))
+        if (grantType == "password" && !ValidateUserCredentials(body, services))
             return new ResponseMessage
             {
                 StatusCode = HttpStatusCode.BadRequest,
@@ -97,36 +94,38 @@ internal static class WireMockConfiguration
         };
     }
 
-    private static bool ValidateUserCredentials(IDictionary<string, string> body)
+    private static bool ValidateUserCredentials(IDictionary<string, string> body, IServiceCollection services)
     {
-        var dbContext = _serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         return body.TryGetValue("username", out var username) &&
                body.TryGetValue("password", out var reqPassword) &&
                dbContext.Set<KeycloakUser>().Any(x => x.Username == username && x.Password == reqPassword);
     }
 
-    private static void ConfigureUserManagementEndpoints()
+    private static void ConfigureUserManagementEndpoints(this WireMockServer server, IServiceCollection services)
     {
-        _server!.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
-            .RespondWith(Response.Create().WithCallback(HandleUserCreation));
+        server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingPost())
+            .RespondWith(Response.Create().WithCallback(message => HandleUserCreation(message, services)));
 
-        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam("username"))
+        server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam("username"))
             .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
-                .WithCallback(HandleUserSearch)
+                .WithCallback(message => HandleUserSearch(message, services))
                 .WithSuccess());
 
-        _server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users/*").UsingPut())
+        server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users/*").UsingPut())
             .RespondWith(Response.Create().WithStatusCode(HttpStatusCode.NoContent));
     }
 
-    private static ResponseMessage HandleUserCreation(IRequestMessage message)
+    private static ResponseMessage HandleUserCreation(IRequestMessage message, IServiceCollection services)
     {
         var user = JsonConvert.DeserializeObject<KeycloakRequestUser>(message.BodyData?.BodyAsString ?? string.Empty);
         if (user == null || user.Credentials.All(x => x.Type != "password"))
             return BadRequest();
 
-        var dbContext = _serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         dbContext.Set<KeycloakUser>().Add(new KeycloakUser
         {
@@ -146,13 +145,14 @@ internal static class WireMockConfiguration
         }
     }
 
-    private static ResponseMessage HandleUserSearch(IRequestMessage message)
+    private static ResponseMessage HandleUserSearch(IRequestMessage message, IServiceCollection services)
     {
         var username = message.GetParameter("username")?.FirstOrDefault();
         if (username == null)
             return BadRequest();
 
-        var dbContext = _serviceScope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
+        using var scope = services.BuildServiceProvider().CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToArray();
 
@@ -177,27 +177,27 @@ internal static class WireMockConfiguration
         return new ResponseMessage { StatusCode = HttpStatusCode.BadRequest };
     }
 
-    private static void SafeStartServer()
+    private static WireMockServer SafeStartServer(this WireMockServer server)
     {
-        if (_server is { IsStarted: true }) return; //Equals to (_server == null || !_server.IsStarted)
-        _server = WireMockServer.Start();
-        Port = _server.Ports[0]; //First port
+        if (server is { IsStarted: true }) return server; //Equals to (_server == null || !_server.IsStarted)
+        server = WireMockServer.Start();
+        return server;
     }
 
 
-    public static void StopServer()
+    public static void StopServer(this WireMockServer server)
     {
-        _server?.Stop();
+        server.Stop();
     }
 
 
-    private static string GetMetadata()
+    private static string GetMetadata(int serverPort)
     {
         const string metadataFileName = "MetadataResponse.json";
 
         var response = GetResponse(metadataFileName);
 
-        response = response.Replace("{{Port}}", Port.ToString());
+        response = response.Replace("{{Port}}", serverPort.ToString());
         response = response.Replace("{{Realm}}", RealmName);
         response = response.Replace("{{Issuer}}", TokenExtensions.GetIssuer());
 
