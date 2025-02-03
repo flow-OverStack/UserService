@@ -9,12 +9,8 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-public class TokenServiceTests : BaseFunctionalTest
+public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    public TokenServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
-    {
-    }
-
     [Fact]
     [Trait("Category", "Functional")]
     public async Task RefreshToken_ShouldBe_Success()

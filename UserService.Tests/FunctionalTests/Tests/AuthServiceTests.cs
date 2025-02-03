@@ -10,12 +10,8 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-public class AuthServiceTests : BaseFunctionalTest
+public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    public AuthServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
-    {
-    }
-
     [Trait("Category", "Functional")]
     [Fact]
     public async Task RegisterUser_ShouldBe_Success()
