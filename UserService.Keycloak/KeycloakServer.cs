@@ -16,6 +16,7 @@ using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Keycloak;
 using UserService.Domain.Settings;
+using UserService.Keycloak.HttpModels;
 
 namespace UserService.Keycloak;
 
@@ -30,7 +31,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
     private readonly HttpClient _httpClient = new();
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
-    private static KeycloakServiceTokenDto? Token { get; set; }
+    private static KeycloakServiceToken? Token { get; set; }
 
 
     public async Task<KeycloakUserDto> RegisterUserAsync(KeycloakRegisterUserDto dto)
@@ -112,11 +113,11 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
             var response = await _httpClient.PostAsync(_keycloakSettings.LoginUrl, content);
 
             var body = await response.Content.ReadAsStringAsync();
-            var responseToken = JsonConvert.DeserializeObject<UserTokenResponse>(body);
+            var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
 
             if (!responseToken!.IsValid())
             {
-                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(body);
+                var errorResponse = JsonConvert.DeserializeObject<KeycloakErrorResponse>(body);
 
                 if (errorResponse!.Error == WrongPasswordErrorMessage)
                     throw new IdentityServerPasswordIsWrongException(IdentityServerName,
@@ -158,7 +159,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
             response.EnsureSuccessStatusCode();
 
             var body = await response.Content.ReadAsStringAsync();
-            var responseToken = JsonConvert.DeserializeObject<UserTokenResponse>(body);
+            var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
 
             return new KeycloakUserTokenDto
             {
@@ -262,12 +263,12 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         response.EnsureSuccessStatusCode();
 
         var body = await response.Content.ReadAsStringAsync();
-        var responseToken = JsonConvert.DeserializeObject<ServiceTokenResponse>(body);
+        var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
 
-        Token = new KeycloakServiceTokenDto
+        Token = new KeycloakServiceToken
         {
             AccessToken = responseToken!.AccessToken,
-            Expires = DateTime.UtcNow.AddSeconds(responseToken.ExpiresIn)
+            Expires = DateTime.UtcNow.AddSeconds(responseToken.AccessExpiresIn)
         };
     }
 
@@ -290,68 +291,4 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         return Token == null ||
                Token.Expires <= DateTime.UtcNow;
     }
-
-
-    #region Classes for http requests
-
-    private sealed class KeycloakServiceTokenDto
-    {
-        public string AccessToken { get; set; }
-
-        public DateTime Expires { get; set; }
-    }
-
-    private sealed class ServiceTokenResponse
-    {
-        [JsonProperty("access_token")] public string AccessToken { get; set; }
-        [JsonProperty("expires_in")] public int ExpiresIn { get; set; }
-    }
-
-    private sealed class UserTokenResponse
-    {
-        [JsonProperty("access_token")] public string AccessToken { get; set; }
-        [JsonProperty("refresh_token")] public string RefreshToken { get; set; }
-        [JsonProperty("expires_in")] public int AccessExpiresIn { get; set; }
-        [JsonProperty("refresh_expires_in")] public int RefreshExpiresIn { get; set; }
-
-        public bool IsValid()
-        {
-            return AccessToken != null
-                   && RefreshToken != null
-                   && AccessExpiresIn > 0
-                   && RefreshExpiresIn > 0;
-        }
-    }
-
-    private sealed class KeycloakUser
-    {
-        [JsonProperty("id")] public string Id { get; set; }
-        [JsonProperty("username")] public string Username { get; set; }
-    }
-
-    private sealed class RegisterUserPayload
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-
-        public bool Enabled { get; set; } = true;
-
-        public List<KeycloakCredential> Credentials { get; set; }
-        public KeycloakAttributes Attributes { get; set; }
-    }
-
-    private sealed class UpdateUserPayload
-    {
-        public string Email { get; set; }
-
-        public KeycloakAttributes Attributes { get; set; }
-    }
-
-    private sealed class ErrorResponse
-    {
-        [JsonProperty("error")] public string Error { get; set; }
-        [JsonProperty("error_description")] public string ErrorDescription { get; set; }
-    }
-
-    #endregion
 }
