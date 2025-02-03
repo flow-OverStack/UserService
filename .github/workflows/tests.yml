@@ -65,4 +65,4 @@ jobs:
         run: dotnet restore
 
       - name: Run Functional Tests (detailed)
-        run: dotnet test --no-restore --filter "Category=E2E" --verbosity detailed
+        run: dotnet test --no-restore --filter "Category=Functional" --verbosity detailed
