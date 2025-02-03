@@ -27,6 +27,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     private const string PasswordGrantType = "password";
     private const string RefreshTokenGrantType = "refresh_token";
     private const string ClientCredentialsGrantType = "client_credentials";
+    private const int TokenExpirationThresholdInSeconds = 5;
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
     private readonly HttpClient _httpClient = new();
@@ -38,8 +39,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     {
         try
         {
-            await UpdateServiceTokenIfNeeded();
-
             #region Create register request
 
             var userPayload = new RegisterUserPayload
@@ -56,15 +55,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             #region Create user
 
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
-
             var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            await SetAuthHeader();
             var createResponse = await _httpClient.PostAsync(_keycloakSettings.UsersUrl, content);
 
             createResponse.EnsureSuccessStatusCode();
@@ -73,6 +70,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
 
             #region Get created user
 
+            await SetAuthHeader();
             var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersUrl}?username={dto.Username}");
 
             getResponse.EnsureSuccessStatusCode();
@@ -179,8 +177,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     {
         try
         {
-            await UpdateServiceTokenIfNeeded();
-
             var userPayload = new UpdateUserPayload
             {
                 Email = dto.Email,
@@ -194,9 +190,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
             });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
-
+            await SetAuthHeader();
             var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
                 content);
 
@@ -289,6 +283,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     private static bool IsTokenExpired()
     {
         return Token == null ||
-               Token.Expires <= DateTime.UtcNow;
+               Token.Expires <= DateTime.UtcNow.AddSeconds(TokenExpirationThresholdInSeconds);
+    }
+
+    private async Task SetAuthHeader()
+    {
+        await UpdateServiceTokenIfNeeded();
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
     }
 }
