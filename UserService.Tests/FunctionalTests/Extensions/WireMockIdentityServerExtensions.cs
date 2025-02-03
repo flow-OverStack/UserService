@@ -13,7 +13,7 @@ using WireMock.Util;
 
 namespace UserService.Tests.FunctionalTests.Extensions;
 
-internal static class WireMockExtensions
+internal static class WireMockIdentityServerExtensions
 {
     public const string RealmName = "TestRealm";
 

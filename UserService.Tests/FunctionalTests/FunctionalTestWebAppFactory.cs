@@ -71,7 +71,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             services.Configure<KeycloakSettings>(x =>
             {
                 x.Url = "http://localhost:" + _wireMockServer.Port;
-                x.Realm = WireMockExtensions.RealmName;
+                x.Realm = WireMockIdentityServerExtensions.RealmName;
                 x.AdminToken = "TestAdminToken";
                 x.Audience = TokenExtensions.GetAudience();
                 x.ClientId = "TestClientId";
