@@ -114,15 +114,6 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Password mismatch.
-        /// </summary>
-        public static string PasswordMismatch {
-            get {
-                return ResourceManager.GetString("PasswordMismatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Role already exists.
         /// </summary>
         public static string RoleAlreadyExists {

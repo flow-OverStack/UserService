@@ -18,7 +18,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4", TestConstants.TestPassword + "4");
+            TestConstants.TestPassword + "4");
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -35,8 +35,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
     public async Task RegisterUser_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new RegisterUserDto("TestUser4", "NotEmail", TestConstants.TestPassword + "4",
-            "TheOtherPassword");
+        var dto = new RegisterUserDto("TestUser1", "NotEmail", TestConstants.TestPassword);
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
         var body = await response.Content.ReadAsStringAsync();

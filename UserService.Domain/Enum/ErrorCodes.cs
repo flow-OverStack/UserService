@@ -10,10 +10,8 @@ public enum ErrorCodes
     UserAlreadyExists = 22,
     UserAlreadyHasThisRole = 23,
 
-
-    PasswordMismatch = 31,
-    PasswordIsWrong = 32,
-    EmailNotValid = 33,
+    PasswordIsWrong = 31,
+    EmailNotValid = 32,
 
     RoleAlreadyExists = 41,
     RoleNotFound = 42

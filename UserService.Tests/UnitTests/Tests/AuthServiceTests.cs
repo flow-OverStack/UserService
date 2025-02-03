@@ -16,7 +16,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4", TestConstants.TestPassword + "4"));
+            TestConstants.TestPassword + "4"));
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -31,28 +31,12 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result =
-            await reportService.Register(new RegisterUserDto("TestUser4", "NotEmail", TestConstants.TestPassword + "4",
-                "TheOtherPassword"));
+            await reportService.Register(new RegisterUserDto("TestUser4", "NotEmail",
+                TestConstants.TestPassword + "4"));
 
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RegisterUser_ShouldBe_PasswordMismatch()
-    {
-        //Arrange
-        var reportService = new AuthServiceFactory().GetService();
-        //Act
-        var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4", TestConstants.WrongPassword));
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.PasswordMismatch, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -64,7 +48,7 @@ public class AuthServiceTests
         var reportService = new AuthServiceFactory().GetService();
         //Act
         var result = await reportService.Register(new RegisterUserDto("TestUser1", "TestsUser1@test.com",
-            TestConstants.TestPassword + "1", TestConstants.TestPassword + "1"));
+            TestConstants.TestPassword + "1"));
 
         //Assert
         Assert.False(result.IsSuccess);

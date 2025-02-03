@@ -33,13 +33,6 @@ public class AuthService(
                 ErrorCode = (int)ErrorCodes.EmailNotValid
             };
 
-        if (dto.Password != dto.PasswordConfirm)
-            return new BaseResult<UserDto>
-            {
-                ErrorMessage = ErrorMessage.PasswordMismatch,
-                ErrorCode = (int)ErrorCodes.PasswordMismatch
-            };
-
         var lowerUsername = dto.Username.ToLowerInvariant();
 
         var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Username == lowerUsername) ??
