@@ -237,6 +237,32 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
         }
     }
 
+    public async Task RollbackRegistration(Guid userId)
+    {
+        await SetAuthHeader();
+        await _httpClient.DeleteAsync($"{_keycloakSettings.UsersUrl}/{userId.ToString()}");
+    }
+
+    public async Task RollbackUpdateRolesAsync(KeycloakUpdateRolesDto dto)
+    {
+        var userPayload = new UpdateUserPayload
+        {
+            Email = dto.Email,
+            Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdAttributeName, dto.UserId)
+                .AddRoles(_keycloakSettings.RolesAttributeName, dto.NewRoles)
+        };
+
+        var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        });
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        await SetAuthHeader();
+        await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
+            content);
+    }
+
 
     private async Task UpdateServiceToken()
     {

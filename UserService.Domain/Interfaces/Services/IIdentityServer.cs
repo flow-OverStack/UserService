@@ -43,4 +43,18 @@ public interface IIdentityServer
     /// </summary>
     /// <returns></returns>
     Task<TokenValidationParameters> GetTokenValidationParametersAsync();
+
+    /// <summary>
+    ///     Rolls back the registration of a user; does not catch errors
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    Task RollbackRegistration(Guid userId);
+
+    /// <summary>
+    ///     Rolls back the user's roles update; does not catch errors
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <returns></returns>
+    Task RollbackUpdateRolesAsync(KeycloakUpdateRolesDto dto);
 }

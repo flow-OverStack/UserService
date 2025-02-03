@@ -44,6 +44,7 @@ public class AuthService(
                 ErrorCode = (int)ErrorCodes.UserAlreadyExists
             };
 
+        KeycloakUserDto? keycloakResponse = null;
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -79,7 +80,7 @@ public class AuthService(
                 var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
                 keycloakDto.Password = dto.Password;
 
-                var keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
+                keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
 
                 user.KeycloakId = keycloakResponse.KeycloakId;
                 await unitOfWork.SaveChangesAsync();
@@ -89,6 +90,9 @@ public class AuthService(
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+                if (keycloakResponse != null)
+                    await identityServer.RollbackRegistration(keycloakResponse.KeycloakId);
+
                 throw;
             }
         }
