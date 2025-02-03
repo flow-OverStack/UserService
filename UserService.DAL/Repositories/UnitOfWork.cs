@@ -8,7 +8,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
 
-    public UnitOfWork(ApplicationDbContext context, IBaseRepository<User> users, IBaseRepository<Role> roles,
+    public UnitOfWork(ApplicationDbContext context, IBaseRepository<User> users,
         IBaseRepository<UserRole> userRoles)
     {
         _context = context;
