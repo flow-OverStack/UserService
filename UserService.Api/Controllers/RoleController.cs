@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Domain.Dto.Role;
 using UserService.Domain.Dto.UserRole;
-using UserService.Domain.Entity;
 using UserService.Domain.Enum;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Result;
@@ -40,7 +39,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpPost]
-    public async Task<ActionResult<BaseResult<Role>>> Create([FromBody] CreateRoleDto dto)
+    public async Task<ActionResult<BaseResult<RoleDto>>> Create([FromBody] CreateRoleDto dto)
     {
         var response = await roleService.CreateRoleAsync(dto);
         if (response.IsSuccess) return Ok(response);
@@ -62,7 +61,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpDelete("{id:long}")]
-    public async Task<ActionResult<BaseResult<Role>>> Delete(long id)
+    public async Task<ActionResult<BaseResult<RoleDto>>> Delete(long id)
     {
         var response = await roleService.DeleteRoleAsync(id);
         if (response.IsSuccess) return Ok(response);
@@ -85,7 +84,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpPut]
-    public async Task<ActionResult<BaseResult<Role>>> Update([FromBody] RoleDto dto)
+    public async Task<ActionResult<BaseResult<RoleDto>>> Update([FromBody] RoleDto dto)
     {
         var response = await roleService.UpdateRoleAsync(dto);
         if (response.IsSuccess) return Ok(response);
@@ -108,7 +107,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpPost("add-role")]
-    public async Task<ActionResult<BaseResult<Role>>> AddRoleForUser([FromBody] UserRoleDto dto)
+    public async Task<ActionResult<BaseResult<UserRoleDto>>> AddRoleForUser([FromBody] UserRoleDto dto)
     {
         var response = await roleService.AddRoleForUserAsync(dto);
         if (response.IsSuccess) return Ok(response);
@@ -131,7 +130,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpDelete("delete-role")]
-    public async Task<ActionResult<BaseResult<Role>>> DeleteRoleForUser([FromQuery] string username,
+    public async Task<ActionResult<BaseResult<UserRoleDto>>> DeleteRoleForUser([FromQuery] string username,
         [FromQuery] long roleId)
     {
         var dto = new DeleteUserRoleDto
@@ -162,7 +161,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
     ///     }
     /// </remarks>
     [HttpPut("update-role")]
-    public async Task<ActionResult<BaseResult<Role>>> UpdateRoleForUser([FromBody] UpdateUserRoleDto dto)
+    public async Task<ActionResult<BaseResult<UserRoleDto>>> UpdateRoleForUser([FromBody] UpdateUserRoleDto dto)
     {
         var response = await roleService.UpdateRoleForUserAsync(dto);
         if (response.IsSuccess) return Ok(response);

@@ -23,7 +23,7 @@ public class TokenController(ITokenService tokenService) : ControllerBase
     /// <param name="dto"></param>
     /// <returns></returns>
     [HttpPost("refresh")]
-    public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenDto dto)
+    public async Task<ActionResult<TokenDto>> RefreshToken([FromBody] RefreshTokenDto dto)
     {
         var response = await tokenService.RefreshToken(dto);
         if (response.IsSuccess) return Ok(response);
