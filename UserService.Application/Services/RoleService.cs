@@ -142,16 +142,16 @@ public class RoleService(
                 ErrorCode = (int)ErrorCodes.UserNotFound
             };
 
-        var roles = user.Roles.Select(x => x.Name).ToArray();
+        var roles = user.Roles.Select(x => x.Id).ToArray();
 
-        if (roles.Any(x => x == dto.RoleName))
+        if (roles.Any(x => x == dto.RoleId))
             return new BaseResult<UserRoleDto>
             {
                 ErrorMessage = ErrorMessage.UserAlreadyHasThisRole,
                 ErrorCode = (int)ErrorCodes.UserAlreadyHasThisRole
             };
 
-        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.RoleName);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.RoleId);
         if (role == null)
             return new BaseResult<UserRoleDto>
             {
@@ -193,7 +193,7 @@ public class RoleService(
             Data = new UserRoleDto
             {
                 Username = user.Username,
-                RoleName = role.Name
+                RoleId = role.Id
             }
         };
     }
@@ -252,7 +252,7 @@ public class RoleService(
             Data = new UserRoleDto
             {
                 Username = user.Username,
-                RoleName = role.Name
+                RoleId = role.Id
             }
         };
     }
@@ -339,7 +339,7 @@ public class RoleService(
             Data = new UserRoleDto
             {
                 Username = user.Username,
-                RoleName = newRoleForUser.Name
+                RoleId = newRoleForUser.Id
             }
         };
     }
