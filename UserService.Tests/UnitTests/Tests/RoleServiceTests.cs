@@ -106,7 +106,7 @@ public class RoleServiceTests
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
             Username = "TestUser1",
-            RoleName = "Moderator"
+            RoleId = 3
         });
 
 
@@ -125,7 +125,7 @@ public class RoleServiceTests
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
             Username = "NotExistingUser",
-            RoleName = "Moderator"
+            RoleId = 3
         });
 
         //Assert
@@ -144,7 +144,7 @@ public class RoleServiceTests
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
             Username = "TestUser1",
-            RoleName = "User"
+            RoleId = 1
         });
 
         //Assert
@@ -163,7 +163,7 @@ public class RoleServiceTests
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
             Username = "TestUser1",
-            RoleName = "NotExistingRole"
+            RoleId = 0
         });
 
         //Assert

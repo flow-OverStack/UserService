@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
+using UserService.Domain.Dto.Requests.UserRole;
 using UserService.Domain.Dto.Role;
 using UserService.Domain.Dto.UserRole;
 using UserService.Domain.Entity;
@@ -35,7 +36,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Role", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -53,7 +54,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Role", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -72,7 +73,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Act
         var response = await HttpClient.DeleteAsync($"/api/v1.0/role/{roleId}");
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -90,7 +91,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Act
         var response = await HttpClient.DeleteAsync($"/api/v1.0/role/{roleId}");
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -109,7 +110,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Act
         var response = await HttpClient.PutAsJsonAsync("/api/v1.0/Role", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -127,7 +128,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Act
         var response = await HttpClient.PutAsJsonAsync("/api/v1.0/Role", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -141,16 +142,16 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task AddRoleForUser_ShouldBe_Success()
     {
         //Arrange
-        var dto = new UserRoleDto
+        const string username = "TestUser1";
+        var dto = new RequestUserRoleDto
         {
-            Username = "TestUser1",
-            RoleName = "Moderator"
+            RoleId = 3
         };
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/role/add-role", dto);
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/role/" + username, dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -163,16 +164,16 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task AddRoleForUser_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new UserRoleDto
+        const string username = "NotExistingUser";
+        var dto = new RequestUserRoleDto
         {
-            Username = "NotExistingUser",
-            RoleName = "Moderator"
+            RoleId = 3
         };
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/role/add-role", dto);
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/role/" + username, dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -186,17 +187,14 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task DeleteRoleForUser_ShouldBe_Success()
     {
         //Arrange
-        var dto = new DeleteUserRoleDto
-        {
-            Username = "TestUser2",
-            RoleId = 3
-        };
+        const string username = "TestUser2";
+        const long roleId = 3;
 
         //Act
         var response =
-            await HttpClient.DeleteAsync($"/api/v1.0/role/delete-role?username={dto.Username}&roleId={dto.RoleId}");
+            await HttpClient.DeleteAsync($"/api/v1.0/role/{username}/{roleId}");
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
 
         //Assert
@@ -210,17 +208,14 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task DeleteRoleForUser_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new DeleteUserRoleDto
-        {
-            Username = "NotExistingUser",
-            RoleId = 3
-        };
+        const string username = "NotExistingUser";
+        const long roleId = 3;
 
         //Act
         var response =
-            await HttpClient.DeleteAsync($"/api/v1.0/role/delete-role?username={dto.Username}&roleId={dto.RoleId}");
+            await HttpClient.DeleteAsync($"/api/v1.0/role/{username}/{roleId}");
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -234,17 +229,17 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task UpdateRoleForUser_ShouldBe_Success()
     {
         //Arrange
-        var dto = new UpdateUserRoleDto
+        const string username = "TestUser2";
+        var dto = new RequestUpdateUserRoleDto
         {
-            Username = "TestUser2",
             FromRoleId = 3,
             ToRoleId = 2
         };
 
         //Act
-        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/role/update-role", dto);
+        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/role/" + username, dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -257,17 +252,17 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task UpdateRoleForUser_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new UpdateUserRoleDto
+        const string username = "NotExistingUser";
+        var dto = new RequestUpdateUserRoleDto
         {
-            Username = "NotExistingUser",
             FromRoleId = 3,
             ToRoleId = 2
         };
 
         //Act
-        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/role/update-role", dto);
+        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/role/" + username, dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<Role>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
