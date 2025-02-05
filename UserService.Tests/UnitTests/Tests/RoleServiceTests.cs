@@ -1,6 +1,7 @@
 using UserService.Domain.Dto.Role;
 using UserService.Domain.Dto.UserRole;
 using UserService.Domain.Resources;
+using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.ServiceFactories;
 using Xunit;
 
@@ -72,6 +73,21 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task DeleteRole_ShouldBe_Exception()
+    {
+        //Arrange
+        var roleService =
+            new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+
+        //Act
+        var action = async () => await roleService.DeleteRoleAsync(3);
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task UpdateRole_ShouldBe_Success()
     {
         //Arrange
@@ -99,6 +115,21 @@ public class RoleServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task UpdateRole_ShouldBe_Exception()
+    {
+        //Arrange
+        var roleService =
+            new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+
+        //Act
+        var action = async () => await roleService.UpdateRoleAsync(new RoleDto(3, "UpdatedTestRole"));
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
     }
 
     [Trait("Category", "Unit")]
@@ -182,6 +213,25 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task AddRoleForUser_ShouldBe_Exception()
+    {
+        //Arrange
+        var roleService =
+            new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+
+        //Act
+        var action = async () => await roleService.AddRoleForUserAsync(new UserRoleDto
+        {
+            Username = "TestUser1",
+            RoleId = 3
+        });
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task DeleteRoleForUser_ShouldBe_Success()
     {
         //Arrange
@@ -237,6 +287,25 @@ public class RoleServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task DeleteRoleForUser_ShouldBe_Exception()
+    {
+        //Arrange
+        var roleService =
+            new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+
+        //Act
+        var action = async () => await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
+        {
+            Username = "TestUser2",
+            RoleId = 3
+        });
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
     }
 
     [Trait("Category", "Unit")]
@@ -341,5 +410,25 @@ public class RoleServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(result.ErrorMessage, ErrorMessage.RoleToUpdateIsNotFound);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task UpdateRoleForUser_ShouldBe_Exception()
+    {
+        //Arrange
+        var roleService =
+            new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+
+        //Act
+        var action = async () => await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        {
+            Username = "TestUser2",
+            FromRoleId = 3,
+            ToRoleId = 2
+        });
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
     }
 }

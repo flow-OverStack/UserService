@@ -23,8 +23,11 @@ internal class RoleServiceFactory
     public readonly IBaseRepository<UserRole> UserRoleRepository =
         MockRepositoriesGetters.GetMockUserRoleRepository().Object;
 
-    public RoleServiceFactory()
+    public RoleServiceFactory(IUnitOfWork? unitOfWork = null)
     {
+        if (unitOfWork != null)
+            UnitOfWork = unitOfWork;
+
         _roleService = new RoleService(UserRepository, RoleRepository, Mapper, UserRoleRepository, UnitOfWork,
             IdentityServer);
     }

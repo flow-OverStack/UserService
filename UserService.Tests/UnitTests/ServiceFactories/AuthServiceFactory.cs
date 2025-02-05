@@ -23,8 +23,11 @@ internal class AuthServiceFactory
         MockRepositoriesGetters.GetMockUserTokenRepository().Object;
 
 
-    public AuthServiceFactory()
+    public AuthServiceFactory(IUnitOfWork? unitOfWork = null)
     {
+        if (unitOfWork != null)
+            UnitOfWork = unitOfWork;
+
         _authService = new AuthService(UserRepository, Mapper, IdentityServer, RoleRepository, UnitOfWork,
             UserTokenRepository);
     }

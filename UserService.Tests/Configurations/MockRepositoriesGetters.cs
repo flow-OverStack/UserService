@@ -80,6 +80,29 @@ internal static class MockRepositoriesGetters
         return mockUnitOfWork;
     }
 
+    private static Mock<IDbContextTransaction> GetExceptionMockTransaction()
+    {
+        var transaction = new Mock<IDbContextTransaction>();
+
+        transaction.Setup(x => x.CommitAsync(new CancellationToken())).ThrowsAsync(new TestException());
+        transaction.Setup(x => x.RollbackAsync(new CancellationToken())).Returns(Task.CompletedTask);
+
+        return transaction;
+    }
+
+    public static Mock<IUnitOfWork> GetExceptionMockUnitOfWork()
+    {
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+
+        mockUnitOfWork.Setup(x => x.Users).Returns(GetMockUserRepository().Object);
+        mockUnitOfWork.Setup(x => x.UserRoles).Returns(GetMockUserRoleRepository().Object);
+        mockUnitOfWork.Setup(x => x.BeginTransactionAsync()).ReturnsAsync(GetExceptionMockTransaction().Object);
+        mockUnitOfWork.Setup(x => x.SaveChangesAsync())
+            .ReturnsAsync(-1); //-1 is here to indicate that the method is a mock
+
+        return mockUnitOfWork;
+    }
+
     public static Mock<IBaseRepository<User>> GetMockUserRepository()
     {
         var mockRepository = new Mock<IBaseRepository<User>>();
