@@ -20,10 +20,6 @@ public class IdentityServerPasswordIsWrongException : IdentityServerBusinessExce
 
     public override BaseResult GetBaseResult()
     {
-        return new BaseResult
-        {
-            ErrorMessage = ErrorMessage.PasswordIsWrong,
-            ErrorCode = (int)ErrorCodes.PasswordIsWrong
-        };
+        return BaseResult.Failure(ErrorMessage.PasswordIsWrong, (int)ErrorCodes.PasswordIsWrong);
     }
 }

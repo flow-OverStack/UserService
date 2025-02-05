@@ -25,11 +25,7 @@ public class RoleService(
     {
         var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name);
         if (role != null)
-            return new BaseResult<RoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleAlreadyExists,
-                ErrorCode = (int)ErrorCodes.RoleAlreadyExists
-            };
+            return BaseResult<RoleDto>.Failure(ErrorMessage.RoleAlreadyExists, (int)ErrorCodes.RoleAlreadyExists);
 
         role = new Role
         {
@@ -38,21 +34,14 @@ public class RoleService(
         await roleRepository.CreateAsync(role);
         await roleRepository.SaveChangesAsync();
 
-        return new BaseResult<RoleDto>
-        {
-            Data = mapper.Map<RoleDto>(role)
-        };
+        return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
     public async Task<BaseResult<RoleDto>> DeleteRoleAsync(long id)
     {
         var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
         if (role == null)
-            return new BaseResult<RoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleNotFound,
-                ErrorCode = (int)ErrorCodes.RoleNotFound
-            };
+            return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         var usersWithRoleToDelete = await GetUsersWithRoleAsync(role.Id);
 
@@ -83,21 +72,14 @@ public class RoleService(
             }
         }
 
-        return new BaseResult<RoleDto>
-        {
-            Data = mapper.Map<RoleDto>(role)
-        };
+        return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
     public async Task<BaseResult<RoleDto>> UpdateRoleAsync(RoleDto dto)
     {
         var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id);
         if (role == null)
-            return new BaseResult<RoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleNotFound,
-                ErrorCode = (int)ErrorCodes.RoleNotFound
-            };
+            return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
@@ -123,10 +105,7 @@ public class RoleService(
             }
         }
 
-        return new BaseResult<RoleDto>
-        {
-            Data = mapper.Map<RoleDto>(role)
-        };
+        return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
     public async Task<BaseResult<UserRoleDto>> AddRoleForUserAsync(UserRoleDto dto)
@@ -136,28 +115,17 @@ public class RoleService(
             .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         if (user == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.UserNotFound,
-                ErrorCode = (int)ErrorCodes.UserNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         var roles = user.Roles.Select(x => x.Id).ToArray();
 
         if (roles.Any(x => x == dto.RoleId))
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.UserAlreadyHasThisRole,
-                ErrorCode = (int)ErrorCodes.UserAlreadyHasThisRole
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
+                (int)ErrorCodes.UserAlreadyHasThisRole);
 
         var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.RoleId);
         if (role == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleNotFound,
-                ErrorCode = (int)ErrorCodes.RoleNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
@@ -173,7 +141,7 @@ public class RoleService(
                 await userRoleRepository.SaveChangesAsync();
 
                 var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync([userWithUpdatedRole!]);
+                await UpdateRolesAsync(new[] { userWithUpdatedRole! });
 
                 await transaction.CommitAsync();
             }
@@ -182,20 +150,17 @@ public class RoleService(
                 await transaction.RollbackAsync();
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
-                await RollbackRolesAsync([userWithOldRole!]);
+                await RollbackRolesAsync(new[] { userWithOldRole! });
 
                 throw;
             }
         }
 
-        return new BaseResult<UserRoleDto>
+        return BaseResult<UserRoleDto>.Success(new UserRoleDto
         {
-            Data = new UserRoleDto
-            {
-                Username = user.Username,
-                RoleId = role.Id
-            }
-        };
+            Username = user.Username,
+            RoleId = role.Id
+        });
     }
 
     public async Task<BaseResult<UserRoleDto>> DeleteRoleForUserAsync(DeleteUserRoleDto dto)
@@ -205,20 +170,12 @@ public class RoleService(
             .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         if (user == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.UserNotFound,
-                ErrorCode = (int)ErrorCodes.UserNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         var role = user.Roles.FirstOrDefault(x => x.Id == dto.RoleId);
 
         if (role == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleNotFound,
-                ErrorCode = (int)ErrorCodes.RoleNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
@@ -232,7 +189,7 @@ public class RoleService(
                 await userRoleRepository.SaveChangesAsync();
 
                 var userWithDeletedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync([userWithDeletedRole!]);
+                await UpdateRolesAsync(new[] { userWithDeletedRole! });
 
                 await transaction.CommitAsync();
             }
@@ -241,20 +198,17 @@ public class RoleService(
                 await transaction.RollbackAsync();
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
-                await RollbackRolesAsync([userWithOldRole!]);
+                await RollbackRolesAsync(new[] { userWithOldRole! });
 
                 throw;
             }
         }
 
-        return new BaseResult<UserRoleDto>
+        return BaseResult<UserRoleDto>.Success(new UserRoleDto
         {
-            Data = new UserRoleDto
-            {
-                Username = user.Username,
-                RoleId = role.Id
-            }
-        };
+            Username = user.Username,
+            RoleId = role.Id
+        });
     }
 
     public async Task<BaseResult<UserRoleDto>> UpdateRoleForUserAsync(UpdateUserRoleDto dto)
@@ -264,29 +218,18 @@ public class RoleService(
             .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
         if (user == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.UserNotFound,
-                ErrorCode = (int)ErrorCodes.UserNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         var role = user.Roles.FirstOrDefault(x => x.Id == dto.FromRoleId);
 
         if (role == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleToBeUpdatedIsNotFound,
-                ErrorCode = (int)ErrorCodes.RoleNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToBeUpdatedIsNotFound,
+                (int)ErrorCodes.RoleNotFound);
 
         var newRoleForUser = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.ToRoleId);
 
         if (newRoleForUser == null)
-            return new BaseResult<UserRoleDto>
-            {
-                ErrorMessage = ErrorMessage.RoleToUpdateIsNotFound,
-                ErrorCode = (int)ErrorCodes.RoleNotFound
-            };
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToUpdateIsNotFound, (int)ErrorCodes.RoleNotFound);
 
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
@@ -302,11 +245,8 @@ public class RoleService(
                     .FirstOrDefaultAsync(x => x.UserId == newUserRole.UserId && x.RoleId == newUserRole.RoleId) != null;
 
                 if (isNewUserRoleExists)
-                    return new BaseResult<UserRoleDto>
-                    {
-                        ErrorMessage = ErrorMessage.UserAlreadyHasThisRole,
-                        ErrorCode = (int)ErrorCodes.UserAlreadyHasThisRole
-                    };
+                    return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
+                        (int)ErrorCodes.UserAlreadyHasThisRole);
 
                 var userRole = await unitOfWork.UserRoles.GetAll()
                     .Where(x => x.RoleId == role.Id)
@@ -319,7 +259,7 @@ public class RoleService(
                 await unitOfWork.SaveChangesAsync();
 
                 var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync([userWithUpdatedRole!]);
+                await UpdateRolesAsync(new[] { userWithUpdatedRole! });
 
                 await transaction.CommitAsync();
             }
@@ -328,20 +268,17 @@ public class RoleService(
                 await transaction.RollbackAsync();
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
-                await RollbackRolesAsync([userWithOldRole!]);
+                await RollbackRolesAsync(new[] { userWithOldRole! });
 
                 throw;
             }
         }
 
-        return new BaseResult<UserRoleDto>
+        return BaseResult<UserRoleDto>.Success(new UserRoleDto
         {
-            Data = new UserRoleDto
-            {
-                Username = user.Username,
-                RoleId = newRoleForUser.Id
-            }
-        };
+            Username = user.Username,
+            RoleId = newRoleForUser.Id
+        });
     }
 
     private async Task<User?> GetUserWithRolesByIdAsync(long userId)

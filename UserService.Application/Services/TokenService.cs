@@ -29,10 +29,7 @@ public class TokenService(
         }
         catch (Exception e)
         {
-            return new BaseResult<TokenDto>
-            {
-                ErrorMessage = e.Message
-            };
+            return BaseResult<TokenDto>.Failure(e.Message);
         }
 
         var username = claimsPrincipal.Identity?.Name;
@@ -43,10 +40,7 @@ public class TokenService(
 
         if (user == null || user.UserToken.RefreshToken != dto.RefreshToken ||
             user.UserToken.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            return new BaseResult<TokenDto>
-            {
-                ErrorMessage = ErrorMessage.InvalidClientRequest
-            };
+            return BaseResult<TokenDto>.Failure(ErrorMessage.InvalidClientRequest);
 
 
         var keycloakResponse = await identityServer.RefreshTokenAsync(new KeycloakRefreshTokenDto(dto.RefreshToken));
@@ -58,10 +52,7 @@ public class TokenService(
         var tokenDto = mapper.Map<TokenDto>(keycloakResponse);
         tokenDto.UserId = user.Id;
 
-        return new BaseResult<TokenDto>
-        {
-            Data = tokenDto
-        };
+        return BaseResult<TokenDto>.Success(tokenDto);
     }
 
     private static Task<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token,
