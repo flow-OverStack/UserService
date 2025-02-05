@@ -6,6 +6,7 @@ using UserService.Domain.Dto.User;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
 using UserService.Tests.Extensions;
+using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;

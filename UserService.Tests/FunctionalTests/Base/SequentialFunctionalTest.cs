@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.Tests.FunctionalTests.Configurations;
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests;
+namespace UserService.Tests.FunctionalTests.Base;
 
 public class SequentialFunctionalTest : BaseFunctionalTest, IAsyncLifetime
 {

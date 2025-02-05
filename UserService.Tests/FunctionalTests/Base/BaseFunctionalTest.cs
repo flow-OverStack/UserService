@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests;
+namespace UserService.Tests.FunctionalTests.Base;
 
 public class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFactory>
 {

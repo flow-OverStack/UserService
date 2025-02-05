@@ -30,4 +30,8 @@
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="FunctionalTests\ExceptionBase\"/>
+    </ItemGroup>
+
 </Project>
