@@ -24,7 +24,6 @@ public class TokenServiceTests
     {
         //Arrange
         var accessToken = TokenExtensions.GetRsaToken("testuser1");
-
         var tokenService = new TokenServiceFactory().GetService();
 
         //Act
@@ -45,7 +44,6 @@ public class TokenServiceTests
     {
         //Arrange
         var accessToken = TokenExtensions.GetHmacToken("testuser1");
-
         var tokenService = new TokenServiceFactory().GetService();
 
         //Act

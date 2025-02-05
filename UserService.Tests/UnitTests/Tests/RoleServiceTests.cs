@@ -14,6 +14,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.CreateRoleAsync(new CreateRoleDto("NewTestRole"));
 
@@ -28,6 +29,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.CreateRoleAsync(new CreateRoleDto("User"));
 
@@ -43,6 +45,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.DeleteRoleAsync(3);
 
@@ -57,6 +60,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.DeleteRoleAsync(0);
 
@@ -72,6 +76,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.UpdateRoleAsync(new RoleDto(3, "UpdatedTestRole"));
 
@@ -86,6 +91,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.UpdateRoleAsync(new RoleDto(0, "UpdatedTestRole"));
 
@@ -109,7 +115,6 @@ public class RoleServiceTests
             RoleId = 3
         });
 
-
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
@@ -121,6 +126,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
@@ -140,6 +146,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
@@ -159,6 +166,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.AddRoleForUserAsync(new UserRoleDto
         {
@@ -186,7 +194,6 @@ public class RoleServiceTests
             RoleId = 3
         });
 
-
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
@@ -198,6 +205,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
         {
@@ -217,6 +225,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
         {
@@ -245,7 +254,6 @@ public class RoleServiceTests
             ToRoleId = 2
         });
 
-
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
@@ -257,6 +265,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
         {
@@ -277,6 +286,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
         {
@@ -297,6 +307,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
         {
@@ -317,6 +328,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+
         //Act
         var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
         {
