@@ -61,8 +61,8 @@ internal static class MockRepositoriesGetters
     {
         var transaction = new Mock<IDbContextTransaction>();
 
-        transaction.Setup(x => x.CommitAsync(new CancellationToken())).Returns(Task.CompletedTask);
-        transaction.Setup(x => x.RollbackAsync(new CancellationToken())).Returns(Task.CompletedTask);
+        transaction.Setup(x => x.CommitAsync(default)).Returns(Task.CompletedTask);
+        transaction.Setup(x => x.RollbackAsync(default)).Returns(Task.CompletedTask);
 
         return transaction;
     }
@@ -84,8 +84,8 @@ internal static class MockRepositoriesGetters
     {
         var transaction = new Mock<IDbContextTransaction>();
 
-        transaction.Setup(x => x.CommitAsync(new CancellationToken())).ThrowsAsync(new TestException());
-        transaction.Setup(x => x.RollbackAsync(new CancellationToken())).Returns(Task.CompletedTask);
+        transaction.Setup(x => x.CommitAsync(default)).ThrowsAsync(new TestException());
+        transaction.Setup(x => x.RollbackAsync(default)).Returns(Task.CompletedTask);
 
         return transaction;
     }
