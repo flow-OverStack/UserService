@@ -45,6 +45,7 @@ public class RoleService(
 
         var usersWithRoleToDelete = await GetUsersWithRoleAsync(role.Id);
 
+        var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -59,12 +60,15 @@ public class RoleService(
                     Email = x.Email,
                     Roles = x.Roles.Where(y => y.Id != role.Id).ToList()
                 }));
+                areRolesUpdated = true;
 
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+
+                if (!areRolesUpdated) throw;
 
                 await RollbackRolesAsync(usersWithRoleToDelete);
 
@@ -81,6 +85,7 @@ public class RoleService(
         if (role == null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
+        var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -91,12 +96,15 @@ public class RoleService(
 
                 var usersWithUpdatedRole = await GetUsersWithRoleAsync(role.Id);
                 await UpdateRolesAsync(usersWithUpdatedRole);
+                areRolesUpdated = true;
 
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+
+                if (!areRolesUpdated) throw;
 
                 var usersWithOldRole = await GetUsersWithRoleAsync(role.Id);
                 await RollbackRolesAsync(usersWithOldRole);
@@ -127,6 +135,7 @@ public class RoleService(
         if (role == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
+        var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -141,13 +150,16 @@ public class RoleService(
                 await userRoleRepository.SaveChangesAsync();
 
                 var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync(new[] { userWithUpdatedRole! });
+                await UpdateRolesAsync([userWithUpdatedRole!]);
+                areRolesUpdated = true;
 
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+
+                if (!areRolesUpdated) throw;
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
                 await RollbackRolesAsync(new[] { userWithOldRole! });
@@ -177,6 +189,7 @@ public class RoleService(
         if (role == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
+        var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -189,13 +202,16 @@ public class RoleService(
                 await userRoleRepository.SaveChangesAsync();
 
                 var userWithDeletedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync(new[] { userWithDeletedRole! });
+                await UpdateRolesAsync([userWithDeletedRole!]);
+                areRolesUpdated = true;
 
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+
+                if (!areRolesUpdated) throw;
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
                 await RollbackRolesAsync(new[] { userWithOldRole! });
@@ -231,6 +247,7 @@ public class RoleService(
         if (newRoleForUser == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToUpdateIsNotFound, (int)ErrorCodes.RoleNotFound);
 
+        var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync())
         {
             try
@@ -260,12 +277,15 @@ public class RoleService(
 
                 var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id);
                 await UpdateRolesAsync(new[] { userWithUpdatedRole! });
+                areRolesUpdated = true;
 
                 await transaction.CommitAsync();
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync();
+
+                if (!areRolesUpdated) throw;
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
                 await RollbackRolesAsync(new[] { userWithOldRole! });
