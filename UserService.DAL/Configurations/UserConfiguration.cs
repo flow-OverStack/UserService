@@ -39,13 +39,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 x => x.HasOne<User>().WithMany().HasForeignKey(y => y.UserId)
             );
 
-        builder.HasMany(x => x.Badges)
-            .WithMany(x => x.Users)
-            .UsingEntity<UserBadge>(
-                x => x.HasOne<Badge>().WithMany().HasForeignKey(y => y.BadgeId),
-                x => x.HasOne<User>().WithMany().HasForeignKey(y => y.UserId)
-            );
-
         builder.HasOne<UserToken>(x => x.UserToken)
             .WithOne(x => x.User)
             .HasForeignKey<UserToken>(x => x.UserId)

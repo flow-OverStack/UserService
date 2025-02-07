@@ -13,7 +13,6 @@ public class User : IEntityId<long>, IAuditable
     public int Reputation { get; set; }
 
     public List<Role> Roles { get; set; }
-    public List<Badge> Badges { get; set; }
 
     public DateTime CreatedAt { get; set; }
     public long Id { get; set; }

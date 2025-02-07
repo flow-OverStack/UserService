@@ -28,8 +28,6 @@ public static class DependencyInjection
         services.AddScoped<IBaseRepository<User>, BaseRepository<User>>();
         services.AddScoped<IBaseRepository<Role>, BaseRepository<Role>>();
         services.AddScoped<IBaseRepository<UserRole>, BaseRepository<UserRole>>();
-        services.AddScoped<IBaseRepository<Badge>, BaseRepository<Badge>>();
-        services.AddScoped<IBaseRepository<UserBadge>, BaseRepository<UserBadge>>();
         services.AddScoped<IBaseRepository<UserToken>, BaseRepository<UserToken>>();
     }
 }
