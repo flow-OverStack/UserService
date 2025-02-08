@@ -68,7 +68,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_Success()
+    public async Task UpdateRole_ShouldBe_Exception()
     {
         //Arrange
         var dto = new RoleDto(3, "UpdatedTestRole");
@@ -87,7 +87,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_Success()
+    public async Task AddRoleForUser_ShouldBe_Exception()
     {
         //Arrange
         const string username = "TestUser1";
@@ -110,7 +110,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_Success()
+    public async Task DeleteRoleForUser_ShouldBe_Exception()
     {
         //Arrange
         const string username = "TestUser2";
@@ -132,7 +132,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_Success()
+    public async Task UpdateRoleForUser_ShouldBe_Exception()
     {
         //Arrange
         const string username = "TestUser2";
