@@ -36,11 +36,11 @@ public static class Startup
             var keycloakSettings =
                 services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
 
-            options.Audience = keycloakSettings.Audience;
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
             options.TokenValidationParameters = new TokenValidationParameters
             {
+                ValidAudiences = [keycloakSettings.Audience, keycloakSettings.ServiceAudience],
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
@@ -69,13 +69,13 @@ public static class Startup
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Diary.Api",
-                Description = "Diary api v1",
+                Title = "UserService.Api",
+                Description = "UserService api v1",
                 //maybe add in future
                 //TermsOfService = termsOfServiceUrl,
                 Contact = new OpenApiContact
                 {
-                    Name = "Diary api contact"
+                    Name = "UserService api contact"
                     //maybe add in future
                     //Url = termsOfServiceUrl
                 }
