@@ -132,6 +132,15 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roles not found.
+        /// </summary>
+        public static string RolesNotFound {
+            get {
+                return ResourceManager.GetString("RolesNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Role to be updated is not found.
         /// </summary>
         public static string RoleToBeUpdatedIsNotFound {
@@ -173,6 +182,15 @@ namespace UserService.Domain.Resources {
         public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Users not found.
+        /// </summary>
+        public static string UsersNotFound {
+            get {
+                return ResourceManager.GetString("UsersNotFound", resourceCulture);
             }
         }
     }

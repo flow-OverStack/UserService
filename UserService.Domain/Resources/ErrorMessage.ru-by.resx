@@ -28,7 +28,7 @@
         <value>Неверный пароль</value>
     </data>
     <data name="InvalidToken" xml:space="preserve">
-        <value>Невалидныйй токен</value>
+        <value>Невалидный токен</value>
     </data>
     <data name="InvalidClientRequest" xml:space="preserve">
         <value>Невалидный запрос клиента</value>
@@ -53,5 +53,11 @@
     </data>
     <data name="EmailNotValid" xml:space="preserve">
         <value>Невалидный email</value>
+    </data>
+    <data name="UsersNotFound" xml:space="preserve">
+        <value>Пользователи не найдены</value>
+    </data>
+    <data name="RolesNotFound" xml:space="preserve">
+        <value>Роли не найдены</value>
     </data>
 </root>

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Asp.Versioning;
+using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -8,6 +9,8 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using UserService.DAL;
 using UserService.Domain.Settings;
+using UserService.GraphQl;
+using UserService.GraphQl.Types;
 using Path = System.IO.Path;
 
 namespace UserService.Api;
@@ -18,6 +21,8 @@ namespace UserService.Api;
 public static class Startup
 {
     private const string AppStartupSectionName = "AppStartupSettings";
+    private const string GraphQlEndpoint = "/graphql";
+    private const string GraphQlVoyagerEndpoint = "/graphql-voyager";
 
     /// <summary>
     ///     Sets up authentication and authorization
@@ -142,5 +147,31 @@ public static class Startup
     {
         var dbContext = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.MigrateAsync();
+    }
+
+    /// <summary>
+    ///     Adds GraphQl services
+    /// </summary>
+    /// <param name="services"></param>
+    public static void AddGraphQl(this IServiceCollection services)
+    {
+        services.AddGraphQLServer()
+            .AddQueryType<Queries>()
+            .AddType<UserType>()
+            .AddType<RoleType>()
+            .AddSorting()
+            .AddFiltering();
+    }
+
+    /// <summary>
+    ///     Enables the use of GraphQl services
+    /// </summary>
+    /// <param name="app"></param>
+    public static void UseGraphQl(this WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
+            app.UseGraphQLVoyager(GraphQlVoyagerEndpoint, new VoyagerOptions { GraphQLEndPoint = GraphQlEndpoint });
+
+        app.MapGraphQL();
     }
 }

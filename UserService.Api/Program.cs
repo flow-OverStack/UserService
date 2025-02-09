@@ -17,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddIdentityServer();
 builder.Services.AddSwagger();
+builder.Services.AddGraphQl();
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -38,6 +39,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.MapControllers();
+app.UseGraphQl();
 
 app.UseAuthentication();
 app.UseAuthorization();

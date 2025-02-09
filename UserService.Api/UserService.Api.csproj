@@ -11,6 +11,8 @@
 
     <ItemGroup>
         <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0"/>
+        <PackageReference Include="GraphQL.Server.Ui.Voyager" Version="8.2.0"/>
+        <PackageReference Include="HotChocolate.AspNetCore" Version="15.0.3"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
@@ -31,6 +33,7 @@
     <ItemGroup>
         <ProjectReference Include="..\UserService.Application\UserService.Application.csproj"/>
         <ProjectReference Include="..\UserService.DAL\UserService.DAL.csproj"/>
+        <ProjectReference Include="..\UserService.GraphQl\UserService.GraphQl.csproj"/>
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
     </ItemGroup>
 
