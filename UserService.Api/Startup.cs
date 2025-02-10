@@ -2,11 +2,13 @@ using System.Reflection;
 using Asp.Versioning;
 using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using UserService.Api.Authorization;
 using UserService.DAL;
 using UserService.Domain.Settings;
 using UserService.GraphQl;
@@ -30,7 +32,6 @@ public static class Startup
     /// <param name="services"></param>
     public static void AddAuthenticationAndAuthorization(this IServiceCollection services)
     {
-        services.AddAuthorization();
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -43,15 +44,29 @@ public static class Startup
 
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
+            options.Audience = keycloakSettings.Audience; //Default audience
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidAudiences = [keycloakSettings.Audience, keycloakSettings.ServiceAudience],
+                ValidAudiences =
+                    [keycloakSettings.Audience, keycloakSettings.ServiceAudience], //Additional valid service audience
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true
             };
         });
+
+        services.AddAuthorization(options =>
+        {
+            var keycloakSettings =
+                services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
+            var serviceAudience = keycloakSettings.ServiceAudience;
+
+            options.AddPolicy("ServiceApiOnly",
+                builder => builder.Requirements.Add(new AudienceRequirement(serviceAudience)));
+        });
+
+        services.AddSingleton<IAuthorizationHandler, AudienceAuthorizationHandler>();
     }
 
     /// <summary>
@@ -159,6 +174,7 @@ public static class Startup
             .AddQueryType<Queries>()
             .AddType<UserType>()
             .AddType<RoleType>()
+            .AddAuthorization()
             .AddSorting()
             .AddFiltering();
     }
