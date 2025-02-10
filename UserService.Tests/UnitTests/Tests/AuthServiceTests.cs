@@ -62,6 +62,25 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task RegisterUser_ShouldBe_RoleNotFound()
+    {
+        //Arrange
+        var reportService =
+            new AuthServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRoleRepository().Object)
+                .GetService();
+
+        //Act
+        var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
+            TestConstants.TestPassword + "4"));
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task RegisterUser_ShouldBe_Exception()
     {
         //Arrange
