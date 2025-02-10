@@ -116,10 +116,84 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
+    public static Mock<IBaseRepository<User>> GetEmptyMockUserRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<User>>();
+        var users = Array.Empty<User>().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(users.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).ReturnsAsync((User user) => user);
+        mockRepository.Setup(x => x.Update(It.IsAny<User>())).Returns((User user) => user);
+        mockRepository.Setup(x => x.Remove(It.IsAny<User>())).Returns((User user) => user);
+
+        return mockRepository;
+    }
+
     public static Mock<IBaseRepository<Role>> GetMockRoleRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Role>>();
         var roles = GetRoles().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
+        mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
+        mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
+
+        return mockRepository;
+    }
+
+    public static Mock<IBaseRepository<Role>> GetEmptyMockRoleRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<Role>>();
+        var roles = Array.Empty<Role>().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
+        mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
+        mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
+
+        return mockRepository;
+    }
+
+    /// <summary>
+    ///     Get role repository with roles, that have list of users
+    ///     IMPORTANT: THIS METHOD IS FOR UNIT TESTS ONLY.
+    ///     WRONG RELATION BETWEEN USERS AND ROLES.
+    /// </summary>
+    /// <returns></returns>
+    public static Mock<IBaseRepository<Role>> GetMockRoleWithUsersRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<Role>>();
+        var rolesList = GetRoles().ToList();
+        //IMPORTANT: FOR UNIT TESTS ONLY
+        //IMPORTANT: WRONG RELATION BETWEEN USERS AND ROLES
+        rolesList.ForEach(x => x.Users = GetUsers().ToList());
+
+        var roles = rolesList.BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
+        mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
+        mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
+
+        return mockRepository;
+    }
+
+    /// <summary>
+    ///     Get role repository with roles, that have empty list of users
+    ///     IMPORTANT: THIS METHOD IS FOR UNIT TESTS ONLY.
+    ///     WRONG RELATION BETWEEN USERS AND ROLES.
+    /// </summary>
+    /// <returns></returns>
+    public static Mock<IBaseRepository<Role>> GetMockRoleWithEmptyUsersRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<Role>>();
+        var rolesList = GetRoles().ToList();
+        //IMPORTANT: FOR UNIT TESTS ONLY
+        //IMPORTANT: WRONG RELATION BETWEEN USERS AND ROLES
+        rolesList.ForEach(x => x.Users = []);
+
+        var roles = rolesList.BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
         mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
@@ -194,6 +268,17 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 0,
                 Roles = [GetRoleModer()]
+            },
+            new() //user without roles
+            {
+                Id = 5, //id is not 4 because 4 is used to create a new user
+                KeycloakId = Guid.NewGuid(),
+                Username = "testuser5",
+                Email = "TestUser5@test.com",
+                LastLoginAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                Reputation = 0,
+                Roles = []
             }
         }.AsQueryable();
     }
