@@ -25,13 +25,14 @@ public class TokenServiceTests
         //Arrange
         var accessToken = TokenExtensions.GetRsaToken("testuser1");
         var tokenService = new TokenServiceFactory().GetService();
-
-        //Act
-        var result = await tokenService.RefreshToken(new RefreshTokenDto
+        var dto = new RefreshTokenDto
         {
             AccessToken = accessToken,
             RefreshToken = "TestRefreshToken1"
-        });
+        };
+
+        //Act
+        var result = await tokenService.RefreshToken(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -45,13 +46,14 @@ public class TokenServiceTests
         //Arrange
         var accessToken = TokenExtensions.GetHmacToken("testuser1");
         var tokenService = new TokenServiceFactory().GetService();
-
-        //Act
-        var result = await tokenService.RefreshToken(new RefreshTokenDto
+        var dto = new RefreshTokenDto
         {
             AccessToken = accessToken,
             RefreshToken = "TestRefreshToken1"
-        });
+        };
+
+        //Act
+        var result = await tokenService.RefreshToken(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -67,13 +69,14 @@ public class TokenServiceTests
     {
         //Arrange
         var tokenService = new TokenServiceFactory().GetService();
-
-        //Act
-        var result = await tokenService.RefreshToken(new RefreshTokenDto
+        var dto = new RefreshTokenDto
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken
-        });
+        };
+
+        //Act
+        var result = await tokenService.RefreshToken(dto);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.InvalidClientRequest, result.ErrorMessage);

@@ -34,7 +34,6 @@ public class GraphQlServiceTests
         //Act
         var result = await graphQlService.GetAllUsersAsync();
 
-
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.UsersNotFound, result.ErrorMessage);
@@ -69,7 +68,6 @@ public class GraphQlServiceTests
 
         //Act
         var result = await graphQlService.GetAllRolesAsync();
-
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -107,7 +105,6 @@ public class GraphQlServiceTests
         //Act
         var result = await graphQlService.GetUserRoles(wrongUserId);
 
-
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
@@ -127,7 +124,6 @@ public class GraphQlServiceTests
 
         //Act
         var result = await graphQlService.GetUserRoles(userId);
-
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -168,7 +164,6 @@ public class GraphQlServiceTests
         //Act
         var result = await graphQlService.GetUsersWithRole(roleId);
 
-
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
@@ -189,7 +184,6 @@ public class GraphQlServiceTests
 
         //Act
         var result = await graphQlService.GetUsersWithRole(roleId);
-
 
         //Assert
         Assert.False(result.IsSuccess);

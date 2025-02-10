@@ -15,10 +15,11 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
+            TestConstants.TestPassword + "4");
 
         //Act
-        var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4"));
+        var result = await reportService.Register(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -31,11 +32,12 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new RegisterUserDto("TestUser4", "NotEmail",
+            TestConstants.TestPassword + "4");
 
         //Act
         var result =
-            await reportService.Register(new RegisterUserDto("TestUser4", "NotEmail",
-                TestConstants.TestPassword + "4"));
+            await reportService.Register(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -49,10 +51,11 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new RegisterUserDto("TestUser1", "TestsUser1@test.com",
+            TestConstants.TestPassword + "1");
 
         //Act
-        var result = await reportService.Register(new RegisterUserDto("TestUser1", "TestsUser1@test.com",
-            TestConstants.TestPassword + "1"));
+        var result = await reportService.Register(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -68,10 +71,11 @@ public class AuthServiceTests
         var reportService =
             new AuthServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRoleRepository().Object)
                 .GetService();
+        var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
+            TestConstants.TestPassword + "4");
 
         //Act
-        var result = await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4"));
+        var result = await reportService.Register(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -86,10 +90,11 @@ public class AuthServiceTests
         //Arrange
         var reportService =
             new AuthServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+        var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
+            TestConstants.TestPassword + "4");
 
         //Act
-        var action = async () => await reportService.Register(new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4"));
+        var action = async () => await reportService.Register(dto);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
@@ -101,11 +106,12 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new LoginUsernameUserDto("TestUser3",
+            TestConstants.TestPassword + "3");
 
         //Act
         var result =
-            await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser3",
-                TestConstants.TestPassword + "3"));
+            await reportService.LoginWithUsername(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -118,11 +124,12 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new LoginEmailUserDto("TestUser1@test.com",
+            TestConstants.TestPassword + "1");
 
         //Act
         var result =
-            await reportService.LoginWithEmail(new LoginEmailUserDto("TestUser1@test.com",
-                TestConstants.TestPassword + "1"));
+            await reportService.LoginWithEmail(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -135,10 +142,11 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new LoginEmailUserDto("NotEmail", TestConstants.TestPassword + "1");
 
         //Act
         var result =
-            await reportService.LoginWithEmail(new LoginEmailUserDto("NotEmail", TestConstants.TestPassword + "1"));
+            await reportService.LoginWithEmail(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -152,11 +160,12 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new LoginUsernameUserDto("NotExistingUser",
+            TestConstants.TestPassword + "1");
 
         //Act
         var result =
-            await reportService.LoginWithUsername(new LoginUsernameUserDto("NotExistingUser",
-                TestConstants.TestPassword + "1"));
+            await reportService.LoginWithUsername(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -170,10 +179,11 @@ public class AuthServiceTests
     {
         //Arrange
         var reportService = new AuthServiceFactory().GetService();
+        var dto = new LoginUsernameUserDto("TestUser1", TestConstants.WrongPassword);
 
         //Act
         var result =
-            await reportService.LoginWithUsername(new LoginUsernameUserDto("TestUser1", TestConstants.WrongPassword));
+            await reportService.LoginWithUsername(dto);
 
         //Assert
         Assert.False(result.IsSuccess);

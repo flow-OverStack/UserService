@@ -15,9 +15,10 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+        var dto = new CreateRoleDto("NewTestRole");
 
         //Act
-        var result = await roleService.CreateRoleAsync(new CreateRoleDto("NewTestRole"));
+        var result = await roleService.CreateRoleAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -30,9 +31,10 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+        var dto = new CreateRoleDto("User");
 
         //Act
-        var result = await roleService.CreateRoleAsync(new CreateRoleDto("User"));
+        var result = await roleService.CreateRoleAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -46,9 +48,10 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+        const long roleId = 3;
 
         //Act
-        var result = await roleService.DeleteRoleAsync(3);
+        var result = await roleService.DeleteRoleAsync(roleId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -61,9 +64,10 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+        const long wrongRoleId = 0;
 
         //Act
-        var result = await roleService.DeleteRoleAsync(0);
+        var result = await roleService.DeleteRoleAsync(wrongRoleId);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -78,9 +82,10 @@ public class RoleServiceTests
         //Arrange
         var roleService =
             new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+        const long roleId = 3;
 
         //Act
-        var action = async () => await roleService.DeleteRoleAsync(3);
+        var action = async () => await roleService.DeleteRoleAsync(roleId);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
@@ -92,9 +97,10 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+        var dto = new RoleDto(3, "UpdatedTestRole");
 
         //Act
-        var result = await roleService.UpdateRoleAsync(new RoleDto(3, "UpdatedTestRole"));
+        var result = await roleService.UpdateRoleAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -107,9 +113,10 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
+        var dto = new RoleDto(0, "UpdatedTestRole");
 
         //Act
-        var result = await roleService.UpdateRoleAsync(new RoleDto(0, "UpdatedTestRole"));
+        var result = await roleService.UpdateRoleAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -124,9 +131,10 @@ public class RoleServiceTests
         //Arrange
         var roleService =
             new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
+        var dto = new RoleDto(3, "UpdatedTestRole");
 
         //Act
-        var action = async () => await roleService.UpdateRoleAsync(new RoleDto(3, "UpdatedTestRole"));
+        var action = async () => await roleService.UpdateRoleAsync(dto);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
@@ -138,13 +146,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.AddRoleForUserAsync(new UserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser1",
             RoleId = 3
-        });
+        };
+
+        //Act
+        var result = await roleService.AddRoleForUserAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -157,13 +166,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.AddRoleForUserAsync(new UserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "NotExistingUser",
             RoleId = 3
-        });
+        };
+
+        //Act
+        var result = await roleService.AddRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -177,13 +187,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.AddRoleForUserAsync(new UserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser1",
             RoleId = 1
-        });
+        };
+
+        //Act
+        var result = await roleService.AddRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -197,13 +208,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.AddRoleForUserAsync(new UserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser1",
             RoleId = 0
-        });
+        };
+
+        //Act
+        var result = await roleService.AddRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -218,13 +230,14 @@ public class RoleServiceTests
         //Arrange
         var roleService =
             new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
-
-        //Act
-        var action = async () => await roleService.AddRoleForUserAsync(new UserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser1",
             RoleId = 3
-        });
+        };
+
+        //Act
+        var action = async () => await roleService.AddRoleForUserAsync(dto);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
@@ -236,13 +249,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
+        var dto = new DeleteUserRoleDto
         {
             Username = "TestUser2",
             RoleId = 3
-        });
+        };
+
+        //Act
+        var result = await roleService.DeleteRoleForUserAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -255,13 +269,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
+        var dto = new DeleteUserRoleDto
         {
             Username = "NotExistingUser",
             RoleId = 3
-        });
+        };
+
+        //Act
+        var result = await roleService.DeleteRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -275,13 +290,14 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
+        var dto = new DeleteUserRoleDto
         {
             Username = "TestUser2",
             RoleId = 0
-        });
+        };
+
+        //Act
+        var result = await roleService.DeleteRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -296,13 +312,14 @@ public class RoleServiceTests
         //Arrange
         var roleService =
             new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
-
-        //Act
-        var action = async () => await roleService.DeleteRoleForUserAsync(new DeleteUserRoleDto
+        var dto = new DeleteUserRoleDto
         {
             Username = "TestUser2",
             RoleId = 3
-        });
+        };
+
+        //Act
+        var action = async () => await roleService.DeleteRoleForUserAsync(dto);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
@@ -334,14 +351,15 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        var dto = new UpdateUserRoleDto
         {
             Username = "NotExistingUser",
             FromRoleId = 3,
             ToRoleId = 2
-        });
+        };
+
+        //Act
+        var result = await roleService.UpdateRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -355,14 +373,15 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",
             FromRoleId = 0,
             ToRoleId = 2
-        });
+        };
+
+        //Act
+        var result = await roleService.UpdateRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -376,14 +395,15 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        var dto = new UpdateUserRoleDto
         {
             Username = "TestUser1",
             FromRoleId = 2,
             ToRoleId = 1
-        });
+        };
+
+        //Act
+        var result = await roleService.UpdateRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -397,14 +417,15 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-
-        //Act
-        var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",
             FromRoleId = 3,
             ToRoleId = 0
-        });
+        };
+
+        //Act
+        var result = await roleService.UpdateRoleForUserAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -419,14 +440,15 @@ public class RoleServiceTests
         //Arrange
         var roleService =
             new RoleServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
-
-        //Act
-        var action = async () => await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
+        var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",
             FromRoleId = 3,
             ToRoleId = 2
-        });
+        };
+
+        //Act
+        var action = async () => await roleService.UpdateRoleForUserAsync(dto);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);

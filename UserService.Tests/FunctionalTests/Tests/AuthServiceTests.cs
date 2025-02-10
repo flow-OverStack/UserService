@@ -20,6 +20,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
         //Arrange
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
             TestConstants.TestPassword + "4");
+
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -37,6 +38,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser1", "NotEmail", TestConstants.TestPassword);
+
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -56,6 +58,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
         //Arrange
         var dto = new LoginUsernameUserDto("TestUser3",
             TestConstants.TestPassword + "3");
+
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -74,6 +77,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
         //Arrange
         var dto = new LoginEmailUserDto("TestUser1@test.com",
             TestConstants.TestPassword + "1");
+
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-email", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -91,6 +95,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
     {
         //Arrange
         var dto = new LoginEmailUserDto("NotEmail", TestConstants.TestPassword + "1");
+
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-email", dto);
         var body = await response.Content.ReadAsStringAsync();
@@ -110,6 +115,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
         //Arrange
         var dto = new LoginUsernameUserDto("TestUser1",
             TestConstants.WrongPassword);
+
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
         var body = await response.Content.ReadAsStringAsync();
