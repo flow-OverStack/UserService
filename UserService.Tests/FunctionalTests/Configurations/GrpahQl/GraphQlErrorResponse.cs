@@ -13,4 +13,5 @@ internal class GraphQlError
 internal class GraphQlErrorExtensions
 {
     public string Code { get; set; }
+    public string Message { get; set; }
 }
