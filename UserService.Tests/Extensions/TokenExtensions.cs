@@ -10,6 +10,7 @@ namespace UserService.Tests.Extensions;
 internal static class TokenExtensions
 {
     private const string Audience = "TestAudience";
+    private const string ServiceAudience = "TestServiceAudience";
     private const string Issuer = "TestIssuer";
     private const string Kid = "test-key-id";
 
@@ -66,9 +67,32 @@ internal static class TokenExtensions
         return Audience;
     }
 
+    public static string GetServiceAudience()
+    {
+        return ServiceAudience;
+    }
+
     public static string GetIssuer()
     {
         return Issuer;
+    }
+
+    public static string GetServiceRsaToken(string username)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]),
+            //expired is not listed because it is not validated
+            SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
+            Audience = ServiceAudience,
+            Issuer = Issuer
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
+
+        return tokenString;
     }
 
     public static string GetRsaToken(string username)

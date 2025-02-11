@@ -74,6 +74,7 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
                 x.Realm = WireMockIdentityServerExtensions.RealmName;
                 x.AdminToken = "TestAdminToken";
                 x.Audience = TokenExtensions.GetAudience();
+                x.ServiceAudience = TokenExtensions.GetServiceAudience();
                 x.ClientId = "TestClientId";
                 x.RolesAttributeName = "roles";
                 x.UserIdAttributeName = "userId";

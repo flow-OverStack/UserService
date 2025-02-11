@@ -42,7 +42,7 @@ internal static class IdentityServerConfiguration
             ValidateIssuer = true,
             ValidIssuer = TokenExtensions.GetIssuer(),
             ValidateAudience = true,
-            ValidAudience = TokenExtensions.GetAudience(),
+            ValidAudiences = [TokenExtensions.GetAudience(), TokenExtensions.GetServiceAudience()],
             ValidateLifetime = false
         });
         mockIdentityServer.Setup(x => x.UpdateRolesAsync(It.IsAny<KeycloakUpdateRolesDto>()));
