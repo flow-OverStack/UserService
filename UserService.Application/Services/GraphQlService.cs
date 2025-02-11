@@ -45,9 +45,6 @@ public class GraphQlService(IBaseRepository<User> userRepository, IBaseRepositor
         var roles = user.Roles.ToArray();
         var count = roles.Length;
 
-        if (count == 0)
-            return CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
-
         return CollectionResult<Role>.Success(roles, count);
     }
 
@@ -62,9 +59,6 @@ public class GraphQlService(IBaseRepository<User> userRepository, IBaseRepositor
 
         var users = role.Users.ToArray();
         var count = users.Length;
-
-        if (count == 0)
-            return CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound);
 
         return CollectionResult<User>.Success(users, count);
     }

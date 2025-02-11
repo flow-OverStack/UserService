@@ -114,26 +114,6 @@ public class GraphQlServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUserRoles_ShouldBe_RolesNotFound()
-    {
-        //Arrange
-        var graphQlService =
-            new GraphQlServiceFactory()
-                .GetService();
-        const long userId = 5;
-
-        //Act
-        var result = await graphQlService.GetUserRoles(userId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.RolesNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
     public async Task GetUserWithRole_ShouldBe_Success()
     {
         //Arrange
@@ -167,27 +147,6 @@ public class GraphQlServiceTests
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetUserWithRoles_ShouldBe_UsersNotFound()
-    {
-        //Arrange
-        var graphQlService =
-            new GraphQlServiceFactory(roleRepository: MockRepositoriesGetters.GetMockRoleWithEmptyUsersRepository()
-                    .Object)
-                .GetService();
-        const long roleId = 1;
-
-        //Act
-        var result = await graphQlService.GetUsersWithRole(roleId);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UsersNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
         Assert.Equal(0, result.Count);
     }
