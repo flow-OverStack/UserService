@@ -1,6 +1,6 @@
 namespace UserService.Tests.FunctionalTests.Configurations.Keycloak;
 
-public class KeycloakUser
+internal class KeycloakUser
 {
     public Guid Id { get; set; }
     public string Username { get; set; }
