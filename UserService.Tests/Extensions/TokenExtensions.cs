@@ -77,12 +77,12 @@ internal static class TokenExtensions
         return Issuer;
     }
 
-    public static string GetServiceRsaToken(string username)
+    public static string GetServiceRsaToken(string serviceName)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]),
+            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, serviceName)]),
             //expired is not listed because it is not validated
             SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
             Audience = ServiceAudience,

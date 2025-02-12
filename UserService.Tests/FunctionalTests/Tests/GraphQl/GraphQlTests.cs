@@ -8,7 +8,7 @@ using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests.Tests;
+namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
 public class GraphQlTests : BaseFunctionalTest
 {
@@ -17,9 +17,8 @@ public class GraphQlTests : BaseFunctionalTest
 
     public GraphQlTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
-        const string username = "testservice1";
-        var serviceToken = TokenExtensions.GetServiceRsaToken(username);
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serviceToken);
+        const string serviceName = "testservice1";
+        HttpClient.SetGraphQlAuthHeaders(serviceName);
     }
 
     [Trait("Category", "Functional")]

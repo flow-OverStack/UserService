@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
 using UserService.Domain.Resources;
@@ -10,15 +9,14 @@ using UserService.Tests.FunctionalTests.Base.GraphQl;
 using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests.Tests;
+namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
 public class GraphQlExceptionalTests : GraphQlExceptionBaseFunctionalTest
 {
     public GraphQlExceptionalTests(GraphQlExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {
-        const string username = "testservice1";
-        var serviceToken = TokenExtensions.GetServiceRsaToken(username);
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", serviceToken);
+        const string serviceName = "testservice1";
+        HttpClient.SetGraphQlAuthHeaders(serviceName);
     }
 
     [Trait("Category", "Functional")]
