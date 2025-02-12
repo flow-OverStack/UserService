@@ -12,6 +12,7 @@ using UserService.Api.Authorization;
 using UserService.DAL;
 using UserService.Domain.Settings;
 using UserService.GraphQl;
+using UserService.GraphQl.ErrorFilters;
 using UserService.GraphQl.Types;
 using Path = System.IO.Path;
 
@@ -176,7 +177,8 @@ public static class Startup
             .AddType<RoleType>()
             .AddAuthorization()
             .AddSorting()
-            .AddFiltering();
+            .AddFiltering()
+            .AddErrorFilter<PublicErrorFilter>();
     }
 
     /// <summary>

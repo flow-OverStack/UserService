@@ -1,8 +1,9 @@
 using HotChocolate;
 using HotChocolate.Authorization;
 using UserService.Domain.Entity;
-using UserService.Domain.Exceptions;
+using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Result;
 
 namespace UserService.GraphQl;
 
@@ -14,18 +15,20 @@ public class Queries
     [UseSorting]
     public async Task<IEnumerable<User>> GetUsers([Service] IGraphQlService graphQlService)
     {
+        CollectionResult<User> result;
         try
         {
-            var result = await graphQlService.GetAllUsersAsync();
-            if (!result.IsSuccess)
-                throw new GraphQlException(result.ErrorMessage!);
-
-            return result.Data;
+            result = await graphQlService.GetAllUsersAsync();
         }
         catch (Exception e)
         {
-            throw GraphQlException.Internal(e);
+            throw GraphQlExceptionHelper.GetInternal(e);
         }
+
+        if (!result.IsSuccess)
+            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+
+        return result.Data;
     }
 
     [Authorize(Policy = "ServiceApiOnly")]
@@ -34,17 +37,19 @@ public class Queries
     [UseSorting]
     public async Task<IEnumerable<Role>> GetRoles([Service] IGraphQlService graphQlService)
     {
+        CollectionResult<Role> result;
         try
         {
-            var result = await graphQlService.GetAllRolesAsync();
-            if (!result.IsSuccess)
-                throw new GraphQlException(result.ErrorMessage!);
-
-            return result.Data;
+            result = await graphQlService.GetAllRolesAsync();
         }
         catch (Exception e)
         {
-            throw GraphQlException.Internal(e);
+            throw GraphQlExceptionHelper.GetInternal(e);
         }
+
+        if (!result.IsSuccess)
+            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+
+        return result.Data;
     }
 }

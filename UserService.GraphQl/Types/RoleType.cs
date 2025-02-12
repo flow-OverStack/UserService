@@ -1,8 +1,9 @@
 using HotChocolate;
 using HotChocolate.Types;
 using UserService.Domain.Entity;
-using UserService.Domain.Exceptions;
+using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Result;
 
 namespace UserService.GraphQl.Types;
 
@@ -23,19 +24,20 @@ public class RoleType : ObjectType<Role>
     {
         public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, [Service] IGraphQlService graphQlService)
         {
+            CollectionResult<User> result;
             try
             {
-                var result = await graphQlService.GetUsersWithRole(role.Id);
-
-                if (!result.IsSuccess)
-                    throw new GraphQlException(result.ErrorMessage!);
-
-                return result.Data;
+                result = await graphQlService.GetUsersWithRole(role.Id);
             }
             catch (Exception e)
             {
-                throw GraphQlException.Internal(e);
+                throw GraphQlExceptionHelper.GetInternal(e);
             }
+
+            if (!result.IsSuccess)
+                throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+
+            return result.Data;
         }
     }
 }

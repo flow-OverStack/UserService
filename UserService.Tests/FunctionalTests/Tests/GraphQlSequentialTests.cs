@@ -63,10 +63,9 @@ public class GraphQlSequentialTests : SequentialFunctionalTest
         var response = await HttpClient.PostAsJsonAsync(GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
-        var areUsersNotFound = result!.Errors.Exists(x =>
-            x.Extensions.Message == $"{ErrorMessage.InternalServerError}: {ErrorMessage.UsersNotFound}");
-        var areRolesNotFound = result.Errors.Exists(x =>
-            x.Extensions.Message == $"{ErrorMessage.InternalServerError}: {ErrorMessage.RolesNotFound}");
+
+        var areUsersNotFound = result!.Errors.Exists(x => x.Message == ErrorMessage.UsersNotFound);
+        var areRolesNotFound = result.Errors.Exists(x => x.Message == ErrorMessage.RolesNotFound);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
