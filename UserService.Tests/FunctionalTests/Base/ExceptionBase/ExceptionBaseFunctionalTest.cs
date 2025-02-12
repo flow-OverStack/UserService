@@ -4,7 +4,7 @@ namespace UserService.Tests.FunctionalTests.Base.ExceptionBase;
 
 public class ExceptionBaseFunctionalTest : IClassFixture<ExceptionFunctionalTestWebAppFactory>
 {
-    protected ExceptionBaseFunctionalTest(FunctionalTestWebAppFactory factory)
+    protected ExceptionBaseFunctionalTest(ExceptionFunctionalTestWebAppFactory factory)
     {
         HttpClient = factory.CreateClient();
     }
