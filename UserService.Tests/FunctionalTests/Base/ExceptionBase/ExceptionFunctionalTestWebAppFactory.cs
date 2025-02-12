@@ -45,6 +45,8 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
             services.RemoveAll<IUnitOfWork>();
             services.AddScoped<IUnitOfWork>(provider =>
             {
+                //the dependencies from service provider only apply for this current scope
+                //that is why we have to use ActivatorUtilities to transfer dependencies from this scope to callers' scope
                 var unitOfWork = ActivatorUtilities.CreateInstance<UnitOfWork>(provider);
                 var exceptionUnitOfWork = GetExceptionUnitOfWork(unitOfWork).GetAwaiter().GetResult();
 
