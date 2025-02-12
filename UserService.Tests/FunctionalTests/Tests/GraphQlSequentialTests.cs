@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using UserService.DAL;
 using UserService.Domain.Entity;
 using UserService.Domain.Resources;
+using UserService.Tests.Constants;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
@@ -16,34 +17,6 @@ namespace UserService.Tests.FunctionalTests.Tests;
 
 public class GraphQlSequentialTests : SequentialFunctionalTest
 {
-    private const string RequestAllQuery = """
-                                           {
-                                             users{
-                                               id
-                                               keycloakId
-                                               username
-                                               email
-                                               lastLoginAt
-                                               reputation
-                                               createdAt
-                                               roles{
-                                                 id
-                                                 name
-                                               }
-                                             }
-                                             roles{
-                                               id
-                                               name
-                                               users{
-                                                 id
-                                                 username
-                                               }
-                                             }
-                                           }
-                                           """;
-
-    private const string GraphQlEndpoint = "/graphql";
-
     public GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
         const string username = "testservice1";
@@ -57,10 +30,10 @@ public class GraphQlSequentialTests : SequentialFunctionalTest
     {
         //Arrange
         DeleteUsersAndRoles();
-        var requestBody = new { query = RequestAllQuery };
+        var requestBody = new { query = GraphQlConstants.RequestAllQuery };
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlEndpoint, requestBody);
+        var response = await HttpClient.PostAsJsonAsync(GraphQlConstants.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
 
