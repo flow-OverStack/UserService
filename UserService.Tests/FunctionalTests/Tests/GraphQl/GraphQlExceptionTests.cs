@@ -11,9 +11,9 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GraphQlExceptionalTests : GraphQlExceptionBaseFunctionalTest
+public class GraphQlExceptionTests : GraphQlExceptionBaseFunctionalTest
 {
-    public GraphQlExceptionalTests(GraphQlExceptionFunctionalTestWebAppFactory factory) : base(factory)
+    public GraphQlExceptionTests(GraphQlExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {
         const string serviceName = "testservice1";
         HttpClient.SetGraphQlAuthHeaders(serviceName);
