@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL;
 using UserService.Domain.Entity;
 using UserService.Tests.Configurations;
-using UserService.Tests.Extensions;
+using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 
 namespace UserService.Tests.FunctionalTests.Configurations;

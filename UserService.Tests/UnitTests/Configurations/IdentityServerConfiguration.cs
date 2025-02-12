@@ -5,6 +5,7 @@ using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Interfaces.Services;
+using UserService.Tests.Constants;
 using UserService.Tests.Extensions;
 
 namespace UserService.Tests.UnitTests.Configurations;

@@ -10,6 +10,7 @@ using UserService.Domain.Dto.UserRole;
 using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
+using UserService.Tests.Constants;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Base.ExceptionBase;
 using Xunit;

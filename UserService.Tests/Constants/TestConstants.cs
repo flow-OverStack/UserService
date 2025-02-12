@@ -1,4 +1,4 @@
-namespace UserService.Tests.Extensions;
+namespace UserService.Tests.Constants;
 
 internal static class TestConstants
 {
