@@ -6,7 +6,7 @@ namespace UserService.Tests.FunctionalTests.Base;
 
 public class SequentialFunctionalTest : BaseFunctionalTest, IAsyncLifetime
 {
-    public readonly IServiceProvider ServicesProvider;
+    protected readonly IServiceProvider ServicesProvider;
 
     protected SequentialFunctionalTest(FunctionalTestWebAppFactory factory) : base(factory)
     {
