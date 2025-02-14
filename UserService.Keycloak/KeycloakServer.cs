@@ -20,7 +20,8 @@ using UserService.Keycloak.HttpModels;
 
 namespace UserService.Keycloak;
 
-public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIdentityServer
+public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpClientFactory httpClientFactory)
+    : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
     private const string WrongPasswordErrorMessage = "invalid_grant";
@@ -30,7 +31,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings) : IIden
     private const int TokenExpirationThresholdInSeconds = 5;
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
-    private readonly HttpClient _httpClient = new();
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceToken? Token { get; set; }
 

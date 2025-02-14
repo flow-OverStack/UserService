@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
+using UserService.Tests.FunctionalTests.Configurations.Keycloak.HttpModels;
 using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;

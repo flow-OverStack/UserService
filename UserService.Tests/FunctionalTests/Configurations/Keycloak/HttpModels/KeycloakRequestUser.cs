@@ -1,6 +1,6 @@
 using UserService.Domain.Keycloak;
 
-namespace UserService.Tests.FunctionalTests.Configurations.Keycloak;
+namespace UserService.Tests.FunctionalTests.Configurations.Keycloak.HttpModels;
 
 internal class KeycloakRequestUser
 {

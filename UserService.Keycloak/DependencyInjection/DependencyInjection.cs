@@ -7,6 +7,7 @@ public static class DependencyInjection
 {
     public static void AddIdentityServer(this IServiceCollection services)
     {
+        services.AddHttpClient();
         InitServices(services);
     }
 
