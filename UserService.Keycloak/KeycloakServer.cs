@@ -31,7 +31,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     private const int TokenExpirationThresholdInSeconds = 5;
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient();
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("KeycloakHttpClient");
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceToken? Token { get; set; }
 
