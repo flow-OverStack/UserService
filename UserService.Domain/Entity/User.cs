@@ -4,6 +4,8 @@ namespace UserService.Domain.Entity;
 
 public class User : IEntityId<long>, IAuditable
 {
+    public const int MaxDailyReputation = 200;
+
     public Guid KeycloakId { get; set; }
     public string Username { get; set; }
     public string Email { get; set; }
@@ -12,11 +14,13 @@ public class User : IEntityId<long>, IAuditable
     public UserToken UserToken { get; set; }
     public int Reputation { get; set; }
 
+    public int ReputationEarnedToday { get; set; }
+
     public List<Role> Roles { get; set; }
 
     public DateTime CreatedAt { get; set; }
     public long Id { get; set; }
 
-    //Questions, Answers and UserTags are not implemented here
+    //Questions, Badges, Answers and UserTags are not implemented here
     //They will be implemented via GraphQl via corresponding microservices
 }

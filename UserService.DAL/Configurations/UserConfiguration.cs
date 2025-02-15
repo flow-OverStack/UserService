@@ -13,6 +13,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Username).IsRequired().HasMaxLength(100);
         builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
         builder.Property(x => x.Reputation).IsRequired().HasDefaultValue(0);
+        builder.Property(x => x.ReputationEarnedToday).IsRequired().HasDefaultValue(0);
 
         //Email constraint
         builder.ToTable(t =>
@@ -23,6 +24,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.ToTable(t => t.HasCheckConstraint("CK_User_Reputation", """
                                                                         "Reputation" >= 0
                                                                         """));
+
+        //Reputation constraint
+        builder.ToTable(t => t.HasCheckConstraint("CK_User_ReputationEarnedToday", $"""
+             "Reputation" >= 0 AND "Reputation" <= {User.MaxDailyReputation}
+             """));
+
         //Username constraint
         builder.ToTable(t => t.HasCheckConstraint("CK_User_Username_LowerCase", """
             "Username" = LOWER("Username")
