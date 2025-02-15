@@ -6,12 +6,12 @@ using UserService.Tests.UnitTests.Configurations;
 
 namespace UserService.Tests.UnitTests.ServiceFactories;
 
-public class IdentityServerFactory
+public class ExceptionIdentityServerFactory
 {
     private readonly IIdentityServer _identityServer;
 
     public readonly IHttpClientFactory HttpClientFactory =
-        HttpClientFactoryConfiguration.GetHttpClientFactoryConfiguration();
+        ExceptionHttpClientFactoryConfiguration.GetHttpClientFactoryConfiguration();
 
     public readonly KeycloakSettings KeycloakSettings = new()
     {
@@ -25,7 +25,7 @@ public class IdentityServerFactory
         RolesAttributeName = "TestRoleIdAttributeName"
     };
 
-    public IdentityServerFactory()
+    public ExceptionIdentityServerFactory()
     {
         _identityServer =
             new KeycloakServer(new OptionsWrapper<KeycloakSettings>(KeycloakSettings), HttpClientFactory);

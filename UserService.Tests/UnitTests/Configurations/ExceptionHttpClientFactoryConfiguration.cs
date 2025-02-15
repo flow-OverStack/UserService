@@ -3,7 +3,7 @@ using UserService.Tests.Configurations;
 
 namespace UserService.Tests.UnitTests.Configurations;
 
-internal static class HttpClientFactoryConfiguration
+internal static class ExceptionHttpClientFactoryConfiguration
 {
     public static IHttpClientFactory GetHttpClientFactoryConfiguration()
     {

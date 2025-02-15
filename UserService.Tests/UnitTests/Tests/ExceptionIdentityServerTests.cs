@@ -9,14 +9,14 @@ using Xunit;
 
 namespace UserService.Tests.UnitTests.Tests;
 
-public class KeycloakTests
+public class ExceptionIdentityServerTests
 {
     [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterUser_ShouldBe_Exception()
     {
         //Arrange
-        var identityServer = new IdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerFactory().GetService();
         var dto = new KeycloakRegisterUserDto(4, "testuser4", "TestsUser4@test.com",
             [new Role { Id = 1, Name = "User" }]);
 
@@ -32,7 +32,7 @@ public class KeycloakTests
     public async Task LoginUser_ShouldBe_Exception()
     {
         //Arrange
-        var identityServer = new IdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerFactory().GetService();
         var dto = new KeycloakLoginUserDto("testuser1")
         {
             Password = TestConstants.TestPassword + "1"
@@ -50,7 +50,7 @@ public class KeycloakTests
     public async Task RefreshToken_ShouldBe_Exception()
     {
         //Arrange
-        var identityServer = new IdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerFactory().GetService();
         var dto = new KeycloakRefreshTokenDto("refresh_token");
 
         //Act
@@ -65,7 +65,7 @@ public class KeycloakTests
     public async Task UpdateRoles_ShouldBe_Exception()
     {
         //Arrange
-        var identityServer = new IdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerFactory().GetService();
         var dto = new KeycloakUpdateRolesDto
         {
             UserId = 1,
@@ -86,7 +86,7 @@ public class KeycloakTests
     public async Task GetTokenValidationParameters_ShouldBe_Exception()
     {
         //Arrange
-        var identityServer = new IdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerFactory().GetService();
 
         //Act
         var action = async () => await identityServer.GetTokenValidationParametersAsync();
