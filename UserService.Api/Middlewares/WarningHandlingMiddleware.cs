@@ -38,7 +38,7 @@ public class WarningHandlingMiddleware
                 var responseBody = await new StreamReader(swapStream).ReadToEndAsync();
                 swapStream.Seek(0, SeekOrigin.Begin);
 
-                var data = JsonConvert.DeserializeObject<BaseResult<object>>(responseBody)!; // Object means any type
+                var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!; // Object means any type
                 var errorMessage =
                     $"Bad request: {data.ErrorMessage!}. Path: {httpContext.Request.Path}. Method: {httpContext.Request.Method}. IP: {httpContext.Connection.RemoteIpAddress}.";
 
