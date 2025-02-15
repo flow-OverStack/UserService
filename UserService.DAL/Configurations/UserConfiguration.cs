@@ -12,7 +12,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.KeycloakId).IsRequired();
         builder.Property(x => x.Username).IsRequired().HasMaxLength(100);
         builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
-        builder.Property(x => x.Reputation).IsRequired().HasDefaultValue(0);
+        builder.Property(x => x.Reputation).IsRequired().HasDefaultValue(1);
         builder.Property(x => x.ReputationEarnedToday).IsRequired().HasDefaultValue(0);
 
         //Email constraint
@@ -22,10 +22,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                                                   """));
         //Reputation constraint
         builder.ToTable(t => t.HasCheckConstraint("CK_User_Reputation", """
-                                                                        "Reputation" >= 0
+                                                                        "Reputation" >= 1
                                                                         """));
 
-        //Reputation constraint
+        //ReputationEarnedToday constraint
         builder.ToTable(t => t.HasCheckConstraint("CK_User_ReputationEarnedToday", $"""
              "Reputation" >= 0 AND "Reputation" <= {User.MaxDailyReputation}
              """));
