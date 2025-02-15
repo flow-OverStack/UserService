@@ -20,5 +20,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IGraphQlService, GraphQlService>();
+        services.AddScoped<IReputationService, ReputationService>();
+        services.AddScoped<IReputationResetService, ReputationService>();
     }
 }

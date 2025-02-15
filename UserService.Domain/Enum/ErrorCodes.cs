@@ -10,6 +10,8 @@ public enum ErrorCodes
     UserAlreadyExists = 22,
     UserAlreadyHasThisRole = 23,
     UsersNotFound = 24,
+    DailyReputationLimitExceeded = 25,
+    ReputationMinimumReached = 26,
 
     PasswordIsWrong = 31,
     EmailNotValid = 32,

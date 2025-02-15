@@ -60,6 +60,15 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Daily reputation limit exceeded.
+        /// </summary>
+        public static string DailyReputationLimitExceeded {
+            get {
+                return ResourceManager.GetString("DailyReputationLimitExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not valid email.
         /// </summary>
         public static string EmailNotValid {
@@ -110,6 +119,15 @@ namespace UserService.Domain.Resources {
         public static string PasswordIsWrong {
             get {
                 return ResourceManager.GetString("PasswordIsWrong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reputation reached its minimum.
+        /// </summary>
+        public static string ReputationMinimumReached {
+            get {
+                return ResourceManager.GetString("ReputationMinimumReached", resourceCulture);
             }
         }
         

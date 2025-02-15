@@ -69,4 +69,10 @@
     <data name="RolesNotFound" xml:space="preserve">
         <value>Roles not found</value>
     </data>
+    <data name="DailyReputationLimitExceeded" xml:space="preserve">
+        <value>Daily reputation limit exceeded</value>
+    </data>
+    <data name="ReputationMinimumReached" xml:space="preserve">
+        <value>Reputation reached its minimum</value>
+    </data>
 </root>

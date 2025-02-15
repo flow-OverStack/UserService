@@ -8,6 +8,11 @@ public class BaseResult
 
     public int? ErrorCode { get; set; }
 
+    public static BaseResult Success()
+    {
+        return new BaseResult();
+    }
+
     public static BaseResult Failure(string errorMessage, int? errorCode = null)
     {
         return new BaseResult { ErrorMessage = errorMessage, ErrorCode = errorCode };
