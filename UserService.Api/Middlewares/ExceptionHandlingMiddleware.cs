@@ -40,7 +40,8 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        var errorMessage = exception.Message;
+        var errorMessage =
+            $"{exception.Message} Path: {httpContext.Request.Path}. Method: {httpContext.Request.Method}. IP: {httpContext.Connection.RemoteIpAddress}.";
 
         _logger.Error(exception, errorMessage);
 
