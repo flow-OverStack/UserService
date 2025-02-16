@@ -5,10 +5,12 @@ using UserService.Application.DependencyInjection;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
 using UserService.Keycloak.DependencyInjection;
+using UserService.ReputationConsumer.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<KeycloakSettings>(builder.Configuration.GetSection(nameof(KeycloakSettings)));
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
@@ -18,6 +20,7 @@ builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddIdentityServer();
 builder.Services.AddSwagger();
 builder.Services.AddGraphQl();
+builder.Services.AddMassTransitServices();
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
