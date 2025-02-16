@@ -11,6 +11,10 @@ public interface IGraphQlService
     /// <returns></returns>
     Task<CollectionResult<User>> GetAllUsersAsync();
 
+    /// <summary>
+    ///     Get all roles
+    /// </summary>
+    /// <returns></returns>
     Task<CollectionResult<Role>> GetAllRolesAsync();
 
     /// <summary>
