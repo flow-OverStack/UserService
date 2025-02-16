@@ -10,12 +10,12 @@ public interface IReputationService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<ReputationDto>> IncreaseReputation(ReputationIncreaseDto dto);
+    Task<BaseResult<ReputationDto>> IncreaseReputationAsync(ReputationIncreaseDto dto);
 
     /// <summary>
     ///     Decreases user's reputation
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<ReputationDto>> DecreaseReputation(ReputationDecreaseDto dto);
+    Task<BaseResult<ReputationDto>> DecreaseReputationAsync(ReputationDecreaseDto dto);
 }

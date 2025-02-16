@@ -25,7 +25,7 @@ public class ReputationService(IBaseRepository<User> userRepository) : IReputati
         }
     }
 
-    public async Task<BaseResult<ReputationDto>> IncreaseReputation(ReputationIncreaseDto dto)
+    public async Task<BaseResult<ReputationDto>> IncreaseReputationAsync(ReputationIncreaseDto dto)
     {
         var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId);
 
@@ -52,7 +52,7 @@ public class ReputationService(IBaseRepository<User> userRepository) : IReputati
         });
     }
 
-    public async Task<BaseResult<ReputationDto>> DecreaseReputation(ReputationDecreaseDto dto)
+    public async Task<BaseResult<ReputationDto>> DecreaseReputationAsync(ReputationDecreaseDto dto)
     {
         var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId);
 
