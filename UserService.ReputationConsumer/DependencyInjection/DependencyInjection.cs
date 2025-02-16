@@ -4,6 +4,9 @@ using Microsoft.Extensions.Options;
 using UserService.Domain.Settings;
 using UserService.ReputationConsumer.Consumers;
 using UserService.ReputationConsumer.Events;
+using UserService.ReputationConsumer.Strategy.Reputation;
+using UserService.ReputationConsumer.Strategy.Reputation.Base;
+using UserService.ReputationConsumer.Strategy.Reputation.Strategies;
 
 namespace UserService.ReputationConsumer.DependencyInjection;
 
@@ -14,6 +17,12 @@ public static class DependencyInjection
     /// </summary>
     /// <param name="services"></param>
     public static void AddMassTransitServices(this IServiceCollection services)
+    {
+        services.InitMassTransit();
+        services.InitStrategies();
+    }
+
+    private static void InitMassTransit(this IServiceCollection services)
     {
         services.AddMassTransit(configurator =>
         {
@@ -39,5 +48,17 @@ public static class DependencyInjection
                 });
             });
         });
+    }
+
+    private static void InitStrategies(this IServiceCollection services)
+    {
+        services.AddTransient<IReputationStrategy, AnswerAcceptedStrategy>();
+        services.AddTransient<IReputationStrategy, AnswerDownvoteStrategy>();
+        services.AddTransient<IReputationStrategy, AnswerUpvoteStrategy>();
+        services.AddTransient<IReputationStrategy, DownvoteGivenStrategy>();
+        services.AddTransient<IReputationStrategy, QuestionDownvoteStrategy>();
+        services.AddTransient<IReputationStrategy, QuestionUpvoteStrategy>();
+        services.AddTransient<IReputationStrategy, UserAcceptedAnswerStrategy>();
+        services.AddSingleton<IReputationStrategyResolver, ReputationStrategyResolver>();
     }
 }
