@@ -40,18 +40,16 @@ public class ExceptionHandlingMiddleware
 
     private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        var errorMessage =
-            $"{exception.Message} Path: {httpContext.Request.Path}. Method: {httpContext.Request.Method}. IP: {httpContext.Connection.RemoteIpAddress}.";
-
-        _logger.Error(exception, errorMessage);
+        _logger.Error(exception, "Error: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}", exception.Message,
+            httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
 
 
         var response = exception switch
         {
             IdentityServerInternalException => BaseResult.Failure(
-                $"{ErrorMessage.IdentityServerError}: {errorMessage}", (int)HttpStatusCode.InternalServerError),
+                $"{ErrorMessage.IdentityServerError}: {exception.Message}", (int)HttpStatusCode.InternalServerError),
 
-            _ => BaseResult.Failure($"{ErrorMessage.InternalServerError}: {errorMessage}",
+            _ => BaseResult.Failure($"{ErrorMessage.InternalServerError}: {exception.Message}",
                 (int)HttpStatusCode.InternalServerError)
         };
 

@@ -2,22 +2,15 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using UserService.DAL.Interceptors;
-using ILogger = Serilog.ILogger;
 
 namespace UserService.DAL;
 
-public sealed class ApplicationDbContext : DbContext
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ILoggerFactory loggerFactory)
+    : DbContext(options)
 {
-    private readonly ILogger _logger;
-
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ILogger logger) : base(options)
-    {
-        _logger = logger;
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.LogTo(_logger.Information, LogLevel.Information);
+        optionsBuilder.UseLoggerFactory(loggerFactory);
         optionsBuilder.AddInterceptors(new DateInterceptor());
     }
 

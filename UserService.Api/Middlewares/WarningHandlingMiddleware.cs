@@ -39,10 +39,10 @@ public class WarningHandlingMiddleware
                 swapStream.Seek(0, SeekOrigin.Begin);
 
                 var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!; // Object means any type
-                var errorMessage =
-                    $"Bad request: {data.ErrorMessage!}. Path: {httpContext.Request.Path}. Method: {httpContext.Request.Method}. IP: {httpContext.Connection.RemoteIpAddress}.";
 
-                _logger.Warning(errorMessage);
+                _logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+                    data.ErrorMessage!,
+                    httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
             }
 
             // Copy the intercepted response back to the original response stream
