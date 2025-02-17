@@ -4,6 +4,7 @@ using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
+using UserService.GraphQl.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
 using UserService.ReputationConsumer.DependencyInjection;
 

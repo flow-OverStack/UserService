@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,17 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options => { options.UseNpgsql(connectionString); });
 
         services.InitRepositories();
+    }
+
+    /// <summary>
+    ///     Migrates the database
+    /// </summary>
+    /// <param name="app"></param>
+    /// <param name="services"></param>
+    public static async Task MigrateDatabaseAsync(this WebApplication app, IServiceCollection services)
+    {
+        var dbContext = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync();
     }
 
     private static void InitRepositories(this IServiceCollection services)
