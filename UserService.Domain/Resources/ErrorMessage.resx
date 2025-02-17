@@ -75,4 +75,7 @@
     <data name="ReputationMinimumReached" xml:space="preserve">
         <value>Reputation reached its minimum</value>
     </data>
+    <data name="CannotIncreaseOrDecreaseNegativeReputation" xml:space="preserve">
+        <value>Cannot increase or decrease negative reputation</value>
+    </data>
 </root>

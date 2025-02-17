@@ -60,6 +60,15 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot increase or decrease negative reputation.
+        /// </summary>
+        public static string CannotIncreaseOrDecreaseNegativeReputation {
+            get {
+                return ResourceManager.GetString("CannotIncreaseOrDecreaseNegativeReputation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Daily reputation limit exceeded.
         /// </summary>
         public static string DailyReputationLimitExceeded {

@@ -66,4 +66,7 @@
     <data name="ReputationMinimumReached" xml:space="preserve">
         <value>Дотигнут минимум репутации</value>
     </data>
+    <data name="CannotIncreaseOrDecreaseNegativeReputation" xml:space="preserve">
+        <value>Невозможно увеличить или уменьшить отрицательную репутацию</value>
+    </data>
 </root>
