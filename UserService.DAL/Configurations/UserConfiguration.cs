@@ -27,7 +27,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         //ReputationEarnedToday constraint
         builder.ToTable(t => t.HasCheckConstraint("CK_User_ReputationEarnedToday", $"""
-             "Reputation" >= 0 AND "Reputation" <= {User.MaxDailyReputation}
+             "ReputationEarnedToday" >= 0 AND "ReputationEarnedToday" <= {User.MaxDailyReputation}
              """));
 
         //Username constraint
