@@ -34,8 +34,6 @@ public static class DependencyInjection
             {
                 rider.AddConsumer<ReputationEventConsumer>();
 
-                rider.AddProducer<BaseEvent>("main-events-topic"); //TODO remove this line
-
                 rider.UsingKafka((context, factoryConfigurator) =>
                 {
                     var kafkaSettings = context.GetRequiredService<IOptions<KafkaSettings>>().Value;
