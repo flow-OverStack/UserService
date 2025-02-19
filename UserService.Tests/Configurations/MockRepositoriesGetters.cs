@@ -242,7 +242,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0,
+                Reputation = 1,
                 UserToken = GetUserToken1(),
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
@@ -254,7 +254,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0,
+                Reputation = 1,
                 UserToken = GetUserToken2(),
                 Roles = [GetRoleUser(), GetRoleModer()]
             },
@@ -266,7 +266,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0,
+                Reputation = 1,
                 Roles = [GetRoleModer()]
             },
             new() //user without roles
@@ -277,7 +277,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser5@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 0,
+                Reputation = 1,
                 Roles = []
             }
         }.AsQueryable();
