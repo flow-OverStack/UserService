@@ -11,7 +11,7 @@ namespace UserService.Application.Services;
 
 public class ReputationService(IBaseRepository<User> userRepository) : IReputationService, IReputationResetService
 {
-    public async Task<BaseResult> ResetReputation()
+    public async Task<BaseResult> ResetEarnedTodayReputation()
     {
         await userRepository.GetAll().ForEachAsync(x => x.ReputationEarnedToday = User.MinReputation);
 

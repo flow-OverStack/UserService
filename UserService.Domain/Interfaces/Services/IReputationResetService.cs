@@ -8,5 +8,5 @@ public interface IReputationResetService
     ///     Resets ReputationEarnedToday of all users to min value
     /// </summary>
     /// <returns></returns>
-    Task<BaseResult> ResetReputation();
+    Task<BaseResult> ResetEarnedTodayReputation();
 }
