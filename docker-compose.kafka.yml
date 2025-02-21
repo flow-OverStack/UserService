@@ -1,7 +1,7 @@
 ﻿# Ready-made confluent kafka configuration from
 # https://github.com/confluentinc/cp-all-in-one/blob/7.8.0-post/cp-all-in-one/docker-compose.yml
 # ksql service removed, volumes added
-# First launch of broker may be too long, yo may need to restart the services that depend on broker
+# First launch of broker may be too long, you may need to restart the services that depend on broker
 ---
 services:
 
@@ -46,6 +46,7 @@ services:
     image: confluentinc/cp-schema-registry:7.8.0
     hostname: schema-registry
     container_name: schema-registry
+    restart: unless-stopped
     volumes:
       - kafka_schema_data:/var/lib/schema-registry
     depends_on:
@@ -61,6 +62,7 @@ services:
     image: cnfldemos/cp-server-connect-datagen:0.6.4-7.6.0
     hostname: connect
     container_name: connect
+    restart: unless-stopped
     depends_on:
       - broker
       - schema-registry
@@ -88,6 +90,7 @@ services:
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.8.0
+    restart: unless-stopped
     hostname: control-center
     container_name: control-center
     depends_on:
@@ -109,6 +112,7 @@ services:
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:7.8.0
+    restart: unless-stopped
     depends_on:
       - broker
       - schema-registry
