@@ -21,7 +21,7 @@ public class ReputationEventConsumer(
             var reputationChange = strategy.CalculateReputationChange();
 
             var result = await UpdateReputationAsync(context.Message, reputationChange);
-            await LogReputationResult(context.Message, result);
+            LogReputationResult(context.Message, result);
         }
         catch (Exception e)
         {
@@ -43,7 +43,7 @@ public class ReputationEventConsumer(
         return result;
     }
 
-    private async Task LogReputationResult(BaseEvent message, BaseResult<ReputationDto> result)
+    private void LogReputationResult(BaseEvent message, BaseResult<ReputationDto> result)
     {
         if (!result.IsSuccess)
             logger.Warning(
