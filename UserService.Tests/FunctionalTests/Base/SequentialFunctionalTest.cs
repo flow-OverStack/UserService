@@ -6,16 +6,16 @@ namespace UserService.Tests.FunctionalTests.Base;
 
 public class SequentialFunctionalTest : BaseFunctionalTest, IAsyncLifetime
 {
-    protected readonly IServiceProvider ServicesProvider;
+    protected readonly IServiceProvider ServiceProvider;
 
     protected SequentialFunctionalTest(FunctionalTestWebAppFactory factory) : base(factory)
     {
-        ServicesProvider = factory.Services;
+        ServiceProvider = factory.Services;
     }
 
     public Task InitializeAsync()
     {
-        using var scope = ServicesProvider.CreateScope();
+        using var scope = ServiceProvider.CreateScope();
         ResetDb(scope);
         return Task.CompletedTask;
     }

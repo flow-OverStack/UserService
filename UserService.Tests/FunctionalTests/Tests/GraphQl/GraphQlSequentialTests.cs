@@ -46,7 +46,7 @@ public class GraphQlSequentialTests : SequentialFunctionalTest
 
     private void DeleteUsersAndRoles()
     {
-        using var scope = ServicesProvider.CreateScope();
+        using var scope = ServiceProvider.CreateScope();
         using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         dbContext.Set<User>().ExecuteDelete();
