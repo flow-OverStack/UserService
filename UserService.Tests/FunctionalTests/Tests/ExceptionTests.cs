@@ -12,6 +12,7 @@ using UserService.Domain.Resources;
 using UserService.Domain.Result;
 using UserService.Tests.Constants;
 using UserService.Tests.Extensions;
+using UserService.Tests.FunctionalTests.Base.Exception;
 using UserService.Tests.FunctionalTests.Base.ExceptionBase;
 using Xunit;
 

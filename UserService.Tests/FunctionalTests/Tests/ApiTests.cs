@@ -8,7 +8,7 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Success()
+    public async Task RequestWrongUrl_ShouldBe_NotFound()
     {
         //Arrange
         const string wrongUrl = "wrongUrl";
