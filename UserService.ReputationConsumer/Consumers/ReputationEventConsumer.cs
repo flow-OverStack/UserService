@@ -20,26 +20,37 @@ public class ReputationEventConsumer(
             var strategy = reputationResolver.Resolve(context.Message.EventType);
             var reputationChange = strategy.CalculateReputationChange();
 
-            BaseResult<ReputationDto> result;
-            if (reputationChange > 0)
-                result = await reputationService.IncreaseReputationAsync(
-                    new ReputationIncreaseDto(context.Message.UserId, reputationChange));
-            else
-                result = await reputationService.DecreaseReputationAsync(
-                    new ReputationDecreaseDto(context.Message.UserId, -reputationChange));
-
-            if (!result.IsSuccess)
-                logger.Warning(
-                    "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}.",
-                    result.ErrorMessage, context.Message.UserId, context.Message.EventType);
-            else
-                logger.Information("Successfully updated reputation. UserId: {UserId}. Event: {EventType}.",
-                    context.Message.UserId, context.Message.EventType);
+            var result = await UpdateReputationAsync(context.Message, reputationChange);
+            await LogReputationResult(context.Message, result);
         }
         catch (Exception e)
         {
             logger.Error(e, "Failed to update reputation: {ErrorMessage} UserId: {UserId}.Event: {EventType}.",
                 e.Message, context.Message.UserId, context.Message.EventType);
         }
+    }
+
+    private async Task<BaseResult<ReputationDto>> UpdateReputationAsync(BaseEvent message, int reputationChange)
+    {
+        BaseResult<ReputationDto> result;
+        if (reputationChange > 0)
+            result = await reputationService.IncreaseReputationAsync(
+                new ReputationIncreaseDto(message.UserId, reputationChange));
+        else
+            result = await reputationService.DecreaseReputationAsync(
+                new ReputationDecreaseDto(message.UserId, -reputationChange));
+
+        return result;
+    }
+
+    private async Task LogReputationResult(BaseEvent message, BaseResult<ReputationDto> result)
+    {
+        if (!result.IsSuccess)
+            logger.Warning(
+                "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}.",
+                result.ErrorMessage, message.UserId, message.EventType);
+        else
+            logger.Information("Successfully updated reputation. UserId: {UserId}. Event: {EventType}.",
+                message.UserId, message.EventType);
     }
 }
