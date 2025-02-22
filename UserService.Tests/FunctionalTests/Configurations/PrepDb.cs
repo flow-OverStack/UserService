@@ -18,6 +18,7 @@ internal static class PrepDb
             Username = x.Username,
             Email = x.Email,
             Reputation = x.Reputation,
+            ReputationEarnedToday = x.ReputationEarnedToday,
             CreatedAt = x.CreatedAt,
             LastLoginAt = x.LastLoginAt
         });
