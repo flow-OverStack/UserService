@@ -7,6 +7,7 @@ using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
 using UserService.ReputationConsumer.DependencyInjection;
+using DependencyInjection = UserService.DAL.DependencyInjection.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,7 @@ app.UseGraphQl();
 app.UseAuthentication();
 app.UseAuthorization();
 
-await app.MigrateDatabaseAsync(builder.Services);
+await DependencyInjection.MigrateDatabaseAsync(builder.Services);
 
 app.LogListeningUrls();
 
