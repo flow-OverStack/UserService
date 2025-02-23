@@ -11,12 +11,9 @@ namespace UserService.DAL.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration,
-        bool isDevelopment = true)
+    public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = isDevelopment
-            ? configuration.GetConnectionString("PostgresSQL:Development")
-            : configuration.GetConnectionString("PostgresSQL:Production");
+        var connectionString = configuration.GetConnectionString("PostgresSQL");
         services.AddSingleton<DateInterceptor>();
         services.AddDbContext<ApplicationDbContext>(options => { options.UseNpgsql(connectionString); });
 

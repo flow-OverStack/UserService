@@ -25,7 +25,7 @@ builder.Services.AddMassTransitServices();
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
-builder.Services.AddDataAccessLayer(builder.Configuration, builder.Environment.IsDevelopment());
+builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
