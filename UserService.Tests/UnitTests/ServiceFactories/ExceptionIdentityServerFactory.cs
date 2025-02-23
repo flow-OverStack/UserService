@@ -15,7 +15,7 @@ public class ExceptionIdentityServerFactory
 
     public readonly KeycloakSettings KeycloakSettings = new()
     {
-        Url = "testUri:0",
+        Host = "testUri:0",
         Realm = "TestRealm",
         AdminToken = "TestAdminToken",
         ClientId = "TestClientId",
