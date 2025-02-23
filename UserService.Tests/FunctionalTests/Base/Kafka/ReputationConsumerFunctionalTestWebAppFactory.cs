@@ -10,10 +10,10 @@ using UserService.ReputationConsumer.Events;
 
 namespace UserService.Tests.FunctionalTests.Base.Kafka;
 
-public class KafkaConsumerFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
+public class ReputationConsumerFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
-    // Tests will not be implemented via test kafka container
-    // because consumer does not work when tests are running.
+    // Tests will not be implemented via the kafka test container
+    // because consumer is not running when the tests are running.
     // Tests will be implemented via scoped IConsumer<BaseEvent>, which is in DI only in tests
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

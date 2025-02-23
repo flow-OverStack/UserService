@@ -10,8 +10,8 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-public class KafkaConsumerTests(KafkaConsumerFunctionalTestWebAppFactory factory)
-    : KafkaConsumerBaseFunctionalTest(factory)
+public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFactory factory)
+    : ReputationConsumerBaseFunctionalTest(factory)
 {
     public static TheoryData<string> GetEvents()
     {

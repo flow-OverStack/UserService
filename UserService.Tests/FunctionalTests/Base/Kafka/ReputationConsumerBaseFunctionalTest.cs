@@ -4,11 +4,12 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Base.Kafka;
 
-public class KafkaConsumerBaseFunctionalTest : IClassFixture<KafkaConsumerFunctionalTestWebAppFactory>, IAsyncLifetime
+public class ReputationConsumerBaseFunctionalTest : IClassFixture<ReputationConsumerFunctionalTestWebAppFactory>,
+    IAsyncLifetime
 {
     protected readonly IServiceProvider ServiceProvider;
 
-    protected KafkaConsumerBaseFunctionalTest(KafkaConsumerFunctionalTestWebAppFactory factory)
+    protected ReputationConsumerBaseFunctionalTest(ReputationConsumerFunctionalTestWebAppFactory factory)
     {
         ServiceProvider = factory.Services;
     }
