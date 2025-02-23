@@ -1,4 +1,3 @@
-using UserService.Tests.FunctionalTests.Base.ExceptionBase;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception;

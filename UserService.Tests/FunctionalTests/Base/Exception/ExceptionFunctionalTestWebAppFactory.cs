@@ -8,7 +8,7 @@ using UserService.DAL.Repositories;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Tests.Configurations;
 
-namespace UserService.Tests.FunctionalTests.Base.ExceptionBase;
+namespace UserService.Tests.FunctionalTests.Base.Exception;
 
 public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
