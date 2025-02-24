@@ -2,6 +2,7 @@ using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -134,14 +135,21 @@ public static class Startup
     {
         app.Lifetime.ApplicationStarted.Register(() =>
         {
-            var addresses = app.Configuration.GetSection("ASPNETCORE_URLS");
-            var addressesList = addresses.Value?.Split(';').ToList();
-            var appStartupUrlLog =
+            HashSet<string> hosts = [];
+
+            var serverAddressesFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
+            serverAddressesFeature?.Addresses.ToList().ForEach(x => hosts.Add(x));
+
+            var serverAddressesConfiguration = app.Configuration.GetSection("ASPNETCORE_URLS");
+            serverAddressesConfiguration.Value?.Split(';').ToList().ForEach(x => hosts.Add(x));
+
+            var appStartupHostLog =
                 app.Configuration.GetSection(AppStartupSectionName).GetValue<string>("AppStartupUrlLog");
-            addressesList?.ForEach(address =>
+
+            hosts.ToList().ForEach(host =>
             {
-                var fullUrlLog = appStartupUrlLog + address;
-                Log.Information(fullUrlLog);
+                var fullHostLog = appStartupHostLog + host;
+                Log.Information(fullHostLog);
             });
         });
     }
