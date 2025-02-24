@@ -12,7 +12,7 @@
       - user-service-network
     environment:
       ConnectionStrings__PostgresSQL: Server=postgres-db;Port=5432;Database=user-service-db;User Id=postgres; Password=root
-      KeycloakSettings__AdminToken: XQ7DlQHJ5QJB4n0f50bRCeMUo7DFY4Vi
+      KeycloakSettings__AdminToken: BRQNEmzjwYfsSUm8FnDXYRIhekOHzSLV
       KafkaSettings__Host: broker:29092
       KeycloakSettings__Host: http://keycloak:8080
   
@@ -28,7 +28,7 @@
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-      POSTGRES_DB: flowOverStack
+      POSTGRES_DB: user-service-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -49,6 +49,8 @@
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.7
     container_name: identity-server
+    depends_on:
+      - keycloak-db
     networks:
       - user-service-network
     ports:
@@ -56,9 +58,31 @@
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-    command: start-dev
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/flowOverStack
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: root
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+      KC_HTTP_ENABLED: true
+    command: start
     volumes:
       - keycloak_data:/opt/keycloak/data
+  
+  keycloak-db:
+    image: postgres:latest
+    container_name: keycloak-db
+    ports:
+      - "5434:5432"
+    networks:
+      - pg-network
+      - user-service-network
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: flowOverStack
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
 
   broker:
     image: confluentinc/cp-server:7.8.0
@@ -233,5 +257,6 @@ networks:
 volumes:
   postgres_data:
   keycloak_data:
+  keycloak_db_data:
   kafka_data:
   kafka_schema_data:
