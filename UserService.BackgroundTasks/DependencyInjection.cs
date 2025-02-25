@@ -40,7 +40,7 @@ public static class DependencyInjection
     {
         app.Lifetime.ApplicationStarted.Register(() =>
             RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.Run(),
-                Cron.Minutely));
+                Cron.Daily));
 
         if (app.Environment.IsDevelopment())
             app.UseHangfireDashboard();
