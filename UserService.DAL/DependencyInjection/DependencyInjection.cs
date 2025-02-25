@@ -23,7 +23,7 @@ public static class DependencyInjection
     ///     Migrates the database
     /// </summary>
     /// <param name="services"></param>
-    public static async Task MigrateDatabaseAsync(IServiceCollection services)
+    public static async Task MigrateDatabaseAsync(this IServiceCollection services)
     {
         var dbContext = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
         await dbContext.Database.MigrateAsync();

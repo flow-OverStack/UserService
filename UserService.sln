@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.GraphQl", "User
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.ReputationConsumer", "UserService.ReputationConsumer\UserService.ReputationConsumer.csproj", "{6B13329A-AC86-4E5C-80EE-F478CF3A4E38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.BackgroundTasks", "UserService.BackgroundTasks\UserService.BackgroundTasks.csproj", "{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{6B13329A-AC86-4E5C-80EE-F478CF3A4E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B13329A-AC86-4E5C-80EE-F478CF3A4E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B13329A-AC86-4E5C-80EE-F478CF3A4E38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{23ABD402-F883-47AC-B6C3-47B9AE6C0689} = {C8C24C14-6921-4C65-8189-3D092F4FA102}
@@ -80,5 +86,6 @@ Global
 		{122DB01B-B8AA-4C85-B5E4-5140DDC7AACC} = {0A359468-8E0A-49C1-BA27-9EF35E2230E1}
 		{0ED4AB3A-5B67-4570-9C78-5BCFBAC3B7BD} = {C8C24C14-6921-4C65-8189-3D092F4FA102}
 		{6B13329A-AC86-4E5C-80EE-F478CF3A4E38} = {CAD2DC0D-768D-472B-85C1-800FCA227C54}
+		{ACA7FC3E-B58A-481D-91D3-1FC423A7175E} = {CAD2DC0D-768D-472B-85C1-800FCA227C54}
 	EndGlobalSection
 EndGlobal

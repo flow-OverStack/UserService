@@ -13,7 +13,8 @@ public class ReputationService(IBaseRepository<User> userRepository) : IReputati
 {
     public async Task<BaseResult> ResetEarnedTodayReputation()
     {
-        await userRepository.GetAll().ForEachAsync(x => x.ReputationEarnedToday = User.MinReputation);
+        await userRepository.GetAll().ExecuteUpdateAsync(x => x.SetProperty(y => y.ReputationEarnedToday, 0));
+        await userRepository.SaveChangesAsync();
 
         return BaseResult.Success();
     }

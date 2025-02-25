@@ -30,6 +30,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\UserService.Application\UserService.Application.csproj"/>
+        <ProjectReference Include="..\UserService.BackgroundTasks\UserService.BackgroundTasks.csproj"/>
         <ProjectReference Include="..\UserService.DAL\UserService.DAL.csproj"/>
         <ProjectReference Include="..\UserService.GraphQl\UserService.GraphQl.csproj"/>
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>

@@ -2,12 +2,12 @@ using Serilog;
 using UserService.Api;
 using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
+using UserService.BackgroundTasks;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
 using UserService.ReputationConsumer.DependencyInjection;
-using DependencyInjection = UserService.DAL.DependencyInjection.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +23,7 @@ builder.Services.AddIdentityServer();
 builder.Services.AddSwagger();
 builder.Services.AddGraphQl();
 builder.Services.AddMassTransitServices();
+builder.Services.AddHangfire(builder.Configuration);
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
@@ -45,11 +46,12 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.MapControllers();
 app.UseGraphQl();
+app.SetupHangfire();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-await DependencyInjection.MigrateDatabaseAsync(builder.Services);
+await builder.Services.MigrateDatabaseAsync();
 
 app.LogListeningUrls();
 
