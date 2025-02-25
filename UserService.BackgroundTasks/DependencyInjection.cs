@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UserService.BackgroundTasks.Interfaces;
 using UserService.BackgroundTasks.Jobs;
 
 namespace UserService.BackgroundTasks;
@@ -39,8 +38,7 @@ public static class DependencyInjection
     public static void SetupHangfire(this WebApplication app)
     {
         app.Lifetime.ApplicationStarted.Register(() =>
-            RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.Run(),
-                Cron.Daily));
+            RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.Run(), Cron.Daily));
 
         if (app.Environment.IsDevelopment())
             app.UseHangfireDashboard();
@@ -48,6 +46,6 @@ public static class DependencyInjection
 
     private static void InitJobs(this IServiceCollection services)
     {
-        services.AddTransient<IJob, ReputationResetJob>();
+        services.AddTransient<ReputationResetJob>();
     }
 }

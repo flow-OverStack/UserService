@@ -1,10 +1,9 @@
 using Serilog;
-using UserService.BackgroundTasks.Interfaces;
 using UserService.Domain.Interfaces.Services;
 
 namespace UserService.BackgroundTasks.Jobs;
 
-public class ReputationResetJob(IReputationResetService reputationResetService) : IJob
+public class ReputationResetJob(IReputationResetService reputationResetService)
 {
     public async Task Run()
     {
