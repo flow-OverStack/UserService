@@ -14,6 +14,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
+[Collection("GraphQlSequentialTests")]
 public class GraphQlSequentialTests : SequentialFunctionalTest
 {
     public GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : base(factory)

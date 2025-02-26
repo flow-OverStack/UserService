@@ -14,7 +14,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-[Collection("SequentialTests")]
+[Collection("RoleSequentialTests")]
 public class RoleServiceTests : SequentialFunctionalTest
 {
     public RoleServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
