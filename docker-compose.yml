@@ -16,7 +16,6 @@
       KafkaSettings__Host: broker:29092
       KeycloakSettings__Host: http://keycloak:8080
   
-  
   postgres-db:
     image: postgres:latest
     container_name: postgres-user-db
@@ -83,7 +82,9 @@
       POSTGRES_DB: flowOverStack
     volumes:
       - keycloak_db_data:/var/lib/postgresql/data
-
+  
+  # Ready-made confluent kafka configuration from
+  # https://github.com/confluentinc/cp-all-in-one/blob/7.8.0-post/cp-all-in-one/docker-compose.yml
   broker:
     image: confluentinc/cp-server:7.8.0
     hostname: broker
