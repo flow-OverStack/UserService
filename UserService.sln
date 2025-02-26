@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		sonar-project.properties = sonar-project.properties
 		.github\workflows\sonarqube.yml = .github\workflows\sonarqube.yml
 		.github\workflows\tests.yml = .github\workflows\tests.yml
+		.env = .env
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Keycloak", "UserService.Keycloak\UserService.Keycloak.csproj", "{CEEC3CC5-A840-43BC-8A52-0D9F893D5467}"
