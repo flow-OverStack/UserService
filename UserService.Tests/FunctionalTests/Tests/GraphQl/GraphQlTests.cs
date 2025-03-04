@@ -12,7 +12,6 @@ namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
 public class GraphQlTests : BaseFunctionalTest
 {
-    private const string NotAuthorizedCode = "AUTH_NOT_AUTHORIZED";
     private const string NotAuthenticatedCode = "AUTH_NOT_AUTHENTICATED";
 
     public GraphQlTests(FunctionalTestWebAppFactory factory) : base(factory)
@@ -41,31 +40,12 @@ public class GraphQlTests : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_NotAuthorized()
-    {
-        //Arrange
-        const string username = "testservice1";
-        var userToken = TokenExtensions.GetRsaToken(username);
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
-        var requestBody = new { query = GraphQlConstants.RequestAllQuery };
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlConstants.GraphQlEndpoint, requestBody);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
-        var isNotAuthenticated = result!.Errors.All(x => x.Extensions.Code == NotAuthorizedCode);
-
-        //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(isNotAuthenticated);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
     public async Task GetAll_ShouldBe_NotAuthenticated()
     {
         //Arrange
-        HttpClient.DefaultRequestHeaders.Authorization = null;
+        const string username = "testservice1";
+        var userToken = TokenExtensions.GetRsaTokenWithWrongAudience(username);
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
         var requestBody = new { query = GraphQlConstants.RequestAllQuery };
 
         //Act
