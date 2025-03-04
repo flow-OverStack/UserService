@@ -13,7 +13,7 @@ public class AudienceAuthorizationHandler : AuthorizationHandler<AudienceRequire
     {
         var audience = context.User.FindFirstValue(AudienceClaimType);
 
-        if (audience == requirement.RequiredAudience)
+        if (requirement.RequiredAudiences.Contains(audience))
             context.Succeed(requirement);
         else
             context.Fail();

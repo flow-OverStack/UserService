@@ -55,9 +55,10 @@ public static class Startup
             var keycloakSettings =
                 services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
             var serviceAudience = keycloakSettings.ServiceAudience;
+            var userAudience = keycloakSettings.Audience;
 
-            options.AddPolicy("ServiceApiOnly",
-                builder => builder.Requirements.Add(new AudienceRequirement(serviceAudience)));
+            options.AddPolicy("DefaultOrServiceApi",
+                builder => builder.Requirements.Add(new AudienceRequirement(serviceAudience, userAudience)));
         });
 
         services.AddSingleton<IAuthorizationHandler, AudienceAuthorizationHandler>();
