@@ -1,4 +1,3 @@
-using HotChocolate.Authorization;
 using UserService.Domain.Entity;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
@@ -8,7 +7,6 @@ namespace UserService.GraphQl;
 
 public class Queries
 {
-    [Authorize(Policy = "DefaultOrServiceApi")]
     [GraphQLDescription("Returns a list of all users")]
     [UseFiltering]
     [UseSorting]
@@ -30,7 +28,7 @@ public class Queries
         return result.Data;
     }
 
-    [Authorize(Policy = "DefaultOrServiceApi")]
+
     [GraphQLDescription("Returns a list of all roles")]
     [UseFiltering]
     [UseSorting]

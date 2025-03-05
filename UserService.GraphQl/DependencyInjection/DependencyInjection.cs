@@ -22,7 +22,6 @@ public static class DependencyInjection
             .AddQueryType<Queries>()
             .AddType<UserType>()
             .AddType<RoleType>()
-            .AddAuthorization()
             .AddSorting()
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>();

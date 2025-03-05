@@ -1,13 +1,11 @@
 using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using UserService.Api.Authorization;
 using UserService.Domain.Settings;
 using Path = System.IO.Path;
 
@@ -49,19 +47,6 @@ public static class Startup
                 ValidateIssuerSigningKey = true
             };
         });
-
-        services.AddAuthorization(options =>
-        {
-            var keycloakSettings =
-                services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
-            var serviceAudience = keycloakSettings.ServiceAudience;
-            var userAudience = keycloakSettings.Audience;
-
-            options.AddPolicy("DefaultOrServiceApi",
-                builder => builder.Requirements.Add(new AudienceRequirement(serviceAudience, userAudience)));
-        });
-
-        services.AddSingleton<IAuthorizationHandler, AudienceAuthorizationHandler>();
     }
 
     /// <summary>
