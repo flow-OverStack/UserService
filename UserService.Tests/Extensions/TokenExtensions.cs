@@ -11,7 +11,6 @@ internal static class TokenExtensions
 {
     private const string Audience = "TestAudience";
     private const string ServiceAudience = "TestServiceAudience";
-    private const string WrongAudience = "WrongAudience";
     private const string Issuer = "TestIssuer";
     private const string Kid = "test-key-id";
 
@@ -105,24 +104,6 @@ internal static class TokenExtensions
             //expired is not listed because it is not validated
             SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
             Audience = Audience,
-            Issuer = Issuer
-        };
-
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var tokenString = tokenHandler.WriteToken(token);
-
-        return tokenString;
-    }
-
-    public static string GetRsaTokenWithWrongAudience(string username)
-    {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]),
-            //expired is not listed because it is not validated
-            SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
-            Audience = WrongAudience,
             Issuer = Issuer
         };
 
