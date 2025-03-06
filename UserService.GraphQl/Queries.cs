@@ -1,7 +1,6 @@
 using UserService.Domain.Entity;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
-using UserService.Domain.Result;
 
 namespace UserService.GraphQl;
 
@@ -12,15 +11,7 @@ public class Queries
     [UseSorting]
     public async Task<IEnumerable<User>> GetUsers([Service] IGetUserService userService)
     {
-        CollectionResult<User> result;
-        try
-        {
-            result = await userService.GetAllUsersAsync();
-        }
-        catch (Exception e)
-        {
-            throw GraphQlExceptionHelper.GetInternal(e);
-        }
+        var result = await userService.GetAllUsersAsync();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
@@ -34,15 +25,7 @@ public class Queries
     [UseSorting]
     public async Task<IEnumerable<Role>> GetRoles([Service] IGetRoleService roleService)
     {
-        CollectionResult<Role> result;
-        try
-        {
-            result = await roleService.GetAllRolesAsync();
-        }
-        catch (Exception e)
-        {
-            throw GraphQlExceptionHelper.GetInternal(e);
-        }
+        var result = await roleService.GetAllRolesAsync();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.Get(result.ErrorMessage!);

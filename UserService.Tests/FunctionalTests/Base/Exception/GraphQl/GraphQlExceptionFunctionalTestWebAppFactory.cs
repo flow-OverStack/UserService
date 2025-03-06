@@ -7,7 +7,7 @@ using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Tests.Configurations;
 
-namespace UserService.Tests.FunctionalTests.Base.GraphQl;
+namespace UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 
 public class GraphQlExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {

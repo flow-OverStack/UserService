@@ -5,7 +5,7 @@ using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.Extensions;
-using UserService.Tests.FunctionalTests.Base.GraphQl;
+using UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
 using Xunit;
 

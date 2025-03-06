@@ -1,7 +1,6 @@
 using UserService.Domain.Entity;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
-using UserService.Domain.Result;
 
 namespace UserService.GraphQl.Types;
 
@@ -22,15 +21,7 @@ public class RoleType : ObjectType<Role>
     {
         public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, [Service] IGetUserService userService)
         {
-            CollectionResult<User> result;
-            try
-            {
-                result = await userService.GetUsersWithRole(role.Id);
-            }
-            catch (Exception e)
-            {
-                throw GraphQlExceptionHelper.GetInternal(e);
-            }
+            var result = await userService.GetUsersWithRole(role.Id);
 
             if (!result.IsSuccess)
                 throw GraphQlExceptionHelper.Get(result.ErrorMessage!);

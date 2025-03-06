@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests.Base.GraphQl;
+namespace UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 
 public class GraphQlExceptionBaseFunctionalTest : IClassFixture<GraphQlExceptionFunctionalTestWebAppFactory>
 {
