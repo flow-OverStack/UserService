@@ -6,14 +6,14 @@ using UserService.Tests.Configurations;
 
 namespace UserService.Tests.UnitTests.ServiceFactories;
 
-public class GraphQlServiceFactory
+public class GetRoleServiceFactory
 {
-    private readonly IGraphQlService _graphQlService;
+    private readonly IGetRoleService _getRoleService;
     public readonly IBaseRepository<Role> RoleRepository = MockRepositoriesGetters.GetMockRoleRepository().Object;
 
     public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
 
-    public GraphQlServiceFactory(IBaseRepository<User>? userRepository = null,
+    public GetRoleServiceFactory(IBaseRepository<User>? userRepository = null,
         IBaseRepository<Role>? roleRepository = null)
     {
         if (userRepository != null)
@@ -22,11 +22,11 @@ public class GraphQlServiceFactory
         if (roleRepository != null)
             RoleRepository = roleRepository;
 
-        _graphQlService = new GraphQlService(UserRepository, RoleRepository);
+        _getRoleService = new GetRoleService(UserRepository, RoleRepository);
     }
 
-    public IGraphQlService GetService()
+    public IGetRoleService GetService()
     {
-        return _graphQlService;
+        return _getRoleService;
     }
 }
