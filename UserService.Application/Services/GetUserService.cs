@@ -8,8 +8,8 @@ using UserService.Domain.Result;
 
 namespace UserService.Application.Services;
 
-public class GraphQlService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository)
-    : IGraphQlService
+public class GetUserService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository)
+    : IGetUserService
 {
     public async Task<CollectionResult<User>> GetAllUsersAsync()
     {
@@ -20,32 +20,6 @@ public class GraphQlService(IBaseRepository<User> userRepository, IBaseRepositor
             return CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound);
 
         return CollectionResult<User>.Success(users, count);
-    }
-
-    public async Task<CollectionResult<Role>> GetAllRolesAsync()
-    {
-        var roles = await roleRepository.GetAll().ToArrayAsync();
-        var count = roles.Length;
-
-        if (count == 0)
-            return CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
-
-        return CollectionResult<Role>.Success(roles, count);
-    }
-
-    public async Task<CollectionResult<Role>> GetUserRoles(long userid)
-    {
-        var user = await userRepository.GetAll()
-            .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Id == userid);
-
-        if (user == null)
-            return CollectionResult<Role>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
-
-        var roles = user.Roles.ToArray();
-        var count = roles.Length;
-
-        return CollectionResult<Role>.Success(roles, count);
     }
 
     public async Task<CollectionResult<User>> GetUsersWithRole(long roleId)

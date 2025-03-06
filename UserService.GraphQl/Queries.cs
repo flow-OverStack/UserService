@@ -10,12 +10,12 @@ public class Queries
     [GraphQLDescription("Returns a list of all users")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<User>> GetUsers([Service] IGraphQlService graphQlService)
+    public async Task<IEnumerable<User>> GetUsers([Service] IGetUserService userService)
     {
         CollectionResult<User> result;
         try
         {
-            result = await graphQlService.GetAllUsersAsync();
+            result = await userService.GetAllUsersAsync();
         }
         catch (Exception e)
         {
@@ -32,12 +32,12 @@ public class Queries
     [GraphQLDescription("Returns a list of all roles")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Role>> GetRoles([Service] IGraphQlService graphQlService)
+    public async Task<IEnumerable<Role>> GetRoles([Service] IGetRoleService roleService)
     {
         CollectionResult<Role> result;
         try
         {
-            result = await graphQlService.GetAllRolesAsync();
+            result = await roleService.GetAllRolesAsync();
         }
         catch (Exception e)
         {

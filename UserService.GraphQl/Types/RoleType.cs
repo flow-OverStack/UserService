@@ -1,5 +1,3 @@
-using HotChocolate;
-using HotChocolate.Types;
 using UserService.Domain.Entity;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
@@ -22,12 +20,12 @@ public class RoleType : ObjectType<Role>
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, [Service] IGraphQlService graphQlService)
+        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, [Service] IGetUserService userService)
         {
             CollectionResult<User> result;
             try
             {
-                result = await graphQlService.GetUsersWithRole(role.Id);
+                result = await userService.GetUsersWithRole(role.Id);
             }
             catch (Exception e)
             {
