@@ -17,9 +17,12 @@ internal class TokenServiceFactory
 
     public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
 
-    public TokenServiceFactory()
+    public TokenServiceFactory(IIdentityServer? identityServer = null, IMapper? mapper = null)
     {
-        _tokenService = new TokenService(UserRepository, IdentityServer, Mapper);
+        if (identityServer != null) IdentityServer = identityServer;
+        if (mapper != null) Mapper = mapper;
+
+        _tokenService = new TokenService(IdentityServer, Mapper);
     }
 
     public ITokenService GetService()

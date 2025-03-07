@@ -14,7 +14,6 @@ public class UserType : ObjectType<User>
         descriptor.Field(x => x.Username).Description("The name of the user.");
         descriptor.Field(x => x.Email).Description("The email address of the user.");
         descriptor.Field(x => x.LastLoginAt).Description("The last login time of the user.");
-        descriptor.Field(x => x.UserToken).Ignore();
         descriptor.Field(x => x.Reputation).Description("The reputation of the user.");
         descriptor.Field(x => x.Roles).Description("The roles of the user.");
         descriptor.Field(x => x.CreatedAt).Description("User creation time.");

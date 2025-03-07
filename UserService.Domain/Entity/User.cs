@@ -11,8 +11,6 @@ public class User : IEntityId<long>, IAuditable
     public string Username { get; set; }
     public string Email { get; set; }
     public DateTime LastLoginAt { get; set; } //is updated at successful login ot token update  
-
-    public UserToken UserToken { get; set; }
     public int Reputation { get; set; }
 
     public int ReputationEarnedToday { get; set; }

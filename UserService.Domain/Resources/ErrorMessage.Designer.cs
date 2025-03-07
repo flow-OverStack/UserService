@@ -105,15 +105,6 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid client request.
-        /// </summary>
-        public static string InvalidClientRequest {
-            get {
-                return ResourceManager.GetString("InvalidClientRequest", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Invalid token.
         /// </summary>
         public static string InvalidToken {

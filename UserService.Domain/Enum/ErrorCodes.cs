@@ -18,6 +18,7 @@ public enum ErrorCodes
 
     PasswordIsWrong = 31,
     EmailNotValid = 32,
+    InvalidToken = 33,
 
     RoleAlreadyExists = 41,
     RoleNotFound = 42,

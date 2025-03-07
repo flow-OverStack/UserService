@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using UserService.Domain.Dto.Token;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
-using UserService.Tests.Extensions;
+using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
@@ -19,7 +19,6 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
         //Arrange
         var dto = new RefreshTokenDto
         {
-            AccessToken = TokenExtensions.GetRsaToken("testuser1"),
             RefreshToken = "TestRefreshToken1"
         };
 
@@ -41,8 +40,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
         //Arrange
         var dto = new RefreshTokenDto
         {
-            AccessToken = TokenExtensions.GetHmacToken("testuser1"),
-            RefreshToken = "TestRefreshToken1"
+            RefreshToken = TestConstants.WrongRefreshToken
         };
 
         //Act

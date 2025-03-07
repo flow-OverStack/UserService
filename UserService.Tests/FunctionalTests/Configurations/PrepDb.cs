@@ -37,16 +37,9 @@ internal static class PrepDb
 
 
         var userRoles = MockRepositoriesGetters.GetUserRoles();
-        var userTokens = MockRepositoriesGetters.GetUserTokens().Select(x => new UserToken
-        {
-            RefreshToken = x.RefreshToken,
-            RefreshTokenExpiryTime = x.RefreshTokenExpiryTime,
-            UserId = x.UserId
-        });
 
         dbContext.Set<User>().AddRange(users);
         dbContext.Set<UserRole>().AddRange(userRoles);
-        dbContext.Set<UserToken>().AddRange(userTokens);
 
         dbContext.SaveChanges();
     }

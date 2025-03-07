@@ -1,7 +1,6 @@
-using Microsoft.IdentityModel.Tokens;
 using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
+using UserService.Domain.Dto.Token;
 
 namespace UserService.Domain.Interfaces.Services;
 
@@ -22,14 +21,14 @@ public interface IIdentityServer
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<KeycloakUserTokenDto> LoginUserAsync(KeycloakLoginUserDto dto);
+    Task<TokenDto> LoginUserAsync(KeycloakLoginUserDto dto);
 
     /// <summary>
     ///     Refresh user's token in keycloak
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<KeycloakUserTokenDto> RefreshTokenAsync(KeycloakRefreshTokenDto dto);
+    Task<TokenDto> RefreshTokenAsync(RefreshTokenDto dto);
 
     /// <summary>
     ///     Update user's roles
@@ -37,12 +36,6 @@ public interface IIdentityServer
     /// <param name="dto"></param>
     /// <returns></returns>
     Task UpdateRolesAsync(KeycloakUpdateRolesDto dto);
-
-    /// <summary>
-    ///     Get validation parameters for keycloak token 
-    /// </summary>
-    /// <returns></returns>
-    Task<TokenValidationParameters> GetTokenValidationParametersAsync();
 
     /// <summary>
     ///     Rolls back the registration of a user; does not catch errors

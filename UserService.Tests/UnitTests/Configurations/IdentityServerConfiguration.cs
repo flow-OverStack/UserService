@@ -1,12 +1,10 @@
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
+using UserService.Domain.Dto.Token;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Interfaces.Services;
 using UserService.Tests.Constants;
-using UserService.Tests.Extensions;
 
 namespace UserService.Tests.UnitTests.Configurations;
 
@@ -16,7 +14,7 @@ internal static class IdentityServerConfiguration
     {
         var mockIdentityServer = new Mock<IIdentityServer>();
 
-        var randomKeycloakUserTokenDto = new KeycloakUserTokenDto
+        var randomKeycloakUserTokenDto = new TokenDto
         {
             AccessToken = "newAccessToken",
             AccessExpires = DateTime.UtcNow.AddSeconds(300), //random value
@@ -34,18 +32,8 @@ internal static class IdentityServerConfiguration
             });
         mockIdentityServer.Setup(x => x.RegisterUserAsync(It.IsAny<KeycloakRegisterUserDto>())).ReturnsAsync(
             new KeycloakUserDto(Guid.NewGuid()));
-        mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<KeycloakRefreshTokenDto>()))
+        mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<RefreshTokenDto>()))
             .ReturnsAsync(randomKeycloakUserTokenDto);
-        mockIdentityServer.Setup(x => x.GetTokenValidationParametersAsync()).ReturnsAsync(new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = TokenExtensions.GetPublicSigningKey(),
-            ValidateIssuer = true,
-            ValidIssuer = TokenExtensions.GetIssuer(),
-            ValidateAudience = true,
-            ValidAudiences = [TokenExtensions.GetAudience(), TokenExtensions.GetServiceAudience()],
-            ValidateLifetime = false
-        });
         mockIdentityServer.Setup(x => x.UpdateRolesAsync(It.IsAny<KeycloakUpdateRolesDto>()));
 
         return mockIdentityServer.Object;

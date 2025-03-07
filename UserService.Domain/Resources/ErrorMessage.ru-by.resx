@@ -30,9 +30,6 @@
     <data name="InvalidToken" xml:space="preserve">
         <value>Невалидный токен</value>
     </data>
-    <data name="InvalidClientRequest" xml:space="preserve">
-        <value>Невалидный запрос клиента</value>
-    </data>
     <data name="RoleAlreadyExists" xml:space="preserve">
         <value>Роль уже существует</value>
     </data>

@@ -8,28 +8,6 @@ namespace UserService.Tests.Configurations;
 
 internal static class MockRepositoriesGetters
 {
-    private static UserToken GetUserToken1()
-    {
-        return new UserToken
-        {
-            Id = 1,
-            RefreshToken = "TestRefreshToken1",
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddSeconds(300), //random value
-            UserId = 1
-        };
-    }
-
-    private static UserToken GetUserToken2()
-    {
-        return new UserToken
-        {
-            Id = 2,
-            RefreshToken = "TestRefreshToken2",
-            RefreshTokenExpiryTime = DateTime.UtcNow.AddMicroseconds(-1), //expired
-            UserId = 2
-        };
-    }
-
     private static Role GetRoleUser()
     {
         return new Role
@@ -203,20 +181,6 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<UserToken>> GetMockUserTokenRepository()
-    {
-        var mockRepository = new Mock<IBaseRepository<UserToken>>();
-        var userTokens = GetUserTokens().BuildMockDbSet();
-
-        mockRepository.Setup(x => x.GetAll()).Returns(userTokens.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<UserToken>()))
-            .ReturnsAsync((UserToken userToken) => userToken);
-        mockRepository.Setup(x => x.Update(It.IsAny<UserToken>())).Returns((UserToken userToken) => userToken);
-        mockRepository.Setup(x => x.Remove(It.IsAny<UserToken>())).Returns((UserToken userToken) => userToken);
-
-        return mockRepository;
-    }
-
     public static Mock<IBaseRepository<UserRole>> GetMockUserRoleRepository()
     {
         var mockRepository = new Mock<IBaseRepository<UserRole>>();
@@ -244,7 +208,6 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 Reputation = User.MinReputation,
                 ReputationEarnedToday = 0,
-                UserToken = GetUserToken1(),
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
             new()
@@ -257,7 +220,6 @@ internal static class MockRepositoriesGetters
                 CreatedAt = DateTime.UtcNow,
                 Reputation = User.MinReputation,
                 ReputationEarnedToday = 0,
-                UserToken = GetUserToken2(),
                 Roles = [GetRoleUser(), GetRoleModer()]
             },
             new()
@@ -290,11 +252,6 @@ internal static class MockRepositoriesGetters
     public static IQueryable<Role> GetRoles()
     {
         return new[] { GetRoleUser(), GetRoleAdmin(), GetRoleModer() }.AsQueryable();
-    }
-
-    public static IQueryable<UserToken> GetUserTokens()
-    {
-        return new[] { GetUserToken1(), GetUserToken2() }.AsQueryable();
     }
 
     public static IQueryable<UserRole> GetUserRoles()

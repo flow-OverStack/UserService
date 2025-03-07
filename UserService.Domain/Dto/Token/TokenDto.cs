@@ -8,5 +8,4 @@ public class TokenDto
     public DateTime AccessExpires { get; set; }
 
     public DateTime RefreshExpires { get; set; }
-    public long UserId { get; set; }
 }

@@ -19,9 +19,6 @@ internal class AuthServiceFactory
 
     public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
 
-    public readonly IBaseRepository<UserToken> UserTokenRepository =
-        MockRepositoriesGetters.GetMockUserTokenRepository().Object;
-
 
     public AuthServiceFactory(IUnitOfWork? unitOfWork = null, IBaseRepository<Role>? roleRepository = null)
     {
@@ -31,8 +28,7 @@ internal class AuthServiceFactory
         if (roleRepository != null)
             RoleRepository = roleRepository;
 
-        _authService = new AuthService(UserRepository, Mapper, IdentityServer, RoleRepository, UnitOfWork,
-            UserTokenRepository);
+        _authService = new AuthService(UserRepository, Mapper, IdentityServer, RoleRepository, UnitOfWork);
     }
 
     public IAuthService GetService()

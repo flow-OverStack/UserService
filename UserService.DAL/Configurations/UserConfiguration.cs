@@ -45,10 +45,5 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 x => x.HasOne<Role>().WithMany().HasForeignKey(y => y.RoleId),
                 x => x.HasOne<User>().WithMany().HasForeignKey(y => y.UserId)
             );
-
-        builder.HasOne<UserToken>(x => x.UserToken)
-            .WithOne(x => x.User)
-            .HasForeignKey<UserToken>(x => x.UserId)
-            .HasPrincipalKey<User>(x => x.Id);
     }
 }

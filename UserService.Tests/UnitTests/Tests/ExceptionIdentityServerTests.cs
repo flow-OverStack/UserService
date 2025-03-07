@@ -1,6 +1,6 @@
 using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
+using UserService.Domain.Dto.Token;
 using UserService.Domain.Entity;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Tests.Constants;
@@ -51,7 +51,10 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new KeycloakRefreshTokenDto("refresh_token");
+        var dto = new RefreshTokenDto
+        {
+            RefreshToken = "refresh_token"
+        };
 
         //Act
         var action = async () => await identityServer.RefreshTokenAsync(dto);
@@ -76,20 +79,6 @@ public class ExceptionIdentityServerTests
 
         //Act
         var action = async () => await identityServer.UpdateRolesAsync(dto);
-
-        //Assert
-        await Assert.ThrowsAsync<IdentityServerInternalException>(action);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task GetTokenValidationParameters_ShouldBe_Exception()
-    {
-        //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
-
-        //Act
-        var action = async () => await identityServer.GetTokenValidationParametersAsync();
 
         //Assert
         await Assert.ThrowsAsync<IdentityServerInternalException>(action);

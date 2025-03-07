@@ -2,6 +2,7 @@ using System.Net;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using UserService.Tests.Constants;
 using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak.HttpModels;
@@ -70,6 +71,23 @@ internal static class WireMockIdentityServerExtensions
                                    {
                                        "error": "invalid_grant",
                                        "error_description": "Invalid user credentials"
+                                   }
+                                   """,
+                    DetectedBodyType = BodyType.String
+                }
+            };
+
+        if (grantType == "refresh_token" && body.TryGetValue("refresh_token", out var refreshToken) &&
+            refreshToken == TestConstants.WrongRefreshToken)
+            return new ResponseMessage
+            {
+                StatusCode = HttpStatusCode.BadRequest,
+                BodyData = new BodyData
+                {
+                    BodyAsString = """
+                                   {
+                                       "error": "invalid_grant",
+                                       "error_description": "Invalid refresh token"
                                    }
                                    """,
                     DetectedBodyType = BodyType.String

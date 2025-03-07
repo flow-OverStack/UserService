@@ -2,14 +2,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
+using UserService.Domain.Dto.Token;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Extensions;
@@ -25,6 +22,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 {
     private const string IdentityServerName = "Keycloak";
     private const string WrongPasswordErrorMessage = "invalid_grant";
+    private const string WrongGrantErrorMessage = "invalid_grant";
     private const string PasswordGrantType = "password";
     private const string RefreshTokenGrantType = "refresh_token";
     private const string ClientCredentialsGrantType = "client_credentials";
@@ -94,7 +92,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         }
     }
 
-    public async Task<KeycloakUserTokenDto> LoginUserAsync(KeycloakLoginUserDto dto)
+    public async Task<TokenDto> LoginUserAsync(KeycloakLoginUserDto dto)
     {
         try
         {
@@ -125,7 +123,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             response.EnsureSuccessStatusCode();
 
-            return new KeycloakUserTokenDto
+            return new TokenDto
             {
                 AccessToken = responseToken.AccessToken,
                 RefreshToken = responseToken.RefreshToken,
@@ -139,7 +137,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         }
     }
 
-    public async Task<KeycloakUserTokenDto> RefreshTokenAsync(KeycloakRefreshTokenDto dto)
+    public async Task<TokenDto> RefreshTokenAsync(RefreshTokenDto dto)
     {
         try
         {
@@ -155,14 +153,24 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             var response = await _httpClient.PostAsync(_keycloakSettings.LoginUrl, content);
 
-            response.EnsureSuccessStatusCode();
-
             var body = await response.Content.ReadAsStringAsync();
             var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
 
-            return new KeycloakUserTokenDto
+            if (!responseToken!.IsValid())
             {
-                AccessToken = responseToken!.AccessToken,
+                var errorResponse = JsonConvert.DeserializeObject<KeycloakErrorResponse>(body);
+
+                if (errorResponse!.Error == WrongGrantErrorMessage)
+                    throw new IdentityServerInvalidTokenException(IdentityServerName,
+                        errorResponse.ErrorDescription);
+            }
+
+            response.EnsureSuccessStatusCode();
+
+
+            return new TokenDto
+            {
+                AccessToken = responseToken.AccessToken,
                 RefreshToken = responseToken.RefreshToken,
                 AccessExpires = DateTime.UtcNow.AddSeconds(responseToken.AccessExpiresIn),
                 RefreshExpires = DateTime.UtcNow.AddSeconds(responseToken.RefreshExpiresIn)
@@ -196,41 +204,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
                 content);
 
             response.EnsureSuccessStatusCode();
-        }
-        catch (Exception e) when (e is not IdentityServerBusinessException)
-        {
-            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
-        }
-    }
-
-    public async Task<TokenValidationParameters> GetTokenValidationParametersAsync()
-    {
-        try
-        {
-            var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                _keycloakSettings.MetadataAddress,
-                new OpenIdConnectConfigurationRetriever(),
-                new HttpDocumentRetriever
-                {
-                    RequireHttps = false
-                });
-
-            var openIdConfiguration = await configurationManager.GetConfigurationAsync();
-
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = true,
-                ValidateIssuer = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKeys = openIdConfiguration.SigningKeys,
-                ValidateLifetime = false,
-                ValidAudience = _keycloakSettings.Audience,
-                ValidIssuer = openIdConfiguration.Issuer
-            };
-
-
-            return tokenValidationParameters;
         }
         catch (Exception e) when (e is not IdentityServerBusinessException)
         {

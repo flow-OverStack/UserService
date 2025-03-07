@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Dto.Keycloak.Token;
 using UserService.Domain.Dto.Keycloak.User;
 using UserService.Domain.Dto.Token;
 using UserService.Domain.Dto.User;
@@ -20,8 +19,7 @@ public class AuthService(
     IMapper mapper,
     IIdentityServer identityServer,
     IBaseRepository<Role> roleRepository,
-    IUnitOfWork unitOfWork,
-    IBaseRepository<UserToken> userTokenRepository)
+    IUnitOfWork unitOfWork)
     : IAuthService
 {
     public async Task<BaseResult<UserDto>> Register(RegisterUserDto dto)
@@ -109,42 +107,18 @@ public class AuthService(
         if (user == null)
             return BaseResult<TokenDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var userToken = await userTokenRepository.GetAll().FirstOrDefaultAsync(x => x.UserId == user.Id);
         var keycloakDto = mapper.Map<KeycloakLoginUserDto>(user);
         keycloakDto.Password = password;
 
         var keycloakSafeResponse = await SafeLoginUser(identityServer, keycloakDto);
         if (!keycloakSafeResponse.IsSuccess)
-            return BaseResult<TokenDto>.Failure(keycloakSafeResponse.ErrorMessage!, keycloakSafeResponse.ErrorCode);
+            return keycloakSafeResponse;
 
-        var keycloakResponse = keycloakSafeResponse.Data;
-
-        if (userToken == null)
-        {
-            userToken = new UserToken
-            {
-                UserId = user.Id,
-                RefreshToken = keycloakResponse.RefreshToken,
-                RefreshTokenExpiryTime = keycloakResponse.RefreshExpires
-            };
-            await userTokenRepository.CreateAsync(userToken);
-        }
-        else
-        {
-            userToken.RefreshToken = keycloakResponse.RefreshToken;
-            userToken.RefreshTokenExpiryTime = keycloakResponse.RefreshExpires;
-            userTokenRepository.Update(userToken);
-        }
-
-        await userTokenRepository.SaveChangesAsync();
         user.LastLoginAt = DateTime.UtcNow;
         userRepository.Update(user);
         await userRepository.SaveChangesAsync();
 
-        var tokenDto = mapper.Map<TokenDto>(keycloakResponse);
-        tokenDto.UserId = user.Id;
-
-        return BaseResult<TokenDto>.Success(tokenDto);
+        return BaseResult<TokenDto>.Success(keycloakSafeResponse.Data);
     }
 
     private static bool IsEmail(string email)
@@ -154,18 +128,18 @@ public class AuthService(
         return emailRegex.IsMatch(email);
     }
 
-    private static async Task<BaseResult<KeycloakUserTokenDto>> SafeLoginUser(IIdentityServer identityServer,
-        KeycloakLoginUserDto userDto)
+    private static async Task<BaseResult<TokenDto>> SafeLoginUser(IIdentityServer identityServer,
+        KeycloakLoginUserDto dto)
     {
         try
         {
-            var response = await identityServer.LoginUserAsync(userDto);
-            return BaseResult<KeycloakUserTokenDto>.Success(response);
+            var response = await identityServer.LoginUserAsync(dto);
+            return BaseResult<TokenDto>.Success(response);
         }
         catch (IdentityServerBusinessException e)
         {
             var baseResult = e.GetBaseResult();
-            return BaseResult<KeycloakUserTokenDto>.Failure(baseResult.ErrorMessage!, baseResult.ErrorCode);
+            return BaseResult<TokenDto>.Failure(baseResult.ErrorMessage!, baseResult.ErrorCode);
         }
     }
 }
