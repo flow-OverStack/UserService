@@ -11,8 +11,7 @@ public abstract class IdentityServerException : Exception
     }
 
     protected IdentityServerException(string identityServerName, string message, Exception innerException) : base(
-        message,
-        innerException)
+        message, innerException)
     {
         IdentityServerName = identityServerName;
     }
