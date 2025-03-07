@@ -6,6 +6,7 @@ using UserService.BackgroundTasks;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
+using UserService.Grpc.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
 using UserService.ReputationConsumer.DependencyInjection;
 
@@ -22,6 +23,7 @@ builder.Services.AddAuthenticationAndAuthorization();
 builder.Services.AddIdentityServer();
 builder.Services.AddSwagger();
 builder.Services.AddGraphQl();
+builder.Services.AddGrpcServices();
 builder.Services.AddMassTransitServices();
 builder.Services.AddHangfire(builder.Configuration);
 
@@ -46,6 +48,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.MapControllers();
 app.UseGraphQl();
+app.UseGrpcServices();
 app.SetupHangfire();
 
 app.UseAuthentication();

@@ -22,6 +22,16 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         return CollectionResult<User>.Success(users, count);
     }
 
+    public async Task<BaseResult<User>> GetUserByIdAsync(long id)
+    {
+        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+
+        if (user == null)
+            return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+
+        return BaseResult<User>.Success(user);
+    }
+
     public async Task<CollectionResult<User>> GetUsersWithRole(long roleId)
     {
         var role = await roleRepository.GetAll()

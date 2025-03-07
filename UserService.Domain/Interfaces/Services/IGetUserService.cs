@@ -12,6 +12,12 @@ public interface IGetUserService
     Task<CollectionResult<User>> GetAllUsersAsync();
 
     /// <summary>
+    ///     Get user by id
+    /// </summary>
+    /// <returns></returns>
+    Task<BaseResult<User>> GetUserByIdAsync(long id);
+
+    /// <summary>
     ///     Get all users who have the role by its id
     /// </summary>
     /// <param name="roleId"></param>
