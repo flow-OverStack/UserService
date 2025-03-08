@@ -18,6 +18,13 @@ public class WarningHandlingMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
+        // Checks if request is gRPC
+        if (httpContext.Request.ContentType?.StartsWith("application/grpc") == true)
+        {
+            await _next(httpContext);
+            return;
+        }
+
         // Save the original response body stream
         var originalResponseBody = httpContext.Response.Body;
 
@@ -38,7 +45,7 @@ public class WarningHandlingMiddleware
                 var responseBody = await new StreamReader(swapStream).ReadToEndAsync();
                 swapStream.Seek(0, SeekOrigin.Begin);
 
-                var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!; // Object means any type
+                var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!;
 
                 _logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
                     data.ErrorMessage!,
