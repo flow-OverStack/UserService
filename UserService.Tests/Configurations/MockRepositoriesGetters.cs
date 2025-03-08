@@ -8,6 +8,9 @@ namespace UserService.Tests.Configurations;
 
 internal static class MockRepositoriesGetters
 {
+    public const int MinReputation = 1;
+    public const int MaxDailyReputation = 200;
+
     private static Role GetRoleUser()
     {
         return new Role
@@ -206,7 +209,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = User.MinReputation,
+                Reputation = MinReputation,
                 ReputationEarnedToday = 0,
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
@@ -218,7 +221,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = User.MinReputation,
+                Reputation = MinReputation,
                 ReputationEarnedToday = 0,
                 Roles = [GetRoleUser(), GetRoleModer()]
             },
@@ -231,7 +234,7 @@ internal static class MockRepositoriesGetters
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
                 Reputation = 200,
-                ReputationEarnedToday = User.MaxDailyReputation,
+                ReputationEarnedToday = MaxDailyReputation,
                 Roles = [GetRoleModer()]
             },
             new() //user without roles
@@ -242,7 +245,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser5@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = User.MinReputation,
+                Reputation = MinReputation,
                 ReputationEarnedToday = 0,
                 Roles = []
             }

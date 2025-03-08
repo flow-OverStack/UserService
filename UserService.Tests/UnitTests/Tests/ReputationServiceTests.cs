@@ -1,6 +1,6 @@
 using UserService.Domain.Dto.User;
-using UserService.Domain.Entity;
 using UserService.Domain.Resources;
+using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.ServiceFactories;
 using Xunit;
 
@@ -64,7 +64,7 @@ public class ReputationServiceTests
     {
         //Arrange
         var reputationService = new ReputationServiceFactory().GetService();
-        var dto = new ReputationIncreaseDto(3, User.MaxDailyReputation + 1);
+        var dto = new ReputationIncreaseDto(3, MockRepositoriesGetters.MaxDailyReputation + 1);
 
         //Act
         var result = await reputationService.IncreaseReputationAsync(dto);

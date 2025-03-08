@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using UserService.Domain.Dto.User;
 using UserService.Domain.Entity;
 using UserService.Domain.Enum;
@@ -6,11 +7,15 @@ using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
+using UserService.Domain.Settings;
 
 namespace UserService.Application.Services;
 
-public class ReputationService(IBaseRepository<User> userRepository) : IReputationService, IReputationResetService
+public class ReputationService(IBaseRepository<User> userRepository, IOptions<BusinessRules> businessRules)
+    : IReputationService, IReputationResetService
 {
+    private readonly BusinessRules _businessRules = businessRules.Value;
+
     public async Task<BaseResult> ResetEarnedTodayReputation()
     {
         await userRepository.GetAll().ExecuteUpdateAsync(x => x.SetProperty(y => y.ReputationEarnedToday, 0));
@@ -39,7 +44,7 @@ public class ReputationService(IBaseRepository<User> userRepository) : IReputati
 
         await userRepository.SaveChangesAsync();
 
-        var remainingDailyLimit = User.MaxDailyReputation - user.ReputationEarnedToday;
+        var remainingDailyLimit = _businessRules.MaxDailyReputation - user.ReputationEarnedToday;
 
         return BaseResult<ReputationDto>.Success(new ReputationDto
         {
@@ -69,7 +74,7 @@ public class ReputationService(IBaseRepository<User> userRepository) : IReputati
 
         await userRepository.SaveChangesAsync();
 
-        var remainingDailyLimit = User.MaxDailyReputation - user.ReputationEarnedToday;
+        var remainingDailyLimit = _businessRules.MaxDailyReputation - user.ReputationEarnedToday;
 
         return BaseResult<ReputationDto>.Success(new ReputationDto
         {
@@ -79,20 +84,20 @@ public class ReputationService(IBaseRepository<User> userRepository) : IReputati
         });
     }
 
-    private static int CalculateReputationToIncrease(int reputationEarnedToday, int reputationToIncrease)
+    private int CalculateReputationToIncrease(int reputationEarnedToday, int reputationToIncrease)
     {
-        var remainingReputation = User.MaxDailyReputation - reputationEarnedToday;
+        var remainingReputation = _businessRules.MaxDailyReputation - reputationEarnedToday;
         if (remainingReputation > 0)
             return Math.Min(remainingReputation, reputationToIncrease);
 
         return 0;
     }
 
-    private static int CalculateReputationToDecrease(int currentReputation, int reputationToDecrease)
+    private int CalculateReputationToDecrease(int currentReputation, int reputationToDecrease)
     {
         var newReputation = currentReputation - reputationToDecrease;
-        if (newReputation < User.MinReputation)
-            return currentReputation - User.MinReputation;
+        if (newReputation < _businessRules.MinReputation)
+            return currentReputation - _businessRules.MinReputation;
 
         return reputationToDecrease;
     }

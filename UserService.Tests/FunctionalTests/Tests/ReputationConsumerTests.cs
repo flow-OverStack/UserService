@@ -5,6 +5,7 @@ using Moq;
 using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.ReputationConsumer.Events;
+using UserService.Tests.Configurations;
 using UserService.Tests.FunctionalTests.Base.Kafka;
 using Xunit;
 
@@ -101,7 +102,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
 
         //Assert
         Assert.NotNull(user);
-        Assert.Equal(User.MaxDailyReputation, user.ReputationEarnedToday);
+        Assert.Equal(MockRepositoriesGetters.MaxDailyReputation, user.ReputationEarnedToday);
         Assert.Equal(initialReputation, user.Reputation);
     }
 
@@ -127,7 +128,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
 
         //Assert
         Assert.NotNull(user);
-        Assert.Equal(User.MinReputation, user.Reputation);
+        Assert.Equal(MockRepositoriesGetters.MinReputation, user.Reputation);
         Assert.Equal(initialReputationEarnedToday, user.ReputationEarnedToday);
     }
 

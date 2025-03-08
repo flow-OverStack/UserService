@@ -4,9 +4,6 @@ namespace UserService.Domain.Entity;
 
 public class User : IEntityId<long>, IAuditable
 {
-    public const int MaxDailyReputation = 200;
-    public const int MinReputation = 1;
-
     public Guid KeycloakId { get; set; }
     public string Username { get; set; }
     public string Email { get; set; }
