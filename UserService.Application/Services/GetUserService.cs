@@ -24,7 +24,9 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
 
     public async Task<BaseResult<User>> GetUserByIdAsync(long id)
     {
-        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+        var user = await userRepository.GetAll()
+            .Include(x => x.Roles)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
             return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
