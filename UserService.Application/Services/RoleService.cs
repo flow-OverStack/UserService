@@ -1,4 +1,5 @@
 using AutoMapper;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Dto.Keycloak.Roles;
 using UserService.Domain.Dto.Role;
@@ -70,7 +71,7 @@ public class RoleService(
 
                 if (!areRolesUpdated) throw;
 
-                await RollbackRolesAsync(usersWithRoleToDelete);
+                RollbackRoles(usersWithRoleToDelete);
 
                 throw;
             }
@@ -107,7 +108,7 @@ public class RoleService(
                 if (!areRolesUpdated) throw;
 
                 var usersWithOldRole = await GetUsersWithRoleAsync(role.Id);
-                await RollbackRolesAsync(usersWithOldRole);
+                RollbackRoles(usersWithOldRole);
 
                 throw;
             }
@@ -162,7 +163,7 @@ public class RoleService(
                 if (!areRolesUpdated) throw;
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
-                await RollbackRolesAsync(new[] { userWithOldRole! });
+                RollbackRoles(new[] { userWithOldRole! });
 
                 throw;
             }
@@ -214,7 +215,7 @@ public class RoleService(
                 if (!areRolesUpdated) throw;
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
-                await RollbackRolesAsync(new[] { userWithOldRole! });
+                RollbackRoles(new[] { userWithOldRole! });
 
                 throw;
             }
@@ -288,7 +289,7 @@ public class RoleService(
                 if (!areRolesUpdated) throw;
 
                 var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id);
-                await RollbackRolesAsync(new[] { userWithOldRole! });
+                RollbackRoles(new[] { userWithOldRole! });
 
                 throw;
             }
@@ -329,14 +330,13 @@ public class RoleService(
         await Task.WhenAll(updateTasks);
     }
 
-    private async Task RollbackRolesAsync(IEnumerable<User> users)
+    private void RollbackRoles(IEnumerable<User> users)
     {
-        var rollbackTasks = users.Select(user =>
+        foreach (var user in users)
         {
             var dto = mapper.Map<KeycloakUpdateRolesDto>(user);
-            return identityServer.RollbackUpdateRolesAsync(dto);
-        });
-
-        await Task.WhenAll(rollbackTasks);
+            dto.NewRoles.ForEach(x => x.Users = null!); //Removing loop dependencies
+            BackgroundJob.Enqueue(() => identityServer.RollbackUpdateRolesAsync(dto));
+        }
     }
 }

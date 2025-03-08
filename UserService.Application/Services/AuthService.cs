@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using AutoMapper;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Dto.Keycloak.User;
 using UserService.Domain.Dto.Token;
@@ -74,7 +75,7 @@ public class AuthService(
             {
                 await transaction.RollbackAsync();
                 if (keycloakResponse != null)
-                    await identityServer.RollbackRegistration(keycloakResponse.KeycloakId);
+                    BackgroundJob.Enqueue(() => identityServer.RollbackRegistration(keycloakResponse.KeycloakId));
 
                 throw;
             }

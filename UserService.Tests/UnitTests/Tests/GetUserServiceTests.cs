@@ -43,6 +43,38 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task GetUserById_ShouldBe_Success()
+    {
+        //Arrange
+        const long userId = 1;
+        var getUserService = new GetUserServiceFactory().GetService();
+
+        //Act
+        var result = await getUserService.GetUserByIdAsync(userId);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUserById_ShouldBe_UserNotFound()
+    {
+        //Arrange
+        const long userId = 0;
+        var getUserService = new GetUserServiceFactory().GetService();
+
+        //Act
+        var result = await getUserService.GetUserByIdAsync(userId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task GetUserWithRole_ShouldBe_Success()
     {
         //Arrange
