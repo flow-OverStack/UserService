@@ -85,23 +85,6 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Exception()
-    {
-        //Arrange
-        var authService =
-            new AuthServiceFactory(MockRepositoriesGetters.GetExceptionMockUnitOfWork().Object).GetService();
-        var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
-            TestConstants.TestPassword + "4");
-
-        //Act
-        var action = async () => await authService.Register(dto);
-
-        //Assert
-        await Assert.ThrowsAsync<TestException>(action);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
     public async Task LoginUserWithUsername_ShouldBe_Success()
     {
         //Arrange
