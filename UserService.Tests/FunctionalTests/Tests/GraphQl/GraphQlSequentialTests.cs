@@ -7,7 +7,6 @@ using UserService.DAL;
 using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Tests.Constants;
-using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
 using Xunit;
@@ -15,14 +14,8 @@ using Xunit;
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
 [Collection("GraphQlSequentialTests")]
-public class GraphQlSequentialTests : SequentialFunctionalTest
+public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    public GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : base(factory)
-    {
-        const string serviceName = "testservice1";
-        HttpClient.SetGraphQlAuthHeaders(serviceName);
-    }
-
     [Trait("Category", "Functional")]
     [Fact]
     public async Task GetAll_ShouldBe_NotFoundError()

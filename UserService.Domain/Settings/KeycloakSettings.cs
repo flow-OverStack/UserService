@@ -7,7 +7,6 @@ public class KeycloakSettings
     public string AdminToken { get; set; }
     public string ClientId { get; set; }
     public string Audience { get; set; }
-    public string ServiceAudience { get; set; }
     public string UserIdAttributeName { get; set; }
     public string RolesAttributeName { get; set; }
     public string MetadataAddress => $"{Host}/realms/{Realm}/.well-known/openid-configuration";

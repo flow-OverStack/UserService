@@ -4,21 +4,15 @@ using Newtonsoft.Json;
 using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
-using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GraphQlExceptionTests : GraphQlExceptionBaseFunctionalTest
+public class GraphQlExceptionTests(GraphQlExceptionFunctionalTestWebAppFactory factory)
+    : GraphQlExceptionBaseFunctionalTest(factory)
 {
-    public GraphQlExceptionTests(GraphQlExceptionFunctionalTestWebAppFactory factory) : base(factory)
-    {
-        const string serviceName = "testservice1";
-        HttpClient.SetGraphQlAuthHeaders(serviceName);
-    }
-
     [Trait("Category", "Functional")]
     [Fact]
     public async Task GetAll_ShouldBe_ServerError()

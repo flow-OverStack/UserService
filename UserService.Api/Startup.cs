@@ -36,11 +36,9 @@ public static class Startup
 
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
-            options.Audience = keycloakSettings.Audience; //Default audience
+            options.Audience = keycloakSettings.Audience;
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidAudiences =
-                    [keycloakSettings.Audience, keycloakSettings.ServiceAudience], //Additional valid service audience
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
