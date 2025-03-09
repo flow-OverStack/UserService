@@ -5,9 +5,9 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using UserService.Domain.Entity;
 
-namespace UserService.Tests.Extensions;
+namespace UserService.Tests.FunctionalTests.Helpers;
 
-internal static class TokenExtensions
+internal static class TokenHelper
 {
     private const string Audience = "TestAudience";
     private const string Issuer = "TestIssuer";
@@ -19,7 +19,7 @@ internal static class TokenExtensions
 
     private static readonly string PublicJwk;
 
-    static TokenExtensions()
+    static TokenHelper()
     {
         var rsa = RSA.Create();
         PrivateKey = new RsaSecurityKey(rsa);

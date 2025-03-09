@@ -3,9 +3,9 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Tests.Constants;
-using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak.HttpModels;
+using UserService.Tests.FunctionalTests.Helpers;
 using WireMock;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -45,7 +45,7 @@ internal static class WireMockIdentityServerExtensions
         server.Given(Request.Create().WithPath($"/realms/{RealmName}/protocol/openid-connect/certs").UsingGet())
             .RespondWith(Response.Create()
                 .WithHeader("Content-Type", "application/json")
-                .WithBody(TokenExtensions.GetJwk()).WithSuccess());
+                .WithBody(TokenHelper.GetJwk()).WithSuccess());
     }
 
     private static void ConfigureTokenEndpoint(this WireMockServer server, IServiceCollection services)
@@ -218,7 +218,7 @@ internal static class WireMockIdentityServerExtensions
 
         response = response.Replace("{{Port}}", serverPort.ToString());
         response = response.Replace("{{Realm}}", RealmName);
-        response = response.Replace("{{Issuer}}", TokenExtensions.GetIssuer());
+        response = response.Replace("{{Issuer}}", TokenHelper.GetIssuer());
 
         return response;
     }

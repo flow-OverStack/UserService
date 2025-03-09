@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 using UserService.DAL;
 using UserService.Domain.Entity;
 using UserService.Domain.Resources;
-using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
-using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl;
+using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
@@ -22,10 +22,10 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
     {
         //Arrange
         DeleteUsersAndRoles();
-        var requestBody = new { query = GraphQlConstants.RequestAllQuery };
+        var requestBody = new { query = GraphQlHelper.RequestAllQuery };
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlConstants.GraphQlEndpoint, requestBody);
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
 

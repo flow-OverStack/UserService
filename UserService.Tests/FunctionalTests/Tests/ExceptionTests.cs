@@ -11,8 +11,8 @@ using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
 using UserService.Tests.Constants;
-using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Base.Exception;
+using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
@@ -21,7 +21,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 {
     public ExceptionTests(ExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {
-        var accessToken = TokenExtensions.GetRsaTokenWithRoleClaims("testuser1", [
+        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
             new Role { Name = "User" },
             new Role { Name = "Admin" }
         ]);

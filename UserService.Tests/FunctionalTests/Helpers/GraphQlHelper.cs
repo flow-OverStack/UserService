@@ -1,6 +1,6 @@
-namespace UserService.Tests.Constants;
+namespace UserService.Tests.FunctionalTests.Helpers;
 
-public static class GraphQlConstants
+public static class GraphQlHelper
 {
     public const string RequestAllQuery = """
                                           {
@@ -29,4 +29,25 @@ public static class GraphQlConstants
                                           """;
 
     public const string GraphQlEndpoint = "/graphql";
+
+    public static string RequestUserByIdQuery(long id)
+    {
+      return """
+             {
+               user(id: $ID){
+                 id
+                 keycloakId
+                 username
+                 email
+                 lastLoginAt
+                 reputation
+                 createdAt
+                 roles{
+                   id
+                   name
+                 }
+               }
+             }
+             """.Replace("$ID", id.ToString());
+    }
 }

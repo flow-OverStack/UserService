@@ -1,9 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
-using UserService.Tests.Constants;
+using UserService.Domain.Resources;
 using UserService.Tests.FunctionalTests.Base;
-using UserService.Tests.FunctionalTests.Configurations.GrpahQl;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl;
+using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
@@ -15,16 +16,53 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
     public async Task GetAll_ShouldBe_Success()
     {
         //Arrange
-        var requestBody = new { query = GraphQlConstants.RequestAllQuery };
+        var requestBody = new { query = GraphQlHelper.RequestAllQuery };
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlConstants.GraphQlEndpoint, requestBody);
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlResponse>(body);
+        var result = JsonConvert.DeserializeObject<GraphQlGetAllResponse>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(result!.Data.Users);
         Assert.NotNull(result.Data.Roles);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetUserById_ShouldBe_Success()
+    {
+        //Arrange
+        const long userId = 1;
+        var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(userId) };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlGetUserByIdResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result!.Data.User);
+        Assert.NotNull(result.Data.User.Roles);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetUserById_ShouldBe_UserNotFound()
+    {
+        //Arrange
+        const long userId = 0;
+        var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(userId) };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.Errors.Any(x => x.Message == ErrorMessage.UserNotFound));
     }
 }

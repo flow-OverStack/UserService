@@ -8,8 +8,8 @@ using UserService.Domain.Dto.UserRole;
 using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Domain.Result;
-using UserService.Tests.Extensions;
 using UserService.Tests.FunctionalTests.Base;
+using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
@@ -19,7 +19,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 {
     public RoleServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
     {
-        var accessToken = TokenExtensions.GetRsaTokenWithRoleClaims("testuser1", [
+        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
             new Role { Name = "User" },
             new Role { Name = "Admin" }
         ]);

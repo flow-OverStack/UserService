@@ -9,6 +9,7 @@
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="14.0.0"/>
         <PackageReference Include="FluentAssertions" Version="8.0.0"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.67.0"/>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0"/>
         <PackageReference Include="MockQueryable.Moq" Version="7.0.3"/>
@@ -28,6 +29,10 @@
         <ProjectReference Include="..\UserService.Application\UserService.Application.csproj"/>
         <ProjectReference Include="..\UserService.DAL\UserService.DAL.csproj"/>
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\UserService.proto" GrpcServices="Client"/>
     </ItemGroup>
 
 </Project>
