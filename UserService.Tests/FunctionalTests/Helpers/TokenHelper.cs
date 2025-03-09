@@ -13,8 +13,6 @@ internal static class TokenHelper
     private const string Issuer = "TestIssuer";
     private const string Kid = "test-key-id";
 
-    private static readonly RsaSecurityKey PublicKey;
-
     private static readonly RsaSecurityKey PrivateKey;
 
     private static readonly string PublicJwk;
@@ -23,11 +21,11 @@ internal static class TokenHelper
     {
         var rsa = RSA.Create();
         PrivateKey = new RsaSecurityKey(rsa);
-        PublicKey = new RsaSecurityKey(rsa.ExportParameters(false));
+        var publicKey = new RsaSecurityKey(rsa.ExportParameters(false));
 
         PrivateKey.KeyId = Kid;
 
-        var rsaParams = PublicKey.Parameters;
+        var rsaParams = publicKey.Parameters;
 
         var modulus = Base64UrlEncode(rsaParams.Modulus!);
         var exponent = Base64UrlEncode(rsaParams.Exponent!);
