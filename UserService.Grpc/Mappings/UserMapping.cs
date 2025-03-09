@@ -1,4 +1,5 @@
 using AutoMapper;
+using UserService.Domain.Entity;
 
 namespace UserService.Grpc.Mappings;
 
@@ -6,6 +7,6 @@ public class UserMapping : Profile
 {
     public UserMapping()
     {
-        CreateMap<Domain.Entity.User, User>().ReverseMap();
+        CreateMap<User, GrpcUser>().ReverseMap();
     }
 }

@@ -6,7 +6,7 @@ namespace UserService.Grpc.Services;
 
 public class GrpcUserService(IGetUserService userService, IMapper mapper) : UserService.UserServiceBase
 {
-    public override async Task<User> GetUserById(GetUserByIdRequest request, ServerCallContext context)
+    public override async Task<GrpcUser> GetUserById(GetUserByIdRequest request, ServerCallContext context)
     {
         var result = await userService.GetUserByIdAsync(request.UserId);
 
@@ -14,6 +14,6 @@ public class GrpcUserService(IGetUserService userService, IMapper mapper) : User
             throw new RpcException(new Status(StatusCode.InvalidArgument, result.ErrorMessage!),
                 new Metadata { { nameof(result.ErrorCode), result.ErrorCode.ToString()! } });
 
-        return mapper.Map<User>(result.Data);
+        return mapper.Map<GrpcUser>(result.Data);
     }
 }
