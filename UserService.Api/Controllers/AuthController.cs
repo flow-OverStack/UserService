@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using UserService.Api.Controllers.Base;
 using UserService.Domain.Dto.Token;
 using UserService.Domain.Dto.User;
 using UserService.Domain.Interfaces.Services;
@@ -7,18 +8,12 @@ using UserService.Domain.Result;
 namespace UserService.Api.Controllers;
 
 /// <summary>
-///     authentication controller
+///     Authentication controller
 /// </summary>
-/// \
 /// <response code="200">If user was registered/logged in</response>
 /// <response code="400">If user was not registered/logged in</response>
 /// <response code="500">If internal server error occured</response>
-[ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService) : BaseController
 {
     /// <summary>
     ///     user registration
@@ -28,10 +23,9 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<BaseResult<UserDto>>> Register([FromBody] RegisterUserDto dto)
     {
-        var response = await authService.Register(dto);
-        if (response.IsSuccess) return Ok(response);
+        var result = await authService.Register(dto);
 
-        return BadRequest(response);
+        return HandleResult(result);
     }
 
     /// <summary>
@@ -42,10 +36,9 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("login-email")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginEmailUserDto dto)
     {
-        var response = await authService.LoginWithEmail(dto);
-        if (response.IsSuccess) return Ok(response);
+        var result = await authService.LoginWithEmail(dto);
 
-        return BadRequest(response);
+        return HandleResult(result);
     }
 
     /// <summary>
@@ -56,9 +49,8 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("login-username")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUsernameUserDto dto)
     {
-        var response = await authService.LoginWithUsername(dto);
-        if (response.IsSuccess) return Ok(response);
+        var result = await authService.LoginWithUsername(dto);
 
-        return BadRequest(response);
+        return HandleResult(result);
     }
 }

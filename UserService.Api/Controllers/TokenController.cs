@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using UserService.Api.Controllers.Base;
 using UserService.Domain.Dto.Token;
 using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Result;
 
 namespace UserService.Api.Controllers;
 
@@ -10,12 +12,7 @@ namespace UserService.Api.Controllers;
 /// <response code="200">If new access token was received</response>
 /// <response code="400">If new access token was not received</response>
 /// <response code="500">If internal server error occured</response>
-[ApiController]
-[Route("api/v{version:apiVersion}/[controller]")]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-public class TokenController(ITokenService tokenService) : ControllerBase
+public class TokenController(ITokenService tokenService) : BaseController
 {
     /// <summary>
     ///     Refreshes user's token
@@ -23,11 +20,10 @@ public class TokenController(ITokenService tokenService) : ControllerBase
     /// <param name="dto"></param>
     /// <returns></returns>
     [HttpPost("refresh")]
-    public async Task<ActionResult<TokenDto>> RefreshToken([FromBody] RefreshTokenDto dto)
+    public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto)
     {
-        var response = await tokenService.RefreshToken(dto);
-        if (response.IsSuccess) return Ok(response);
+        var result = await tokenService.RefreshToken(dto);
 
-        return BadRequest(response);
+        return HandleResult(result);
     }
 }
