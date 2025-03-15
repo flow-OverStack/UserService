@@ -12,7 +12,8 @@ namespace UserService.Tests.FunctionalTests.Base.Exception.ReputationResetJob;
 
 public class ReputationResetJobExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
-    private static IBaseRepository<User> GetExceptionMockUserRepository(IBaseRepository<User> originalUserRepository)
+    private static Mock<IBaseRepository<User>> GetExceptionMockUserRepository(
+        IBaseRepository<User> originalUserRepository)
     {
         var mockRepository = new Mock<IBaseRepository<User>>();
 
@@ -21,7 +22,7 @@ public class ReputationResetJobExceptionFunctionalTestWebAppFactory : Functional
         mockRepository.Setup(x => x.Update(It.IsAny<User>())).Returns(originalUserRepository.Update);
         mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).Returns(originalUserRepository.CreateAsync);
 
-        return mockRepository.Object;
+        return mockRepository;
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -35,7 +36,7 @@ public class ReputationResetJobExceptionFunctionalTestWebAppFactory : Functional
                 //the dependencies from service provider only apply for this current scope
                 //that is why we have to use ActivatorUtilities to transfer dependencies from this scope to callers' scope
                 var userRepository = ActivatorUtilities.CreateInstance<BaseRepository<User>>(provider);
-                var exceptionUserRepository = GetExceptionMockUserRepository(userRepository);
+                var exceptionUserRepository = GetExceptionMockUserRepository(userRepository).Object;
 
                 return exceptionUserRepository;
             });
