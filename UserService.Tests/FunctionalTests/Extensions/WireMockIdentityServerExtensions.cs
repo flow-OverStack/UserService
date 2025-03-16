@@ -230,16 +230,17 @@ internal static class WireMockIdentityServerExtensions
         var currentProjectName =
             string.Join('.',
                 Assembly.GetExecutingAssembly().GetName().Name!.Split('.')
-                    .Take(2)); //name of current project if naming is of type '<AppName>.<DirectoryName>' (e. g. 'UserService.Api')
+                    .Take(2)); //name of current project if naming is of type '<AppName>.<DirectoryName>' (e. g. 'QuestionService.Api')
 
-        var filePath = GetPath(projectDirectory!, currentProjectName, fileName);
+        var filePath = GetPathToConfiguration(projectDirectory!, currentProjectName, fileName, ResponsesDirectoryName);
 
         var response = File.ReadAllText(filePath);
 
         return response;
     }
 
-    private static string GetPath(DirectoryInfo runtimeDirectory, string currentProjectName, string fileName)
+    private static string GetPathToConfiguration(DirectoryInfo runtimeDirectory, string currentProjectName,
+        string fileName, params string[] configurationSubdirectories)
     {
         var currentProjectDirectory = runtimeDirectory;
 
@@ -248,8 +249,9 @@ internal static class WireMockIdentityServerExtensions
                 currentProjectDirectory.Parent!; //getting path to current project directory from runtime directory
 
 
+        var configurationSubdirectoriesPath = Path.Combine(configurationSubdirectories);
         var filePath = Path.Combine(currentProjectDirectory.FullName, FunctionalTestsDirectoryName,
-            ConfigurationsDirectoryName, ResponsesDirectoryName, fileName);
+            ConfigurationsDirectoryName, configurationSubdirectoriesPath, fileName);
 
         return filePath;
     }
