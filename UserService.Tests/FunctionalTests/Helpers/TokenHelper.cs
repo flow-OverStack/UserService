@@ -75,7 +75,7 @@ internal static class TokenHelper
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]),
-            //expired is not listed because it is not validated
+            Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
             Audience = Audience,
             Issuer = Issuer,

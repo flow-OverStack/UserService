@@ -27,7 +27,6 @@ internal static class WireMockIdentityServerExtensions
     {
         server = server.SafeStartServer();
 
-
         server.ConfigureWellKnownEndpoints();
         server.ConfigureTokenEndpoint(services);
         server.ConfigureUserManagementEndpoints(services);
