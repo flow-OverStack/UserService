@@ -33,6 +33,8 @@ builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Confi
 builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddApplication();
 
+builder.ConfigurePorts();
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -45,7 +47,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 app.UseRouting();
 app.MapControllers();
 app.UseGraphQl();

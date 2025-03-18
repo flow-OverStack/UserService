@@ -8,6 +8,7 @@
       - broker
     ports:
       - "8085:8080"
+      - "8086:8081"
     networks:
       - user-service-network
     environment:
@@ -15,6 +16,9 @@
       KeycloakSettings__AdminToken: ${KC_ADMIN_TOKEN}
       KafkaSettings__Host: broker:29092
       KeycloakSettings__Host: http://keycloak:8080
+      AppStartupSettings__Ports__GrpcPort: 8081
+      AppStartupSettings__Ports__RestApiPort: 8080
+      AppStartupSettings__Ports__UseHttpsForRestApi: false
   
   postgres-db:
     image: postgres:latest

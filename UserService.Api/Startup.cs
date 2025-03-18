@@ -2,6 +2,7 @@ using System.Reflection;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -17,6 +18,7 @@ namespace UserService.Api;
 public static class Startup
 {
     private const string AppStartupSectionName = "AppStartupSettings";
+    private const string AppPortsSectionName = "Ports";
 
     /// <summary>
     ///     Sets up authentication and authorization
@@ -119,22 +121,52 @@ public static class Startup
     {
         app.Lifetime.ApplicationStarted.Register(() =>
         {
-            HashSet<string> hosts = [];
-
-            var serverAddressesFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
-            serverAddressesFeature?.Addresses.ToList().ForEach(x => hosts.Add(x));
-
-            var serverAddressesConfiguration = app.Configuration.GetSection("ASPNETCORE_URLS");
-            serverAddressesConfiguration.Value?.Split(';').ToList().ForEach(x => hosts.Add(x));
+            var hosts = app.GetHosts().ToList();
 
             var appStartupHostLog =
                 app.Configuration.GetSection(AppStartupSectionName).GetValue<string>("AppStartupUrlLog");
 
-            hosts.ToList().ForEach(host =>
+            hosts.ForEach(host =>
             {
                 var fullHostLog = appStartupHostLog + host;
                 Log.Information(fullHostLog);
             });
         });
+    }
+
+    /// <summary>
+    ///     Configure ports for application
+    /// </summary>
+    /// <param name="builder"></param>
+    public static void ConfigurePorts(this WebApplicationBuilder builder)
+    {
+        var grpcPort = builder.Configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+            .GetValue<int>("GrpcPort");
+
+        var apiPort = builder.Configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+            .GetValue<int>("RestApiPort");
+
+        var useHttpsForApi = builder.Configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+            .GetValue<bool>("UseHttpsForRestApi");
+
+        builder.WebHost.ConfigureKestrel(opt =>
+        {
+            opt.ListenAnyIP(grpcPort, listenOpt => listenOpt.Protocols = HttpProtocols.Http2);
+            opt.ListenAnyIP(apiPort, listenOpt =>
+            {
+                listenOpt.Protocols = HttpProtocols.Http1AndHttp2;
+                if (useHttpsForApi) listenOpt.UseHttps();
+            });
+        });
+    }
+
+    private static IEnumerable<string> GetHosts(this WebApplication app)
+    {
+        HashSet<string> hosts = [];
+
+        var serverAddressesFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
+        serverAddressesFeature?.Addresses.ToList().ForEach(x => hosts.Add(x));
+
+        return hosts;
     }
 }
