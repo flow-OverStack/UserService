@@ -1,10 +1,11 @@
+using UserService.ReputationConsumer.Enum;
 using UserService.ReputationConsumer.Strategy.Reputation.Base;
 
 namespace UserService.ReputationConsumer.Strategy.Reputation.Strategies;
 
 public class AnswerDownvoteStrategy : IReputationStrategy
 {
-    public string EventType => "AnswerDownvote";
+    public BaseEventType EventType => BaseEventType.AnswerDownvote;
 
     public int CalculateReputationChange()
     {
