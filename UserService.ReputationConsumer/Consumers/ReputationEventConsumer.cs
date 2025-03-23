@@ -12,14 +12,14 @@ namespace UserService.ReputationConsumer.Consumers;
 public class ReputationEventConsumer(
     IReputationStrategyResolver reputationResolver,
     IReputationService reputationService,
-    IEventProcessor<BaseEvent> eventProcessor,
+    IProcessedEventRepository processedEventRepository,
     ILogger logger) : IConsumer<BaseEvent>
 {
     public async Task Consume(ConsumeContext<BaseEvent> context)
     {
         try
         {
-            if (await eventProcessor.IsEventProcessedAsync(context.Message.EventId))
+            if (await processedEventRepository.IsEventProcessedAsync(context.Message.EventId))
             {
                 logger.Warning(
                     "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
@@ -33,7 +33,7 @@ public class ReputationEventConsumer(
 
             var result = await UpdateReputationAsync(context.Message, reputationChange);
 
-            await eventProcessor.MarkAsProcessedAsync(context.Message);
+            await processedEventRepository.MarkAsProcessedAsync(context.Message.EventId);
 
             LogReputationResult(context.Message, result);
         }

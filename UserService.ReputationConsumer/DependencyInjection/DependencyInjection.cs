@@ -65,6 +65,6 @@ public static class DependencyInjection
 
     private static void InitEventProcessors(this IServiceCollection services)
     {
-        services.AddScoped<IEventProcessor<BaseEvent>, BaseEventProcessor>();
+        services.AddScoped<IProcessedEventRepository, ProcessedEventRepository>();
     }
 }

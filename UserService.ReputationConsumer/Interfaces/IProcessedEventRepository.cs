@@ -1,6 +1,6 @@
 namespace UserService.ReputationConsumer.Interfaces;
 
-public interface IEventProcessor<in TEvent> where TEvent : class
+public interface IProcessedEventRepository
 {
     /// <summary>
     ///     Checks if event is already processed
@@ -12,7 +12,7 @@ public interface IEventProcessor<in TEvent> where TEvent : class
     /// <summary>
     ///     Marks event as already processed
     /// </summary>
-    /// <param name="event"></param>
+    /// <param name="eventId"></param>
     /// <returns></returns>
-    Task MarkAsProcessedAsync(TEvent @event);
+    Task MarkAsProcessedAsync(Guid eventId);
 }
