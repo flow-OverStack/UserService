@@ -23,5 +23,6 @@ public static class DependencyInjection
         services.AddScoped<IGetRoleService, GetRoleService>();
         services.AddScoped<IReputationService, ReputationService>();
         services.AddScoped<IReputationResetService, ReputationService>();
+        services.AddScoped<IProcessedEventsResetService, ProcessedEventsResetService>();
     }
 }

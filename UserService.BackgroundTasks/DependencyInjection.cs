@@ -43,7 +43,11 @@ public static class DependencyInjection
     public static void SetupHangfire(this WebApplication app)
     {
         app.Lifetime.ApplicationStarted.Register(() =>
-            RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.Run(), Cron.Daily));
+            {
+                RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.Run(), Cron.Daily);
+                RecurringJob.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset", job => job.Run(), Cron.Daily);
+            }
+        );
 
         if (app.Environment.IsDevelopment())
             app.UseHangfireDashboard();

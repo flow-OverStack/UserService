@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL.Interceptors;
 using UserService.DAL.Repositories;
 using UserService.Domain.Entity;
+using UserService.Domain.Entity.Events;
 using UserService.Domain.Interfaces.Repositories;
-using UserService.ReputationConsumer.Events;
 
 namespace UserService.DAL.DependencyInjection;
 

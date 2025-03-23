@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using UserService.ReputationConsumer.Events;
+using UserService.Domain.Entity.Events;
 
 namespace UserService.DAL.Configurations;
 
