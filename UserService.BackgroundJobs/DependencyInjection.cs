@@ -1,7 +1,5 @@
 using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UserService.BackgroundJobs.Jobs;
@@ -10,32 +8,6 @@ namespace UserService.BackgroundJobs;
 
 public static class DependencyInjection
 {
-    /// <summary>
-    ///     Sets up background tasks
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="configuration"></param>
-    public static void AddHangfire(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddHangfire(x => x.UsePostgreSqlStorage(options =>
-            {
-                var connectionString = configuration.GetConnectionString("PostgresSQL");
-                options.UseNpgsqlConnection(connectionString);
-            })
-            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            .UseSimpleAssemblyNameTypeSerializer()
-            .UseRecommendedSerializerSettings()
-            .UseSerilogLogProvider()
-            .UseFilter(new AutomaticRetryAttribute
-            {
-                Attempts = 10,
-                DelaysInSeconds = [30, 60, 300, 600, 1800, 43200, 86400] //30sec, 1min, 5min, 10min, 1h, 12h, 24h
-            }));
-
-        services.AddHangfireServer();
-        services.InitJobs();
-    }
-
     /// <summary>
     ///     Uses hangfire
     /// </summary>
@@ -53,7 +25,12 @@ public static class DependencyInjection
             app.UseHangfireDashboard();
     }
 
-    private static void InitJobs(this IServiceCollection services)
+
+    /// <summary>
+    ///     Initializes jobs
+    /// </summary>
+    /// <param name="services"></param>
+    public static void InitJobs(this IServiceCollection services)
     {
         services.AddTransient<ReputationResetJob>();
         services.AddTransient<ProcessedEventsResetJob>();

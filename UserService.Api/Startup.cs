@@ -1,5 +1,7 @@
 using System.Reflection;
 using Asp.Versioning;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using UserService.BackgroundJobs;
 using UserService.Domain.Settings;
 using Path = System.IO.Path;
 
@@ -158,6 +161,32 @@ public static class Startup
                 if (useHttpsForApi) listenOpt.UseHttps();
             });
         });
+    }
+
+    /// <summary>
+    ///     Configures hangfire and adds jobs
+    /// </summary>
+    /// <param name="builder"></param>
+    public static void AddHangfire(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddHangfire(x => x.UsePostgreSqlStorage(options =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("PostgresSQL");
+                options.UseNpgsqlConnection(connectionString);
+            })
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSerilogLogProvider()
+            .UseFilter(new AutomaticRetryAttribute
+            {
+                Attempts = 10,
+                DelaysInSeconds = [30, 60, 300, 600, 1800, 43200, 86400] //30sec, 1min, 5min, 10min, 1h, 12h, 24h
+            }));
+
+        builder.Services.AddHangfireServer();
+
+        builder.Services.InitJobs();
     }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
