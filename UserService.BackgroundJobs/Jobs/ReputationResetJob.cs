@@ -1,7 +1,7 @@
 using Serilog;
 using UserService.Domain.Interfaces.Services;
 
-namespace UserService.BackgroundTasks.Jobs;
+namespace UserService.BackgroundJobs.Jobs;
 
 public class ReputationResetJob(IReputationResetService reputationResetService)
 {

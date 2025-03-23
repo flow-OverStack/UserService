@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.BackgroundTasks.Jobs;
+using UserService.BackgroundJobs.Jobs;
 using UserService.DAL;
 using UserService.Domain.Entity;
 using UserService.Domain.Entity.Events;

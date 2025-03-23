@@ -2,7 +2,7 @@ using Serilog;
 using UserService.Api;
 using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
-using UserService.BackgroundTasks;
+using UserService.BackgroundJobs;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;

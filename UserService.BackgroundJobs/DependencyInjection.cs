@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UserService.BackgroundTasks.Jobs;
+using UserService.BackgroundJobs.Jobs;
 
-namespace UserService.BackgroundTasks;
+namespace UserService.BackgroundJobs;
 
 public static class DependencyInjection
 {

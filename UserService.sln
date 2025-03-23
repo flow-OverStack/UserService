@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.GraphQl", "User
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.ReputationConsumer", "UserService.ReputationConsumer\UserService.ReputationConsumer.csproj", "{6B13329A-AC86-4E5C-80EE-F478CF3A4E38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.BackgroundTasks", "UserService.BackgroundTasks\UserService.BackgroundTasks.csproj", "{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.BackgroundJobs", "UserService.BackgroundJobs\UserService.BackgroundJobs.csproj", "{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Grpc", "UserService.Grpc\UserService.Grpc.csproj", "{5539A244-DC4F-4639-A488-2FAECA271EA5}"
 EndProject
