@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.BackgroundJobs.Jobs;
 using UserService.DAL;
 using UserService.Domain.Entity;
-using UserService.Domain.Entity.Events;
+using UserService.Domain.Events;
 using UserService.Tests.FunctionalTests.Base.Exception.ResetJob;
 using Xunit;
 

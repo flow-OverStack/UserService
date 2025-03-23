@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using UserService.Domain.Events;
 using UserService.Domain.Settings;
 using UserService.ReputationConsumer.Consumers;
-using UserService.ReputationConsumer.Events;
 
 namespace UserService.Tests.FunctionalTests.Base.Kafka;
 

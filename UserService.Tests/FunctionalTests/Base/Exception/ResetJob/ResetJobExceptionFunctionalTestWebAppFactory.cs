@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using UserService.DAL.Repositories;
 using UserService.Domain.Entity;
-using UserService.Domain.Entity.Events;
+using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Tests.Configurations;
 

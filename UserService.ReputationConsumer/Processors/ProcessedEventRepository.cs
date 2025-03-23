@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Entity.Events;
+using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.ReputationConsumer.Interfaces;
 

@@ -1,4 +1,4 @@
-namespace UserService.ReputationConsumer.Events;
+namespace UserService.Domain.Events;
 
 public class BaseEvent
 {

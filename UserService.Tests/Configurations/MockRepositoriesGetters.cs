@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using UserService.Domain.Entity;
-using UserService.Domain.Entity.Events;
+using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Tests.Configurations;

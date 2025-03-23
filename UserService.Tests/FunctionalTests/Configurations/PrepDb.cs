@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL;
 using UserService.Domain.Entity;
-using UserService.Domain.Entity.Events;
+using UserService.Domain.Events;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;

@@ -1,9 +1,9 @@
 using MassTransit;
 using Serilog;
 using UserService.Domain.Dto.User;
+using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Result;
-using UserService.ReputationConsumer.Events;
 using UserService.ReputationConsumer.Interfaces;
 using UserService.ReputationConsumer.Strategy.Reputation.Base;
 
