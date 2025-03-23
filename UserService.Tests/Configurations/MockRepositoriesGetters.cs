@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using UserService.Domain.Entity;
+using UserService.Domain.Entity.Events;
 using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.Tests.Configurations;
@@ -238,6 +239,28 @@ internal static class MockRepositoriesGetters
             {
                 RoleId = 3,
                 UserId = 3
+            }
+        }.AsQueryable();
+    }
+
+    public static IQueryable<ProcessedEvent> GetProcessedEvents()
+    {
+        return new[]
+        {
+            new ProcessedEvent
+            {
+                EventId = Guid.NewGuid(),
+                ProcessedAt = DateTime.UtcNow
+            },
+            new ProcessedEvent
+            {
+                EventId = Guid.NewGuid(),
+                ProcessedAt = DateTime.UtcNow.AddDays(-7)
+            },
+            new ProcessedEvent
+            {
+                EventId = Guid.NewGuid(),
+                ProcessedAt = DateTime.UtcNow.AddDays(-7)
             }
         }.AsQueryable();
     }

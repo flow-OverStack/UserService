@@ -56,5 +56,6 @@ public static class DependencyInjection
     private static void InitJobs(this IServiceCollection services)
     {
         services.AddTransient<ReputationResetJob>();
+        services.AddTransient<ProcessedEventsResetJob>();
     }
 }

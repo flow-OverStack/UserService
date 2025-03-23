@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL;
 using UserService.Domain.Entity;
+using UserService.Domain.Entity.Events;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
@@ -37,9 +38,11 @@ internal static class PrepDb
 
 
         var userRoles = MockRepositoriesGetters.GetUserRoles();
+        var processedEvents = MockRepositoriesGetters.GetProcessedEvents();
 
         dbContext.Set<User>().AddRange(users);
         dbContext.Set<UserRole>().AddRange(userRoles);
+        dbContext.Set<ProcessedEvent>().AddRange(processedEvents);
 
         dbContext.SaveChanges();
     }

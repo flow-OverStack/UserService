@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.BackgroundTasks.Jobs;
 using UserService.Domain.Entity;
+using UserService.Domain.Entity.Events;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
@@ -9,11 +10,11 @@ using Xunit;
 namespace UserService.Tests.FunctionalTests.Tests;
 
 [Collection("ReputationResetSequentialTests")]
-public class ReputationResetTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
+public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunResetJob_ShouldBe_Success()
+    public async Task RunReputationResetJob_ShouldBe_Success()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
@@ -27,5 +28,23 @@ public class ReputationResetTests(FunctionalTestWebAppFactory factory) : BaseFun
         var reputations = await userRepository.GetAll().Select(x => x.ReputationEarnedToday).ToListAsync();
 
         Assert.True(reputations.All(x => x == 0));
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RunProcessedEvent_ShouldBe_Success()
+    {
+        //Arrange
+        using var scope = ServiceProvider.CreateScope();
+        var processedEventsResetJob = scope.ServiceProvider.GetRequiredService<ProcessedEventsResetJob>();
+        var eventRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<ProcessedEvent>>();
+
+        //Act
+        await processedEventsResetJob.Run();
+
+        //Assert
+        var processedEvents = await eventRepository.GetAll().ToListAsync();
+
+        Assert.True(processedEvents.All(x => x.ProcessedAt.AddDays(7) >= DateTime.UtcNow));
     }
 }
