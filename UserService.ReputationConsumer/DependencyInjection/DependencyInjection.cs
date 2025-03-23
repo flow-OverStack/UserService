@@ -4,6 +4,8 @@ using Microsoft.Extensions.Options;
 using UserService.Domain.Settings;
 using UserService.ReputationConsumer.Consumers;
 using UserService.ReputationConsumer.Events;
+using UserService.ReputationConsumer.Interfaces;
+using UserService.ReputationConsumer.Processors;
 using UserService.ReputationConsumer.Strategy.Reputation;
 using UserService.ReputationConsumer.Strategy.Reputation.Base;
 using UserService.ReputationConsumer.Strategy.Reputation.Strategies;
@@ -20,6 +22,7 @@ public static class DependencyInjection
     {
         services.InitMassTransit();
         services.InitStrategies();
+        services.InitEventProcessors();
     }
 
     private static void InitMassTransit(this IServiceCollection services)
@@ -58,5 +61,10 @@ public static class DependencyInjection
         services.AddTransient<IReputationStrategy, QuestionUpvoteStrategy>();
         services.AddTransient<IReputationStrategy, UserAcceptedAnswerStrategy>();
         services.AddSingleton<IReputationStrategyResolver, ReputationStrategyResolver>();
+    }
+
+    private static void InitEventProcessors(this IServiceCollection services)
+    {
+        services.AddScoped<IEventProcessor<BaseEvent>, BaseEventProcessor>();
     }
 }

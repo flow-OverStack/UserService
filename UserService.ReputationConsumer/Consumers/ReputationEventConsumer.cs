@@ -4,6 +4,7 @@ using UserService.Domain.Dto.User;
 using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Result;
 using UserService.ReputationConsumer.Events;
+using UserService.ReputationConsumer.Interfaces;
 using UserService.ReputationConsumer.Strategy.Reputation.Base;
 
 namespace UserService.ReputationConsumer.Consumers;
@@ -11,22 +12,36 @@ namespace UserService.ReputationConsumer.Consumers;
 public class ReputationEventConsumer(
     IReputationStrategyResolver reputationResolver,
     IReputationService reputationService,
+    IEventProcessor<BaseEvent> eventProcessor,
     ILogger logger) : IConsumer<BaseEvent>
 {
     public async Task Consume(ConsumeContext<BaseEvent> context)
     {
         try
         {
+            if (await eventProcessor.IsEventProcessedAsync(context.Message.EventId))
+            {
+                logger.Warning(
+                    "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
+                    context.Message.UserId, context.Message.EventType, context.Message.EventId);
+                return;
+            }
+
+
             var strategy = reputationResolver.Resolve(context.Message.EventType);
             var reputationChange = strategy.CalculateReputationChange();
 
             var result = await UpdateReputationAsync(context.Message, reputationChange);
+
+            await eventProcessor.MarkAsProcessedAsync(context.Message);
+
             LogReputationResult(context.Message, result);
         }
         catch (Exception e)
         {
-            logger.Error(e, "Failed to update reputation: {ErrorMessage} UserId: {UserId}.Event: {EventType}.",
-                e.Message, context.Message.UserId, context.Message.EventType);
+            logger.Error(e,
+                "Failed to update reputation: {ErrorMessage} UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
+                e.Message, context.Message.UserId, context.Message.EventType, context.Message.EventId);
         }
     }
 
@@ -47,10 +62,11 @@ public class ReputationEventConsumer(
     {
         if (!result.IsSuccess)
             logger.Warning(
-                "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}.",
-                result.ErrorMessage, message.UserId, message.EventType);
+                "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
+                result.ErrorMessage, message.UserId, message.EventType, message.EventId);
         else
-            logger.Information("Successfully updated reputation. UserId: {UserId}. Event: {EventType}.",
-                message.UserId, message.EventType);
+            logger.Information(
+                "Successfully updated reputation. UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
+                message.UserId, message.EventType, message.EventId);
     }
 }

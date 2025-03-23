@@ -18,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\UserService.Domain\UserService.Domain.csproj"/>
+        <ProjectReference Include="..\UserService.ReputationConsumer\UserService.ReputationConsumer.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

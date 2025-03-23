@@ -31,7 +31,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
     {
         //Arrange
         const long userId = 1;
-        var message = new BaseEvent { EventType = eventName, UserId = userId };
+        var message = new BaseEvent { EventType = eventName, UserId = userId, EventId = Guid.NewGuid() };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
@@ -59,7 +59,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
     {
         //Arrange
         const long userId = 3;
-        var message = new BaseEvent { EventType = eventName, UserId = userId };
+        var message = new BaseEvent { EventType = eventName, UserId = userId, EventId = Guid.NewGuid() };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
@@ -82,11 +82,39 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
 
     [Trait("Category", "Functional")]
     [Fact]
+    public async Task ConsumeEvent_ShouldBe_EventAlreadyProcessed()
+    {
+        //Arrange
+        const long userId = 1;
+        var message = new BaseEvent { EventType = "AnswerAccepted", UserId = userId, EventId = Guid.NewGuid() };
+        var contextMock = new Mock<ConsumeContext<BaseEvent>>();
+        contextMock.Setup(x => x.Message).Returns(message);
+
+        using var scope = ServiceProvider.CreateScope();
+        var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
+        var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
+
+        await reputationEventConsumer.Consume(contextMock.Object); // Consuming 1st message
+
+        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == userId);
+        var initialReputation = user!.Reputation;
+
+        //Act
+
+        await reputationEventConsumer.Consume(contextMock.Object); // Consuming duplicate
+
+        //Assert
+        Assert.NotNull(user);
+        Assert.Equal(initialReputation, user.Reputation);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
     public async Task ConsumePositiveEvent_ShouldBe_DailyReputationLimitExceeded()
     {
         //Arrange
         const long userId = 3;
-        var message = new BaseEvent { EventType = "AnswerAccepted", UserId = userId };
+        var message = new BaseEvent { EventType = "AnswerAccepted", UserId = userId, EventId = Guid.NewGuid() };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
@@ -112,7 +140,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
     {
         //Arrange
         const long userId = 1;
-        var message = new BaseEvent { EventType = "AnswerDownvote", UserId = userId };
+        var message = new BaseEvent { EventType = "AnswerDownvote", UserId = userId, EventId = Guid.NewGuid() };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
@@ -138,7 +166,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
     {
         //Arrange
         const long userId = 1;
-        var message = new BaseEvent { EventType = "WrongEvent", UserId = userId };
+        var message = new BaseEvent { EventType = "WrongEvent", UserId = userId, EventId = Guid.NewGuid() };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 

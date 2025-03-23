@@ -5,6 +5,7 @@ using UserService.DAL.Interceptors;
 using UserService.DAL.Repositories;
 using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
+using UserService.ReputationConsumer.Events;
 
 namespace UserService.DAL.DependencyInjection;
 
@@ -35,5 +36,6 @@ public static class DependencyInjection
         services.AddScoped<IBaseRepository<User>, BaseRepository<User>>();
         services.AddScoped<IBaseRepository<Role>, BaseRepository<Role>>();
         services.AddScoped<IBaseRepository<UserRole>, BaseRepository<UserRole>>();
+        services.AddScoped<IBaseRepository<ProcessedEvent>, BaseRepository<ProcessedEvent>>();
     }
 }
