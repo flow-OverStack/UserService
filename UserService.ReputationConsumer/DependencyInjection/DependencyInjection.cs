@@ -56,7 +56,7 @@ public static class DependencyInjection
         services.AddTransient<IReputationStrategy, AnswerAcceptedStrategy>();
         services.AddTransient<IReputationStrategy, AnswerDownvoteStrategy>();
         services.AddTransient<IReputationStrategy, AnswerUpvoteStrategy>();
-        services.AddTransient<IReputationStrategy, DownvoteGivenStrategy>();
+        services.AddTransient<IReputationStrategy, DownvoteGivenForAnswerStrategy>();
         services.AddTransient<IReputationStrategy, QuestionDownvoteStrategy>();
         services.AddTransient<IReputationStrategy, QuestionUpvoteStrategy>();
         services.AddTransient<IReputationStrategy, UserAcceptedAnswerStrategy>();

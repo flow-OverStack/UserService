@@ -1,11 +1,11 @@
-namespace UserService.ReputationConsumer.Enum;
+namespace UserService.Domain.Enum;
 
 public enum BaseEventType
 {
     AnswerAccepted,
     AnswerDownvote,
     AnswerUpvote,
-    DownvoteGiven,
+    DownvoteGivenForAnswer,
     QuestionDownvote,
     QuestionUpvote,
     UserAcceptedAnswer

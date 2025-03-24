@@ -1,4 +1,4 @@
-using UserService.ReputationConsumer.Enum;
+using UserService.Domain.Enum;
 using UserService.ReputationConsumer.Strategy.Reputation.Base;
 
 namespace UserService.ReputationConsumer.Strategy.Reputation.Strategies;
