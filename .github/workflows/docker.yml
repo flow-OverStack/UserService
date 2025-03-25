@@ -43,5 +43,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/your-image-name:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/flow-overstack_user-service:latest
 
