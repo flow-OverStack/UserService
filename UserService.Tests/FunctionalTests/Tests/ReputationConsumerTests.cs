@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using UserService.Domain.Entity;
+using UserService.Domain.Enum;
 using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Tests.Configurations;
@@ -16,12 +17,20 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
 {
     public static TheoryData<string> GetPositiveEvents()
     {
-        return ["AnswerAccepted", "AnswerUpvote", "QuestionUpvote", "UserAcceptedAnswer"];
+        return
+        [
+            BaseEventType.AnswerAccepted.ToString(), BaseEventType.AnswerUpvote.ToString(),
+            BaseEventType.QuestionUpvote.ToString(), BaseEventType.UserAcceptedAnswer.ToString()
+        ];
     }
 
     public static TheoryData<string> GetNegativeEvents()
     {
-        return ["AnswerDownvote", "DownvoteGiven", "QuestionDownvote"];
+        return
+        [
+            BaseEventType.AnswerDownvote.ToString(), BaseEventType.DownvoteGivenForAnswer.ToString(),
+            BaseEventType.QuestionDownvote.ToString()
+        ];
     }
 
     [Trait("Category", "Functional")]
