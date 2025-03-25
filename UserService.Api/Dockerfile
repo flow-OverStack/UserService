@@ -10,11 +10,12 @@ WORKDIR /src
 COPY ["UserService.Api/UserService.Api.csproj", "UserService.Api/"]
 COPY ["UserService.Application/UserService.Application.csproj", "UserService.Application/"]
 COPY ["UserService.Domain/UserService.Domain.csproj", "UserService.Domain/"]
-COPY ["UserService.BackgroundTasks/UserService.BackgroundTasks.csproj", "UserService.BackgroundTasks/"]
+COPY ["UserService.BackgroundJobs/UserService.BackgroundJobs.csproj", "UserService.BackgroundJobs/"]
 COPY ["UserService.DAL/UserService.DAL.csproj", "UserService.DAL/"]
-COPY ["UserService.GraphQl/UserService.GraphQl.csproj", "UserService.GraphQl/"]
-COPY ["UserService.Keycloak/UserService.Keycloak.csproj", "UserService.Keycloak/"]
 COPY ["UserService.ReputationConsumer/UserService.ReputationConsumer.csproj", "UserService.ReputationConsumer/"]
+COPY ["UserService.GraphQl/UserService.GraphQl.csproj", "UserService.GraphQl/"]
+COPY ["UserService.Grpc/UserService.Grpc.csproj", "UserService.Grpc/"]
+COPY ["UserService.Keycloak/UserService.Keycloak.csproj", "UserService.Keycloak/"]
 RUN dotnet restore "UserService.Api/UserService.Api.csproj"
 COPY . .
 WORKDIR "/src/UserService.Api"
