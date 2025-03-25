@@ -41,7 +41,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./UserService.Api
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/flow-overstack_user-service:latest
 
