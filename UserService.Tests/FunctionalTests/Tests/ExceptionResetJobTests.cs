@@ -28,7 +28,7 @@ public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory
         //Assert
         var reputations = await dbContext.Set<User>().Select(x => x.ReputationEarnedToday).ToListAsync();
 
-        Assert.True(reputations.Any(x => x != 0));
+        Assert.Contains(reputations, x => x != 0);
     }
 
     [Trait("Category", "Functional")]
@@ -47,6 +47,6 @@ public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory
         //Assert
         var processedEvents = await dbContext.Set<ProcessedEvent>().ToListAsync();
 
-        Assert.True(processedEvents.Any(x => x.ProcessedAt.AddDays(7) < DateTime.UtcNow));
+        Assert.Contains(processedEvents, x => x.ProcessedAt.AddDays(7) < DateTime.UtcNow);
     }
 }

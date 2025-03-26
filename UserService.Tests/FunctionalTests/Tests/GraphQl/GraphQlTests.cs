@@ -63,6 +63,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(result!.Errors.Any(x => x.Message == ErrorMessage.UserNotFound));
+        Assert.Contains(result!.Errors, x => x.Message == ErrorMessage.UserNotFound);
     }
 }
