@@ -7,7 +7,7 @@ public class ReputationStrategyResolver(IEnumerable<IReputationStrategy> strateg
 {
     public IReputationStrategy Resolve(string eventType)
     {
-        var notFoundException = new ArgumentException($"No strategy found for {eventType} event type.");
+        var notFoundException = new InvalidOperationException($"No strategy found for {eventType} event type.");
 
         if (!Enum.TryParse<BaseEventType>(eventType, out var baseEventType))
             throw notFoundException;
