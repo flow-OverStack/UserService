@@ -11,7 +11,7 @@ namespace UserService.Application.Services;
 public class GetUserService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository)
     : IGetUserService
 {
-    public async Task<CollectionResult<User>> GetAllUsersAsync()
+    public async Task<CollectionResult<User>> GetAllAsync()
     {
         var users = await userRepository.GetAll().ToArrayAsync();
         var count = users.Length;
@@ -22,7 +22,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         return CollectionResult<User>.Success(users, count);
     }
 
-    public async Task<BaseResult<User>> GetUserByIdAsync(long id)
+    public async Task<BaseResult<User>> GetByIdAsync(long id)
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)

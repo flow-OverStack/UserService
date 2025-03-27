@@ -15,7 +15,7 @@ public class GetUserServiceTests
         var getUserService = new GetUserServiceFactory().GetService();
 
         //Act
-        var result = await getUserService.GetAllUsersAsync();
+        var result = await getUserService.GetAllAsync();
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -32,7 +32,7 @@ public class GetUserServiceTests
             .GetService();
 
         //Act
-        var result = await getUserService.GetAllUsersAsync();
+        var result = await getUserService.GetAllAsync();
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -50,7 +50,7 @@ public class GetUserServiceTests
         var getUserService = new GetUserServiceFactory().GetService();
 
         //Act
-        var result = await getUserService.GetUserByIdAsync(userId);
+        var result = await getUserService.GetByIdAsync(userId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -66,7 +66,7 @@ public class GetUserServiceTests
         var getUserService = new GetUserServiceFactory().GetService();
 
         //Act
-        var result = await getUserService.GetUserByIdAsync(userId);
+        var result = await getUserService.GetByIdAsync(userId);
 
         //Assert
         Assert.False(result.IsSuccess);

@@ -11,7 +11,7 @@ public class Queries
     [UseSorting]
     public async Task<IEnumerable<User>> GetUsers([Service] IGetUserService userService)
     {
-        var result = await userService.GetAllUsersAsync();
+        var result = await userService.GetAllAsync();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
@@ -24,7 +24,7 @@ public class Queries
     [UseSorting]
     public async Task<User> GetUser(long id, [Service] IGetUserService userService)
     {
-        var result = await userService.GetUserByIdAsync(id);
+        var result = await userService.GetByIdAsync(id);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
@@ -38,7 +38,20 @@ public class Queries
     [UseSorting]
     public async Task<IEnumerable<Role>> GetRoles([Service] IGetRoleService roleService)
     {
-        var result = await roleService.GetAllRolesAsync();
+        var result = await roleService.GetAllAsync();
+
+        if (!result.IsSuccess)
+            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+
+        return result.Data;
+    }
+
+    [GraphQLDescription("Returns a role by its id")]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<Role> GetRole(long id, [Service] IGetRoleService roleService)
+    {
+        var result = await roleService.GetByIdAsync(id);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.Get(result.ErrorMessage!);

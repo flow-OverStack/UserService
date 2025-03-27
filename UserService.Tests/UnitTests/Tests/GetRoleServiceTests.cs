@@ -15,7 +15,7 @@ public class GetRoleServiceTests
         var getRoleService = new GetRoleServiceFactory().GetService();
 
         //Act
-        var result = await getRoleService.GetAllRolesAsync();
+        var result = await getRoleService.GetAllAsync();
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -33,7 +33,7 @@ public class GetRoleServiceTests
                 .GetService();
 
         //Act
-        var result = await getRoleService.GetAllRolesAsync();
+        var result = await getRoleService.GetAllAsync();
 
         //Assert
         Assert.False(result.IsSuccess);

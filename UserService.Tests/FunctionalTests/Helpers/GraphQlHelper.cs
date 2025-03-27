@@ -50,4 +50,20 @@ public static class GraphQlHelper
              }
              """.Replace("$ID", id.ToString());
     }
+
+    public static string RequestRoleByIdQuery(long id)
+    {
+      return """
+             {
+               role(id: $ID){
+               id
+               name
+               users{
+                 id
+                 username
+               }
+             }
+             }
+             """.Replace("$ID", id.ToString());
+    }
 }

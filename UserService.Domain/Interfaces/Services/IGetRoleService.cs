@@ -3,14 +3,8 @@ using UserService.Domain.Result;
 
 namespace UserService.Domain.Interfaces.Services;
 
-public interface IGetRoleService
+public interface IGetRoleService : IGetService<Role>
 {
-    /// <summary>
-    ///     Get all roles
-    /// </summary>
-    /// <returns></returns>
-    Task<CollectionResult<Role>> GetAllRolesAsync();
-
     /// <summary>
     ///     Get all roles of the user by his id
     /// </summary>

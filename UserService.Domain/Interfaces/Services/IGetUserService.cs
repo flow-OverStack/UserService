@@ -3,20 +3,8 @@ using UserService.Domain.Result;
 
 namespace UserService.Domain.Interfaces.Services;
 
-public interface IGetUserService
+public interface IGetUserService : IGetService<User>
 {
-    /// <summary>
-    ///     Get all users
-    /// </summary>
-    /// <returns></returns>
-    Task<CollectionResult<User>> GetAllUsersAsync();
-
-    /// <summary>
-    ///     Get user by id
-    /// </summary>
-    /// <returns></returns>
-    Task<BaseResult<User>> GetUserByIdAsync(long id);
-
     /// <summary>
     ///     Get all users who have the role by its id
     /// </summary>

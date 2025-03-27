@@ -11,7 +11,7 @@ namespace UserService.Application.Services;
 public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository)
     : IGetRoleService
 {
-    public async Task<CollectionResult<Role>> GetAllRolesAsync()
+    public async Task<CollectionResult<Role>> GetAllAsync()
     {
         var roles = await roleRepository.GetAll().ToArrayAsync();
         var count = roles.Length;
@@ -20,6 +20,16 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
             return CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
 
         return CollectionResult<Role>.Success(roles, count);
+    }
+
+    public async Task<BaseResult<Role>> GetByIdAsync(long id)
+    {
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+
+        if (role == null)
+            return BaseResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+
+        return BaseResult<Role>.Success(role);
     }
 
     public async Task<CollectionResult<Role>> GetUserRoles(long userid)
