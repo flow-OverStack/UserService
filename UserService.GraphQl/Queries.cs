@@ -14,7 +14,7 @@ public class Queries
         var result = await userService.GetAllAsync();
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
         return result.Data;
     }
@@ -27,7 +27,7 @@ public class Queries
         var result = await userService.GetByIdAsync(id);
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
         return result.Data;
     }
@@ -41,7 +41,7 @@ public class Queries
         var result = await roleService.GetAllAsync();
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
         return result.Data;
     }
@@ -54,7 +54,7 @@ public class Queries
         var result = await roleService.GetByIdAsync(id);
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
         return result.Data;
     }

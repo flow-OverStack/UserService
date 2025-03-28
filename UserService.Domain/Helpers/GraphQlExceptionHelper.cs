@@ -6,7 +6,7 @@ public static class GraphQlExceptionHelper
 {
     public const string IsBusinessErrorExtension = "IsBusinessError";
 
-    public static GraphQLException Get(string errorMessage)
+    public static GraphQLException GetException(string errorMessage)
     {
         return new GraphQLException(ErrorBuilder.New()
             .SetMessage(errorMessage)

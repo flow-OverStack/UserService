@@ -28,7 +28,7 @@ public class UserType : ObjectType<User>
             var result = await roleService.GetUserRoles(user.Id);
 
             if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.Get(result.ErrorMessage!);
+                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
             return result.Data;
         }
