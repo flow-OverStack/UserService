@@ -79,7 +79,7 @@ public class GetUserServiceTests
     {
         //Arrange
         var getUserService =
-            new GetUserServiceFactory(roleRepository: MockRepositoriesGetters.GetMockRoleWithUsersRepository().Object)
+            new GetUserServiceFactory()
                 .GetService();
         const long roleId = 1;
 

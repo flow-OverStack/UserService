@@ -91,9 +91,27 @@ internal static class MockRepositoriesGetters
     public static Mock<IBaseRepository<Role>> GetMockRoleRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Role>>();
-        var roles = GetRoles().BuildMockDbSet();
 
-        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
+        #region Adding users to roles
+
+        var roles = GetRoles().ToList();
+        roles.ForEach(x => x.Users = []);
+        var users = GetUsers().ToList();
+        var userRoles = GetUserRoles().ToList();
+
+        foreach (var userRole in userRoles)
+        {
+            var user = users.First(x => x.Id == userRole.UserId);
+            var role = roles.First(x => x.Id == userRole.RoleId);
+
+            role.Users.Add(user);
+        }
+
+        #endregion
+
+        var rolesDbSet = roles.BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(rolesDbSet.Object);
         mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
         mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
         mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
@@ -105,30 +123,6 @@ internal static class MockRepositoriesGetters
     {
         var mockRepository = new Mock<IBaseRepository<Role>>();
         var roles = Array.Empty<Role>().BuildMockDbSet();
-
-        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
-        mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
-        mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
-
-        return mockRepository;
-    }
-
-    /// <summary>
-    ///     Get role repository with roles, that have list of users
-    ///     IMPORTANT: THIS METHOD IS FOR UNIT TESTS ONLY.
-    ///     WRONG RELATION BETWEEN USERS AND ROLES.
-    /// </summary>
-    /// <returns></returns>
-    public static Mock<IBaseRepository<Role>> GetMockRoleWithUsersRepository()
-    {
-        var mockRepository = new Mock<IBaseRepository<Role>>();
-        var rolesList = GetRoles().ToList();
-        //IMPORTANT: FOR UNIT TESTS ONLY
-        //IMPORTANT: WRONG RELATION BETWEEN USERS AND ROLES
-        rolesList.ForEach(x => x.Users = GetUsers().ToList());
-
-        var roles = rolesList.BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
         mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
