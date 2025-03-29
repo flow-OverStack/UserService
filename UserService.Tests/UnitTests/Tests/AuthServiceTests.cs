@@ -1,4 +1,5 @@
 using UserService.Domain.Dto.User;
+using UserService.Domain.Entity;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.ServiceFactories;
@@ -69,7 +70,7 @@ public class AuthServiceTests
     {
         //Arrange
         var authService =
-            new AuthServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRoleRepository().Object)
+            new AuthServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
                 .GetService();
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
             TestConstants.TestPassword + "4");

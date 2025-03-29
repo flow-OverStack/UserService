@@ -1,3 +1,4 @@
+using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.ServiceFactories;
@@ -29,7 +30,7 @@ public class GetRoleServiceTests
     {
         //Arrange
         var getRoleService =
-            new GetRoleServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRoleRepository().Object)
+            new GetRoleServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
                 .GetService();
 
         //Act

@@ -1,3 +1,4 @@
+using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.ServiceFactories;
@@ -28,7 +29,7 @@ public class GetUserServiceTests
     public async Task GetAllUsers_ShouldBe_UsersNotFound()
     {
         //Arrange
-        var getUserService = new GetUserServiceFactory(MockRepositoriesGetters.GetEmptyMockUserRepository().Object)
+        var getUserService = new GetUserServiceFactory(MockRepositoriesGetters.GetEmptyMockRepository<User>().Object)
             .GetService();
 
         //Act

@@ -75,19 +75,6 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<User>> GetEmptyMockUserRepository()
-    {
-        var mockRepository = new Mock<IBaseRepository<User>>();
-        var users = Array.Empty<User>().BuildMockDbSet();
-
-        mockRepository.Setup(x => x.GetAll()).Returns(users.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).ReturnsAsync((User user) => user);
-        mockRepository.Setup(x => x.Update(It.IsAny<User>())).Returns((User user) => user);
-        mockRepository.Setup(x => x.Remove(It.IsAny<User>())).Returns((User user) => user);
-
-        return mockRepository;
-    }
-
     public static Mock<IBaseRepository<Role>> GetMockRoleRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Role>>();
@@ -119,15 +106,15 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<Role>> GetEmptyMockRoleRepository()
+    public static Mock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
     {
-        var mockRepository = new Mock<IBaseRepository<Role>>();
-        var roles = Array.Empty<Role>().BuildMockDbSet();
+        var mockRepository = new Mock<IBaseRepository<T>>();
+        var roles = Array.Empty<T>().BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
-        mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
-        mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>())).ReturnsAsync((T role) => role);
+        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T role) => role);
+        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T role) => role);
 
         return mockRepository;
     }
