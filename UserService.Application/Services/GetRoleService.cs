@@ -13,13 +13,12 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
 {
     public async Task<CollectionResult<Role>> GetAllAsync()
     {
-        var roles = await roleRepository.GetAll().ToArrayAsync();
-        var count = roles.Length;
+        var roles = await roleRepository.GetAll().ToListAsync();
 
-        if (count == 0)
+        if (!roles.Any())
             return CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
 
-        return CollectionResult<Role>.Success(roles, count);
+        return CollectionResult<Role>.Success(roles, roles.Count);
     }
 
     public async Task<BaseResult<Role>> GetByIdAsync(long id)
@@ -30,6 +29,17 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
             return BaseResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         return BaseResult<Role>.Success(role);
+    }
+
+    public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids)
+    {
+        var roles = await roleRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+        var totalCount = await roleRepository.GetAll().CountAsync();
+
+        if (!roles.Any())
+            return CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
+
+        return CollectionResult<Role>.Success(roles, roles.Count, totalCount);
     }
 
     public async Task<CollectionResult<Role>> GetUserRoles(long userid)

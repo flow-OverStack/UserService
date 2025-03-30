@@ -13,13 +13,12 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
 {
     public async Task<CollectionResult<User>> GetAllAsync()
     {
-        var users = await userRepository.GetAll().ToArrayAsync();
-        var count = users.Length;
+        var users = await userRepository.GetAll().ToListAsync();
 
-        if (count == 0)
+        if (!users.Any())
             return CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound);
 
-        return CollectionResult<User>.Success(users, count);
+        return CollectionResult<User>.Success(users, users.Count);
     }
 
     public async Task<BaseResult<User>> GetByIdAsync(long id)
@@ -29,9 +28,20 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
-            return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+            return BaseResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UserNotFound);
 
         return BaseResult<User>.Success(user);
+    }
+
+    public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids)
+    {
+        var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+        var totalCount = await userRepository.GetAll().CountAsync();
+
+        if (!users.Any())
+            return CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound);
+
+        return CollectionResult<User>.Success(users, users.Count, totalCount);
     }
 
     public async Task<CollectionResult<User>> GetUsersWithRole(long roleId)

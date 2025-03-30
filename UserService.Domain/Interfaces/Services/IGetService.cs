@@ -16,4 +16,11 @@ public interface IGetService<T>
     /// <param name="id"></param>
     /// <returns></returns>
     Task<BaseResult<T>> GetByIdAsync(long id);
+
+    /// <summary>
+    ///     Gets several T's by its Ids
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <returns></returns>
+    Task<CollectionResult<T>> GetByIdsAsync(IEnumerable<long> ids);
 }
