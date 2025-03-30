@@ -21,7 +21,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
     public async Task GetAll_ShouldBe_NotFoundError()
     {
         //Arrange
-        DeleteUsersAndRoles();
+        await DeleteAllEntitiesAsync();
         var requestBody = new { query = GraphQlHelper.RequestAllQuery };
 
         //Act
@@ -38,14 +38,14 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
         Assert.True(areRolesNotFound);
     }
 
-    private void DeleteUsersAndRoles()
+    private async Task DeleteAllEntitiesAsync()
     {
         using var scope = ServiceProvider.CreateScope();
-        using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        dbContext.Set<User>().ExecuteDelete();
-        dbContext.Set<Role>().ExecuteDelete();
+        await dbContext.Set<User>().ExecuteDeleteAsync();
+        await dbContext.Set<Role>().ExecuteDeleteAsync();
 
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
     }
 }

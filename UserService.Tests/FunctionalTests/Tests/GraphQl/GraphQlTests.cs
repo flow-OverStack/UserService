@@ -87,11 +87,11 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetRoleById_ShouldBe_UserNotFound()
+    public async Task GetRoleById_ShouldBe_RoleNotFound()
     {
         //Arrange
-        const long userId = 0;
-        var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(userId) };
+        const long roleId = 0;
+        var requestBody = new { query = GraphQlHelper.RequestRoleByIdQuery(roleId) };
 
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
@@ -100,6 +100,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains(result!.Errors, x => x.Message == ErrorMessage.UserNotFound);
+        Assert.Contains(result!.Errors, x => x.Message == ErrorMessage.RoleNotFound);
     }
 }
