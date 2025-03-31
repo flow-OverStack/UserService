@@ -2,6 +2,7 @@ using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.ErrorFilters;
 using UserService.GraphQl.Types;
 
@@ -24,7 +25,9 @@ public static class DependencyInjection
             .AddType<RoleType>()
             .AddSorting()
             .AddFiltering()
-            .AddErrorFilter<PublicErrorFilter>();
+            .AddErrorFilter<PublicErrorFilter>()
+            .AddDataLoader<UserDataLoader>()
+            .AddApolloFederation();
     }
 
     /// <summary>

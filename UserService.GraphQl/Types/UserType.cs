@@ -1,6 +1,9 @@
+using HotChocolate.ApolloFederation.Types;
 using UserService.Domain.Entity;
+using UserService.Domain.Extensions;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
+using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl.Types;
 
@@ -19,6 +22,9 @@ public class UserType : ObjectType<User>
         descriptor.Field(x => x.CreatedAt).Description("User creation time.");
 
         descriptor.Field(x => x.Roles).ResolveWith<Resolvers>(x => x.GetRolesAsync(default!, default!));
+
+        descriptor.Key(nameof(User.Id).LowercaseFirstLetter())
+            .ResolveReferenceWith(_ => Resolvers.GetUserByIdAsync(default!, default!));
     }
 
     private sealed class Resolvers
@@ -31,6 +37,13 @@ public class UserType : ObjectType<User>
                 throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
             return result.Data;
+        }
+
+        public static async Task<User> GetUserByIdAsync(long id, UserDataLoader userLoader)
+        {
+            var user = await userLoader.LoadRequiredAsync(id);
+
+            return user;
         }
     }
 }
