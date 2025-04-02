@@ -110,4 +110,39 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
         Assert.Equal(0, result.Count);
     }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUserByIds_ShouldBe_Success()
+    {
+        //Arrange
+        var getRoleService = new GetUserServiceFactory().GetService();
+        var userIds = new List<long> { 1, 2, 0 };
+
+        //Act
+        var result = await getRoleService.GetByIdsAsync(userIds);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+        Assert.Equal(result.Count, result.Data.Count());
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUserByIds_ShouldBe_UserNotFound()
+    {
+        //Arrange
+        var getRoleService = new GetUserServiceFactory().GetService();
+        var userIds = new List<long> { 0 };
+
+        //Act
+        var result = await getRoleService.GetByIdsAsync(userIds);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.UsersNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+        Assert.Equal(0, result.Count);
+    }
 }

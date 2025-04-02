@@ -28,7 +28,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
-            return BaseResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UserNotFound);
+            return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         return BaseResult<User>.Success(user);
     }
