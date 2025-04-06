@@ -26,14 +26,14 @@ builder.Services.AddSwagger();
 builder.Services.AddGraphQl();
 builder.Services.AddGrpcServices();
 builder.Services.AddMassTransitServices();
-builder.AddHangfire();
+builder.Services.AddHangfire(builder.Configuration);
 
 builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddApplication();
 
-builder.ConfigurePorts();
+builder.WebHost.ConfigurePorts(builder.Configuration);
 
 var app = builder.Build();
 

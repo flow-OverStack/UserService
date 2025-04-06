@@ -140,19 +140,20 @@ public static class Startup
     /// <summary>
     ///     Configure ports for application
     /// </summary>
-    /// <param name="builder"></param>
-    public static void ConfigurePorts(this WebApplicationBuilder builder)
+    /// <param name="hostBuilder"></param>
+    /// <param name="configuration"></param>
+    public static void ConfigurePorts(this IWebHostBuilder hostBuilder, IConfiguration configuration)
     {
-        var grpcPort = builder.Configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+        var grpcPort = configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
             .GetValue<int>("GrpcPort");
 
-        var apiPort = builder.Configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+        var apiPort = configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
             .GetValue<int>("RestApiPort");
 
-        var useHttpsForApi = builder.Configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
+        var useHttpsForApi = configuration.GetSection(AppStartupSectionName).GetSection(AppPortsSectionName)
             .GetValue<bool>("UseHttpsForRestApi");
 
-        builder.WebHost.ConfigureKestrel(opt =>
+        hostBuilder.ConfigureKestrel(opt =>
         {
             opt.ListenAnyIP(grpcPort, listenOpt => listenOpt.Protocols = HttpProtocols.Http2);
             opt.ListenAnyIP(apiPort, listenOpt =>
@@ -166,12 +167,13 @@ public static class Startup
     /// <summary>
     ///     Configures hangfire and adds jobs
     /// </summary>
-    /// <param name="builder"></param>
-    public static void AddHangfire(this WebApplicationBuilder builder)
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    public static void AddHangfire(this IServiceCollection services, IConfiguration configuration)
     {
-        builder.Services.AddHangfire(x => x.UsePostgreSqlStorage(options =>
+        services.AddHangfire(x => x.UsePostgreSqlStorage(options =>
             {
-                var connectionString = builder.Configuration.GetConnectionString("PostgresSQL");
+                var connectionString = configuration.GetConnectionString("PostgresSQL");
                 options.UseNpgsqlConnection(connectionString);
             })
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -184,9 +186,9 @@ public static class Startup
                 DelaysInSeconds = [30, 60, 300, 600, 1800, 43200, 86400] //30sec, 1min, 5min, 10min, 1h, 12h, 24h
             }));
 
-        builder.Services.AddHangfireServer();
+        services.AddHangfireServer();
 
-        builder.Services.InitJobs();
+        services.InitJobs();
     }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
