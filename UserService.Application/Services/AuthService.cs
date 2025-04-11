@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using System.Net.Mail;
 using AutoMapper;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
@@ -124,9 +124,15 @@ public class AuthService(
 
     private static bool IsEmail(string email)
     {
-        var emailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-            RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        return emailRegex.IsMatch(email);
+        try
+        {
+            _ = new MailAddress(email);
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 
     private static async Task<BaseResult<TokenDto>> SafeLoginUser(IIdentityServer identityServer,
