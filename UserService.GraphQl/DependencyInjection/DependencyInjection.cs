@@ -27,6 +27,8 @@ public static class DependencyInjection
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()
             .AddDataLoader<UserDataLoader>()
+            .AddDataLoader<GroupUserDataLoader>()
+            .AddDataLoader<GroupRoleDataLoader>()
             .AddApolloFederation();
     }
 

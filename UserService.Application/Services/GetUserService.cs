@@ -44,18 +44,19 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         return CollectionResult<User>.Success(users, users.Count, totalCount);
     }
 
-    public async Task<CollectionResult<User>> GetUsersWithRole(long roleId)
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRoles(
+        IEnumerable<long> roleIds)
     {
-        var role = await roleRepository.GetAll()
+        var groupedUsers = await roleRepository.GetAll()
+            .Where(x => roleIds.Contains(x.Id))
             .Include(x => x.Users)
-            .FirstOrDefaultAsync(x => x.Id == roleId);
+            .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToArray()))
+            .ToListAsync();
 
-        if (role == null)
-            return CollectionResult<User>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+        if (!groupedUsers.Any())
+            return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
+                (int)ErrorCodes.UsersNotFound);
 
-        var users = role.Users.ToArray();
-        var count = users.Length;
-
-        return CollectionResult<User>.Success(users, count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers, groupedUsers.Count);
     }
 }

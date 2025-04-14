@@ -1,6 +1,5 @@
 using UserService.Domain.Entity;
-using UserService.Domain.Helpers;
-using UserService.Domain.Interfaces.Services;
+using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl.Types;
 
@@ -19,14 +18,11 @@ public class RoleType : ObjectType<Role>
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, [Service] IGetUserService userService)
+        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, GroupUserDataLoader userLoader)
         {
-            var result = await userService.GetUsersWithRole(role.Id);
+            var users = await userLoader.LoadRequiredAsync(role.Id);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-            return result.Data;
+            return users;
         }
     }
 }

@@ -3,12 +3,25 @@ using UserService.Domain.Result;
 
 namespace UserService.Domain.Interfaces.Services;
 
-public interface IGetRoleService : IGetService<Role>
+public interface IGetRoleService
 {
     /// <summary>
-    ///     Get all roles of the user by his id
+    ///     Gets all of Roles
     /// </summary>
-    /// <param name="userid"></param>
     /// <returns></returns>
-    Task<CollectionResult<Role>> GetUserRoles(long userid);
+    Task<CollectionResult<Role>> GetAllAsync();
+
+    /// <summary>
+    ///     Gets one Role by its Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<BaseResult<Role>> GetByIdAsync(long id);
+
+    /// <summary>
+    ///     Get all roles of the users by his ids
+    /// </summary>
+    /// <param name="userIds"></param>
+    /// <returns></returns>
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRoles(IEnumerable<long> userIds);
 }

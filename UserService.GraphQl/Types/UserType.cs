@@ -1,8 +1,6 @@
 using HotChocolate.ApolloFederation.Types;
 using UserService.Domain.Entity;
 using UserService.Domain.Extensions;
-using UserService.Domain.Helpers;
-using UserService.Domain.Interfaces.Services;
 using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl.Types;
@@ -29,14 +27,11 @@ public class UserType : ObjectType<User>
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<Role>> GetRolesAsync([Parent] User user, [Service] IGetRoleService roleService)
+        public async Task<IEnumerable<Role>> GetRolesAsync([Parent] User user, GroupRoleDataLoader roleLoader)
         {
-            var result = await roleService.GetUserRoles(user.Id);
+            var roles = await roleLoader.LoadRequiredAsync(user.Id);
 
-            if (!result.IsSuccess)
-                throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-            return result.Data;
+            return roles;
         }
 
         public static async Task<User> GetUserByIdAsync(long id, UserDataLoader userLoader)
