@@ -1,15 +1,27 @@
+using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain.Entity;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
 
 namespace UserService.GraphQl.DataLoaders;
 
-public class GroupRoleDataLoader(IBatchScheduler batchScheduler, DataLoaderOptions options, IGetRoleService roleService)
+/// <summary>
+///     Data loader that stores Roles by Users ids
+/// </summary>
+/// <param name="batchScheduler"></param>
+/// <param name="options"></param>
+public class GroupRoleDataLoader(
+    IBatchScheduler batchScheduler,
+    DataLoaderOptions options,
+    IServiceScopeFactory scopeFactory)
     : GroupedDataLoader<long, Role>(batchScheduler, options)
 {
     protected override async Task<ILookup<long, Role>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
+        using var scope = scopeFactory.CreateScope();
+        var roleService = scope.ServiceProvider.GetRequiredService<IGetRoleService>();
+
         var result = await roleService.GetUsersRoles(keys);
 
         if (!result.IsSuccess)

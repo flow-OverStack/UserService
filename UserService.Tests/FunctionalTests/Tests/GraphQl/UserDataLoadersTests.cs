@@ -8,7 +8,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class DataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
+public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
