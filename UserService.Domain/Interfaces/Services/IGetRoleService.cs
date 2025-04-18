@@ -12,14 +12,14 @@ public interface IGetRoleService
     Task<CollectionResult<Role>> GetAllAsync();
 
     /// <summary>
-    ///     Gets one Role by its Id
+    ///     Gets one Role by its id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     Task<BaseResult<Role>> GetByIdAsync(long id);
 
     /// <summary>
-    ///     Get all roles of the users by his ids
+    ///     Get all roles of the users by their ids
     /// </summary>
     /// <param name="userIds"></param>
     /// <returns></returns>

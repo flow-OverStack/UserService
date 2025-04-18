@@ -6,7 +6,7 @@ namespace UserService.Domain.Interfaces.Services;
 public interface IGetUserService : IGetService<User>
 {
     /// <summary>
-    ///     Get all users who have the roles by its ids
+    ///     Get all users who have the roles by their ids
     /// </summary>
     /// <param name="roleIds"></param>
     /// <returns></returns>
