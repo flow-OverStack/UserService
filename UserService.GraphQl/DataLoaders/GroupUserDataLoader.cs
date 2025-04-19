@@ -6,7 +6,7 @@ using UserService.Domain.Interfaces.Services;
 namespace UserService.GraphQl.DataLoaders;
 
 /// <summary>
-///     Data loader that stores Users by Roles ids
+///     Data loader that stores users by roles ids
 /// </summary>
 /// <param name="batchScheduler"></param>
 /// <param name="options"></param>
