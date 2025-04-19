@@ -1,6 +1,7 @@
 using UserService.Domain.Entity;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
+using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl;
 
@@ -22,14 +23,12 @@ public class Queries
     [GraphQLDescription("Returns a user by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<User> GetUser(long id, [Service] IGetUserService userService)
+    public async Task<User> GetUser(long id, UserDataLoader userLoader)
     {
-        var result = await userService.GetByIdAsync(id);
+        //If the user is not found, data loader will throw GrpahQl exception
+        var user = await userLoader.LoadRequiredAsync(id);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-        return result.Data;
+        return user;
     }
 
 
@@ -49,13 +48,11 @@ public class Queries
     [GraphQLDescription("Returns a role by its id")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Role> GetRole(long id, [Service] IGetRoleService roleService)
+    public async Task<Role> GetRole(long id, RoleDataLoader roleLoader)
     {
-        var result = await roleService.GetByIdAsync(id);
+        //If the user is not found, data loader will throw GrpahQl exception
+        var role = await roleLoader.LoadAsync(id);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
-        return result.Data;
+        return role;
     }
 }

@@ -21,14 +21,22 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
         return CollectionResult<Role>.Success(roles, roles.Count);
     }
 
-    public async Task<BaseResult<Role>> GetByIdAsync(long id)
+    public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids)
     {
-        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+        var roles = await roleRepository.GetAll()
+            .Where(r => ids.Contains(r.Id))
+            .ToListAsync();
+        var totalCount = await roleRepository.GetAll().CountAsync();
 
-        if (role == null)
-            return BaseResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+        if (!roles.Any())
+            return ids.Count() switch
+            {
+                <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
+                > 1 => CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound)
+            };
 
-        return BaseResult<Role>.Success(role);
+
+        return CollectionResult<Role>.Success(roles, roles.Count, totalCount);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(
@@ -41,8 +49,13 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
             .ToListAsync();
 
         if (!groupedRoles.Any())
-            return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
-                (int)ErrorCodes.RolesNotFound);
+            return userIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RoleNotFound,
+                    (int)ErrorCodes.RoleNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
+                    (int)ErrorCodes.RolesNotFound)
+            };
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Success(groupedRoles, groupedRoles.Count);
     }

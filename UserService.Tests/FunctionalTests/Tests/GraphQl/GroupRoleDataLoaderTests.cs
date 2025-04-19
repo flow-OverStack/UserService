@@ -28,7 +28,7 @@ public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_RolesNotFound()
+    public async Task LoadBatch_ShouldBe_RoleNotFound()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
@@ -40,6 +40,6 @@ public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
 
         //Assert
         var exception = await Assert.ThrowsAsync<GraphQLException>(action);
-        Assert.Equal(ErrorMessage.RolesNotFound, exception.Message);
+        Assert.Equal(ErrorMessage.RoleNotFound, exception.Message);
     }
 }

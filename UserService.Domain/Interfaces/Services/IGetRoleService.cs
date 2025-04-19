@@ -6,20 +6,20 @@ namespace UserService.Domain.Interfaces.Services;
 public interface IGetRoleService
 {
     /// <summary>
-    ///     Gets all of Roles
+    ///     Gets all of roles
     /// </summary>
     /// <returns></returns>
     Task<CollectionResult<Role>> GetAllAsync();
 
     /// <summary>
-    ///     Gets one Role by its id
+    ///     Gets roles by their ids
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="ids"></param>
     /// <returns></returns>
-    Task<BaseResult<Role>> GetByIdAsync(long id);
+    Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids);
 
     /// <summary>
-    ///     Get all roles of the users by their ids
+    ///     Gets all roles of the users by their ids
     /// </summary>
     /// <param name="userIds"></param>
     /// <returns></returns>

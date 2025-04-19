@@ -29,7 +29,7 @@ public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFun
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_UsersNotFound()
+    public async Task LoadBatch_ShouldBe_UserNotFound()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
@@ -41,6 +41,6 @@ public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFun
 
         //Assert
         var exception = await Assert.ThrowsAsync<GraphQLException>(action);
-        Assert.Equal(ErrorMessage.UsersNotFound, exception.Message);
+        Assert.Equal(ErrorMessage.UserNotFound, exception.Message);
     }
 }

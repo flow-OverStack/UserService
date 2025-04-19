@@ -6,11 +6,10 @@ using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GraphQlTests(FunctionalTestWebAppFactory factory, ITestOutputHelper testOutputHelper)
+public class GraphQlTests(FunctionalTestWebAppFactory factory)
     : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
@@ -23,7 +22,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory, ITestOutputHelper
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
-        testOutputHelper.WriteLine(body);
         var result = JsonConvert.DeserializeObject<GraphQlGetAllResponse>(body);
 
         //Assert

@@ -104,6 +104,24 @@ public class GetUserServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+        Assert.Equal(0, result.Count);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUserByIds_ShouldBe_UsersNotFound()
+    {
+        //Arrange
+        var getRoleService = new GetUserServiceFactory().GetService();
+        var userIds = new List<long> { 0, 0 };
+
+        //Act
+        var result = await getRoleService.GetByIdsAsync(userIds);
+
+        //Assert
+        Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.UsersNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
         Assert.Equal(0, result.Count);
@@ -132,7 +150,7 @@ public class GetUserServiceTests
     {
         //Arrange
         var getRoleService = new GetUserServiceFactory().GetService();
-        var roleIds = new List<long> { 0 };
+        var roleIds = new List<long> { 0, 0 };
 
         //Act
         var result = await getRoleService.GetUsersWithRolesAsync(roleIds);
@@ -140,6 +158,24 @@ public class GetUserServiceTests
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.UsersNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+        Assert.Equal(0, result.Count);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUsersWithRoles_ShouldBe_UserNotFound()
+    {
+        //Arrange
+        var getRoleService = new GetUserServiceFactory().GetService();
+        var roleIds = new List<long> { 0 };
+
+        //Act
+        var result = await getRoleService.GetUsersWithRolesAsync(roleIds);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
         Assert.Equal(0, result.Count);
     }

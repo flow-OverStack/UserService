@@ -8,22 +8,23 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
+public class RoleDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadGroupedBatch_ShouldBe_Success()
+    public async Task LoadBatch_ShouldBe_Success()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupUserDataLoader>();
-        var roleIds = new List<long> { 1, 2 };
+        var dataLoader = scope.ServiceProvider.GetRequiredService<RoleDataLoader>();
+        var roleIds = new List<long>
+            { 1, 2 }; //When LoadRequiredAsync if some keys were not resolved the exception is thrown 
 
         //Act
-        var users = await dataLoader.LoadRequiredAsync(roleIds);
+        var roles = await dataLoader.LoadRequiredAsync(roleIds);
 
         //Assert
-        Assert.Equal(users.Count, roleIds.Count);
+        Assert.Equal(roles.Count, roleIds.Count);
     }
 
     [Trait("Category", "Functional")]
@@ -32,7 +33,7 @@ public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupUserDataLoader>();
+        var dataLoader = scope.ServiceProvider.GetRequiredService<RoleDataLoader>();
         var roleIds = new List<long> { 0 };
 
         //Act
@@ -40,6 +41,6 @@ public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
 
         //Assert
         var exception = await Assert.ThrowsAsync<GraphQLException>(action);
-        Assert.Equal(ErrorMessage.UserNotFound, exception.Message);
+        Assert.Equal(ErrorMessage.RoleNotFound, exception.Message);
     }
 }

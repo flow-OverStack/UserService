@@ -39,7 +39,11 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         var totalCount = await userRepository.GetAll().CountAsync();
 
         if (!users.Any())
-            return CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound);
+            return ids.Count() switch
+            {
+                <= 1 => CollectionResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound)
+            };
 
         return CollectionResult<User>.Success(users, users.Count, totalCount);
     }
@@ -54,8 +58,13 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
             .ToListAsync();
 
         if (!groupedUsers.Any())
-            return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
-                (int)ErrorCodes.UsersNotFound);
+            return roleIds.Count() switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UserNotFound,
+                    (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
+                    (int)ErrorCodes.UsersNotFound)
+            };
 
         return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers, groupedUsers.Count);
     }
