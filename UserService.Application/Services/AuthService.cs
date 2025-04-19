@@ -23,7 +23,7 @@ public class AuthService(
     IUnitOfWork unitOfWork)
     : IAuthService
 {
-    public async Task<BaseResult<UserDto>> Register(RegisterUserDto dto)
+    public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto)
     {
         if (!IsEmail(dto.Email))
             return BaseResult<UserDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
@@ -75,7 +75,7 @@ public class AuthService(
             {
                 await transaction.RollbackAsync();
                 if (keycloakResponse != null)
-                    BackgroundJob.Enqueue(() => identityServer.RollbackRegistration(keycloakResponse.KeycloakId));
+                    BackgroundJob.Enqueue(() => identityServer.RollbackRegistrationAsync(keycloakResponse.KeycloakId));
 
                 throw;
             }
@@ -84,15 +84,15 @@ public class AuthService(
         return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
     }
 
-    public async Task<BaseResult<TokenDto>> LoginWithUsername(LoginUsernameUserDto dto)
+    public async Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto)
     {
         var user = await userRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
 
-        return await Login(user, dto.Password);
+        return await LoginAsync(user, dto.Password);
     }
 
-    public async Task<BaseResult<TokenDto>> LoginWithEmail(LoginEmailUserDto dto)
+    public async Task<BaseResult<TokenDto>> LoginWithEmailAsync(LoginEmailUserDto dto)
     {
         if (!IsEmail(dto.Email))
             return BaseResult<TokenDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
@@ -100,10 +100,10 @@ public class AuthService(
         var user = await userRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-        return await Login(user, dto.Password);
+        return await LoginAsync(user, dto.Password);
     }
 
-    private async Task<BaseResult<TokenDto>> Login(User? user, string password)
+    private async Task<BaseResult<TokenDto>> LoginAsync(User? user, string password)
     {
         if (user == null)
             return BaseResult<TokenDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -111,7 +111,7 @@ public class AuthService(
         var keycloakDto = mapper.Map<KeycloakLoginUserDto>(user);
         keycloakDto.Password = password;
 
-        var keycloakSafeResponse = await SafeLoginUser(identityServer, keycloakDto);
+        var keycloakSafeResponse = await SafeLoginUserAsync(identityServer, keycloakDto);
         if (!keycloakSafeResponse.IsSuccess)
             return keycloakSafeResponse;
 
@@ -135,7 +135,7 @@ public class AuthService(
         }
     }
 
-    private static async Task<BaseResult<TokenDto>> SafeLoginUser(IIdentityServer identityServer,
+    private static async Task<BaseResult<TokenDto>> SafeLoginUserAsync(IIdentityServer identityServer,
         KeycloakLoginUserDto dto)
     {
         try

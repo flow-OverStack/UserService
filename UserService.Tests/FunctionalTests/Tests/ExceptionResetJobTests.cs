@@ -23,7 +23,7 @@ public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         //Act
-        await reputationResetJob.Run();
+        await reputationResetJob.RunAsync();
 
         //Assert
         var reputations = await dbContext.Set<User>().Select(x => x.ReputationEarnedToday).ToListAsync();
@@ -42,7 +42,7 @@ public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         //Act
-        await processedEventsResetJob.Run();
+        await processedEventsResetJob.RunAsync();
 
         //Assert
         var processedEvents = await dbContext.Set<ProcessedEvent>().ToListAsync();

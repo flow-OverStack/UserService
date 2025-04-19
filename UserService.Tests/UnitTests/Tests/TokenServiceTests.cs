@@ -18,7 +18,7 @@ public class TokenServiceTests
         };
 
         //Act
-        var result = await tokenService.RefreshToken(dto);
+        var result = await tokenService.RefreshTokenAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);

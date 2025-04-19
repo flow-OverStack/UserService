@@ -16,8 +16,9 @@ public static class DependencyInjection
     {
         app.Lifetime.ApplicationStarted.Register(() =>
             {
-                RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.Run(), Cron.Daily);
-                RecurringJob.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset", job => job.Run(), Cron.Daily);
+                RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset", job => job.RunAsync(), Cron.Daily);
+                RecurringJob.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset", job => job.RunAsync(),
+                    Cron.Daily);
             }
         );
 

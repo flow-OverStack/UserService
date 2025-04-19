@@ -5,7 +5,7 @@ namespace UserService.BackgroundJobs.Jobs;
 
 public class ProcessedEventsResetJob(IProcessedEventsResetService eventsResetService)
 {
-    public async Task Run()
+    public async Task RunAsync()
     {
         try
         {

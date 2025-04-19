@@ -16,7 +16,7 @@ public class ReputationService(IBaseRepository<User> userRepository, IOptions<Bu
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult> ResetEarnedTodayReputation()
+    public async Task<BaseResult> ResetEarnedTodayReputationAsync()
     {
         await userRepository.GetAll().ExecuteUpdateAsync(x => x.SetProperty(y => y.ReputationEarnedToday, 0));
 

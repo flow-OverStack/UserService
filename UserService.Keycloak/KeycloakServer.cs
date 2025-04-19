@@ -60,7 +60,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            await SetAuthHeader();
+            await SetAuthHeaderAsync();
             var createResponse = await _httpClient.PostAsync(_keycloakSettings.UsersUrl, content);
 
             createResponse.EnsureSuccessStatusCode();
@@ -69,7 +69,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             #region Get created user
 
-            await SetAuthHeader();
+            await SetAuthHeaderAsync();
             var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersUrl}?username={dto.Username}");
 
             getResponse.EnsureSuccessStatusCode();
@@ -199,7 +199,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             });
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            await SetAuthHeader();
+            await SetAuthHeaderAsync();
             var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
                 content);
 
@@ -211,9 +211,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         }
     }
 
-    public async Task RollbackRegistration(Guid userId)
+    public async Task RollbackRegistrationAsync(Guid userId)
     {
-        await SetAuthHeader();
+        await SetAuthHeaderAsync();
         await _httpClient.DeleteAsync($"{_keycloakSettings.UsersUrl}/{userId.ToString()}");
     }
 
@@ -232,13 +232,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         });
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        await SetAuthHeader();
+        await SetAuthHeaderAsync();
         await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
             content);
     }
 
 
-    private async Task UpdateServiceToken()
+    private async Task UpdateServiceTokenAsync()
     {
         if (!IsTokenExpired())
             return; //double check is here to check if 2 or more threads are updating the token at the same time after the first check
@@ -266,13 +266,13 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         };
     }
 
-    private async Task UpdateServiceTokenIfNeeded()
+    private async Task UpdateServiceTokenIfNeededAsync()
     {
         if (IsTokenExpired())
             try
             {
                 await TokenSemaphore.WaitAsync();
-                await UpdateServiceToken();
+                await UpdateServiceTokenAsync();
             }
             finally
             {
@@ -286,9 +286,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
                Token.Expires <= DateTime.UtcNow.AddSeconds(TokenExpirationThresholdInSeconds);
     }
 
-    private async Task SetAuthHeader()
+    private async Task SetAuthHeaderAsync()
     {
-        await UpdateServiceTokenIfNeeded();
+        await UpdateServiceTokenIfNeededAsync();
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
     }

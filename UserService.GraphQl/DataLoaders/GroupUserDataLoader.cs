@@ -22,7 +22,7 @@ public class GroupUserDataLoader(
         using var scope = scopeFactory.CreateScope();
         var userService = scope.ServiceProvider.GetRequiredService<IGetUserService>();
 
-        var result = await userService.GetUsersWithRoles(keys);
+        var result = await userService.GetUsersWithRolesAsync(keys);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);

@@ -11,9 +11,9 @@ public class TokenService(
     IMapper mapper)
     : ITokenService
 {
-    public async Task<BaseResult<TokenDto>> RefreshToken(RefreshTokenDto dto)
+    public async Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto)
     {
-        var keycloakResponse = await SafeRefreshToken(identityServer, dto);
+        var keycloakResponse = await SafeRefreshTokenAsync(identityServer, dto);
 
         if (!keycloakResponse.IsSuccess) return keycloakResponse;
 
@@ -22,7 +22,7 @@ public class TokenService(
         return BaseResult<TokenDto>.Success(tokenDto);
     }
 
-    private static async Task<BaseResult<TokenDto>> SafeRefreshToken(IIdentityServer identityServer,
+    private static async Task<BaseResult<TokenDto>> SafeRefreshTokenAsync(IIdentityServer identityServer,
         RefreshTokenDto dto)
     {
         try

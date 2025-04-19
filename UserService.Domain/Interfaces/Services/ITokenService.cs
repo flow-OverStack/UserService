@@ -10,5 +10,5 @@ public interface ITokenService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<TokenDto>> RefreshToken(RefreshTokenDto dto);
+    Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto);
 }

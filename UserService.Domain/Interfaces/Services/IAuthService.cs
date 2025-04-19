@@ -14,19 +14,19 @@ public interface IAuthService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<UserDto>> Register(RegisterUserDto dto);
+    Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto);
 
     /// <summary>
     ///     Logs user in with username given
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<TokenDto>> LoginWithUsername(LoginUsernameUserDto dto);
+    Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto);
 
     /// <summary>
     ///     Logs user in with email given
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<TokenDto>> LoginWithEmail(LoginEmailUserDto dto);
+    Task<BaseResult<TokenDto>> LoginWithEmailAsync(LoginEmailUserDto dto);
 }

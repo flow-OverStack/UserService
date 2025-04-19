@@ -23,7 +23,7 @@ public class AuthController(IAuthService authService) : BaseController
     [HttpPost("register")]
     public async Task<ActionResult<BaseResult<UserDto>>> Register([FromBody] RegisterUserDto dto)
     {
-        var result = await authService.Register(dto);
+        var result = await authService.RegisterAsync(dto);
 
         return HandleResult(result);
     }
@@ -36,7 +36,7 @@ public class AuthController(IAuthService authService) : BaseController
     [HttpPost("login-email")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginEmailUserDto dto)
     {
-        var result = await authService.LoginWithEmail(dto);
+        var result = await authService.LoginWithEmailAsync(dto);
 
         return HandleResult(result);
     }
@@ -49,7 +49,7 @@ public class AuthController(IAuthService authService) : BaseController
     [HttpPost("login-username")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUsernameUserDto dto)
     {
-        var result = await authService.LoginWithUsername(dto);
+        var result = await authService.LoginWithUsernameAsync(dto);
 
         return HandleResult(result);
     }

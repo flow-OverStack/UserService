@@ -118,7 +118,7 @@ public class GetUserServiceTests
         var roleIds = new List<long> { 1, 2, 0 };
 
         //Act
-        var result = await getRoleService.GetUsersWithRoles(roleIds);
+        var result = await getRoleService.GetUsersWithRolesAsync(roleIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -135,7 +135,7 @@ public class GetUserServiceTests
         var roleIds = new List<long> { 0 };
 
         //Act
-        var result = await getRoleService.GetUsersWithRoles(roleIds);
+        var result = await getRoleService.GetUsersWithRolesAsync(roleIds);
 
         //Assert
         Assert.False(result.IsSuccess);

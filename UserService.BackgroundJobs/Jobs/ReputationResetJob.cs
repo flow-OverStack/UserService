@@ -5,11 +5,11 @@ namespace UserService.BackgroundJobs.Jobs;
 
 public class ReputationResetJob(IReputationResetService reputationResetService)
 {
-    public async Task Run()
+    public async Task RunAsync()
     {
         try
         {
-            var result = await reputationResetService.ResetEarnedTodayReputation();
+            var result = await reputationResetService.ResetEarnedTodayReputationAsync();
             if (result.IsSuccess)
                 Log.Information("Successfully reset reputation");
             else

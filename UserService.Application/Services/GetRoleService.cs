@@ -31,7 +31,7 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
         return BaseResult<Role>.Success(role);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRoles(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(
         IEnumerable<long> userIds)
     {
         var groupedRoles = await userRepository.GetAll()

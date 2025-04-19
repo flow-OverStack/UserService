@@ -22,7 +22,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
         //Act
-        await reputationResetService.Run();
+        await reputationResetService.RunAsync();
 
         //Assert
         var reputations = await userRepository.GetAll().Select(x => x.ReputationEarnedToday).ToListAsync();
@@ -40,7 +40,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
         var eventRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<ProcessedEvent>>();
 
         //Act
-        await processedEventsResetJob.Run();
+        await processedEventsResetJob.RunAsync();
 
         //Assert
         var processedEvents = await eventRepository.GetAll().ToListAsync();

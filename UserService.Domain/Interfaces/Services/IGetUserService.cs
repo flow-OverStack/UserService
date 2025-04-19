@@ -10,5 +10,5 @@ public interface IGetUserService : IGetService<User>
     /// </summary>
     /// <param name="roleIds"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRoles(IEnumerable<long> roleIds);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(IEnumerable<long> roleIds);
 }

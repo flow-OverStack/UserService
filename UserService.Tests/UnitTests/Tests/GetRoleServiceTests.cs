@@ -52,7 +52,7 @@ public class GetRoleServiceTests
         var userIds = new List<long> { 1, 2, 0 };
 
         //Act
-        var result = await getRoleService.GetUsersRoles(userIds);
+        var result = await getRoleService.GetUsersRolesAsync(userIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -69,7 +69,7 @@ public class GetRoleServiceTests
         var roleIds = new List<long> { 0 };
 
         //Act
-        var result = await getRoleService.GetUsersRoles(roleIds);
+        var result = await getRoleService.GetUsersRolesAsync(roleIds);
 
         //Assert
         Assert.False(result.IsSuccess);

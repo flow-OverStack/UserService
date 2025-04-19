@@ -22,7 +22,7 @@ public class TokenController(ITokenService tokenService) : BaseController
     [HttpPost("refresh")]
     public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto)
     {
-        var result = await tokenService.RefreshToken(dto);
+        var result = await tokenService.RefreshTokenAsync(dto);
 
         return HandleResult(result);
     }

@@ -20,7 +20,7 @@ public class AuthServiceTests
             TestConstants.TestPassword + "4");
 
         //Act
-        var result = await authService.Register(dto);
+        var result = await authService.RegisterAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -38,7 +38,7 @@ public class AuthServiceTests
 
         //Act
         var result =
-            await authService.Register(dto);
+            await authService.RegisterAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -56,7 +56,7 @@ public class AuthServiceTests
             TestConstants.TestPassword + "1");
 
         //Act
-        var result = await authService.Register(dto);
+        var result = await authService.RegisterAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -76,7 +76,7 @@ public class AuthServiceTests
             TestConstants.TestPassword + "4");
 
         //Act
-        var result = await authService.Register(dto);
+        var result = await authService.RegisterAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -95,7 +95,7 @@ public class AuthServiceTests
 
         //Act
         var result =
-            await authService.LoginWithUsername(dto);
+            await authService.LoginWithUsernameAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -113,7 +113,7 @@ public class AuthServiceTests
 
         //Act
         var result =
-            await authService.LoginWithEmail(dto);
+            await authService.LoginWithEmailAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -130,7 +130,7 @@ public class AuthServiceTests
 
         //Act
         var result =
-            await authService.LoginWithEmail(dto);
+            await authService.LoginWithEmailAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -149,7 +149,7 @@ public class AuthServiceTests
 
         //Act
         var result =
-            await authService.LoginWithUsername(dto);
+            await authService.LoginWithUsernameAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
@@ -167,7 +167,7 @@ public class AuthServiceTests
 
         //Act
         var result =
-            await authService.LoginWithUsername(dto);
+            await authService.LoginWithUsernameAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);

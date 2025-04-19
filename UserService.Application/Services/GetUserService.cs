@@ -44,7 +44,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         return CollectionResult<User>.Success(users, users.Count, totalCount);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRoles(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
         IEnumerable<long> roleIds)
     {
         var groupedUsers = await roleRepository.GetAll()

@@ -42,7 +42,7 @@ public interface IIdentityServer
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task RollbackRegistration(Guid userId);
+    Task RollbackRegistrationAsync(Guid userId);
 
     /// <summary>
     ///     Rolls back the user's roles update; does not catch errors
