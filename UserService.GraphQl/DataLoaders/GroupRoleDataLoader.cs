@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain.Entity;
-using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
 
 namespace UserService.GraphQl.DataLoaders;
@@ -25,7 +24,9 @@ public class GroupRoleDataLoader(
         var result = await roleService.GetUsersRolesAsync(keys);
 
         if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+            return Enumerable.Empty<KeyValuePair<long, IEnumerable<Role>>>()
+                .SelectMany(x => x.Value.Select(y => new { x.Key, Role = y }))
+                .ToLookup(x => x.Key, x => x.Role);
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, Role = y }))

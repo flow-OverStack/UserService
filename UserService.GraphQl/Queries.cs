@@ -20,13 +20,13 @@ public class Queries
         return result.Data;
     }
 
-    [GraphQLDescription("Returns a user by its id")]
+    [GraphQLDescription("Returns a user by its id. If one is requested - error, several - null")]
     [UseFiltering]
     [UseSorting]
-    public async Task<User> GetUser(long id, UserDataLoader userLoader)
+    public async Task<User?> GetUser(long id, UserDataLoader userLoader)
     {
-        //If the user is not found, data loader will throw GrpahQl exception
-        var user = await userLoader.LoadRequiredAsync(id);
+        //If one user is not found, data loader will throw GrpahQl exception
+        var user = await userLoader.LoadAsync(id);
 
         return user;
     }
@@ -45,12 +45,12 @@ public class Queries
         return result.Data;
     }
 
-    [GraphQLDescription("Returns a role by its id")]
+    [GraphQLDescription("Returns a role by its id. If one is requested - error, several - null")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Role> GetRole(long id, RoleDataLoader roleLoader)
+    public async Task<Role?> GetRole(long id, RoleDataLoader roleLoader)
     {
-        //If the user is not found, data loader will throw GrpahQl exception
+        //If one role is not found, data loader will throw GrpahQl exception
         var role = await roleLoader.LoadAsync(id);
 
         return role;

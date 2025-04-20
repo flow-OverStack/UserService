@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain.Entity;
-using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Services;
 
 namespace UserService.GraphQl.DataLoaders;
@@ -19,10 +18,11 @@ public class RoleDataLoader(
 
         var result = await roleService.GetByIdsAsync(keys);
 
-        if (!result.IsSuccess)
-            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
-
         var dictionary = new Dictionary<long, Role>();
+
+        if (!result.IsSuccess)
+            return dictionary.AsReadOnly();
+
         result.Data.ToList().ForEach(x => dictionary.Add(x.Id, x));
 
         return dictionary.AsReadOnly();
