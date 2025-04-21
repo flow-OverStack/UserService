@@ -1,6 +1,8 @@
 using HotChocolate.ApolloFederation.Types;
 using UserService.Domain.Entity;
 using UserService.Domain.Extensions;
+using UserService.Domain.Helpers;
+using UserService.Domain.Resources;
 using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl.Types;
@@ -29,9 +31,13 @@ public class UserType : ObjectType<User>
     {
         public async Task<IEnumerable<Role>> GetRolesAsync([Parent] User user, GroupRoleDataLoader roleLoader)
         {
-            var roles = await roleLoader.LoadRequiredAsync(user.Id);
+            var roles = await roleLoader.LoadAsync(user.Id);
 
-            return roles;
+            // Having no roles is a business exception, so we got to check it here
+            if (roles.IsNullOrEmpty())
+                throw GraphQlExceptionHelper.GetException(ErrorMessage.RolesNotFound);
+
+            return roles!;
         }
 
         public static async Task<User> GetUserByIdAsync(long id, UserDataLoader userLoader)

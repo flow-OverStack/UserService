@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
-using UserService.Domain.Resources;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl;
 using UserService.Tests.FunctionalTests.Helpers;
@@ -51,7 +50,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_UserNotFound()
+    public async Task GetUserById_ShouldBe_Null()
     {
         //Arrange
         const long userId = 0;
@@ -60,11 +59,11 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
+        var result = JsonConvert.DeserializeObject<GraphQlGetUserByIdResponse>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains(result!.Errors, x => x.Message == ErrorMessage.UserNotFound);
+        Assert.Null(result!.Data.User);
     }
 
     [Trait("Category", "Functional")]
@@ -88,7 +87,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetRoleById_ShouldBe_RoleNotFound()
+    public async Task GetRoleById_ShouldBe_Null()
     {
         //Arrange
         const long roleId = 0;
@@ -97,10 +96,10 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
+        var result = JsonConvert.DeserializeObject<GraphQlGetRoleByIdResponse>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Contains(result!.Errors, x => x.Message == ErrorMessage.RoleNotFound);
+        Assert.Null(result!.Data.Role);
     }
 }

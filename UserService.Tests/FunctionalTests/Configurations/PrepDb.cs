@@ -13,16 +13,19 @@ internal static class PrepDb
 {
     public static void PrepPopulation(this IServiceScope serviceScope)
     {
-        var users = MockRepositoriesGetters.GetUsers().Select(x => new User
-        {
-            KeycloakId = x.KeycloakId,
-            Username = x.Username,
-            Email = x.Email,
-            Reputation = x.Reputation,
-            ReputationEarnedToday = x.ReputationEarnedToday,
-            CreatedAt = x.CreatedAt,
-            LastLoginAt = x.LastLoginAt
-        });
+        var users = MockRepositoriesGetters.GetUsers()
+            //Real user always has at least 1 role
+            .Where(x => x.Roles.Count >= 1)
+            .Select(x => new User
+            {
+                KeycloakId = x.KeycloakId,
+                Username = x.Username,
+                Email = x.Email,
+                Reputation = x.Reputation,
+                ReputationEarnedToday = x.ReputationEarnedToday,
+                CreatedAt = x.CreatedAt,
+                LastLoginAt = x.LastLoginAt
+            });
 
         PrepAppDb(serviceScope, users);
 

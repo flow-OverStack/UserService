@@ -1,7 +1,5 @@
 using GreenDonut;
-using HotChocolate;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Domain.Resources;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
@@ -17,29 +15,28 @@ public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupRoleDataLoader>();
-        var userIds = new List<long> { 1, 2 };
+        const long userId = 1;
 
         //Act
-        var users = await dataLoader.LoadRequiredAsync(userIds);
+        var roles = await dataLoader.LoadRequiredAsync(userId);
 
         //Assert
-        Assert.Equal(users.Count, userIds.Count);
+        Assert.Equal(2, roles.Length); // User with id 1 has 2 roles
     }
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_RoleNotFound()
+    public async Task LoadBatch_ShouldBe_NoRoles()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupRoleDataLoader>();
-        var userIds = new List<long> { 0 };
+        const long userId = 0;
 
         //Act
-        var action = async () => await dataLoader.LoadRequiredAsync(userIds);
+        var result = await dataLoader.LoadRequiredAsync(userId);
 
         //Assert
-        var exception = await Assert.ThrowsAsync<GraphQLException>(action);
-        Assert.Equal(ErrorMessage.RoleNotFound, exception.Message);
+        Assert.Equal(0, result.Length);
     }
 }

@@ -9,5 +9,5 @@ internal class GraphQlGetRoleByIdResponse
 
 internal class GraphQlGetRoleByIdData
 {
-    public Role Role { get; set; }
+    public Role? Role { get; set; }
 }

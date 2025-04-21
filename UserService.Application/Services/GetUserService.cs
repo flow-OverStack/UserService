@@ -15,9 +15,6 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
     {
         var users = await userRepository.GetAll().ToListAsync();
 
-        if (!users.Any())
-            return CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound);
-
         return CollectionResult<User>.Success(users, users.Count);
     }
 

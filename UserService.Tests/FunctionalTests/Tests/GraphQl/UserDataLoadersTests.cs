@@ -1,7 +1,4 @@
-using GreenDonut;
-using HotChocolate;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Domain.Resources;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
@@ -17,30 +14,28 @@ public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFun
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<UserDataLoader>();
-        var userIds = new List<long>
-            { 1, 2 }; //When LoadRequiredAsync if some keys were not resolved the exception is thrown 
+        const long userId = 1;
 
         //Act
-        var users = await dataLoader.LoadRequiredAsync(userIds);
+        var result = await dataLoader.LoadAsync(userId);
 
         //Assert
-        Assert.Equal(users.Count, userIds.Count);
+        Assert.NotNull(result);
     }
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_UserNotFound()
+    public async Task LoadBatch_ShouldBe_Null()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<UserDataLoader>();
-        var userIds = new List<long> { 0 };
+        const long userId = 0;
 
         //Act
-        var action = async () => await dataLoader.LoadRequiredAsync(userIds);
+        var result = await dataLoader.LoadAsync(userId);
 
         //Assert
-        var exception = await Assert.ThrowsAsync<GraphQLException>(action);
-        Assert.Equal(ErrorMessage.UserNotFound, exception.Message);
+        Assert.Null(result);
     }
 }

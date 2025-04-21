@@ -9,5 +9,5 @@ internal class GraphQlGetUserByIdResponse
 
 internal class GraphQlGetUserByIdData
 {
-    public User User { get; set; }
+    public User? User { get; set; }
 }
