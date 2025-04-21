@@ -20,8 +20,8 @@ public class ExceptionIdentityServerFactory
         AdminToken = "TestAdminToken",
         ClientId = "TestClientId",
         Audience = "TestAudience",
-        UserIdAttributeName = "TestUserIdAttributeName",
-        RolesAttributeName = "TestRoleIdAttributeName"
+        UserIdClaim = "TestUserIdAttributeName",
+        RolesClaim = "TestRoleIdAttributeName"
     };
 
     public ExceptionIdentityServerFactory()

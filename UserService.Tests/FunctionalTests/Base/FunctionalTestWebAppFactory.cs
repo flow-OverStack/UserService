@@ -88,8 +88,8 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
                 x.AdminToken = "TestAdminToken";
                 x.Audience = TokenHelper.GetAudience();
                 x.ClientId = "TestClientId";
-                x.RolesAttributeName = "roles";
-                x.UserIdAttributeName = "userId";
+                x.RolesClaim = "roles";
+                x.UserIdClaim = "userId";
             });
         });
     }

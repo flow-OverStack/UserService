@@ -7,9 +7,10 @@ public class KeycloakSettings
     public string AdminToken { get; set; }
     public string ClientId { get; set; }
     public string Audience { get; set; }
-    public string UserIdAttributeName { get; set; }
-    public string RolesAttributeName { get; set; }
+    public string UserIdClaim { get; set; }
+    public string RolesClaim { get; set; }
+
     public string MetadataAddress => $"{Host}/realms/{Realm}/.well-known/openid-configuration";
-    public string LoginUrl => $"{Host}/realms/{Realm}/protocol/openid-connect/token";
-    public string UsersUrl => $"{Host}/admin/realms/{Realm}/users";
+    public string LoginEndpoint => $"/realms/{Realm}/protocol/openid-connect/token";
+    public string UsersEndpoint => $"/admin/realms/{Realm}/users";
 }

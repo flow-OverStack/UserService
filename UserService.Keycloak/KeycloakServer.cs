@@ -21,7 +21,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
-    private const string WrongPasswordErrorMessage = "invalid_grant";
     private const string WrongGrantErrorMessage = "invalid_grant";
     private const string PasswordGrantType = "password";
     private const string RefreshTokenGrantType = "refresh_token";
@@ -29,7 +28,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     private const int TokenExpirationThresholdInSeconds = 5;
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient("KeycloakHttpClient");
+    private readonly HttpClient _httpClient = httpClientFactory.CreateClient(nameof(KeycloakServer));
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceToken? Token { get; set; }
 
@@ -46,8 +45,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
                 Email = dto.Email,
 
                 Credentials = new List<KeycloakCredential>().AddPassword(dto.Password),
-                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdAttributeName, dto.Id)
-                    .AddRoles(_keycloakSettings.RolesAttributeName, dto.Roles)
+                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.Id)
+                    .AddRoles(_keycloakSettings.RolesClaim, dto.Roles)
             };
 
             #endregion
@@ -61,7 +60,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await SetAuthHeaderAsync();
-            var createResponse = await _httpClient.PostAsync(_keycloakSettings.UsersUrl, content);
+            var createResponse = await _httpClient.PostAsync(_keycloakSettings.UsersEndpoint, content);
 
             createResponse.EnsureSuccessStatusCode();
 
@@ -70,7 +69,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             #region Get created user
 
             await SetAuthHeaderAsync();
-            var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersUrl}?username={dto.Username}");
+            var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersEndpoint}?username={dto.Username}");
 
             getResponse.EnsureSuccessStatusCode();
 
@@ -107,7 +106,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             var content = new FormUrlEncodedContent(parameters);
 
-            var response = await _httpClient.PostAsync(_keycloakSettings.LoginUrl, content);
+            var response = await _httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content);
 
             var body = await response.Content.ReadAsStringAsync();
             var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
@@ -116,7 +115,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             {
                 var errorResponse = JsonConvert.DeserializeObject<KeycloakErrorResponse>(body);
 
-                if (errorResponse!.Error == WrongPasswordErrorMessage)
+                if (errorResponse!.Error == WrongGrantErrorMessage)
                     throw new IdentityServerPasswordIsWrongException(IdentityServerName,
                         errorResponse.ErrorDescription);
             }
@@ -151,7 +150,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             var content = new FormUrlEncodedContent(parameters);
 
-            var response = await _httpClient.PostAsync(_keycloakSettings.LoginUrl, content);
+            var response = await _httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content);
 
             var body = await response.Content.ReadAsStringAsync();
             var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
@@ -189,8 +188,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             var userPayload = new UpdateUserPayload
             {
                 Email = dto.Email,
-                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdAttributeName, dto.UserId)
-                    .AddRoles(_keycloakSettings.RolesAttributeName, dto.NewRoles)
+                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.UserId)
+                    .AddRoles(_keycloakSettings.RolesClaim, dto.NewRoles)
             };
 
             var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
@@ -200,7 +199,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await SetAuthHeaderAsync();
-            var response = await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
+            var response = await _httpClient.PutAsync(
+                $"{_keycloakSettings.UsersEndpoint}/{dto.KeycloakUserId.ToString()}",
                 content);
 
             response.EnsureSuccessStatusCode();
@@ -214,7 +214,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     public async Task RollbackRegistrationAsync(Guid userId)
     {
         await SetAuthHeaderAsync();
-        await _httpClient.DeleteAsync($"{_keycloakSettings.UsersUrl}/{userId.ToString()}");
+        await _httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{userId.ToString()}");
     }
 
     public async Task RollbackUpdateRolesAsync(KeycloakUpdateRolesDto dto)
@@ -222,8 +222,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         var userPayload = new UpdateUserPayload
         {
             Email = dto.Email,
-            Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdAttributeName, dto.UserId)
-                .AddRoles(_keycloakSettings.RolesAttributeName, dto.NewRoles)
+            Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.UserId)
+                .AddRoles(_keycloakSettings.RolesClaim, dto.NewRoles)
         };
 
         var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
@@ -233,7 +233,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         await SetAuthHeaderAsync();
-        await _httpClient.PutAsync($"{_keycloakSettings.UsersUrl}/{dto.KeycloakUserId.ToString()}",
+        await _httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.KeycloakUserId.ToString()}",
             content);
     }
 
@@ -252,7 +252,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
         var content = new FormUrlEncodedContent(parameters);
 
-        var response = await _httpClient.PostAsync(_keycloakSettings.LoginUrl, content);
+        var response = await _httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content);
 
         response.EnsureSuccessStatusCode();
 
