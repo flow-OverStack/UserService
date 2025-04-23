@@ -25,7 +25,6 @@ public class Queries
     [UseSorting]
     public async Task<User?> GetUser(long id, UserDataLoader userLoader)
     {
-        //If one user is not found, data loader will throw GrpahQl exception
         var user = await userLoader.LoadAsync(id);
 
         return user;
@@ -50,7 +49,6 @@ public class Queries
     [UseSorting]
     public async Task<Role?> GetRole(long id, RoleDataLoader roleLoader)
     {
-        //If one role is not found, data loader will throw GrpahQl exception
         var role = await roleLoader.LoadAsync(id);
 
         return role;

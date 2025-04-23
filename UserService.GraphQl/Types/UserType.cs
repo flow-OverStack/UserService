@@ -31,18 +31,18 @@ public class UserType : ObjectType<User>
     {
         public async Task<IEnumerable<Role>> GetRolesAsync([Parent] User user, GroupRoleDataLoader roleLoader)
         {
-            var roles = await roleLoader.LoadAsync(user.Id);
+            var roles = await roleLoader.LoadRequiredAsync(user.Id);
 
             // Having no roles is a business exception, so we got to check it here
-            if (roles.IsNullOrEmpty())
+            if (!roles.Any())
                 throw GraphQlExceptionHelper.GetException(ErrorMessage.RolesNotFound);
 
-            return roles!;
+            return roles;
         }
 
-        public static async Task<User> GetUserByIdAsync(long id, UserDataLoader userLoader)
+        public static async Task<User?> GetUserByIdAsync(long id, UserDataLoader userLoader)
         {
-            var user = await userLoader.LoadRequiredAsync(id);
+            var user = await userLoader.LoadAsync(id);
 
             return user;
         }
