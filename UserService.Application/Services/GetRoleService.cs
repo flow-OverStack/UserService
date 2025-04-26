@@ -49,13 +49,8 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
             .ToListAsync();
 
         if (!groupedRoles.Any())
-            return userIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RoleNotFound,
-                    (int)ErrorCodes.RoleNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
-                    (int)ErrorCodes.RolesNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
+                (int)ErrorCodes.RolesNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Success(groupedRoles, groupedRoles.Count);
     }

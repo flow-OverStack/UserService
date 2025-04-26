@@ -62,29 +62,11 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersRoles_ShouldBe_RoleNotFound()
-    {
-        //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
-        var roleIds = new List<long> { 0 };
-
-        //Act
-        var result = await getRoleService.GetUsersRolesAsync(roleIds);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
     public async Task GetUsersRoles_ShouldBe_RolesNotFound()
     {
         //Arrange
         var getRoleService = new GetRoleServiceFactory().GetService();
-        var roleIds = new List<long> { 0, 0 };
+        var roleIds = new List<long> { 0 };
 
         //Act
         var result = await getRoleService.GetUsersRolesAsync(roleIds);

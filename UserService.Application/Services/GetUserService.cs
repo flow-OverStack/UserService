@@ -55,13 +55,8 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
             .ToListAsync();
 
         if (!groupedUsers.Any())
-            return roleIds.Count() switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UserNotFound,
-                    (int)ErrorCodes.UserNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
-                    (int)ErrorCodes.UsersNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
+                (int)ErrorCodes.UsersNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers, groupedUsers.Count);
     }
