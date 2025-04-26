@@ -2,7 +2,7 @@ using UserService.Domain.Dto.User;
 using UserService.Domain.Entity;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
-using UserService.Tests.UnitTests.ServiceFactories;
+using UserService.Tests.UnitTests.Factories;
 using Xunit;
 using ErrorMessage = UserService.Domain.Resources.ErrorMessage;
 

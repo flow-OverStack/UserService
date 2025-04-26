@@ -4,7 +4,7 @@ using UserService.Domain.Settings;
 using UserService.Keycloak;
 using UserService.Tests.UnitTests.Configurations;
 
-namespace UserService.Tests.UnitTests.ServiceFactories;
+namespace UserService.Tests.UnitTests.Factories;
 
 public class ExceptionIdentityServerFactory
 {

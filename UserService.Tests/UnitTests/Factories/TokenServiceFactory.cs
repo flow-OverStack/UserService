@@ -7,7 +7,7 @@ using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Configurations;
 using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;
 
-namespace UserService.Tests.UnitTests.ServiceFactories;
+namespace UserService.Tests.UnitTests.Factories;
 
 internal class TokenServiceFactory
 {

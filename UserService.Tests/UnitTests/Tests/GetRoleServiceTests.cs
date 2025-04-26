@@ -1,7 +1,7 @@
 using UserService.Domain.Entity;
 using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
-using UserService.Tests.UnitTests.ServiceFactories;
+using UserService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace UserService.Tests.UnitTests.Tests;

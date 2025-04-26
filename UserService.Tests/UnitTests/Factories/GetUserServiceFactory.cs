@@ -4,7 +4,7 @@ using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Interfaces.Services;
 using UserService.Tests.Configurations;
 
-namespace UserService.Tests.UnitTests.ServiceFactories;
+namespace UserService.Tests.UnitTests.Factories;
 
 public class GetUserServiceFactory
 {

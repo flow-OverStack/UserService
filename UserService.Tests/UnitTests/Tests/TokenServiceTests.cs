@@ -1,5 +1,5 @@
 using UserService.Domain.Dto.Token;
-using UserService.Tests.UnitTests.ServiceFactories;
+using UserService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace UserService.Tests.UnitTests.Tests;

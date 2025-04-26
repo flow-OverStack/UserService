@@ -1,7 +1,7 @@
 using UserService.Domain.Dto.Role;
 using UserService.Domain.Dto.UserRole;
 using UserService.Domain.Resources;
-using UserService.Tests.UnitTests.ServiceFactories;
+using UserService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace UserService.Tests.UnitTests.Tests;

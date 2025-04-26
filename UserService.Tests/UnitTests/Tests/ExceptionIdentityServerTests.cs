@@ -4,7 +4,7 @@ using UserService.Domain.Dto.Token;
 using UserService.Domain.Entity;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Tests.Constants;
-using UserService.Tests.UnitTests.ServiceFactories;
+using UserService.Tests.UnitTests.Factories;
 using Xunit;
 
 namespace UserService.Tests.UnitTests.Tests;

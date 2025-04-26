@@ -6,7 +6,7 @@ using UserService.Domain.Interfaces.Services;
 using UserService.Domain.Settings;
 using UserService.Tests.Configurations;
 
-namespace UserService.Tests.UnitTests.ServiceFactories;
+namespace UserService.Tests.UnitTests.Factories;
 
 public class ReputationServiceFactory
 {
