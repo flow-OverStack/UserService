@@ -37,6 +37,6 @@ public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
         var result = await dataLoader.LoadRequiredAsync(roleId);
 
         //Assert
-        Assert.Equal(0, result.Length);
+        Assert.Empty(result);
     }
 }
