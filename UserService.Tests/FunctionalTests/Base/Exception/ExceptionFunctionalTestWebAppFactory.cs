@@ -12,7 +12,7 @@ namespace UserService.Tests.FunctionalTests.Base.Exception;
 
 public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
-    private static Mock<IDbContextTransaction> GetExceptionMockTransaction(IDbContextTransaction originalTransaction)
+    private static IMock<IDbContextTransaction> GetExceptionMockTransaction(IDbContextTransaction originalTransaction)
     {
         var mockTransaction = new Mock<IDbContextTransaction>();
 
@@ -23,7 +23,7 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
         return mockTransaction;
     }
 
-    private static async Task<Mock<IUnitOfWork>> GetExceptionMockUnitOfWork(IUnitOfWork originalUnitOfWork)
+    private static async Task<IMock<IUnitOfWork>> GetExceptionMockUnitOfWork(IUnitOfWork originalUnitOfWork)
     {
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 

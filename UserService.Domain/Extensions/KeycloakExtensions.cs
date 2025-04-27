@@ -72,7 +72,6 @@ public static class KeycloakExtensions
         long userId)
     {
         ArgumentNullException.ThrowIfNull(key);
-        ArgumentNullException.ThrowIfNull(userId);
 
         keycloakAttributes[key] = userId.ToString();
         return keycloakAttributes;

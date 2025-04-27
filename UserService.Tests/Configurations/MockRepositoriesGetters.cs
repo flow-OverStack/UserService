@@ -39,7 +39,7 @@ internal static class MockRepositoriesGetters
         };
     }
 
-    private static Mock<IDbContextTransaction> GetMockTransaction()
+    private static IMock<IDbContextTransaction> GetMockTransaction()
     {
         var transaction = new Mock<IDbContextTransaction>();
 
@@ -49,7 +49,7 @@ internal static class MockRepositoriesGetters
         return transaction;
     }
 
-    public static Mock<IUnitOfWork> GetMockUnitOfWork()
+    public static IMock<IUnitOfWork> GetMockUnitOfWork()
     {
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 
@@ -62,7 +62,7 @@ internal static class MockRepositoriesGetters
         return mockUnitOfWork;
     }
 
-    public static Mock<IBaseRepository<User>> GetMockUserRepository()
+    public static IMock<IBaseRepository<User>> GetMockUserRepository()
     {
         var mockRepository = new Mock<IBaseRepository<User>>();
         var users = GetUsers().BuildMockDbSet();
@@ -75,7 +75,7 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<Role>> GetMockRoleRepository()
+    public static IMock<IBaseRepository<Role>> GetMockRoleRepository()
     {
         var mockRepository = new Mock<IBaseRepository<Role>>();
 
@@ -106,7 +106,7 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
+    public static IMock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
     {
         var mockRepository = new Mock<IBaseRepository<T>>();
         var roles = Array.Empty<T>().BuildMockDbSet();
@@ -119,7 +119,7 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static Mock<IBaseRepository<UserRole>> GetMockUserRoleRepository()
+    public static IMock<IBaseRepository<UserRole>> GetMockUserRoleRepository()
     {
         var mockRepository = new Mock<IBaseRepository<UserRole>>();
         var userRoles = GetUserRoles().BuildMockDbSet();

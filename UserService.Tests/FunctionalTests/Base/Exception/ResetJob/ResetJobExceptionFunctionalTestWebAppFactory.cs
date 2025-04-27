@@ -13,7 +13,7 @@ namespace UserService.Tests.FunctionalTests.Base.Exception.ResetJob;
 
 public class ResetJobExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
-    private static Mock<IBaseRepository<User>> GetExceptionMockUserRepository(
+    private static IMock<IBaseRepository<User>> GetExceptionMockUserRepository(
         IBaseRepository<User> originalRepository)
     {
         var mockRepository = new Mock<IBaseRepository<User>>();
@@ -26,7 +26,7 @@ public class ResetJobExceptionFunctionalTestWebAppFactory : FunctionalTestWebApp
         return mockRepository;
     }
 
-    private static Mock<IBaseRepository<ProcessedEvent>> GetExceptionMockProcessedEventRepository(
+    private static IMock<IBaseRepository<ProcessedEvent>> GetExceptionMockProcessedEventRepository(
         IBaseRepository<ProcessedEvent> originalRepository)
     {
         var mockRepository = new Mock<IBaseRepository<ProcessedEvent>>();
