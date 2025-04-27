@@ -3,13 +3,13 @@ using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
+namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
 public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_Success()
+    public async Task Load_ShouldBe_Success()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
@@ -25,7 +25,7 @@ public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFun
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_Null()
+    public async Task Load_ShouldBe_Null()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();

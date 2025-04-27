@@ -4,13 +4,13 @@ using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
-namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
+namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
 public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadGroupedBatch_ShouldBe_Success()
+    public async Task LoadGrouped_ShouldBe_Success()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
@@ -26,7 +26,7 @@ public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadBatch_ShouldBe_NoRoles()
+    public async Task Load_ShouldBe_NoRoles()
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
