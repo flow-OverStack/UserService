@@ -55,7 +55,7 @@ public class ExceptionHandlingMiddleware
 
 
         httpContext.Response.ContentType = "application/json";
-        httpContext.Response.StatusCode = (int)response.ErrorCode!;
+        httpContext.Response.StatusCode = response.ErrorCode ?? (int)HttpStatusCode.InternalServerError;
         await httpContext.Response.WriteAsJsonAsync(response);
     }
 }
