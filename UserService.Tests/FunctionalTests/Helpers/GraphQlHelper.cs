@@ -1,6 +1,6 @@
 namespace UserService.Tests.FunctionalTests.Helpers;
 
-public static class GraphQlHelper
+internal static class GraphQlHelper
 {
     public const string RequestAllQuery = """
                                           {

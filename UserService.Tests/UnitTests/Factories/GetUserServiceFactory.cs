@@ -6,7 +6,7 @@ using UserService.Tests.Configurations;
 
 namespace UserService.Tests.UnitTests.Factories;
 
-public class GetUserServiceFactory
+internal class GetUserServiceFactory
 {
     private readonly IGetUserService _getUserService;
     public readonly IBaseRepository<Role> RoleRepository = MockRepositoriesGetters.GetMockRoleRepository().Object;

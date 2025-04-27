@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UserService.Tests.FunctionalTests.Configurations.Keycloak;
 
-public class KeycloakDbContext(DbContextOptions<KeycloakDbContext> options) : DbContext(options)
+internal class KeycloakDbContext(DbContextOptions<KeycloakDbContext> options) : DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

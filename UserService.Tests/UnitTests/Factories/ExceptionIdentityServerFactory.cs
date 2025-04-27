@@ -6,7 +6,7 @@ using UserService.Tests.UnitTests.Configurations;
 
 namespace UserService.Tests.UnitTests.Factories;
 
-public class ExceptionIdentityServerFactory
+internal class ExceptionIdentityServerFactory
 {
     private readonly IIdentityServer _identityServer;
 

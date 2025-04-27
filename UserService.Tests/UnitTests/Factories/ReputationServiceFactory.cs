@@ -8,7 +8,7 @@ using UserService.Tests.Configurations;
 
 namespace UserService.Tests.UnitTests.Factories;
 
-public class ReputationServiceFactory
+internal class ReputationServiceFactory
 {
     private readonly BusinessRules _businessRules = new()
     {
