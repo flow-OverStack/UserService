@@ -41,12 +41,7 @@ internal static class MockRepositoriesGetters
 
     private static IMock<IDbContextTransaction> GetMockTransaction()
     {
-        var transaction = new Mock<IDbContextTransaction>();
-
-        transaction.Setup(x => x.CommitAsync(default)).Returns(Task.CompletedTask);
-        transaction.Setup(x => x.RollbackAsync(default)).Returns(Task.CompletedTask);
-
-        return transaction;
+        return new Mock<IDbContextTransaction>();
     }
 
     public static IMock<IUnitOfWork> GetMockUnitOfWork()
