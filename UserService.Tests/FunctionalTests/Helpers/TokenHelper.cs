@@ -68,7 +68,7 @@ internal static class TokenHelper
     {
         var claims = new Dictionary<string, object>
         {
-            { ClaimTypes.Role, roles.Select(x => x.Name).ToArray() }
+            { ClaimTypes.Role, roles.Select(x => x.Name).ToList() }
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();

@@ -170,7 +170,7 @@ internal static class WireMockIdentityServerExtensions
         using var scope = services.BuildServiceProvider().CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
-        var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToArray();
+        var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToList();
 
         return JsonResponse(users);
     }

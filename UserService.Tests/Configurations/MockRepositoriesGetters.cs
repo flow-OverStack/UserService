@@ -49,7 +49,6 @@ internal static class MockRepositoriesGetters
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 
         mockUnitOfWork.Setup(x => x.Users).Returns(GetMockUserRepository().Object);
-        mockUnitOfWork.Setup(x => x.UserRoles).Returns(GetMockUserRoleRepository().Object);
         mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(GetMockTransaction().Object);
 

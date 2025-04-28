@@ -52,7 +52,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         var groupedUsers = await roleRepository.GetAll()
             .Where(x => roleIds.Contains(x.Id))
             .Include(x => x.Users)
-            .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToArray()))
+            .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToList()))
             .ToListAsync(cancellationToken);
 
         if (!groupedUsers.Any())

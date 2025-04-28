@@ -8,7 +8,5 @@ public interface IUnitOfWork : IStateSaveChanges
 {
     IBaseRepository<User> Users { get; set; }
 
-    IBaseRepository<UserRole> UserRoles { get; set; }
-
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

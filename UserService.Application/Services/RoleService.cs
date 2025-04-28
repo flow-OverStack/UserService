@@ -17,7 +17,6 @@ public class RoleService(
     IBaseRepository<User> userRepository,
     IBaseRepository<Role> roleRepository,
     IMapper mapper,
-    IBaseRepository<UserRole> userRoleRepository,
     IUnitOfWork unitOfWork,
     IIdentityServer identityServer)
     : IRoleService
@@ -45,7 +44,7 @@ public class RoleService(
         if (role == null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
-        var usersWithRoleToDelete = await GetUsersWithRoleAsync(role.Id, cancellationToken);
+        var usersWithRoleToDelete = (await GetUsersWithRoleAsync(role.Id, cancellationToken)).ToList();
 
         var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
@@ -128,9 +127,7 @@ public class RoleService(
         if (user == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var roles = user.Roles.Select(x => x.Id).ToArray();
-
-        if (roles.Any(x => x == dto.RoleId))
+        if (user.Roles.Any(x => x.Id == dto.RoleId))
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
                 (int)ErrorCodes.UserAlreadyHasThisRole);
 
@@ -143,14 +140,8 @@ public class RoleService(
         {
             try
             {
-                var userRole = new UserRole
-                {
-                    RoleId = role.Id,
-                    UserId = user.Id
-                };
-
-                await userRoleRepository.CreateAsync(userRole, cancellationToken);
-                await userRoleRepository.SaveChangesAsync(cancellationToken);
+                user.Roles.Add(role);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id, cancellationToken);
                 await UpdateRolesAsync([userWithUpdatedRole!], cancellationToken);
@@ -198,12 +189,8 @@ public class RoleService(
         {
             try
             {
-                var userRole = await userRoleRepository.GetAll()
-                    .Where(x => x.RoleId == role.Id)
-                    .FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
-
-                userRoleRepository.Remove(userRole!);
-                await userRoleRepository.SaveChangesAsync(cancellationToken);
+                user.Roles.Remove(role);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var userWithDeletedRole = await GetUserWithRolesByIdAsync(user.Id, cancellationToken);
                 await UpdateRolesAsync([userWithDeletedRole!], cancellationToken);
@@ -253,33 +240,17 @@ public class RoleService(
         if (newRoleForUser == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToUpdateIsNotFound, (int)ErrorCodes.RoleNotFound);
 
+        if (user.Roles.Any(x => x.Id == dto.ToRoleId))
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
+                (int)ErrorCodes.UserAlreadyHasThisRole);
+
         var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
-                var newUserRole = new UserRole
-                {
-                    UserId = user.Id,
-                    RoleId = newRoleForUser.Id
-                };
-
-                var isNewUserRoleExists = await unitOfWork.UserRoles.GetAll()
-                    .FirstOrDefaultAsync(x => x.UserId == newUserRole.UserId && x.RoleId == newUserRole.RoleId,
-                        cancellationToken) != null;
-
-                if (isNewUserRoleExists)
-                    return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
-                        (int)ErrorCodes.UserAlreadyHasThisRole);
-
-                var userRole = await unitOfWork.UserRoles.GetAll()
-                    .Where(x => x.RoleId == role.Id)
-                    .FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
-
-                unitOfWork.UserRoles.Remove(userRole!);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-
-                await unitOfWork.UserRoles.CreateAsync(newUserRole, cancellationToken);
+                user.Roles.Remove(role);
+                user.Roles.Add(newRoleForUser);
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id, cancellationToken);
@@ -316,13 +287,14 @@ public class RoleService(
             .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
 
-    private async Task<User[]> GetUsersWithRoleAsync(long roleId, CancellationToken cancellationToken = default)
+    private async Task<IEnumerable<User>> GetUsersWithRoleAsync(long roleId,
+        CancellationToken cancellationToken = default)
     {
         return await userRepository.GetAll()
             .AsNoTracking()
             .Include(x => x.Roles)
             .Where(x => x.Roles.Any(y => y.Id == roleId))
-            .ToArrayAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
     }
 
     private async Task UpdateRolesAsync(IEnumerable<User> users, CancellationToken cancellationToken = default)

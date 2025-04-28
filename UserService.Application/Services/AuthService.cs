@@ -57,12 +57,7 @@ public class AuthService(
                 if (role == null)
                     return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
-                var userRole = new UserRole
-                {
-                    UserId = user.Id,
-                    RoleId = role.Id
-                };
-                await unitOfWork.UserRoles.CreateAsync(userRole, cancellationToken);
+                user.Roles = [role];
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
