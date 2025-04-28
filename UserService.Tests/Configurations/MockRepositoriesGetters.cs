@@ -44,11 +44,13 @@ internal static class MockRepositoriesGetters
         return new Mock<IDbContextTransaction>();
     }
 
-    public static IMock<IUnitOfWork> GetMockUnitOfWork()
+    public static IMock<IUnitOfWork> GetMockUnitOfWork(IBaseRepository<User>? userRepository = null,
+        IBaseRepository<Role>? roleRepository = null)
     {
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 
-        mockUnitOfWork.Setup(x => x.Users).Returns(GetMockUserRepository().Object);
+        mockUnitOfWork.Setup(x => x.Users).Returns(userRepository ?? GetMockUserRepository().Object);
+        mockUnitOfWork.Setup(x => x.Roles).Returns(roleRepository ?? GetMockRoleRepository().Object);
         mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(GetMockTransaction().Object);
 

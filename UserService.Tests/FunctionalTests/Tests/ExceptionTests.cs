@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
+using UserService.Domain.Dto.Requests.Role;
 using UserService.Domain.Dto.Requests.UserRole;
 using UserService.Domain.Dto.Role;
 using UserService.Domain.Dto.Token;
@@ -72,10 +73,11 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
     public async Task UpdateRole_ShouldBe_Exception()
     {
         //Arrange
-        var dto = new RoleDto(3, "UpdatedTestRole");
+        const long roleId = 3;
+        var dto = new RequestRoleDto("UpdatedTestRole");
 
         //Act
-        var response = await HttpClient.PutAsJsonAsync("/api/v1.0/Role", dto);
+        var response = await HttpClient.PutAsJsonAsync($"/api/v1.0/Role/{roleId}", dto);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
@@ -92,13 +94,10 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
     {
         //Arrange
         const string username = "TestUser1";
-        var dto = new RequestUserRoleDto
-        {
-            RoleId = 3
-        };
+        const long roleId = 3;
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/role/" + username, dto);
+        var response = await HttpClient.PostAsync($"/api/v1.0/role/{username}/{roleId}", null);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
