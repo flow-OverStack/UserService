@@ -16,10 +16,8 @@ using UserService.Domain.Result;
 namespace UserService.Application.Services;
 
 public class AuthService(
-    IBaseRepository<User> userRepository,
     IMapper mapper,
     IIdentityServer identityServer,
-    IBaseRepository<Role> roleRepository,
     IUnitOfWork unitOfWork)
     : IAuthService
 {
@@ -31,9 +29,9 @@ public class AuthService(
 
         var lowerUsername = dto.Username.ToLowerInvariant();
 
-        var user = await userRepository.GetAll()
+        var user = await unitOfWork.Users.GetAll()
                        .FirstOrDefaultAsync(x => x.Username == lowerUsername, cancellationToken) ??
-                   await userRepository.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
+                   await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
         if (user != null)
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
 
@@ -52,7 +50,7 @@ public class AuthService(
                 await unitOfWork.Users.CreateAsync(user, cancellationToken);
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                var role = await roleRepository.GetAll()
+                var role = await unitOfWork.Roles.GetAll()
                     .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
                 if (role == null)
                     return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
@@ -85,7 +83,7 @@ public class AuthService(
     public async Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto,
         CancellationToken cancellationToken = default)
     {
-        var user = await userRepository.GetAll()
+        var user = await unitOfWork.Users.GetAll()
             .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant(), cancellationToken);
 
         return await LoginAsync(user, dto.Password, cancellationToken);
@@ -97,7 +95,7 @@ public class AuthService(
         if (!IsEmail(dto.Email))
             return BaseResult<TokenDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
 
-        var user = await userRepository.GetAll()
+        var user = await unitOfWork.Users.GetAll()
             .FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
 
         return await LoginAsync(user, dto.Password, cancellationToken);
@@ -117,8 +115,8 @@ public class AuthService(
             return keycloakSafeResponse;
 
         user.LastLoginAt = DateTime.UtcNow;
-        userRepository.Update(user);
-        await userRepository.SaveChangesAsync(cancellationToken);
+        unitOfWork.Users.Update(user);
+        await unitOfWork.Users.SaveChangesAsync(cancellationToken);
 
         return BaseResult<TokenDto>.Success(keycloakSafeResponse.Data);
     }

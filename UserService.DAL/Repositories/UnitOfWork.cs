@@ -7,11 +7,11 @@ namespace UserService.DAL.Repositories;
 public class UnitOfWork(
     ApplicationDbContext context,
     IBaseRepository<User> users,
-    IBaseRepository<UserRole> userRoles)
+    IBaseRepository<Role> roles)
     : IUnitOfWork
 {
     public IBaseRepository<User> Users { get; set; } = users;
-    public IBaseRepository<UserRole> UserRoles { get; set; } = userRoles;
+    public IBaseRepository<Role> Roles { get; set; } = roles;
 
     public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {

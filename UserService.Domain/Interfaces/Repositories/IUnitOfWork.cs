@@ -7,6 +7,7 @@ namespace UserService.Domain.Interfaces.Repositories;
 public interface IUnitOfWork : IStateSaveChanges
 {
     IBaseRepository<User> Users { get; set; }
+    IBaseRepository<Role> Roles { get; set; }
 
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

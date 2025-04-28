@@ -1,6 +1,5 @@
 using AutoMapper;
 using UserService.Application.Services;
-using UserService.Domain.Entity;
 using UserService.Domain.Interfaces.Repositories;
 using UserService.Domain.Interfaces.Services;
 using UserService.Tests.Configurations;
@@ -14,21 +13,15 @@ internal class AuthServiceFactory
     private readonly IAuthService _authService;
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
-    public readonly IBaseRepository<Role> RoleRepository = MockRepositoriesGetters.GetMockRoleRepository().Object;
     public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
 
-    public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
 
-
-    public AuthServiceFactory(IUnitOfWork? unitOfWork = null, IBaseRepository<Role>? roleRepository = null)
+    public AuthServiceFactory(IUnitOfWork? unitOfWork = null)
     {
         if (unitOfWork != null)
             UnitOfWork = unitOfWork;
 
-        if (roleRepository != null)
-            RoleRepository = roleRepository;
-
-        _authService = new AuthService(UserRepository, Mapper, IdentityServer, RoleRepository, UnitOfWork);
+        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork);
     }
 
     public IAuthService GetService()
