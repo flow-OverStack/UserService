@@ -9,13 +9,17 @@ public interface IReputationService
     ///     Increases user's reputation
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<ReputationDto>> IncreaseReputationAsync(ReputationIncreaseDto dto);
+    Task<BaseResult<ReputationDto>> IncreaseReputationAsync(ReputationIncreaseDto dto,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Decreases user's reputation
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<ReputationDto>> DecreaseReputationAsync(ReputationDecreaseDto dto);
+    Task<BaseResult<ReputationDto>> DecreaseReputationAsync(ReputationDecreaseDto dto,
+        CancellationToken cancellationToken = default);
 }

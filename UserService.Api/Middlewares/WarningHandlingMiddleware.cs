@@ -5,23 +5,14 @@ using ILogger = Serilog.ILogger;
 
 namespace UserService.Api.Middlewares;
 
-public class WarningHandlingMiddleware
+public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
 {
-    private readonly ILogger _logger;
-    private readonly RequestDelegate _next;
-
-    public WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
-    {
-        _logger = logger;
-        _next = next;
-    }
-
     public async Task InvokeAsync(HttpContext httpContext)
     {
         // Checks if request is gRPC
         if (httpContext.Request.ContentType?.StartsWith("application/grpc") == true)
         {
-            await _next(httpContext);
+            await next(httpContext);
             return;
         }
 
@@ -35,7 +26,7 @@ public class WarningHandlingMiddleware
             // Redirect response output from httpContext.Response.Body to swapStream
             httpContext.Response.Body = swapStream;
 
-            await _next(httpContext);
+            await next(httpContext);
 
             swapStream.Seek(0, SeekOrigin.Begin);
 
@@ -47,7 +38,7 @@ public class WarningHandlingMiddleware
 
                 var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!;
 
-                _logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+                logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
                     data.ErrorMessage!,
                     httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
             }

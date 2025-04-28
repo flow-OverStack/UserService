@@ -45,15 +45,16 @@ public class ReputationEventConsumer(
         }
     }
 
-    private async Task<BaseResult<ReputationDto>> UpdateReputationAsync(BaseEvent message, int reputationChange)
+    private async Task<BaseResult<ReputationDto>> UpdateReputationAsync(BaseEvent message, int reputationChange,
+        CancellationToken cancellationToken = default)
     {
         BaseResult<ReputationDto> result;
         if (reputationChange > 0)
             result = await reputationService.IncreaseReputationAsync(
-                new ReputationIncreaseDto(message.UserId, reputationChange));
+                new ReputationIncreaseDto(message.UserId, reputationChange), cancellationToken);
         else
             result = await reputationService.DecreaseReputationAsync(
-                new ReputationDecreaseDto(message.UserId, -reputationChange));
+                new ReputationDecreaseDto(message.UserId, -reputationChange), cancellationToken);
 
         return result;
     }

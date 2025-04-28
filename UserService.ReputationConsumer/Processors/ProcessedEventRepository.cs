@@ -7,12 +7,12 @@ namespace UserService.ReputationConsumer.Processors;
 
 public class ProcessedEventRepository(IBaseRepository<ProcessedEvent> eventRepository) : IProcessedEventRepository
 {
-    public async Task<bool> IsEventProcessedAsync(Guid eventId)
+    public async Task<bool> IsEventProcessedAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
-        return await eventRepository.GetAll().AnyAsync(x => x.EventId == eventId);
+        return await eventRepository.GetAll().AnyAsync(x => x.EventId == eventId, cancellationToken);
     }
 
-    public async Task MarkAsProcessedAsync(Guid eventId)
+    public async Task MarkAsProcessedAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
         var processedEvent = new ProcessedEvent
         {
@@ -20,7 +20,7 @@ public class ProcessedEventRepository(IBaseRepository<ProcessedEvent> eventRepos
             ProcessedAt = DateTime.UtcNow
         };
 
-        await eventRepository.CreateAsync(processedEvent);
-        await eventRepository.SaveChangesAsync();
+        await eventRepository.CreateAsync(processedEvent, cancellationToken);
+        await eventRepository.SaveChangesAsync(cancellationToken);
     }
 }

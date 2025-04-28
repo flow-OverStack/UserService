@@ -4,29 +4,22 @@ using UserService.Domain.Interfaces.Repositories;
 
 namespace UserService.DAL.Repositories;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork(
+    ApplicationDbContext context,
+    IBaseRepository<User> users,
+    IBaseRepository<UserRole> userRoles)
+    : IUnitOfWork
 {
-    private readonly ApplicationDbContext _context;
+    public IBaseRepository<User> Users { get; set; } = users;
+    public IBaseRepository<UserRole> UserRoles { get; set; } = userRoles;
 
-    public UnitOfWork(ApplicationDbContext context, IBaseRepository<User> users,
-        IBaseRepository<UserRole> userRoles)
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        _context = context;
-        Users = users;
-        UserRoles = userRoles;
+        return await context.Database.BeginTransactionAsync(cancellationToken);
     }
 
-
-    public IBaseRepository<User> Users { get; set; }
-    public IBaseRepository<UserRole> UserRoles { get; set; }
-
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Database.BeginTransactionAsync();
-    }
-
-    public async Task<int> SaveChangesAsync()
-    {
-        return await _context.SaveChangesAsync();
+        return await context.SaveChangesAsync(cancellationToken);
     }
 }

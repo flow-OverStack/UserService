@@ -13,20 +13,25 @@ public interface IAuthService
     ///     Registers user
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto);
+    Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Logs user in with username given
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto);
+    Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Logs user in with email given
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<TokenDto>> LoginWithEmailAsync(LoginEmailUserDto dto);
+    Task<BaseResult<TokenDto>>
+        LoginWithEmailAsync(LoginEmailUserDto dto, CancellationToken cancellationToken = default);
 }

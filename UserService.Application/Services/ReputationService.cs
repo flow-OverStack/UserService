@@ -16,20 +16,22 @@ public class ReputationService(IBaseRepository<User> userRepository, IOptions<Bu
 {
     private readonly BusinessRules _businessRules = businessRules.Value;
 
-    public async Task<BaseResult> ResetEarnedTodayReputationAsync()
+    public async Task<BaseResult> ResetEarnedTodayReputationAsync(CancellationToken cancellationToken = default)
     {
-        await userRepository.GetAll().ExecuteUpdateAsync(x => x.SetProperty(y => y.ReputationEarnedToday, 0));
+        await userRepository.GetAll()
+            .ExecuteUpdateAsync(x => x.SetProperty(y => y.ReputationEarnedToday, 0), cancellationToken);
 
         return BaseResult.Success();
     }
 
-    public async Task<BaseResult<ReputationDto>> IncreaseReputationAsync(ReputationIncreaseDto dto)
+    public async Task<BaseResult<ReputationDto>> IncreaseReputationAsync(ReputationIncreaseDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (dto.ReputationToIncrease < 0)
             return BaseResult<ReputationDto>.Failure(ErrorMessage.CannotIncreaseOrDecreaseNegativeReputation,
                 (int)ErrorCodes.CannotIncreaseOrDecreaseNegativeReputation);
 
-        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId);
+        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId, cancellationToken);
 
         if (user == null)
             return BaseResult<ReputationDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -42,7 +44,7 @@ public class ReputationService(IBaseRepository<User> userRepository, IOptions<Bu
         user.Reputation += reputationToIncrease;
         user.ReputationEarnedToday += reputationToIncrease;
 
-        await userRepository.SaveChangesAsync();
+        await userRepository.SaveChangesAsync(cancellationToken);
 
         var remainingDailyLimit = _businessRules.MaxDailyReputation - user.ReputationEarnedToday;
 
@@ -54,13 +56,14 @@ public class ReputationService(IBaseRepository<User> userRepository, IOptions<Bu
         });
     }
 
-    public async Task<BaseResult<ReputationDto>> DecreaseReputationAsync(ReputationDecreaseDto dto)
+    public async Task<BaseResult<ReputationDto>> DecreaseReputationAsync(ReputationDecreaseDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (dto.ReputationToDecrease < 0)
             return BaseResult<ReputationDto>.Failure(ErrorMessage.CannotIncreaseOrDecreaseNegativeReputation,
                 (int)ErrorCodes.CannotIncreaseOrDecreaseNegativeReputation);
 
-        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId);
+        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId, cancellationToken);
 
         if (user == null)
             return BaseResult<ReputationDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -72,7 +75,7 @@ public class ReputationService(IBaseRepository<User> userRepository, IOptions<Bu
 
         user.Reputation -= reputationToDecrease;
 
-        await userRepository.SaveChangesAsync();
+        await userRepository.SaveChangesAsync(cancellationToken);
 
         var remainingDailyLimit = _businessRules.MaxDailyReputation - user.ReputationEarnedToday;
 

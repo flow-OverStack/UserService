@@ -5,11 +5,11 @@ namespace UserService.BackgroundJobs.Jobs;
 
 public class ProcessedEventsResetJob(IProcessedEventsResetService eventsResetService)
 {
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var result = await eventsResetService.ResetProcessedEventsAsync();
+            var result = await eventsResetService.ResetProcessedEventsAsync(cancellationToken);
             if (result.IsSuccess)
                 Log.Information("Successfully reset processed events");
             else

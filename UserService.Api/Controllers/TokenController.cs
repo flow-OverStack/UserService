@@ -18,11 +18,13 @@ public class TokenController(ITokenService tokenService) : BaseController
     ///     Refreshes user's token
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [HttpPost("refresh")]
-    public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto)
+    public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto,
+        CancellationToken cancellationToken)
     {
-        var result = await tokenService.RefreshTokenAsync(dto);
+        var result = await tokenService.RefreshTokenAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }

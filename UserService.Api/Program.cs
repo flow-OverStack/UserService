@@ -37,6 +37,7 @@ builder.WebHost.ConfigurePorts(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseStatusCodePages();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<WarningHandlingMiddleware>();
 

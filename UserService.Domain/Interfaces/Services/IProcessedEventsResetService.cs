@@ -8,5 +8,6 @@ public interface IProcessedEventsResetService
     ///     Removes all processed events that are older than 1 week
     /// </summary>
     /// <returns></returns>
-    Task<BaseResult> ResetProcessedEventsAsync();
+    /// <param name="cancellationToken"></param>
+    Task<BaseResult> ResetProcessedEventsAsync(CancellationToken cancellationToken = default);
 }

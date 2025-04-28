@@ -23,20 +23,22 @@ public class AuthService(
     IUnitOfWork unitOfWork)
     : IAuthService
 {
-    public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto)
+    public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (!IsEmail(dto.Email))
             return BaseResult<UserDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
 
         var lowerUsername = dto.Username.ToLowerInvariant();
 
-        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Username == lowerUsername) ??
-                   await userRepository.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email);
+        var user = await userRepository.GetAll()
+                       .FirstOrDefaultAsync(x => x.Username == lowerUsername, cancellationToken) ??
+                   await userRepository.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
         if (user != null)
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
 
         KeycloakUserDto? keycloakResponse = null;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
@@ -47,10 +49,11 @@ public class AuthService(
                     LastLoginAt = DateTime.UtcNow
                 };
 
-                await unitOfWork.Users.CreateAsync(user);
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.Users.CreateAsync(user, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == nameof(Roles.User));
+                var role = await roleRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
                 if (role == null)
                     return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
@@ -59,17 +62,17 @@ public class AuthService(
                     UserId = user.Id,
                     RoleId = role.Id
                 };
-                await unitOfWork.UserRoles.CreateAsync(userRole);
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.UserRoles.CreateAsync(userRole, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
                 keycloakDto.Password = dto.Password;
 
-                keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto);
+                keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto, cancellationToken);
                 user.KeycloakId = keycloakResponse.KeycloakId;
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -84,26 +87,29 @@ public class AuthService(
         return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
     }
 
-    public async Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto)
+    public async Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto,
+        CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetAll()
-            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant(), cancellationToken);
 
-        return await LoginAsync(user, dto.Password);
+        return await LoginAsync(user, dto.Password, cancellationToken);
     }
 
-    public async Task<BaseResult<TokenDto>> LoginWithEmailAsync(LoginEmailUserDto dto)
+    public async Task<BaseResult<TokenDto>> LoginWithEmailAsync(LoginEmailUserDto dto,
+        CancellationToken cancellationToken = default)
     {
         if (!IsEmail(dto.Email))
             return BaseResult<TokenDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
 
         var user = await userRepository.GetAll()
-            .FirstOrDefaultAsync(x => x.Email == dto.Email);
+            .FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
 
-        return await LoginAsync(user, dto.Password);
+        return await LoginAsync(user, dto.Password, cancellationToken);
     }
 
-    private async Task<BaseResult<TokenDto>> LoginAsync(User? user, string password)
+    private async Task<BaseResult<TokenDto>> LoginAsync(User? user, string password,
+        CancellationToken cancellationToken = default)
     {
         if (user == null)
             return BaseResult<TokenDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -111,13 +117,13 @@ public class AuthService(
         var keycloakDto = mapper.Map<KeycloakLoginUserDto>(user);
         keycloakDto.Password = password;
 
-        var keycloakSafeResponse = await SafeLoginUserAsync(identityServer, keycloakDto);
+        var keycloakSafeResponse = await SafeLoginUserAsync(identityServer, keycloakDto, cancellationToken);
         if (!keycloakSafeResponse.IsSuccess)
             return keycloakSafeResponse;
 
         user.LastLoginAt = DateTime.UtcNow;
         userRepository.Update(user);
-        await userRepository.SaveChangesAsync();
+        await userRepository.SaveChangesAsync(cancellationToken);
 
         return BaseResult<TokenDto>.Success(keycloakSafeResponse.Data);
     }
@@ -136,11 +142,11 @@ public class AuthService(
     }
 
     private static async Task<BaseResult<TokenDto>> SafeLoginUserAsync(IIdentityServer identityServer,
-        KeycloakLoginUserDto dto)
+        KeycloakLoginUserDto dto, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await identityServer.LoginUserAsync(dto);
+            var response = await identityServer.LoginUserAsync(dto, cancellationToken);
             return BaseResult<TokenDto>.Success(response);
         }
         catch (IdentityServerBusinessException e)

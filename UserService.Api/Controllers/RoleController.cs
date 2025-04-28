@@ -23,6 +23,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// Create role
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for create role:
@@ -33,9 +34,10 @@ public class RoleController(IRoleService roleService) : BaseController
     ///     }
     /// </remarks>
     [HttpPost]
-    public async Task<ActionResult<BaseResult<RoleDto>>> Create([FromBody] CreateRoleDto dto)
+    public async Task<ActionResult<BaseResult<RoleDto>>> Create([FromBody] CreateRoleDto dto,
+        CancellationToken cancellationToken)
     {
-        var result = await roleService.CreateRoleAsync(dto);
+        var result = await roleService.CreateRoleAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }
@@ -44,6 +46,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// Deletes role by its id
     /// </summary>
     /// <param name="id">role's id</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// /// <remarks>
     /// Request for deleting role:
@@ -54,9 +57,9 @@ public class RoleController(IRoleService roleService) : BaseController
     ///     }
     /// </remarks>
     [HttpDelete("{id:long}")]
-    public async Task<ActionResult<BaseResult<RoleDto>>> Delete(long id)
+    public async Task<ActionResult<BaseResult<RoleDto>>> Delete(long id, CancellationToken cancellationToken)
     {
-        var result = await roleService.DeleteRoleAsync(id);
+        var result = await roleService.DeleteRoleAsync(id, cancellationToken);
 
         return HandleResult(result);
     }
@@ -65,6 +68,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// Updates role
     /// </summary>
     /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for updating role:
@@ -76,9 +80,10 @@ public class RoleController(IRoleService roleService) : BaseController
     ///     }
     /// </remarks>
     [HttpPut]
-    public async Task<ActionResult<BaseResult<RoleDto>>> Update([FromBody] RoleDto dto)
+    public async Task<ActionResult<BaseResult<RoleDto>>> Update([FromBody] RoleDto dto,
+        CancellationToken cancellationToken)
     {
-        var result = await roleService.UpdateRoleAsync(dto);
+        var result = await roleService.UpdateRoleAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }
@@ -88,6 +93,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// </summary>
     /// <param name="username"></param>
     /// <param name="requestDto"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for add role for user:
@@ -99,7 +105,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// </remarks>
     [HttpPost("{username}")]
     public async Task<ActionResult<BaseResult<UserRoleDto>>> AddRoleForUser(string username,
-        [FromBody] RequestUserRoleDto requestDto)
+        [FromBody] RequestUserRoleDto requestDto, CancellationToken cancellationToken)
     {
         var dto = new UserRoleDto
         {
@@ -107,7 +113,7 @@ public class RoleController(IRoleService roleService) : BaseController
             RoleId = requestDto.RoleId
         };
 
-        var result = await roleService.AddRoleForUserAsync(dto);
+        var result = await roleService.AddRoleForUserAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }
@@ -117,6 +123,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// </summary>
     /// <param name="username"></param>
     /// <param name="roleId"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for deleting role:
@@ -124,7 +131,8 @@ public class RoleController(IRoleService roleService) : BaseController
     ///     DELETE {username}/{roleId:long}
     /// </remarks>
     [HttpDelete("{username}/{roleId:long}")]
-    public async Task<ActionResult<BaseResult<UserRoleDto>>> DeleteRoleForUser(string username, long roleId)
+    public async Task<ActionResult<BaseResult<UserRoleDto>>> DeleteRoleForUser(string username, long roleId,
+        CancellationToken cancellationToken)
     {
         var dto = new DeleteUserRoleDto
         {
@@ -132,7 +140,7 @@ public class RoleController(IRoleService roleService) : BaseController
             RoleId = roleId
         };
 
-        var result = await roleService.DeleteRoleForUserAsync(dto);
+        var result = await roleService.DeleteRoleForUserAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }
@@ -141,6 +149,9 @@ public class RoleController(IRoleService roleService) : BaseController
     /// Updates role for user
     /// </summary>
     /// <returns></returns>
+    /// <param name="username"></param>
+    /// <param name="requestDto"></param>
+    /// <param name="cancellationToken"></param>
     /// <remarks>
     /// Request for updating user's role:
     /// 
@@ -152,7 +163,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// </remarks>
     [HttpPut("{username}")]
     public async Task<ActionResult<BaseResult<UserRoleDto>>> UpdateRoleForUser(string username,
-        [FromBody] RequestUpdateUserRoleDto requestDto)
+        [FromBody] RequestUpdateUserRoleDto requestDto, CancellationToken cancellationToken)
     {
         var dto = new UpdateUserRoleDto
         {
@@ -161,7 +172,7 @@ public class RoleController(IRoleService roleService) : BaseController
             ToRoleId = requestDto.ToRoleId
         };
 
-        var result = await roleService.UpdateRoleForUserAsync(dto);
+        var result = await roleService.UpdateRoleForUserAsync(dto, cancellationToken);
 
         return HandleResult(result);
     }

@@ -11,9 +11,10 @@ public class TokenService(
     IMapper mapper)
     : ITokenService
 {
-    public async Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto)
+    public async Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto,
+        CancellationToken cancellationToken = default)
     {
-        var keycloakResponse = await SafeRefreshTokenAsync(identityServer, dto);
+        var keycloakResponse = await SafeRefreshTokenAsync(identityServer, dto, cancellationToken);
 
         if (!keycloakResponse.IsSuccess) return keycloakResponse;
 
@@ -23,11 +24,11 @@ public class TokenService(
     }
 
     private static async Task<BaseResult<TokenDto>> SafeRefreshTokenAsync(IIdentityServer identityServer,
-        RefreshTokenDto dto)
+        RefreshTokenDto dto, CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await identityServer.RefreshTokenAsync(dto);
+            var response = await identityServer.RefreshTokenAsync(dto, cancellationToken);
             return BaseResult<TokenDto>.Success(response);
         }
         catch (IdentityServerBusinessException e)

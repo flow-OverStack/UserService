@@ -8,5 +8,6 @@ public interface IReputationResetService
     ///     Resets ReputationEarnedToday of all users to min value
     /// </summary>
     /// <returns></returns>
-    Task<BaseResult> ResetEarnedTodayReputationAsync();
+    /// <param name="cancellationToken"></param>
+    Task<BaseResult> ResetEarnedTodayReputationAsync(CancellationToken cancellationToken = default);
 }

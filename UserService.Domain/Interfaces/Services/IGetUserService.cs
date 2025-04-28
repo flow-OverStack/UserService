@@ -10,5 +10,7 @@ public interface IGetUserService : IGetService<User>
     /// </summary>
     /// <param name="roleIds"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(IEnumerable<long> roleIds);
+    /// <param name="cancellationToken"></param>
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(IEnumerable<long> roleIds,
+        CancellationToken cancellationToken = default);
 }

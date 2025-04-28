@@ -10,5 +10,6 @@ public interface ITokenService
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto);
+    /// <param name="cancellationToken"></param>
+    Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto, CancellationToken cancellationToken = default);
 }

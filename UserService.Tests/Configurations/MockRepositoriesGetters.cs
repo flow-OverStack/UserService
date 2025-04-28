@@ -55,9 +55,8 @@ internal static class MockRepositoriesGetters
 
         mockUnitOfWork.Setup(x => x.Users).Returns(GetMockUserRepository().Object);
         mockUnitOfWork.Setup(x => x.UserRoles).Returns(GetMockUserRoleRepository().Object);
-        mockUnitOfWork.Setup(x => x.BeginTransactionAsync()).ReturnsAsync(GetMockTransaction().Object);
-        mockUnitOfWork.Setup(x => x.SaveChangesAsync())
-            .ReturnsAsync(-1); //-1 is here to indicate that the method is a mock
+        mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(GetMockTransaction().Object);
 
         return mockUnitOfWork;
     }
@@ -68,7 +67,8 @@ internal static class MockRepositoriesGetters
         var users = GetUsers().BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(users.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).ReturnsAsync((User user) => user);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User user, CancellationToken _) => user);
         mockRepository.Setup(x => x.Update(It.IsAny<User>())).Returns((User user) => user);
         mockRepository.Setup(x => x.Remove(It.IsAny<User>())).Returns((User user) => user);
 
@@ -99,7 +99,8 @@ internal static class MockRepositoriesGetters
         var rolesDbSet = roles.BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(rolesDbSet.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>())).ReturnsAsync((Role role) => role);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<Role>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Role role, CancellationToken _) => role);
         mockRepository.Setup(x => x.Update(It.IsAny<Role>())).Returns((Role role) => role);
         mockRepository.Setup(x => x.Remove(It.IsAny<Role>())).Returns((Role role) => role);
 
@@ -109,12 +110,13 @@ internal static class MockRepositoriesGetters
     public static IMock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
     {
         var mockRepository = new Mock<IBaseRepository<T>>();
-        var roles = Array.Empty<T>().BuildMockDbSet();
+        var entities = Array.Empty<T>().BuildMockDbSet();
 
-        mockRepository.Setup(x => x.GetAll()).Returns(roles.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>())).ReturnsAsync((T role) => role);
-        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T role) => role);
-        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T role) => role);
+        mockRepository.Setup(x => x.GetAll()).Returns(entities.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<T>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((T entity, CancellationToken _) => entity);
+        mockRepository.Setup(x => x.Update(It.IsAny<T>())).Returns((T entity) => entity);
+        mockRepository.Setup(x => x.Remove(It.IsAny<T>())).Returns((T entity) => entity);
 
         return mockRepository;
     }
@@ -125,7 +127,8 @@ internal static class MockRepositoriesGetters
         var userRoles = GetUserRoles().BuildMockDbSet();
 
         mockRepository.Setup(x => x.GetAll()).Returns(userRoles.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<UserRole>())).ReturnsAsync((UserRole userRole) => userRole);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<UserRole>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserRole userRole, CancellationToken _) => userRole);
         mockRepository.Setup(x => x.Update(It.IsAny<UserRole>())).Returns((UserRole userRole) => userRole);
         mockRepository.Setup(x => x.Remove(It.IsAny<UserRole>())).Returns((UserRole userRole) => userRole);
 

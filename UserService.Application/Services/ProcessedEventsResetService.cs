@@ -10,14 +10,14 @@ public class ProcessedEventsResetService(IBaseRepository<ProcessedEvent> eventRe
 {
     private const int MaxProcessedEventLifetimeInDays = 7;
 
-    public async Task<BaseResult> ResetProcessedEventsAsync()
+    public async Task<BaseResult> ResetProcessedEventsAsync(CancellationToken cancellationToken = default)
     {
         // Subtracting MaxProcessedEventLifetimeInDays
         var thresholdDate = DateTime.UtcNow.AddDays(-MaxProcessedEventLifetimeInDays);
 
-        await eventRepository.GetAll().Where(x => x.ProcessedAt <= thresholdDate).ExecuteDeleteAsync();
+        await eventRepository.GetAll().Where(x => x.ProcessedAt <= thresholdDate).ExecuteDeleteAsync(cancellationToken);
 
-        await eventRepository.SaveChangesAsync();
+        await eventRepository.SaveChangesAsync(cancellationToken);
 
         return BaseResult.Success();
     }

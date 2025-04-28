@@ -22,9 +22,10 @@ public class RoleService(
     IIdentityServer identityServer)
     : IRoleService
 {
-    public async Task<BaseResult<RoleDto>> CreateRoleAsync(CreateRoleDto dto)
+    public async Task<BaseResult<RoleDto>> CreateRoleAsync(CreateRoleDto dto,
+        CancellationToken cancellationToken = default)
     {
-        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name, cancellationToken);
         if (role != null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleAlreadyExists, (int)ErrorCodes.RoleAlreadyExists);
 
@@ -32,27 +33,27 @@ public class RoleService(
         {
             Name = dto.Name
         };
-        await roleRepository.CreateAsync(role);
-        await roleRepository.SaveChangesAsync();
+        await roleRepository.CreateAsync(role, cancellationToken);
+        await roleRepository.SaveChangesAsync(cancellationToken);
 
         return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
-    public async Task<BaseResult<RoleDto>> DeleteRoleAsync(long id)
+    public async Task<BaseResult<RoleDto>> DeleteRoleAsync(long id, CancellationToken cancellationToken = default)
     {
-        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         if (role == null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
-        var usersWithRoleToDelete = await GetUsersWithRoleAsync(role.Id);
+        var usersWithRoleToDelete = await GetUsersWithRoleAsync(role.Id, cancellationToken);
 
         var areRolesUpdated = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
                 roleRepository.Remove(role);
-                await roleRepository.SaveChangesAsync();
+                await roleRepository.SaveChangesAsync(cancellationToken);
 
                 await UpdateRolesAsync(usersWithRoleToDelete.Select(x => new User
                 {
@@ -60,10 +61,10 @@ public class RoleService(
                     KeycloakId = x.KeycloakId,
                     Email = x.Email,
                     Roles = x.Roles.Where(y => y.Id != role.Id).ToList()
-                }));
+                }), cancellationToken);
                 areRolesUpdated = true;
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -80,26 +81,26 @@ public class RoleService(
         return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
-    public async Task<BaseResult<RoleDto>> UpdateRoleAsync(RoleDto dto)
+    public async Task<BaseResult<RoleDto>> UpdateRoleAsync(RoleDto dto, CancellationToken cancellationToken = default)
     {
-        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.Id, cancellationToken);
         if (role == null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         var areRolesUpdated = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
                 role.Name = dto.Name;
                 roleRepository.Update(role);
-                await roleRepository.SaveChangesAsync();
+                await roleRepository.SaveChangesAsync(cancellationToken);
 
-                var usersWithUpdatedRole = await GetUsersWithRoleAsync(role.Id);
-                await UpdateRolesAsync(usersWithUpdatedRole);
+                var usersWithUpdatedRole = await GetUsersWithRoleAsync(role.Id, cancellationToken);
+                await UpdateRolesAsync(usersWithUpdatedRole, cancellationToken);
                 areRolesUpdated = true;
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -117,11 +118,12 @@ public class RoleService(
         return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
-    public async Task<BaseResult<UserRoleDto>> AddRoleForUserAsync(UserRoleDto dto)
+    public async Task<BaseResult<UserRoleDto>> AddRoleForUserAsync(UserRoleDto dto,
+        CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant(), cancellationToken);
 
         if (user == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -132,12 +134,12 @@ public class RoleService(
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
                 (int)ErrorCodes.UserAlreadyHasThisRole);
 
-        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.RoleId);
+        var role = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.RoleId, cancellationToken);
         if (role == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         var areRolesUpdated = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
@@ -147,14 +149,14 @@ public class RoleService(
                     UserId = user.Id
                 };
 
-                await userRoleRepository.CreateAsync(userRole);
-                await userRoleRepository.SaveChangesAsync();
+                await userRoleRepository.CreateAsync(userRole, cancellationToken);
+                await userRoleRepository.SaveChangesAsync(cancellationToken);
 
-                var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync([userWithUpdatedRole!]);
+                var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id, cancellationToken);
+                await UpdateRolesAsync([userWithUpdatedRole!], cancellationToken);
                 areRolesUpdated = true;
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -176,11 +178,12 @@ public class RoleService(
         });
     }
 
-    public async Task<BaseResult<UserRoleDto>> DeleteRoleForUserAsync(DeleteUserRoleDto dto)
+    public async Task<BaseResult<UserRoleDto>> DeleteRoleForUserAsync(DeleteUserRoleDto dto,
+        CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant(), cancellationToken);
 
         if (user == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -191,22 +194,22 @@ public class RoleService(
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         var areRolesUpdated = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
                 var userRole = await userRoleRepository.GetAll()
                     .Where(x => x.RoleId == role.Id)
-                    .FirstOrDefaultAsync(x => x.UserId == user.Id);
+                    .FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
 
                 userRoleRepository.Remove(userRole!);
-                await userRoleRepository.SaveChangesAsync();
+                await userRoleRepository.SaveChangesAsync(cancellationToken);
 
-                var userWithDeletedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync([userWithDeletedRole!]);
+                var userWithDeletedRole = await GetUserWithRolesByIdAsync(user.Id, cancellationToken);
+                await UpdateRolesAsync([userWithDeletedRole!], cancellationToken);
                 areRolesUpdated = true;
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -228,11 +231,12 @@ public class RoleService(
         });
     }
 
-    public async Task<BaseResult<UserRoleDto>> UpdateRoleForUserAsync(UpdateUserRoleDto dto)
+    public async Task<BaseResult<UserRoleDto>> UpdateRoleForUserAsync(UpdateUserRoleDto dto,
+        CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant());
+            .FirstOrDefaultAsync(x => x.Username == dto.Username.ToLowerInvariant(), cancellationToken);
 
         if (user == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -243,13 +247,14 @@ public class RoleService(
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToBeUpdatedIsNotFound,
                 (int)ErrorCodes.RoleNotFound);
 
-        var newRoleForUser = await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.ToRoleId);
+        var newRoleForUser =
+            await roleRepository.GetAll().FirstOrDefaultAsync(x => x.Id == dto.ToRoleId, cancellationToken);
 
         if (newRoleForUser == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToUpdateIsNotFound, (int)ErrorCodes.RoleNotFound);
 
         var areRolesUpdated = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync())
+        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
             {
@@ -260,7 +265,8 @@ public class RoleService(
                 };
 
                 var isNewUserRoleExists = await unitOfWork.UserRoles.GetAll()
-                    .FirstOrDefaultAsync(x => x.UserId == newUserRole.UserId && x.RoleId == newUserRole.RoleId) != null;
+                    .FirstOrDefaultAsync(x => x.UserId == newUserRole.UserId && x.RoleId == newUserRole.RoleId,
+                        cancellationToken) != null;
 
                 if (isNewUserRoleExists)
                     return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserAlreadyHasThisRole,
@@ -268,19 +274,19 @@ public class RoleService(
 
                 var userRole = await unitOfWork.UserRoles.GetAll()
                     .Where(x => x.RoleId == role.Id)
-                    .FirstOrDefaultAsync(x => x.UserId == user.Id);
+                    .FirstOrDefaultAsync(x => x.UserId == user.Id, cancellationToken);
 
                 unitOfWork.UserRoles.Remove(userRole!);
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await unitOfWork.UserRoles.CreateAsync(newUserRole);
-                await unitOfWork.SaveChangesAsync();
+                await unitOfWork.UserRoles.CreateAsync(newUserRole, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id);
-                await UpdateRolesAsync(new[] { userWithUpdatedRole! });
+                var userWithUpdatedRole = await GetUserWithRolesByIdAsync(user.Id, cancellationToken);
+                await UpdateRolesAsync(new[] { userWithUpdatedRole! }, cancellationToken);
                 areRolesUpdated = true;
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
             }
             catch (Exception)
             {
@@ -302,29 +308,29 @@ public class RoleService(
         });
     }
 
-    private async Task<User?> GetUserWithRolesByIdAsync(long userId)
+    private async Task<User?> GetUserWithRolesByIdAsync(long userId, CancellationToken cancellationToken = default)
     {
         return await userRepository.GetAll()
             .AsNoTracking()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Id == userId);
+            .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
 
-    private async Task<User[]> GetUsersWithRoleAsync(long roleId)
+    private async Task<User[]> GetUsersWithRoleAsync(long roleId, CancellationToken cancellationToken = default)
     {
         return await userRepository.GetAll()
             .AsNoTracking()
             .Include(x => x.Roles)
             .Where(x => x.Roles.Any(y => y.Id == roleId))
-            .ToArrayAsync();
+            .ToArrayAsync(cancellationToken);
     }
 
-    private async Task UpdateRolesAsync(IEnumerable<User> users)
+    private async Task UpdateRolesAsync(IEnumerable<User> users, CancellationToken cancellationToken = default)
     {
         var updateTasks = users.Select(user =>
         {
             var dto = mapper.Map<KeycloakUpdateRolesDto>(user);
-            return identityServer.UpdateRolesAsync(dto);
+            return identityServer.UpdateRolesAsync(dto, cancellationToken);
         });
 
         await Task.WhenAll(updateTasks);

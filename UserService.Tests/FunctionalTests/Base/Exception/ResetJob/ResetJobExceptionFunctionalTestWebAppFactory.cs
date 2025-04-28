@@ -21,7 +21,8 @@ public class ResetJobExceptionFunctionalTestWebAppFactory : FunctionalTestWebApp
         mockRepository.Setup(x => x.GetAll()).Throws(new TestException());
         mockRepository.Setup(x => x.Remove(It.IsAny<User>())).Returns(originalRepository.Remove);
         mockRepository.Setup(x => x.Update(It.IsAny<User>())).Returns(originalRepository.Update);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>())).Returns(originalRepository.CreateAsync);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+            .Returns(originalRepository.CreateAsync);
 
         return mockRepository;
     }
@@ -34,7 +35,8 @@ public class ResetJobExceptionFunctionalTestWebAppFactory : FunctionalTestWebApp
         mockRepository.Setup(x => x.GetAll()).Throws(new TestException());
         mockRepository.Setup(x => x.Remove(It.IsAny<ProcessedEvent>())).Returns(originalRepository.Remove);
         mockRepository.Setup(x => x.Update(It.IsAny<ProcessedEvent>())).Returns(originalRepository.Update);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<ProcessedEvent>())).Returns(originalRepository.CreateAsync);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<ProcessedEvent>(), It.IsAny<CancellationToken>()))
+            .Returns(originalRepository.CreateAsync);
 
         return mockRepository;
     }

@@ -11,18 +11,18 @@ namespace UserService.Application.Services;
 public class GetUserService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository)
     : IGetUserService
 {
-    public async Task<CollectionResult<User>> GetAllAsync()
+    public async Task<CollectionResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var users = await userRepository.GetAll().ToListAsync();
+        var users = await userRepository.GetAll().ToListAsync(cancellationToken);
 
         return CollectionResult<User>.Success(users, users.Count);
     }
 
-    public async Task<BaseResult<User>> GetByIdAsync(long id)
+    public async Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (user == null)
             return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
@@ -30,10 +30,11 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         return BaseResult<User>.Success(user);
     }
 
-    public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids)
+    public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
     {
-        var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
-        var totalCount = await userRepository.GetAll().CountAsync();
+        var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        var totalCount = await userRepository.GetAll().CountAsync(cancellationToken);
 
         if (!users.Any())
             return ids.Count() switch
@@ -46,13 +47,13 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
-        IEnumerable<long> roleIds)
+        IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
     {
         var groupedUsers = await roleRepository.GetAll()
             .Where(x => roleIds.Contains(x.Id))
             .Include(x => x.Users)
             .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToArray()))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (!groupedUsers.Any())
             return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
