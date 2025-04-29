@@ -2,16 +2,16 @@ using System.Net.Mail;
 using AutoMapper;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Dto.Keycloak.User;
-using UserService.Domain.Dto.Token;
-using UserService.Domain.Dto.User;
-using UserService.Domain.Entity;
-using UserService.Domain.Enum;
+using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Domain.Dtos.Token;
+using UserService.Domain.Dtos.User;
+using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 using UserService.Domain.Exceptions.IdentityServer.Base;
-using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Resources;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 
 namespace UserService.Application.Services;
 

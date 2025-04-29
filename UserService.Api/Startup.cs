@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using UserService.BackgroundJobs;
+using UserService.BackgroundJobs.DependencyInjection;
 using UserService.Domain.Settings;
 using Path = System.IO.Path;
 

@@ -1,6 +1,6 @@
 using AutoMapper;
 using Grpc.Core;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Service;
 
 namespace UserService.Grpc.Services;
 

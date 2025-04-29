@@ -1,4 +1,4 @@
-using UserService.Domain.Dto.User;
+using UserService.Domain.Dtos.User;
 using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Factories;

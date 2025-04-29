@@ -1,8 +1,8 @@
 using Moq;
-using UserService.Domain.Dto.Keycloak.User;
-using UserService.Domain.Dto.Token;
+using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Domain.Dtos.Token;
 using UserService.Domain.Exceptions.IdentityServer;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Service;
 using UserService.Tests.Constants;
 
 namespace UserService.Tests.UnitTests.Configurations;

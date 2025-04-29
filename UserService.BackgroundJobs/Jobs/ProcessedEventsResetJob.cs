@@ -1,5 +1,5 @@
 using Serilog;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Service;
 
 namespace UserService.BackgroundJobs.Jobs;
 

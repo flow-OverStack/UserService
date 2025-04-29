@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Application.Mapping;
+using UserService.Application.Mappings;
 using UserService.Application.Services;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Service;
 
 namespace UserService.Application.DependencyInjection;
 

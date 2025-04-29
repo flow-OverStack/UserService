@@ -4,16 +4,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Keycloak.User;
-using UserService.Domain.Dto.Token;
+using UserService.Domain.Dtos.Keycloak.Role;
+using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Domain.Dtos.Token;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Exceptions.IdentityServer.Base;
-using UserService.Domain.Extensions;
-using UserService.Domain.Interfaces.Services;
-using UserService.Domain.Keycloak;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Settings;
+using UserService.Keycloak.Extensions;
 using UserService.Keycloak.HttpModels;
+using UserService.Keycloak.KeycloakModels;
 
 namespace UserService.Keycloak;
 

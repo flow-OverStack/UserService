@@ -1,5 +1,5 @@
 using AutoMapper;
-using UserService.Application.Mapping;
+using UserService.Application.Mappings;
 
 namespace UserService.Tests.UnitTests.Configurations;
 

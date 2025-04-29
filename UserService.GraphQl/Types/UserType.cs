@@ -1,5 +1,5 @@
 using HotChocolate.ApolloFederation.Types;
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 using UserService.Domain.Extensions;
 using UserService.Domain.Helpers;
 using UserService.Domain.Resources;

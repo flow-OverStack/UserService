@@ -6,9 +6,9 @@ using UserService.Domain.Settings;
 using UserService.ReputationConsumer.Consumers;
 using UserService.ReputationConsumer.Interfaces;
 using UserService.ReputationConsumer.Processors;
-using UserService.ReputationConsumer.Strategy.Reputation;
-using UserService.ReputationConsumer.Strategy.Reputation.Base;
-using UserService.ReputationConsumer.Strategy.Reputation.Strategies;
+using UserService.ReputationConsumer.Strategies.Reputation;
+using UserService.ReputationConsumer.Strategies.Reputation.Base;
+using UserService.ReputationConsumer.Strategies.Reputation.Strategies;
 
 namespace UserService.ReputationConsumer.DependencyInjection;
 

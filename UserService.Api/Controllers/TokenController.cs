@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
-using UserService.Domain.Dto.Token;
-using UserService.Domain.Interfaces.Services;
-using UserService.Domain.Result;
+using UserService.Domain.Dtos.Token;
+using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Results;
 
 namespace UserService.Api.Controllers;
 

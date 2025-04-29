@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Entity;
-using UserService.Domain.Enum;
-using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Entities;
+using UserService.Domain.Enums;
+using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Resources;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 
 namespace UserService.Application.Services;
 

@@ -1,7 +1,7 @@
-using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Keycloak.User;
-using UserService.Domain.Dto.Token;
-using UserService.Domain.Entity;
+using UserService.Domain.Dtos.Keycloak.Role;
+using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Domain.Dtos.Token;
+using UserService.Domain.Entities;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;

@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL.Interceptors;
 using UserService.DAL.Repositories;
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 using UserService.Domain.Events;
-using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.DAL.DependencyInjection;
 

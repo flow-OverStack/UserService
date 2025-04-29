@@ -1,4 +1,4 @@
-using UserService.Domain.Keycloak;
+using UserService.Keycloak.KeycloakModels;
 
 namespace UserService.Tests.FunctionalTests.Configurations.Keycloak.HttpModels;
 

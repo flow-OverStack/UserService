@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Domain.Entity;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Service;
 
 namespace UserService.GraphQl.DataLoaders;
 

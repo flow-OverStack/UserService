@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Options;
 using UserService.Application.Services;
-using UserService.Domain.Entity;
-using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Settings;
 using UserService.Tests.Configurations;
 

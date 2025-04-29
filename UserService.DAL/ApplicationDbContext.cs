@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using UserService.DAL.Interceptors;
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 using UserService.Domain.Settings;
 using ILogger = Serilog.ILogger;
 

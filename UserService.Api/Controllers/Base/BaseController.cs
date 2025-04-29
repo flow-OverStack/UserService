@@ -1,6 +1,6 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 
 namespace UserService.Api.Controllers.Base;
 

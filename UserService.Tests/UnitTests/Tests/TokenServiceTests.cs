@@ -1,4 +1,4 @@
-using UserService.Domain.Dto.Token;
+using UserService.Domain.Dtos.Token;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
 

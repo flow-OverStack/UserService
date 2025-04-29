@@ -1,11 +1,11 @@
 using MassTransit;
 using Serilog;
-using UserService.Domain.Dto.User;
+using UserService.Domain.Dtos.User;
 using UserService.Domain.Events;
-using UserService.Domain.Interfaces.Services;
-using UserService.Domain.Result;
+using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Results;
 using UserService.ReputationConsumer.Interfaces;
-using UserService.ReputationConsumer.Strategy.Reputation.Base;
+using UserService.ReputationConsumer.Strategies.Reputation.Base;
 
 namespace UserService.ReputationConsumer.Consumers;
 

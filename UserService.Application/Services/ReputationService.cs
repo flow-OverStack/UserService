@@ -1,12 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using UserService.Domain.Dto.User;
-using UserService.Domain.Entity;
-using UserService.Domain.Enum;
-using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Dtos.User;
+using UserService.Domain.Entities;
+using UserService.Domain.Enums;
+using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Resources;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 using UserService.Domain.Settings;
 
 namespace UserService.Application.Services;

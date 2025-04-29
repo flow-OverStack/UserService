@@ -1,4 +1,4 @@
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 
 namespace UserService.Tests.FunctionalTests.Configurations.GraphQl;
 

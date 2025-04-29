@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using UserService.Domain.Entity;
-using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 

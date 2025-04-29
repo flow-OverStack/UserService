@@ -1,7 +1,7 @@
 using AutoMapper;
 using UserService.Application.Services;
-using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Service;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Configurations;
 using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;

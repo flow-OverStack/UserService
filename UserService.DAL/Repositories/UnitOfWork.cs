@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
-using UserService.Domain.Entity;
-using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.DAL.Repositories;
 

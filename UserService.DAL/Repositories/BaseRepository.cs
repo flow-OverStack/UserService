@@ -1,4 +1,4 @@
-using UserService.Domain.Interfaces.Repositories;
+using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.DAL.Repositories;
 

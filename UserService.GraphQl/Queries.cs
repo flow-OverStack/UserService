@@ -1,6 +1,6 @@
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Interfaces.Service;
 using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl;

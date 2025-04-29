@@ -1,4 +1,4 @@
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 using UserService.GraphQl.DataLoaders;
 
 namespace UserService.GraphQl.Types;

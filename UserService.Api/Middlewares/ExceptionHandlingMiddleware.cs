@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mime;
 using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Resources;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 using ILogger = Serilog.ILogger;
 
 namespace UserService.Api.Middlewares;

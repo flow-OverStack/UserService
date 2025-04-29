@@ -1,15 +1,15 @@
 using AutoMapper;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Dto.Keycloak.Roles;
-using UserService.Domain.Dto.Role;
-using UserService.Domain.Dto.UserRole;
-using UserService.Domain.Entity;
-using UserService.Domain.Enum;
-using UserService.Domain.Interfaces.Repositories;
-using UserService.Domain.Interfaces.Services;
+using UserService.Domain.Dtos.Keycloak.Role;
+using UserService.Domain.Dtos.Role;
+using UserService.Domain.Dtos.UserRole;
+using UserService.Domain.Entities;
+using UserService.Domain.Enums;
+using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Resources;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 
 namespace UserService.Application.Services;
 

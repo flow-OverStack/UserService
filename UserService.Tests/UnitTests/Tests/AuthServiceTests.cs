@@ -1,5 +1,5 @@
-using UserService.Domain.Dto.User;
-using UserService.Domain.Entity;
+using UserService.Domain.Dtos.User;
+using UserService.Domain.Entities;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;

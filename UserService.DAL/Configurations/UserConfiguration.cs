@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 
 namespace UserService.DAL.Configurations;
 

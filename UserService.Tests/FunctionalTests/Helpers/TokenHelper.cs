@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 
 namespace UserService.Tests.FunctionalTests.Helpers;
 

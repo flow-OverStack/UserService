@@ -1,5 +1,5 @@
-using UserService.Domain.Interfaces.Exceptions;
-using UserService.Domain.Result;
+using UserService.Domain.Interfaces.Exception;
+using UserService.Domain.Results;
 
 namespace UserService.Domain.Exceptions.IdentityServer.Base;
 

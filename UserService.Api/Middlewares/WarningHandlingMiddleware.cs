@@ -1,6 +1,6 @@
 using System.Net;
 using Newtonsoft.Json;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 using ILogger = Serilog.ILogger;
 
 namespace UserService.Api.Middlewares;

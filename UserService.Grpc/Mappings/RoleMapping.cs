@@ -1,5 +1,5 @@
 using AutoMapper;
-using UserService.Domain.Entity;
+using UserService.Domain.Entities;
 
 namespace UserService.Grpc.Mappings;
 

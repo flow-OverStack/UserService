@@ -1,7 +1,7 @@
-using UserService.Domain.Enum;
+using UserService.Domain.Enums;
 using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Resources;
-using UserService.Domain.Result;
+using UserService.Domain.Results;
 
 namespace UserService.Domain.Exceptions.IdentityServer;
 
