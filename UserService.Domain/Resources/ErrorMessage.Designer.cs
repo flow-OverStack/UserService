@@ -60,6 +60,15 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot delete default role.
+        /// </summary>
+        public static string CannotDeleteDefaultRole {
+            get {
+                return ResourceManager.GetString("CannotDeleteDefaultRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot increase or decrease negative reputation.
         /// </summary>
         public static string CannotIncreaseOrDecreaseNegativeReputation {

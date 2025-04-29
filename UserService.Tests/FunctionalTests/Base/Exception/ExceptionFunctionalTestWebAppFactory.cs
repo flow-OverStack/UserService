@@ -33,6 +33,7 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
         mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(GetExceptionMockTransaction(originalTransaction).Object);
         mockUnitOfWork.Setup(x => x.Users).Returns(originalUnitOfWork.Users);
+        mockUnitOfWork.Setup(x => x.Roles).Returns(originalUnitOfWork.Roles);
 
         return mockUnitOfWork;
     }

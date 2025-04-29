@@ -42,6 +42,10 @@ public class RoleService(
         if (role == null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
+        if (role.Name == nameof(Roles.User))
+            return BaseResult<RoleDto>.Failure(ErrorMessage.CannotDeleteDefaultRole,
+                (int)ErrorCodes.CannotDeleteDefaultRole);
+
         var usersWithRoleToDelete = (await GetUsersWithRoleAsync(role.Id, cancellationToken)).ToList();
 
         var areRolesUpdated = false;
@@ -181,6 +185,10 @@ public class RoleService(
 
         if (role == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+
+        if (role.Name == nameof(Roles.User))
+            return BaseResult<UserRoleDto>.Failure(ErrorMessage.CannotDeleteDefaultRole,
+                (int)ErrorCodes.CannotDeleteDefaultRole);
 
         var areRolesUpdated = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))

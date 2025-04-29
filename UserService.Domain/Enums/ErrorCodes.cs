@@ -22,5 +22,6 @@ public enum ErrorCodes
 
     RoleAlreadyExists = 41,
     RoleNotFound = 42,
-    RolesNotFound = 43
+    RolesNotFound = 43,
+    CannotDeleteDefaultRole = 44
 }

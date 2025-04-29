@@ -86,7 +86,7 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
         //Assert
         Assert.NotNull(user);
         Assert.True(user.Reputation < initialReputation);
-        Assert.Equal(user.ReputationEarnedToday, initialReputationEarnedToday);
+        Assert.Equal(initialReputationEarnedToday, user.ReputationEarnedToday);
     }
 
     [Trait("Category", "Functional")]

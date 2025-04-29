@@ -66,4 +66,7 @@
     <data name="CannotIncreaseOrDecreaseNegativeReputation" xml:space="preserve">
         <value>Невозможно увеличить или уменьшить отрицательную репутацию</value>
     </data>
+    <data name="CannotDeleteDefaultRole" xml:space="preserve">
+        <value>Невозможно удалить роль по умолчанию</value>
+    </data>
 </root>

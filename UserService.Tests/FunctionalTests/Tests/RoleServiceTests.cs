@@ -61,7 +61,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleAlreadyExists);
+        Assert.Equal(ErrorMessage.RoleAlreadyExists, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -98,7 +98,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -137,7 +137,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -176,7 +176,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -218,7 +218,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -265,7 +265,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }

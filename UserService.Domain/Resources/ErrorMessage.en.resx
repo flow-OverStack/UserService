@@ -66,4 +66,7 @@
     <data name="CannotIncreaseOrDecreaseNegativeReputation" xml:space="preserve">
         <value>Cannot increase or decrease negative reputation</value>
     </data>
+    <data name="CannotDeleteDefaultRole" xml:space="preserve">
+        <value>Cannot delete default role</value>
+    </data>
 </root>

@@ -37,7 +37,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleAlreadyExists);
+        Assert.Equal(ErrorMessage.RoleAlreadyExists, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -70,7 +70,24 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task DeleteRole_ShouldBe_CannotDeleteDefaultRole()
+    {
+        //Arrange
+        var roleService = new RoleServiceFactory().GetService();
+        const long roleId = 1;
+
+        //Act
+        var result = await roleService.DeleteRoleAsync(roleId);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.CannotDeleteDefaultRole, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -103,7 +120,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -144,7 +161,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -165,7 +182,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserAlreadyHasThisRole);
+        Assert.Equal(ErrorMessage.UserAlreadyHasThisRole, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -186,7 +203,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -227,7 +244,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -248,7 +265,28 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleNotFound);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task DeleteRoleForUser_ShouldBe_CannotDeleteDefaultRole()
+    {
+        //Arrange
+        var roleService = new RoleServiceFactory().GetService();
+        var dto = new DeleteUserRoleDto
+        {
+            Username = "TestUser2",
+            RoleId = 1
+        };
+
+        //Act
+        var result = await roleService.DeleteRoleForUserAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.CannotDeleteDefaultRole, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -290,7 +328,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserNotFound);
+        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -312,7 +350,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleToBeUpdatedIsNotFound);
+        Assert.Equal(ErrorMessage.RoleToBeUpdatedIsNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -334,7 +372,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.UserAlreadyHasThisRole);
+        Assert.Equal(ErrorMessage.UserAlreadyHasThisRole, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -356,7 +394,7 @@ public class RoleServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.RoleToUpdateIsNotFound);
+        Assert.Equal(ErrorMessage.RoleToUpdateIsNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }

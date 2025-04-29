@@ -51,7 +51,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(result.ErrorMessage, ErrorMessage.InvalidToken);
+        Assert.Equal(ErrorMessage.InvalidToken, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }
