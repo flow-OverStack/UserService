@@ -26,6 +26,6 @@ public class TokenController(ITokenService tokenService) : BaseController
     {
         var result = await tokenService.RefreshTokenAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 }

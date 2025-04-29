@@ -27,7 +27,7 @@ public class AuthController(IAuthService authService) : BaseController
     {
         var result = await authService.RegisterAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class AuthController(IAuthService authService) : BaseController
     {
         var result = await authService.LoginWithEmailAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -57,6 +57,6 @@ public class AuthController(IAuthService authService) : BaseController
     {
         var result = await authService.LoginWithUsernameAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 }

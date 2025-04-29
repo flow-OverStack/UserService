@@ -20,7 +20,7 @@ public class BaseController : ControllerBase
     /// <param name="result"></param>
     /// <typeparam name="T">Type of BaseResult</typeparam>
     /// <returns></returns>
-    protected ActionResult<BaseResult<T>> HandleResult<T>(BaseResult<T> result)
+    protected ActionResult<BaseResult<T>> HandleBaseResult<T>(BaseResult<T> result)
     {
         return result.IsSuccess switch
         {

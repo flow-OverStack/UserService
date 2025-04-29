@@ -40,7 +40,7 @@ public class RoleController(IRoleService roleService) : BaseController
     {
         var result = await roleService.CreateRoleAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class RoleController(IRoleService roleService) : BaseController
     {
         var result = await roleService.DeleteRoleAsync(roleId, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ public class RoleController(IRoleService roleService) : BaseController
 
         var result = await roleService.UpdateRoleAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public class RoleController(IRoleService roleService) : BaseController
 
         var result = await roleService.AddRoleForUserAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -140,7 +140,7 @@ public class RoleController(IRoleService roleService) : BaseController
 
         var result = await roleService.DeleteRoleForUserAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 
     /// <summary>
@@ -172,6 +172,6 @@ public class RoleController(IRoleService roleService) : BaseController
 
         var result = await roleService.UpdateRoleForUserAsync(dto, cancellationToken);
 
-        return HandleResult(result);
+        return HandleBaseResult(result);
     }
 }
