@@ -18,7 +18,7 @@ public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var reputationResetJob = scope.ServiceProvider.GetRequiredService<ReputationResetJob>();
+        var reputationResetJob = ActivatorUtilities.CreateInstance<ReputationResetJob>(scope.ServiceProvider);
         //ApplicationDbContext is instead of IBaseRepository<User> because IBaseRepository<User> is mocked 
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
@@ -37,7 +37,7 @@ public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var processedEventsResetJob = scope.ServiceProvider.GetRequiredService<ProcessedEventsResetJob>();
+        var processedEventsResetJob = ActivatorUtilities.CreateInstance<ProcessedEventsResetJob>(scope.ServiceProvider);
         //ApplicationDbContext is instead of IBaseRepository<User> because IBaseRepository<User> is mocked 
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 

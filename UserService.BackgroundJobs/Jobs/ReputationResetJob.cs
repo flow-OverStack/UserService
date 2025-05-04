@@ -3,7 +3,7 @@ using UserService.Domain.Interfaces.Service;
 
 namespace UserService.BackgroundJobs.Jobs;
 
-public class ReputationResetJob(IReputationResetService reputationResetService)
+public class ReputationResetJob(IReputationResetService reputationResetService, ILogger logger)
 {
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
@@ -11,13 +11,13 @@ public class ReputationResetJob(IReputationResetService reputationResetService)
         {
             var result = await reputationResetService.ResetEarnedTodayReputationAsync(cancellationToken);
             if (result.IsSuccess)
-                Log.Information("Successfully reset reputation");
+                logger.Information("Successfully reset reputation");
             else
-                Log.Error("Failed to reset reputation: {message}", result.ErrorMessage);
+                logger.Error("Failed to reset reputation: {message}", result.ErrorMessage);
         }
         catch (Exception e)
         {
-            Log.Error(e, "Failed to reset reputation: {message}", e.Message);
+            logger.Error(e, "Failed to reset reputation: {message}", e.Message);
         }
     }
 }

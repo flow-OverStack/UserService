@@ -18,7 +18,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var reputationResetService = scope.ServiceProvider.GetRequiredService<ReputationResetJob>();
+        var reputationResetService = ActivatorUtilities.CreateInstance<ReputationResetJob>(scope.ServiceProvider);
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
         //Act
@@ -36,7 +36,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var processedEventsResetJob = scope.ServiceProvider.GetRequiredService<ProcessedEventsResetJob>();
+        var processedEventsResetJob = ActivatorUtilities.CreateInstance<ProcessedEventsResetJob>(scope.ServiceProvider);
         var eventRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<ProcessedEvent>>();
 
         //Act

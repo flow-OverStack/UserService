@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using UserService.BackgroundJobs.DependencyInjection;
 using UserService.Domain.Settings;
 using Path = System.IO.Path;
 
@@ -187,8 +186,16 @@ public static class Startup
             }));
 
         services.AddHangfireServer();
+    }
 
-        services.InitJobs();
+    /// <summary>
+    ///     Uses hangfire
+    /// </summary>
+    /// <param name="app"></param>
+    public static void UseHangfire(this WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
+            app.UseHangfireDashboard();
     }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)

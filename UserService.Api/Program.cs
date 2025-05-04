@@ -52,7 +52,8 @@ app.UseRouting();
 app.MapControllers();
 app.UseGraphQl();
 app.UseGrpcServices();
-app.SetupHangfire();
+app.UseHangfire();
+app.SetupHangfireJobs();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -63,6 +64,4 @@ app.LogListeningUrls();
 
 await app.RunAsync();
 
-public partial class Program
-{
-}
+public partial class Program;
