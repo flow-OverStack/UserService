@@ -141,4 +141,7 @@ public class ReputationServiceTests
         Assert.Equal(ErrorMessage.ReputationMinimumReached, result.ErrorMessage);
         Assert.Null(result.Data);
     }
+
+    // ResetEarnedTodayReputationAsync is not tested because
+    // ExecuteUpdateAsync requires a real database
 }
