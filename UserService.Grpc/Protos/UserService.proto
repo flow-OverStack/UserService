@@ -6,10 +6,19 @@ option csharp_namespace = "UserService.Grpc";
 
 service UserService{
   rpc GetUserById(GetUserByIdRequest) returns (GrpcUser);
+  rpc GetUsersByIds(GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
 }
 
 message GetUserByIdRequest{
   int64 UserId = 1;
+}
+
+message GetUsersByIdsRequest{
+  repeated int64 UserIds = 1;
+}
+
+message GetUsersByIdsResponse {
+  repeated GrpcUser users = 1;
 }
 
 message GrpcUser {

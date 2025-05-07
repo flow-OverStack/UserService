@@ -12,8 +12,23 @@ public class GrpcUserService(IGetUserService userService, IMapper mapper) : User
 
         if (!result.IsSuccess)
             throw new RpcException(new Status(StatusCode.InvalidArgument, result.ErrorMessage!),
-                new Metadata { { nameof(result.ErrorCode), result.ErrorCode.ToString()! } });
+                new Metadata { { nameof(result.ErrorCode), result.ErrorCode?.ToString() ?? string.Empty } });
 
         return mapper.Map<GrpcUser>(result.Data);
+    }
+
+    public override async Task<GetUsersByIdsResponse> GetUsersByIds(GetUsersByIdsRequest request,
+        ServerCallContext context)
+    {
+        var result = await userService.GetByIdsAsync(request.UserIds);
+
+        if (!result.IsSuccess)
+            throw new RpcException(new Status(StatusCode.InvalidArgument, result.ErrorMessage!),
+                new Metadata { { nameof(result.ErrorCode), result.ErrorCode?.ToString() ?? string.Empty } });
+
+        var response = new GetUsersByIdsResponse();
+        response.Users.AddRange(result.Data.Select(mapper.Map<GrpcUser>));
+
+        return response;
     }
 }
