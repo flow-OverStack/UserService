@@ -25,7 +25,7 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
         CancellationToken cancellationToken = default)
     {
         var roles = await roleRepository.GetAll()
-            .Where(r => ids.Contains(r.Id))
+            .Where(x => ids.Contains(x.Id))
             .ToListAsync(cancellationToken);
         var totalCount = await roleRepository.GetAll().CountAsync(cancellationToken);
 

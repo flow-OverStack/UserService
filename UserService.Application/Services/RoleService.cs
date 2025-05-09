@@ -288,7 +288,6 @@ public class RoleService(
     private async Task<User?> GetUserWithRolesByIdAsync(long userId, CancellationToken cancellationToken = default)
     {
         return await unitOfWork.Users.GetAll()
-            .AsNoTracking()
             .Include(x => x.Roles)
             .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
     }
@@ -297,7 +296,6 @@ public class RoleService(
         CancellationToken cancellationToken = default)
     {
         return await unitOfWork.Users.GetAll()
-            .AsNoTracking()
             .Include(x => x.Roles)
             .Where(x => x.Roles.Any(y => y.Id == roleId))
             .ToListAsync(cancellationToken);
