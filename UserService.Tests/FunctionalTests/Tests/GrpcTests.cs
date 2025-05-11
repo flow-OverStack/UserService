@@ -44,4 +44,69 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(StatusCode.InvalidArgument, exception.StatusCode);
         Assert.Equal(ErrorMessage.UserNotFound, exception.Status.Detail);
     }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetUsersByIds_ShouldBe_Success()
+    {
+        //Arrange
+        var userIds = new List<long> { 1, 2, 0 };
+        var channel =
+            GrpcChannel.ForAddress(HttpClient.BaseAddress!, new GrpcChannelOptions { HttpClient = HttpClient });
+        var client = new UserService.UserServiceClient(channel);
+
+        var request = new GetUsersByIdsRequest();
+        request.UserIds.AddRange(userIds);
+
+        //Act
+        var response = await client.GetUsersByIdsAsync(request);
+
+        //Assert
+        Assert.NotNull(response);
+        Assert.Equal(2, response.Users.Count);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetUsersByIds_ShouldBe_UserNotFound()
+    {
+        //Arrange
+        var userIds = new List<long> { 0 };
+        var channel =
+            GrpcChannel.ForAddress(HttpClient.BaseAddress!, new GrpcChannelOptions { HttpClient = HttpClient });
+        var client = new UserService.UserServiceClient(channel);
+
+        var request = new GetUsersByIdsRequest();
+        request.UserIds.AddRange(userIds);
+
+        //Act
+        var usersRequest = async () => await client.GetUsersByIdsAsync(request);
+
+        //Assert
+        var exception = await Assert.ThrowsAsync<RpcException>(usersRequest);
+        Assert.Equal(StatusCode.InvalidArgument, exception.StatusCode);
+        Assert.Equal(ErrorMessage.UserNotFound, exception.Status.Detail);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetUsersByIds_ShouldBe_UsersNotFound()
+    {
+        //Arrange
+        var userIds = new List<long> { 0, -1 };
+        var channel =
+            GrpcChannel.ForAddress(HttpClient.BaseAddress!, new GrpcChannelOptions { HttpClient = HttpClient });
+        var client = new UserService.UserServiceClient(channel);
+
+        var request = new GetUsersByIdsRequest();
+        request.UserIds.AddRange(userIds);
+
+        //Act
+        var usersRequest = async () => await client.GetUsersByIdsAsync(request);
+
+        //Assert
+        var exception = await Assert.ThrowsAsync<RpcException>(usersRequest);
+        Assert.Equal(StatusCode.InvalidArgument, exception.StatusCode);
+        Assert.Equal(ErrorMessage.UsersNotFound, exception.Status.Detail);
+    }
 }
