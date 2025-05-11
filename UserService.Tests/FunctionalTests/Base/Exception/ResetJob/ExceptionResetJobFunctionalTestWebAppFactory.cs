@@ -11,7 +11,7 @@ using UserService.Tests.Configurations;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception.ResetJob;
 
-public class ResetJobExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
+public class ExceptionResetJobFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
     private static IMock<IBaseRepository<User>> GetExceptionMockUserRepository(
         IBaseRepository<User> originalRepository)

@@ -9,8 +9,8 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GraphQlExceptionTests(GraphQlExceptionFunctionalTestWebAppFactory factory)
-    : GraphQlExceptionBaseFunctionalTest(factory)
+public class GraphQlExceptionTests(ExceptionGraphQlFunctionalTestWebAppFactory factory)
+    : ExceptionGraphQlFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]

@@ -7,7 +7,7 @@ using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 
-public class GraphQlExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
+public class ExceptionGraphQlFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

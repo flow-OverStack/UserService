@@ -9,8 +9,8 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-public class ExceptionResetJobTests(ResetJobExceptionFunctionalTestWebAppFactory factory)
-    : ResetJobExceptionBaseFunctionalTest(factory)
+public class ExceptionResetJobTests(ExceptionResetJobFunctionalTestWebAppFactory factory)
+    : ExceptionResetJobFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]

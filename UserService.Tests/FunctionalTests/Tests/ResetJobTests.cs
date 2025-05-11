@@ -18,11 +18,11 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
     {
         //Arrange
         using var scope = ServiceProvider.CreateScope();
-        var reputationResetService = ActivatorUtilities.CreateInstance<ReputationResetJob>(scope.ServiceProvider);
+        var reputationResetJob = ActivatorUtilities.CreateInstance<ReputationResetJob>(scope.ServiceProvider);
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
         //Act
-        await reputationResetService.RunAsync();
+        await reputationResetJob.RunAsync();
 
         //Assert
         var reputations = await userRepository.GetAll().Select(x => x.ReputationEarnedToday).ToListAsync();
