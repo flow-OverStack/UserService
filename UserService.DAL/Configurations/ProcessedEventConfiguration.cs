@@ -10,5 +10,7 @@ public class ProcessedEventConfiguration : IEntityTypeConfiguration<ProcessedEve
     {
         builder.HasKey(x => x.EventId);
         builder.Property(x => x.ProcessedAt).IsRequired();
+
+        builder.HasIndex(x => x.ProcessedAt);
     }
 }
