@@ -16,7 +16,7 @@ public class RoleDataLoader(
         using var scope = scopeFactory.CreateScope();
         var roleService = scope.ServiceProvider.GetRequiredService<IGetRoleService>();
 
-        var result = await roleService.GetByIdsAsync(keys);
+        var result = await roleService.GetByIdsAsync(keys, cancellationToken);
 
         var dictionary = new Dictionary<long, Role>();
 

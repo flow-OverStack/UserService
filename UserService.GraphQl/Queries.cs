@@ -10,9 +10,10 @@ public class Queries
     [GraphQLDescription("Returns a list of all users")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<User>> GetUsers([Service] IGetUserService userService)
+    public async Task<IEnumerable<User>> GetUsers([Service] IGetUserService userService,
+        CancellationToken cancellationToken)
     {
-        var result = await userService.GetAllAsync();
+        var result = await userService.GetAllAsync(cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -23,9 +24,9 @@ public class Queries
     [GraphQLDescription("Returns a user by its id. If one is requested - error, several - null")]
     [UseFiltering]
     [UseSorting]
-    public async Task<User?> GetUser(long id, UserDataLoader userLoader)
+    public async Task<User?> GetUser(long id, UserDataLoader userLoader, CancellationToken cancellationToken)
     {
-        var user = await userLoader.LoadAsync(id);
+        var user = await userLoader.LoadAsync(id, cancellationToken);
 
         return user;
     }
@@ -34,9 +35,10 @@ public class Queries
     [GraphQLDescription("Returns a list of all roles")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Role>> GetRoles([Service] IGetRoleService roleService)
+    public async Task<IEnumerable<Role>> GetRoles([Service] IGetRoleService roleService,
+        CancellationToken cancellationToken)
     {
-        var result = await roleService.GetAllAsync();
+        var result = await roleService.GetAllAsync(cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -47,9 +49,9 @@ public class Queries
     [GraphQLDescription("Returns a role by its id. If one is requested - error, several - null")]
     [UseFiltering]
     [UseSorting]
-    public async Task<Role?> GetRole(long id, RoleDataLoader roleLoader)
+    public async Task<Role?> GetRole(long id, RoleDataLoader roleLoader, CancellationToken cancellationToken)
     {
-        var role = await roleLoader.LoadAsync(id);
+        var role = await roleLoader.LoadAsync(id, cancellationToken);
 
         return role;
     }

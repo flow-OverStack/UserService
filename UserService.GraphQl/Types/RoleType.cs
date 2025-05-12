@@ -13,14 +13,15 @@ public class RoleType : ObjectType<Role>
         descriptor.Field(x => x.Users).Description("Users who have the role.");
         descriptor.Field(x => x.GetRoleName()).Ignore();
 
-        descriptor.Field(x => x.Users).ResolveWith<Resolvers>(x => x.GetUsersAsync(default!, default!));
+        descriptor.Field(x => x.Users).ResolveWith<Resolvers>(x => x.GetUsersAsync(default!, default!, default!));
     }
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, GroupUserDataLoader userLoader)
+        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, GroupUserDataLoader userLoader,
+            CancellationToken cancellationToken)
         {
-            var users = await userLoader.LoadRequiredAsync(role.Id);
+            var users = await userLoader.LoadRequiredAsync(role.Id, cancellationToken);
 
             return users;
         }

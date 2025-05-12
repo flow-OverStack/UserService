@@ -16,7 +16,7 @@ public class UserDataLoader(
         using var scope = scopeFactory.CreateScope();
         var userService = scope.ServiceProvider.GetRequiredService<IGetUserService>();
 
-        var result = await userService.GetByIdsAsync(keys);
+        var result = await userService.GetByIdsAsync(keys, cancellationToken);
 
         var dictionary = new Dictionary<long, User>();
 

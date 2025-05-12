@@ -21,17 +21,18 @@ public class UserType : ObjectType<User>
         descriptor.Field(x => x.Roles).Description("The roles of the user.");
         descriptor.Field(x => x.CreatedAt).Description("User creation time.");
 
-        descriptor.Field(x => x.Roles).ResolveWith<Resolvers>(x => x.GetRolesAsync(default!, default!));
+        descriptor.Field(x => x.Roles).ResolveWith<Resolvers>(x => x.GetRolesAsync(default!, default!, default!));
 
         descriptor.Key(nameof(User.Id).LowercaseFirstLetter())
-            .ResolveReferenceWith(_ => Resolvers.GetUserByIdAsync(default!, default!));
+            .ResolveReferenceWith(_ => Resolvers.GetUserByIdAsync(default!, default!, default!));
     }
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<Role>> GetRolesAsync([Parent] User user, GroupRoleDataLoader roleLoader)
+        public async Task<IEnumerable<Role>> GetRolesAsync([Parent] User user, GroupRoleDataLoader roleLoader,
+            CancellationToken cancellationToken)
         {
-            var roles = await roleLoader.LoadRequiredAsync(user.Id);
+            var roles = await roleLoader.LoadRequiredAsync(user.Id, cancellationToken);
 
             // Having no roles is a business exception, so we got to check it here
             if (!roles.Any())
@@ -40,9 +41,10 @@ public class UserType : ObjectType<User>
             return roles;
         }
 
-        public static async Task<User?> GetUserByIdAsync(long id, UserDataLoader userLoader)
+        public static async Task<User?> GetUserByIdAsync(long id, UserDataLoader userLoader,
+            CancellationToken cancellationToken)
         {
-            var user = await userLoader.LoadAsync(id);
+            var user = await userLoader.LoadAsync(id, cancellationToken);
 
             return user;
         }

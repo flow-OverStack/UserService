@@ -21,7 +21,7 @@ public class GroupUserDataLoader(
         using var scope = scopeFactory.CreateScope();
         var userService = scope.ServiceProvider.GetRequiredService<IGetUserService>();
 
-        var result = await userService.GetUsersWithRolesAsync(keys);
+        var result = await userService.GetUsersWithRolesAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<KeyValuePair<long, IEnumerable<User>>>()
