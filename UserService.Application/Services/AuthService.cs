@@ -69,7 +69,7 @@ public class AuthService(
             }
             catch (Exception)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(CancellationToken.None);
                 if (keycloakResponse != null)
                     BackgroundJob.Enqueue(() => identityServer.RollbackRegistrationAsync(keycloakResponse.KeycloakId));
 

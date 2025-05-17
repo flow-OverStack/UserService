@@ -52,7 +52,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// /// <remarks>
     /// Request for deleting role:
     /// 
-    ///     DELETE {roleId}
+    ///     DELETE {roleId:long}
     /// </remarks>
     [HttpDelete("{roleId:long}")]
     public async Task<ActionResult<BaseResult<RoleDto>>> Delete(long roleId, CancellationToken cancellationToken)
@@ -72,7 +72,7 @@ public class RoleController(IRoleService roleService) : BaseController
     /// <remarks>
     /// Request for updating role:
     /// 
-    ///     PUT {questionId}
+    ///     PUT {roleId:long}
     ///     {
     ///         "name":"Admin"
     ///     }
@@ -92,18 +92,17 @@ public class RoleController(IRoleService roleService) : BaseController
     /// Adding role for user
     /// </summary>
     /// <param name="username"></param>
-    /// <param name="requestDto"></param>
     /// <param name="roleId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
     /// Request for add role for user:
     /// 
-    ///     POST {username}/{roleId}
+    ///     POST {username}/{roleId:long}
     /// </remarks>
     [HttpPost("{username}/{roleId:long}")]
-    public async Task<ActionResult<BaseResult<UserRoleDto>>> AddRoleForUser(string username,
-        long roleId, CancellationToken cancellationToken)
+    public async Task<ActionResult<BaseResult<UserRoleDto>>> AddRoleForUser(string username, long roleId,
+        CancellationToken cancellationToken)
     {
         var dto = new UserRoleDto
         {
@@ -132,7 +131,7 @@ public class RoleController(IRoleService roleService) : BaseController
     public async Task<ActionResult<BaseResult<UserRoleDto>>> DeleteRoleForUser(string username, long roleId,
         CancellationToken cancellationToken)
     {
-        var dto = new DeleteUserRoleDto
+        var dto = new UserRoleDto
         {
             Username = username,
             RoleId = roleId

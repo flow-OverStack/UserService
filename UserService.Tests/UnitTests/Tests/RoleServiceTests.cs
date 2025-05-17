@@ -213,7 +213,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-        var dto = new DeleteUserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser2",
             RoleId = 3
@@ -233,7 +233,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-        var dto = new DeleteUserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "NotExistingUser",
             RoleId = 3
@@ -254,7 +254,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-        var dto = new DeleteUserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser2",
             RoleId = 0
@@ -275,7 +275,7 @@ public class RoleServiceTests
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
-        var dto = new DeleteUserRoleDto
+        var dto = new UserRoleDto
         {
             Username = "TestUser2",
             RoleId = 1

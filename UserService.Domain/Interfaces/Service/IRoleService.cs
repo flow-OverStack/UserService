@@ -47,7 +47,7 @@ public interface IRoleService
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<UserRoleDto>> DeleteRoleForUserAsync(DeleteUserRoleDto dto,
+    Task<BaseResult<UserRoleDto>> DeleteRoleForUserAsync(UserRoleDto dto,
         CancellationToken cancellationToken = default);
 
     /// <summary>
