@@ -4,9 +4,6 @@ using UserService.Domain.Results;
 
 namespace UserService.Domain.Interfaces.Service;
 
-/// <summary>
-///     Service for user authentication
-/// </summary>
 public interface IAuthService
 {
     /// <summary>

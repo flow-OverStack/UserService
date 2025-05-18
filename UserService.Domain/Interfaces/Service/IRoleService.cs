@@ -10,7 +10,7 @@ namespace UserService.Domain.Interfaces.Service;
 public interface IRoleService
 {
     /// <summary>
-    ///     Role creating
+    ///     Creates role
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -18,7 +18,7 @@ public interface IRoleService
     Task<BaseResult<RoleDto>> CreateRoleAsync(CreateRoleDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Role deleting
+    ///     Deletes role
     /// </summary>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
@@ -26,7 +26,7 @@ public interface IRoleService
     Task<BaseResult<RoleDto>> DeleteRoleAsync(long id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Role updating
+    ///     Updates role
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -34,7 +34,7 @@ public interface IRoleService
     Task<BaseResult<RoleDto>> UpdateRoleAsync(RoleDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Adding role for user
+    ///     Adds role for user
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -51,7 +51,7 @@ public interface IRoleService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Updating role for user
+    ///     Updates user's role
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>

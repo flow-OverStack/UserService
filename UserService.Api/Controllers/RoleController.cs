@@ -21,13 +21,13 @@ namespace UserService.Api.Controllers;
 public class RoleController(IRoleService roleService) : BaseController
 {
     /// <summary>
-    /// Create role
+    ///     Creates role
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for create role:
+    /// Request to create a role:
     /// 
     ///     POST
     ///     {
@@ -44,13 +44,13 @@ public class RoleController(IRoleService roleService) : BaseController
     }
 
     /// <summary>
-    /// Deletes role by its id
+    ///     Deletes role by its id
     /// </summary>
     /// <param name="roleId">role's id</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    /// /// <remarks>
-    /// Request for deleting role:
+    /// <remarks>
+    /// Request to delete a role:
     /// 
     ///     DELETE {roleId:long}
     /// </remarks>
@@ -63,14 +63,14 @@ public class RoleController(IRoleService roleService) : BaseController
     }
 
     /// <summary>
-    /// Updates role
+    ///     Updates role
     /// </summary>
     /// <param name="roleId"></param>
     /// <param name="requestDto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for updating role:
+    /// Request to update a role:
     /// 
     ///     PUT {roleId:long}
     ///     {
@@ -89,14 +89,14 @@ public class RoleController(IRoleService roleService) : BaseController
     }
 
     /// <summary>
-    /// Adding role for user
+    ///     Adds role for user
     /// </summary>
     /// <param name="username"></param>
     /// <param name="roleId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for add role for user:
+    /// Request to add a role to a user:
     /// 
     ///     POST {username}/{roleId:long}
     /// </remarks>
@@ -116,14 +116,14 @@ public class RoleController(IRoleService roleService) : BaseController
     }
 
     /// <summary>
-    /// Deletes role of user by username and role's id
+    ///     Deletes role of user by username and role's id
     /// </summary>
     /// <param name="username"></param>
     /// <param name="roleId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for deleting role:
+    /// Request to delete a role of a user:
     /// 
     ///     DELETE {username}/{roleId:long}
     /// </remarks>
@@ -143,14 +143,14 @@ public class RoleController(IRoleService roleService) : BaseController
     }
 
     /// <summary>
-    /// Updates role for user
+    ///     Updates role of user
     /// </summary>
     /// <returns></returns>
     /// <param name="username"></param>
     /// <param name="requestDto"></param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Request for updating user's role:
+    /// Request to update a role of a user:
     /// 
     ///     PUT {username}
     ///     {

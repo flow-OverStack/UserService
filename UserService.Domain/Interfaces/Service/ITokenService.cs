@@ -6,7 +6,7 @@ namespace UserService.Domain.Interfaces.Service;
 public interface ITokenService
 {
     /// <summary>
-    ///     Refreshes user's access token
+    ///     Refreshes user's token
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>

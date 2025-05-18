@@ -16,11 +16,21 @@ namespace UserService.Api.Controllers;
 public class AuthController(IAuthService authService) : BaseController
 {
     /// <summary>
-    ///     user registration
+    ///     Registers user
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    /// <remarks>
+    /// Request for user registration:
+    /// 
+    ///     POST register
+    ///     {
+    ///         "username":"string",
+    ///         "email":"string",
+    ///         "password":"string"
+    ///     }
+    /// </remarks>
     [HttpPost("register")]
     public async Task<ActionResult<BaseResult<UserDto>>> Register([FromBody] RegisterUserDto dto,
         CancellationToken cancellationToken)
@@ -31,11 +41,20 @@ public class AuthController(IAuthService authService) : BaseController
     }
 
     /// <summary>
-    ///     user login with email
+    ///     Logs user in with email
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    ///<remarks>
+    /// Request for user login with email:
+    /// 
+    ///     POST login-email
+    ///     {
+    ///         "email":"string",
+    ///         "password":"string"
+    ///     }
+    /// </remarks>
     [HttpPost("login-email")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginEmailUserDto dto,
         CancellationToken cancellationToken)
@@ -46,11 +65,20 @@ public class AuthController(IAuthService authService) : BaseController
     }
 
     /// <summary>
-    ///     user login with username
+    ///     Logs user in with username
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    /// <remarks>
+    /// Request for user login with username:
+    /// 
+    ///     POST login-username
+    ///     {
+    ///         "username":"string",
+    ///         "password":"string"
+    ///     }
+    /// </remarks>
     [HttpPost("login-username")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUsernameUserDto dto,
         CancellationToken cancellationToken)

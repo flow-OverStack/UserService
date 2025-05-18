@@ -20,6 +20,14 @@ public class TokenController(ITokenService tokenService) : BaseController
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
+    /// <remarks>
+    /// Request for token refresh:
+    /// 
+    ///     POST refresh
+    ///     {
+    ///         "refreshToken":"string"
+    ///     }
+    /// </remarks>
     [HttpPost("refresh")]
     public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto,
         CancellationToken cancellationToken)

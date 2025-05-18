@@ -10,7 +10,7 @@ namespace UserService.Domain.Interfaces.Service;
 public interface IIdentityServer
 {
     /// <summary>
-    ///     Register user in keycloak
+    ///     Register user in identity server
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -18,7 +18,7 @@ public interface IIdentityServer
     Task<KeycloakUserDto> RegisterUserAsync(KeycloakRegisterUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Login user in keycloak
+    ///     Logs user in identity server
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -26,7 +26,7 @@ public interface IIdentityServer
     Task<TokenDto> LoginUserAsync(KeycloakLoginUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Refresh user's token in keycloak
+    ///     Refresh user's token in identity server
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -34,7 +34,7 @@ public interface IIdentityServer
     Task<TokenDto> RefreshTokenAsync(RefreshTokenDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Update user's roles
+    ///     Update user's roles in identity server
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
@@ -49,7 +49,7 @@ public interface IIdentityServer
     Task RollbackRegistrationAsync(Guid userId);
 
     /// <summary>
-    ///     Rolls back the user's roles update; does not catch errors
+    ///     Rolls back user's roles update; does not catch errors
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>

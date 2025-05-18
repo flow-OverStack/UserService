@@ -6,6 +6,14 @@ namespace UserService.Domain.Interfaces.Service;
 public interface IGetUserService : IGetService<User>
 {
     /// <summary>
+    ///     Gets one user by its id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
     ///     Gets all users who have the roles by their ids
     /// </summary>
     /// <param name="roleIds"></param>
