@@ -18,7 +18,7 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
         if (!roles.Any())
             return CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
 
-        return CollectionResult<Role>.Success(roles, roles.Count);
+        return CollectionResult<Role>.Success(roles);
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
@@ -37,7 +37,7 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
             };
 
 
-        return CollectionResult<Role>.Success(roles, roles.Count, totalCount);
+        return CollectionResult<Role>.Success(roles, totalCount);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(
@@ -53,6 +53,6 @@ public class GetRoleService(IBaseRepository<User> userRepository, IBaseRepositor
             return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
                 (int)ErrorCodes.RolesNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Success(groupedRoles, groupedRoles.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Success(groupedRoles);
     }
 }

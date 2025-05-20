@@ -15,7 +15,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
     {
         var users = await userRepository.GetAll().ToListAsync(cancellationToken);
 
-        return CollectionResult<User>.Success(users, users.Count);
+        return CollectionResult<User>.Success(users);
     }
 
     public async Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default)
@@ -43,7 +43,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
                 > 1 => CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound)
             };
 
-        return CollectionResult<User>.Success(users, users.Count, totalCount);
+        return CollectionResult<User>.Success(users, totalCount);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
@@ -59,6 +59,6 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
             return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
                 (int)ErrorCodes.UsersNotFound);
 
-        return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers, groupedUsers.Count);
+        return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers);
     }
 }
