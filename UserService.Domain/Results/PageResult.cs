@@ -8,7 +8,7 @@ namespace UserService.Domain.Results;
 /// <typeparam name="T">The type of items in the returned collection.</typeparam>
 public class PageResult<T> : CollectionResult<T>
 {
-    protected PageResult(IEnumerable<T> data, int pageNumber, int? totalCount = null) : base(data, totalCount)
+    protected PageResult(IEnumerable<T> data, int pageNumber) : base(data)
     {
         if (pageNumber <= 0)
             // ReSharper disable once LocalizableElement
@@ -32,14 +32,12 @@ public class PageResult<T> : CollectionResult<T>
     /// </summary>
     /// <param name="data">The collection of <typeparamref name="T" /> items to return. Cannot be <c>null</c>.</param>
     /// <param name="pageNumber">The current page number. Must be a positive integer.</param>
-    /// <param name="totalCount">The optional total number of available <typeparamref name="T" /> items.</param>
     /// <returns>A successful <see cref="PageResult{T}" /> containing the data and page information.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c> or whitespace.</exception>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="totalCount" /> is less than <see cref="Count" />.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="pageNumber" /> is less than or equal to zero.</exception>
-    public static PageResult<T> Success(IEnumerable<T> data, int pageNumber, int? totalCount = null)
+    public static PageResult<T> Success(IEnumerable<T> data, int pageNumber)
     {
-        return new PageResult<T>(data, pageNumber, totalCount);
+        return new PageResult<T>(data, pageNumber);
     }
 
     /// <inheritdoc cref="BaseResult.Failure" />

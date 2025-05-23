@@ -9,14 +9,8 @@ namespace UserService.Domain.Results;
 /// <typeparam name="T">The type of items in the returned collection.</typeparam>
 public class CollectionResult<T> : BaseResult<IEnumerable<T>>
 {
-    protected CollectionResult(IEnumerable<T> data, int? totalCount = null) : base(data)
+    protected CollectionResult(IEnumerable<T> data) : base(data)
     {
-        if (totalCount < Count)
-            // ReSharper disable once LocalizableElement
-            throw new ArgumentException($"{nameof(totalCount)} cannot be less than {nameof(Count)}.",
-                nameof(totalCount));
-
-        TotalCount = totalCount;
     }
 
     protected CollectionResult(string errorMessage, int? errorCode = null) : base(errorMessage, errorCode)
@@ -38,23 +32,15 @@ public class CollectionResult<T> : BaseResult<IEnumerable<T>>
     public int Count => Data?.Count() ?? 0;
 
     /// <summary>
-    ///     The total number of items available, which may be greater than <see cref="Count" />.
-    ///     Can be <c>null</c>.
-    /// </summary>
-    public int? TotalCount { get; }
-
-    /// <summary>
     ///     Creates a successful <see cref="CollectionResult{T}" /> with the specified collection of <typeparamref name="T" />
     ///     items.
     /// </summary>
     /// <param name="data">The collection of <typeparamref name="T" /> items to return. Cannot be <c>null</c>.</param>
-    /// <param name="totalCount">The optional total number of available <typeparamref name="T" /> items.</param>
     /// <returns>A successful <see cref="CollectionResult{T}" /> containing the data.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c> or whitespace.</exception>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="totalCount" /> is less than <see cref="Count" />.</exception>
-    public static CollectionResult<T> Success(IEnumerable<T> data, int? totalCount = null)
+    public new static CollectionResult<T> Success(IEnumerable<T> data)
     {
-        return new CollectionResult<T>(data, totalCount);
+        return new CollectionResult<T>(data);
     }
 
     /// <inheritdoc cref="BaseResult.Failure" />

@@ -1,21 +1,31 @@
 using Microsoft.EntityFrameworkCore;
+using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Interfaces.Validation;
 using UserService.Domain.Resources;
 using UserService.Domain.Results;
 
 namespace UserService.Application.Services;
 
-public class GetUserService(IBaseRepository<User> userRepository, IBaseRepository<Role> roleRepository)
+public class GetUserService(
+    IBaseRepository<User> userRepository,
+    IBaseRepository<Role> roleRepository,
+    IFallbackValidator<PageDto> paginationValidator)
     : IGetUserService
 {
-    public async Task<CollectionResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PageResult<User>> GetAllAsync(PageDto pagination,
+        CancellationToken cancellationToken = default)
     {
-        var users = await userRepository.GetAll().ToListAsync(cancellationToken);
+        var validPagination = paginationValidator.GetOrFallback(pagination);
+        var users = await userRepository.GetAll()
+            .Skip(validPagination.PageNumber - 1)
+            .Take(validPagination.PageSize)
+            .ToListAsync(cancellationToken);
 
-        return CollectionResult<User>.Success(users);
+        return PageResult<User>.Success(users, validPagination.PageNumber);
     }
 
     public async Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default)
@@ -34,7 +44,6 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
         CancellationToken cancellationToken = default)
     {
         var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
-        var totalCount = await userRepository.GetAll().CountAsync(cancellationToken);
 
         if (!users.Any())
             return ids.Count() switch
@@ -43,7 +52,7 @@ public class GetUserService(IBaseRepository<User> userRepository, IBaseRepositor
                 > 1 => CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound)
             };
 
-        return CollectionResult<User>.Success(users, totalCount);
+        return CollectionResult<User>.Success(users);
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(

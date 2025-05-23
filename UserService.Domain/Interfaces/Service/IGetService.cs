@@ -1,3 +1,4 @@
+using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Results;
 
 namespace UserService.Domain.Interfaces.Service;
@@ -8,8 +9,9 @@ public interface IGetService<T>
     ///     Gets all of T
     /// </summary>
     /// <returns></returns>
+    /// <param name="pagination"></param>
     /// <param name="cancellationToken"></param>
-    Task<CollectionResult<T>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<PageResult<T>> GetAllAsync(PageDto pagination, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets multiple T's by their ids

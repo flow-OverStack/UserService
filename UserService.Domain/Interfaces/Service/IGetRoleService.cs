@@ -3,23 +3,8 @@ using UserService.Domain.Results;
 
 namespace UserService.Domain.Interfaces.Service;
 
-public interface IGetRoleService
+public interface IGetRoleService : IGetService<Role>
 {
-    /// <summary>
-    ///     Gets all of roles
-    /// </summary>
-    /// <returns></returns>
-    /// <param name="cancellationToken"></param>
-    Task<CollectionResult<Role>> GetAllAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    ///     Gets roles by their ids
-    /// </summary>
-    /// <param name="ids"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids, CancellationToken cancellationToken = default);
-
     /// <summary>
     ///     Gets all roles of the users by their ids
     /// </summary>

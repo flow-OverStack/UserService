@@ -1,7 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Application.Mappings;
 using UserService.Application.Services;
+using UserService.Application.Validators;
+using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Interfaces.Validation;
 
 namespace UserService.Application.DependencyInjection;
 
@@ -24,5 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IReputationService, ReputationService>();
         services.AddScoped<IReputationResetService, ReputationService>();
         services.AddScoped<IProcessedEventsResetService, ProcessedEventsResetService>();
+
+        services.AddScoped<IFallbackValidator<PageDto>, PageDtoValidator>();
     }
 }

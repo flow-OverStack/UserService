@@ -1,3 +1,4 @@
+using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Service;
@@ -10,10 +11,10 @@ public class Queries
     [GraphQLDescription("Returns a list of all users")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<User>> GetUsers([Service] IGetUserService userService,
+    public async Task<IEnumerable<User>> GetUsers(PageDto pagination, [Service] IGetUserService userService,
         CancellationToken cancellationToken)
     {
-        var result = await userService.GetAllAsync(cancellationToken);
+        var result = await userService.GetAllAsync(pagination, cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -35,10 +36,10 @@ public class Queries
     [GraphQLDescription("Returns a list of all roles")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Role>> GetRoles([Service] IGetRoleService roleService,
+    public async Task<IEnumerable<Role>> GetRoles(PageDto pagination, [Service] IGetRoleService roleService,
         CancellationToken cancellationToken)
     {
-        var result = await roleService.GetAllAsync(cancellationToken);
+        var result = await roleService.GetAllAsync(pagination, cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
