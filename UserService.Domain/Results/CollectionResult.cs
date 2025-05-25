@@ -9,6 +9,11 @@ namespace UserService.Domain.Results;
 /// <typeparam name="T">The type of items in the returned collection.</typeparam>
 public class CollectionResult<T> : BaseResult<IEnumerable<T>>
 {
+    // Constructor for JSON deserialization
+    protected CollectionResult()
+    {
+    }
+
     protected CollectionResult(IEnumerable<T> data) : base(data)
     {
     }
@@ -27,7 +32,7 @@ public class CollectionResult<T> : BaseResult<IEnumerable<T>>
 
     /// <summary>
     ///     The number of items returned in the current collection.
-    ///     Returns <c>0</c> if the <see cref="BaseResult{T}.Data" /> collection is empty.
+    ///     Returns <c>0</c> if the <see cref="BaseResult{T}.Data" /> collection is <c>null</c>.
     /// </summary>
     public int Count => Data?.Count() ?? 0;
 
@@ -37,7 +42,7 @@ public class CollectionResult<T> : BaseResult<IEnumerable<T>>
     /// </summary>
     /// <param name="data">The collection of <typeparamref name="T" /> items to return. Cannot be <c>null</c>.</param>
     /// <returns>A successful <see cref="CollectionResult{T}" /> containing the data.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c> or whitespace.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c>.</exception>
     public new static CollectionResult<T> Success(IEnumerable<T> data)
     {
         return new CollectionResult<T>(data);

@@ -4,7 +4,10 @@ internal static class GraphQlHelper
 {
     public const string RequestAllQuery = """
                                           {
-                                            users{
+                                            users(pagination:  {
+                                             pageNumber: 1,
+                                             pageSize: 200
+                                            }){
                                               id
                                               keycloakId
                                               username
@@ -17,7 +20,10 @@ internal static class GraphQlHelper
                                                 name
                                               }
                                             }
-                                            roles{
+                                            roles(pagination:  {
+                                             pageNumber: 1,
+                                             pageSize: 200
+                                            }){
                                               id
                                               name
                                               users{

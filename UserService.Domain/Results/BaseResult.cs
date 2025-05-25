@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace UserService.Domain.Results;
 
@@ -14,7 +15,8 @@ public class BaseResult
 
     protected BaseResult(string errorMessage, int? errorCode = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(errorMessage);
+        ArgumentException.ThrowIfNullOrEmpty(errorMessage);
+
         ErrorMessage = errorMessage;
         ErrorCode = errorCode;
     }
@@ -28,12 +30,14 @@ public class BaseResult
     ///     An optional error message that describes why the operation failed.
     ///     If this value is <c>null</c>, the operation is considered successful.
     /// </summary>
-    public string? ErrorMessage { get; }
+    [JsonProperty]
+    public string? ErrorMessage { get; private init; }
 
     /// <summary>
     ///     An optional numeric code representing the type of error.
     /// </summary>
-    public int? ErrorCode { get; }
+    [JsonProperty]
+    public int? ErrorCode { get; private init; }
 
 
     /// <summary>
@@ -65,14 +69,19 @@ public class BaseResult
 /// <typeparam name="T">The type of data returned when the operation is successful. Must be a reference type.</typeparam>
 public class BaseResult<T> : BaseResult where T : class
 {
+    // Constructor for JSON deserialization
+    protected BaseResult()
+    {
+    }
+
     protected BaseResult(T data)
     {
         ArgumentNullException.ThrowIfNull(data);
+
         Data = data;
     }
 
-    protected BaseResult(string errorMessage, int? errorCode = null)
-        : base(errorMessage, errorCode)
+    protected BaseResult(string errorMessage, int? errorCode = null) : base(errorMessage, errorCode)
     {
     }
 
@@ -83,14 +92,15 @@ public class BaseResult<T> : BaseResult where T : class
     /// <summary>
     ///     The data returned by the operation if successful; <c>null</c> otherwise.
     /// </summary>
-    public T? Data { get; }
+    [JsonProperty]
+    public T? Data { get; private init; }
 
     /// <summary>
     ///     Creates a successful result with the specified data.
     /// </summary>
     /// <param name="data">The data to return. Cannot be <c>null</c>.</param>
     /// <returns>A successful <see cref="BaseResult{T}" /> containing the data.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c> or whitespace.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c>.</exception>
     public static BaseResult<T> Success(T data)
     {
         return new BaseResult<T>(data);
