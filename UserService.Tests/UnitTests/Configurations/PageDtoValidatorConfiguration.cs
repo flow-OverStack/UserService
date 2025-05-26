@@ -8,10 +8,10 @@ namespace UserService.Tests.UnitTests.Configurations;
 
 internal static class PageDtoValidatorConfiguration
 {
-    private static readonly BusinessRules _businessRules = BusinessRulesConfiguration.GetBusinessRules();
+    private static readonly BusinessRules BusinessRules = BusinessRulesConfiguration.GetBusinessRules();
 
     public static IFallbackValidator<PageDto> GetValidator()
     {
-        return new PageDtoValidator(new OptionsWrapper<BusinessRules>(_businessRules));
+        return new PageDtoValidator(new OptionsWrapper<BusinessRules>(BusinessRules));
     }
 }

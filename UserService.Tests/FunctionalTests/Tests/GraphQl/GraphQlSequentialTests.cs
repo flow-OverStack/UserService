@@ -39,6 +39,27 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     [Trait("Category", "Functional")]
     [Fact]
+    public async Task GetAllRoles_ShouldBe_NoUsers()
+    {
+        //Arrange
+        await DeleteUsersAsync();
+        var requestBody = new { query = GraphQlHelper.RequestUsersQuery };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlGetAllResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Empty(result!.Data.Users.Items);
+        Assert.Equal(0, result.Data.Users.PageInfo.TotalItems);
+        Assert.Equal(0, result.Data.Users.PageInfo.TotalPages);
+        Assert.Equal(0, result.Data.Users.PageInfo.Size);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
     public async Task GetById_ShouldBe_RolesNotfound()
     {
         //Arrange
@@ -67,6 +88,17 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
         await dbContext.SaveChangesAsync();
     }
+
+    private async Task DeleteUsersAsync()
+    {
+        using var scope = ServiceProvider.CreateScope();
+        await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        await dbContext.Set<User>().ExecuteDeleteAsync();
+
+        await dbContext.SaveChangesAsync();
+    }
+
 
     private async Task AddUserWithNoRolesAsync()
     {

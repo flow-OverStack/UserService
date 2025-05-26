@@ -4,35 +4,72 @@ internal static class GraphQlHelper
 {
     public const string RequestAllQuery = """
                                           {
-                                            users(pagination:  {
-                                             pageNumber: 1,
-                                             pageSize: 200
-                                            }){
-                                              id
-                                              keycloakId
-                                              username
-                                              email
-                                              lastLoginAt
-                                              reputation
-                                              createdAt
-                                              roles{
+                                            users(pagination: { pageNumber: 1, pageSize: 200 }) {
+                                              items {
                                                 id
-                                                name
+                                                keycloakId
+                                                username
+                                                email
+                                                lastLoginAt
+                                                reputation
+                                                createdAt
+                                                roles {
+                                                  id
+                                                  name
+                                                }
+                                              }
+                                              pageInfo {
+                                                size
+                                                page
+                                                totalPages
+                                                totalItems
                                               }
                                             }
-                                            roles(pagination:  {
-                                             pageNumber: 1,
-                                             pageSize: 200
-                                            }){
-                                              id
-                                              name
-                                              users{
+                                            roles(pagination: { pageNumber: 1, pageSize: 200 }) {
+                                              items {
                                                 id
-                                                username
+                                                name
+                                                users {
+                                                  id
+                                                  username
+                                                }
+                                              }
+                                              pageInfo {
+                                                size
+                                                page
+                                                totalPages
+                                                totalItems
                                               }
                                             }
                                           }
+
                                           """;
+
+    public const string RequestUsersQuery = """
+                                            {
+                                              users(pagination: { pageNumber: 1, pageSize: 200 }) {
+                                                items {
+                                                  id
+                                                  keycloakId
+                                                  username
+                                                  email
+                                                  lastLoginAt
+                                                  reputation
+                                                  createdAt
+                                                  roles {
+                                                    id
+                                                    name
+                                                  }
+                                                }
+                                                pageInfo {
+                                                  size
+                                                  page
+                                                  totalPages
+                                                  totalItems
+                                                }
+                                              }
+                                            }
+                                            """;
 
     public const string GraphQlEndpoint = "/graphql";
 

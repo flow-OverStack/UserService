@@ -1,10 +1,18 @@
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 using UserService.Domain.Results;
 
 namespace UserService.Domain.Dtos.Request.Grpahql;
 
 public class PaginatedResult<T> where T : class
 {
+    [JsonConstructor]
+    private PaginatedResult(PageInfo pageInfo, IEnumerable<T> items)
+    {
+        PageInfo = pageInfo;
+        Items = items;
+    }
+
     [SuppressMessage("ReSharper", "LocalizableElement")]
     public PaginatedResult(PageResult<T> pageResult, int requestedPageSize)
     {

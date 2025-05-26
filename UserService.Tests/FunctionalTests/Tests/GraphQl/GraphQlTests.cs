@@ -25,8 +25,10 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(result!.Data.Users);
-        Assert.NotNull(result.Data.Roles);
+        Assert.NotEmpty(result!.Data.Users.Items);
+        Assert.NotEmpty(result.Data.Roles.Items);
+        Assert.Equal(result.Data.Users.Items.Count(), result.Data.Users.PageInfo.Size);
+        Assert.Equal(result.Data.Roles.Items.Count(), result.Data.Roles.PageInfo.Size);
     }
 
     [Trait("Category", "Functional")]
