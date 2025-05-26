@@ -1,3 +1,4 @@
+using UserService.Domain.Dtos.Request.Grpahql;
 using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
@@ -8,10 +9,10 @@ namespace UserService.GraphQl;
 
 public class Queries
 {
-    [GraphQLDescription("Returns a list of all users")]
+    [GraphQLDescription("Returns a list of paginated users.")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<User>> GetUsers(PageDto pagination, [Service] IGetUserService userService,
+    public async Task<PaginatedResult<User>> GetUsers(PageDto pagination, [Service] IGetUserService userService,
         CancellationToken cancellationToken)
     {
         var result = await userService.GetAllAsync(pagination, cancellationToken);
@@ -19,10 +20,10 @@ public class Queries
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
-        return result.Data;
+        return new PaginatedResult<User>(result, pagination.PageSize);
     }
 
-    [GraphQLDescription("Returns a user by its id. If one is requested - error, several - null")]
+    [GraphQLDescription("Returns a user by its id.")]
     [UseFiltering]
     [UseSorting]
     public async Task<User?> GetUser(long id, UserDataLoader userLoader, CancellationToken cancellationToken)
@@ -33,10 +34,10 @@ public class Queries
     }
 
 
-    [GraphQLDescription("Returns a list of all roles")]
+    [GraphQLDescription("Returns a list of paginated roles.")]
     [UseFiltering]
     [UseSorting]
-    public async Task<IEnumerable<Role>> GetRoles(PageDto pagination, [Service] IGetRoleService roleService,
+    public async Task<PaginatedResult<Role>> GetRoles(PageDto pagination, [Service] IGetRoleService roleService,
         CancellationToken cancellationToken)
     {
         var result = await roleService.GetAllAsync(pagination, cancellationToken);
@@ -44,10 +45,10 @@ public class Queries
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
-        return result.Data;
+        return new PaginatedResult<Role>(result, pagination.PageSize);
     }
 
-    [GraphQLDescription("Returns a role by its id. If one is requested - error, several - null")]
+    [GraphQLDescription("Returns a role by its id.")]
     [UseFiltering]
     [UseSorting]
     public async Task<Role?> GetRole(long id, RoleDataLoader roleLoader, CancellationToken cancellationToken)

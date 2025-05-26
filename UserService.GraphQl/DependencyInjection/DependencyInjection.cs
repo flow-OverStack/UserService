@@ -2,9 +2,11 @@ using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UserService.Domain.Entities;
 using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.ErrorFilters;
 using UserService.GraphQl.Types;
+using UserService.GraphQl.Types.Pagination;
 
 namespace UserService.GraphQl.DependencyInjection;
 
@@ -23,6 +25,9 @@ public static class DependencyInjection
             .AddQueryType<Queries>()
             .AddType<UserType>()
             .AddType<RoleType>()
+            .AddType<PageInfoType>()
+            .AddType<PaginatedResultType<User>>()
+            .AddType<PaginatedResultType<Role>>()
             .AddSorting()
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()

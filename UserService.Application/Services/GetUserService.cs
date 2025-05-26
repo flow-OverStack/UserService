@@ -21,11 +21,13 @@ public class GetUserService(
     {
         var validPagination = paginationValidator.GetOrFallback(pagination);
         var users = await userRepository.GetAll()
-            .Skip(validPagination.PageNumber - 1)
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((validPagination.PageNumber - 1) * validPagination.PageSize)
             .Take(validPagination.PageSize)
             .ToListAsync(cancellationToken);
+        var totalCount = await userRepository.GetAll().CountAsync(cancellationToken);
 
-        return PageResult<User>.Success(users, validPagination.PageNumber);
+        return PageResult<User>.Success(users, validPagination.PageNumber, totalCount);
     }
 
     public async Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default)

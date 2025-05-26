@@ -21,14 +21,15 @@ public class GetRoleService(
     {
         var validPagination = paginationValidator.GetOrFallback(pagination);
         var roles = await roleRepository.GetAll()
-            .Skip(validPagination.PageNumber - 1)
+            .Skip((validPagination.PageNumber - 1) * validPagination.PageSize)
             .Take(validPagination.PageSize)
             .ToListAsync(cancellationToken);
+        var totalCount = await roleRepository.GetAll().CountAsync(cancellationToken);
 
         if (!roles.Any())
             return PageResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
 
-        return PageResult<Role>.Success(roles, validPagination.PageNumber);
+        return PageResult<Role>.Success(roles, validPagination.PageNumber, totalCount);
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
@@ -37,6 +38,7 @@ public class GetRoleService(
         var roles = await roleRepository.GetAll()
             .Where(x => ids.Contains(x.Id))
             .ToListAsync(cancellationToken);
+
         if (!roles.Any())
             return ids.Count() switch
             {

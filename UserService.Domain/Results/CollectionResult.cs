@@ -23,7 +23,6 @@ public class CollectionResult<T> : BaseResult<IEnumerable<T>>
     }
 
     /// <inheritdoc cref="BaseResult.IsSuccess" />
-    [MemberNotNullWhen(true, nameof(Count))]
     [MemberNotNullWhen(true, nameof(Data))]
     public new bool IsSuccess => base.IsSuccess;
 

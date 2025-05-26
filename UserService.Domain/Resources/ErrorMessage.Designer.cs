@@ -114,6 +114,15 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Page number must be greater than zero..
+        /// </summary>
+        public static string InvalidPageNumber {
+            get {
+                return ResourceManager.GetString("InvalidPageNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid token.
         /// </summary>
         public static string InvalidToken {

@@ -69,4 +69,7 @@
     <data name="CannotDeleteDefaultRole" xml:space="preserve">
         <value>Cannot delete default role</value>
     </data>
+    <data name="InvalidPageNumber" xml:space="preserve">
+        <value>Page number must be greater than zero.</value>
+    </data>
 </root>

@@ -21,7 +21,7 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
 
         try
         {
-            // Create am empty temporary memory stream to intercept the response and to read it later
+            // Create an empty temporary memory stream to intercept the response and to read it later
             using var swapStream = new MemoryStream();
             // Redirect response output from httpContext.Response.Body to swapStream
             httpContext.Response.Body = swapStream;
