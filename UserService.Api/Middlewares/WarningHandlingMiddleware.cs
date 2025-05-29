@@ -36,10 +36,10 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
                 var responseBody = await new StreamReader(swapStream).ReadToEndAsync();
                 swapStream.Seek(0, SeekOrigin.Begin);
 
-                var data = JsonConvert.DeserializeObject<BaseResult>(responseBody)!;
+                var data = JsonConvert.DeserializeObject<BaseResult>(responseBody);
 
                 logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
-                    data.ErrorMessage!,
+                    data?.ErrorMessage?.TrimEnd('.') ?? responseBody,
                     httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
             }
 

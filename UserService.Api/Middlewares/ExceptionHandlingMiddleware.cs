@@ -23,7 +23,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
 
     private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        logger.Error(exception, "Error: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}", exception.Message,
+        logger.Error(exception, "Error: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+            exception.Message.TrimEnd('.'),
             httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
 
         // We return nothing because the request is already canceled 
