@@ -6,26 +6,26 @@ using UserService.Domain.Settings;
 
 namespace UserService.Application.Validators;
 
-public class PageDtoValidator
-    : AbstractValidator<PageDto>, IFallbackValidator<PageDto>
+public class PageDtoValidator : AbstractValidator<PageDto>, INullSafeValidator<PageDto>
 {
-    private readonly int _maxPageSize;
-
     public PageDtoValidator(IOptions<BusinessRules> businessRules)
     {
-        _maxPageSize = businessRules.Value.MaxPageSize;
+        var maxPageSize = businessRules.Value.MaxPageSize;
 
-        RuleFor(x => x.PageNumber).GreaterThan(0);
-        RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
+        RuleFor(x => x.Skip).NotNull().GreaterThanOrEqualTo(0);
+        RuleFor(x => x.Take).NotNull().InclusiveBetween(1, maxPageSize);
     }
 
-    public PageDto GetOrFallback(PageDto instance)
+    public bool IsValid(PageDto? instance, out IEnumerable<string> errorMessages)
     {
-        return IsValid(instance) ? instance : new PageDto(1, _maxPageSize);
-    }
+        errorMessages = [];
 
-    private bool IsValid(PageDto? instance)
-    {
-        return instance != null && Validate(instance).IsValid;
+        if (instance == null) return false;
+
+        var result = Validate(instance);
+
+        errorMessages = result.Errors.Select(x => x.ErrorMessage);
+
+        return result.IsValid;
     }
 }

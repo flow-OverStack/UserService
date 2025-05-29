@@ -13,21 +13,21 @@ namespace UserService.Application.Services;
 public class GetUserService(
     IBaseRepository<User> userRepository,
     IBaseRepository<Role> roleRepository,
-    IFallbackValidator<PageDto> paginationValidator)
+    INullSafeValidator<PageDto> pageValidator)
     : IGetUserService
 {
-    public async Task<PageResult<User>> GetAllAsync(PageDto pagination,
-        CancellationToken cancellationToken = default)
+    public Task<QueryableResult<User>> GetAllAsync(PageDto pagination, CancellationToken cancellationToken = default)
     {
-        var validPagination = paginationValidator.GetOrFallback(pagination);
-        var users = await userRepository.GetAll()
-            .OrderByDescending(x => x.CreatedAt)
-            .Skip((validPagination.PageNumber - 1) * validPagination.PageSize)
-            .Take(validPagination.PageSize)
-            .ToListAsync(cancellationToken);
-        var totalCount = await userRepository.GetAll().CountAsync(cancellationToken);
+        if (!pageValidator.IsValid(pagination, out var errors))
+            return Task.FromResult(
+                QueryableResult<User>.Failure($"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}",
+                    (int)ErrorCodes.InvalidPagination));
 
-        return PageResult<User>.Success(users, validPagination.PageNumber, totalCount);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var users = userRepository.GetAll();
+
+        return Task.FromResult(QueryableResult<User>.Success(users));
     }
 
     public async Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default)

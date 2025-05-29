@@ -69,7 +69,7 @@
     <data name="CannotDeleteDefaultRole" xml:space="preserve">
         <value>Невозможно удалить роль по умолчанию</value>
     </data>
-    <data name="InvalidPageNumber" xml:space="preserve">
-        <value>Номер страницы должен быть больше 0.</value>
+    <data name="InvalidPagination" xml:space="preserve">
+        <value>Параметры пагинации невалидны</value>
     </data>
 </root>

@@ -1,4 +1,3 @@
-using UserService.Domain.Dtos.Request.Grpahql;
 using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
@@ -10,17 +9,20 @@ namespace UserService.GraphQl;
 public class Queries
 {
     [GraphQLDescription("Returns a list of paginated users.")]
+    // Page size is validated in the service
+    [UseOffsetPaging(IncludeTotalCount = true, MaxPageSize = int.MaxValue)]
     [UseFiltering]
     [UseSorting]
-    public async Task<PaginatedResult<User>> GetUsers(PageDto pagination, [Service] IGetUserService userService,
+    public async Task<IQueryable<User>> GetUsers(int? skip, int? take, [Service] IGetUserService userService,
         CancellationToken cancellationToken)
     {
+        var pagination = new PageDto(skip, take);
         var result = await userService.GetAllAsync(pagination, cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
-        return new PaginatedResult<User>(result, pagination.PageSize);
+        return result.Data;
     }
 
     [GraphQLDescription("Returns a user by its id.")]
@@ -35,17 +37,20 @@ public class Queries
 
 
     [GraphQLDescription("Returns a list of paginated roles.")]
+    // Page size is validated in the service
+    [UseOffsetPaging(IncludeTotalCount = true, MaxPageSize = int.MaxValue)]
     [UseFiltering]
     [UseSorting]
-    public async Task<PaginatedResult<Role>> GetRoles(PageDto pagination, [Service] IGetRoleService roleService,
+    public async Task<IQueryable<Role>> GetRoles(int? skip, int? take, [Service] IGetRoleService roleService,
         CancellationToken cancellationToken)
     {
+        var pagination = new PageDto(skip, take);
         var result = await roleService.GetAllAsync(pagination, cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
 
-        return new PaginatedResult<Role>(result, pagination.PageSize);
+        return result.Data;
     }
 
     [GraphQLDescription("Returns a role by its id.")]

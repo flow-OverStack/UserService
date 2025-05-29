@@ -114,11 +114,11 @@ namespace UserService.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Page number must be greater than zero..
+        ///   Looks up a localized string similar to Pagination parametrs are invalid.
         /// </summary>
-        public static string InvalidPageNumber {
+        public static string InvalidPagination {
             get {
-                return ResourceManager.GetString("InvalidPageNumber", resourceCulture);
+                return ResourceManager.GetString("InvalidPagination", resourceCulture);
             }
         }
         

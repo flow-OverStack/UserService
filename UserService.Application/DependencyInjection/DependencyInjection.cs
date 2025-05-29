@@ -28,6 +28,6 @@ public static class DependencyInjection
         services.AddScoped<IReputationResetService, ReputationService>();
         services.AddScoped<IProcessedEventsResetService, ProcessedEventsResetService>();
 
-        services.AddScoped<IFallbackValidator<PageDto>, PageDtoValidator>();
+        services.AddScoped<INullSafeValidator<PageDto>, PageDtoValidator>();
     }
 }

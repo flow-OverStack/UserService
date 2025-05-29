@@ -13,23 +13,26 @@ namespace UserService.Application.Services;
 public class GetRoleService(
     IBaseRepository<User> userRepository,
     IBaseRepository<Role> roleRepository,
-    IFallbackValidator<PageDto> paginationValidator)
+    INullSafeValidator<PageDto> pageValidator)
     : IGetRoleService
 {
-    public async Task<PageResult<Role>> GetAllAsync(PageDto pagination,
-        CancellationToken cancellationToken = default)
+    public Task<QueryableResult<Role>> GetAllAsync(PageDto pagination, CancellationToken cancellationToken = default)
     {
-        var validPagination = paginationValidator.GetOrFallback(pagination);
-        var roles = await roleRepository.GetAll()
-            .Skip((validPagination.PageNumber - 1) * validPagination.PageSize)
-            .Take(validPagination.PageSize)
-            .ToListAsync(cancellationToken);
-        var totalCount = await roleRepository.GetAll().CountAsync(cancellationToken);
+        if (!pageValidator.IsValid(pagination, out var errors))
+            return Task.FromResult(
+                QueryableResult<Role>.Failure($"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}",
+                    (int)ErrorCodes.InvalidPagination));
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var roles = roleRepository.GetAll();
 
         if (!roles.Any())
-            return PageResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
+            return Task.FromResult(QueryableResult<Role>.Failure(
+                ErrorMessage.RolesNotFound,
+                (int)ErrorCodes.RolesNotFound));
 
-        return PageResult<Role>.Success(roles, validPagination.PageNumber, totalCount);
+        return Task.FromResult(QueryableResult<Role>.Success(roles));
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,

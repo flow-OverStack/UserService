@@ -2,10 +2,11 @@ namespace UserService.Domain.Enums;
 
 public enum ErrorCodes
 {
-    //Reputation: 11-20
-    //User: 21-30
-    //Authorization: 31-40
-    //Roles: 41-50
+    // Reputation: 11-20
+    // User: 21-30
+    // Authorization: 31-40
+    // Roles: 41-50
+    // Validity: 51-60
 
     DailyReputationLimitExceeded = 11,
     ReputationMinimumReached = 12,
@@ -23,5 +24,7 @@ public enum ErrorCodes
     RoleAlreadyExists = 41,
     RoleNotFound = 42,
     RolesNotFound = 43,
-    CannotDeleteDefaultRole = 44
+    CannotDeleteDefaultRole = 44,
+
+    InvalidPagination = 51
 }

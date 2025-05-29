@@ -9,9 +9,9 @@ public interface IGetService<T>
     ///     Gets all of T
     /// </summary>
     /// <returns></returns>
-    /// <param name="pagination"></param>
+    /// <param name="pagination">Pagination dto to validate</param>
     /// <param name="cancellationToken"></param>
-    Task<PageResult<T>> GetAllAsync(PageDto pagination, CancellationToken cancellationToken = default);
+    Task<QueryableResult<T>> GetAllAsync(PageDto pagination, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets multiple T's by their ids
