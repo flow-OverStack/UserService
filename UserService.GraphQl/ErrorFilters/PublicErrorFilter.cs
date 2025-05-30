@@ -12,6 +12,8 @@ public class PublicErrorFilter : IErrorFilter
             && value is true)
             return error.RemoveExtension(GraphQlExceptionHelper.IsBusinessErrorExtension).WithMessage(error.Message);
 
+        if (error.Code != null) return error; // Hot Chocolate error
+
         return error.WithMessage($"{ErrorMessage.InternalServerError}: {error.Exception?.Message ?? error.Message}");
     }
 }
