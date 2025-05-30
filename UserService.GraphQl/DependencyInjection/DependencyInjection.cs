@@ -2,8 +2,11 @@ using GraphQL.Server.Ui.Voyager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using UserService.Domain.Settings;
 using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.ErrorFilters;
+using UserService.GraphQl.Middlewares;
 using UserService.GraphQl.Types;
 
 namespace UserService.GraphQl.DependencyInjection;
@@ -31,7 +34,18 @@ public static class DependencyInjection
             .AddDataLoader<GroupUserDataLoader>()
             .AddDataLoader<GroupRoleDataLoader>()
             .AddApolloFederation()
-            .ModifyCostOptions(options => options.MaxFieldCost *= 2);
+            .ModifyPagingOptions(opt =>
+            {
+                using var provider = services.BuildServiceProvider();
+                using var scope = provider.CreateScope();
+                var defaultSize = scope.ServiceProvider.GetRequiredService<IOptions<BusinessRules>>().Value
+                    .DefaultPageSize;
+
+                opt.DefaultPageSize = defaultSize;
+                opt.IncludeTotalCount = true;
+            })
+            .UseField<PagingValidationMiddleware>()
+            .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
     }
 
     /// <summary>

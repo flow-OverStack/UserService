@@ -1,10 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Domain.Interfaces.Validation;
 using UserService.Domain.Resources;
 using UserService.Domain.Results;
 
@@ -12,17 +10,11 @@ namespace UserService.Application.Services;
 
 public class GetRoleService(
     IBaseRepository<User> userRepository,
-    IBaseRepository<Role> roleRepository,
-    INullSafeValidator<PageDto> pageValidator)
+    IBaseRepository<Role> roleRepository)
     : IGetRoleService
 {
-    public Task<QueryableResult<Role>> GetAllAsync(PageDto pagination, CancellationToken cancellationToken = default)
+    public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        if (!pageValidator.IsValid(pagination, out var errors))
-            return Task.FromResult(
-                QueryableResult<Role>.Failure($"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}",
-                    (int)ErrorCodes.InvalidPagination));
-
         cancellationToken.ThrowIfCancellationRequested();
 
         var roles = roleRepository.GetAll();

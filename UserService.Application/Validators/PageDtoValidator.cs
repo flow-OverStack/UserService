@@ -13,7 +13,7 @@ public class PageDtoValidator : AbstractValidator<PageDto>, INullSafeValidator<P
         var maxPageSize = businessRules.Value.MaxPageSize;
 
         RuleFor(x => x.Skip).NotNull().GreaterThanOrEqualTo(0);
-        RuleFor(x => x.Take).NotNull().InclusiveBetween(1, maxPageSize);
+        RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize);
     }
 
     public bool IsValid(PageDto? instance, out IEnumerable<string> errorMessages)

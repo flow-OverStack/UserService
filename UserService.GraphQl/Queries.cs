@@ -1,4 +1,3 @@
-using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Service;
@@ -10,14 +9,13 @@ public class Queries
 {
     [GraphQLDescription("Returns a list of paginated users.")]
     // Page size is validated in the service
-    [UseOffsetPaging(IncludeTotalCount = true, MaxPageSize = int.MaxValue)]
+    [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<User>> GetUsers(int? skip, int? take, [Service] IGetUserService userService,
+    public async Task<IQueryable<User>> GetUsers([Service] IGetUserService userService,
         CancellationToken cancellationToken)
     {
-        var pagination = new PageDto(skip, take);
-        var result = await userService.GetAllAsync(pagination, cancellationToken);
+        var result = await userService.GetAllAsync(cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -38,14 +36,13 @@ public class Queries
 
     [GraphQLDescription("Returns a list of paginated roles.")]
     // Page size is validated in the service
-    [UseOffsetPaging(IncludeTotalCount = true, MaxPageSize = int.MaxValue)]
+    [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<Role>> GetRoles(int? skip, int? take, [Service] IGetRoleService roleService,
+    public async Task<IQueryable<Role>> GetRoles([Service] IGetRoleService roleService,
         CancellationToken cancellationToken)
     {
-        var pagination = new PageDto(skip, take);
-        var result = await roleService.GetAllAsync(pagination, cancellationToken);
+        var result = await roleService.GetAllAsync(cancellationToken);
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);

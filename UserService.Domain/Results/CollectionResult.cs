@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace UserService.Domain.Results;
 
@@ -9,7 +10,7 @@ namespace UserService.Domain.Results;
 /// <typeparam name="T">The type of items in the returned collection.</typeparam>
 public class CollectionResult<T> : BaseResult<IEnumerable<T>>
 {
-    // Constructor for JSON deserialization
+    [JsonConstructor]
     protected CollectionResult()
     {
     }
