@@ -1,4 +1,3 @@
-using UserService.Domain.Dtos.Request.Grpahql;
 using UserService.Domain.Entities;
 
 namespace UserService.Tests.FunctionalTests.Configurations.GraphQl;
@@ -10,6 +9,6 @@ internal class GraphQlGetAllResponse
 
 internal class GraphQlGetAllData
 {
-    public PaginatedResult<User> Users { get; set; }
-    public PaginatedResult<Role> Roles { get; set; }
+    public GraphQlPaginatedResponse<User> Users { get; set; }
+    public GraphQlPaginatedResponse<Role> Roles { get; set; }
 }

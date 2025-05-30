@@ -10,7 +10,8 @@ internal static class BusinessRulesConfiguration
         {
             MaxDailyReputation = 200,
             MinReputation = 1,
-            MaxPageSize = 100
+            MaxPageSize = 100,
+            DefaultPageSize = 20
         };
     }
 }

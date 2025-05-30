@@ -16,7 +16,7 @@ public class PagingValidationMiddleware(FieldDelegate next)
     public async Task InvokeAsync(IMiddlewareContext context, INullSafeValidator<PageDto> pageValidator,
         IOptions<BusinessRules> businessRules)
     {
-        if (context.Selection.Field.Arguments.Any())
+        if (context.Selection.Field.Arguments.Any(x => x.Name is SkipArgName or TakeArgName))
         {
             var skip = context.ArgumentValue<int?>(SkipArgName) ?? 0; // Value by default
             var take = context.ArgumentValue<int?>(TakeArgName) ??

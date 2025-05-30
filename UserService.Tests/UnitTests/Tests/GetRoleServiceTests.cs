@@ -1,4 +1,3 @@
-using UserService.Domain.Dtos.Request.Page;
 using UserService.Domain.Entities;
 using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
@@ -15,15 +14,13 @@ public class GetRoleServiceTests
     {
         //Arrange
         var getRoleService = new GetRoleServiceFactory().GetService();
-        var pagination = new PageDto(1, 200);
 
         //Act
-        var result = await getRoleService.GetAllAsync(pagination);
+        var result = await getRoleService.GetAllAsync();
 
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.Equal(result.Count, result.Data.Count());
     }
 
     [Trait("Category", "Unit")]
@@ -34,16 +31,14 @@ public class GetRoleServiceTests
         var getRoleService =
             new GetRoleServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
                 .GetService();
-        var pagination = new PageDto(1, 100);
 
         //Act
-        var result = await getRoleService.GetAllAsync(pagination);
+        var result = await getRoleService.GetAllAsync();
 
         //Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RolesNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
     }
 
     [Trait("Category", "Unit")]

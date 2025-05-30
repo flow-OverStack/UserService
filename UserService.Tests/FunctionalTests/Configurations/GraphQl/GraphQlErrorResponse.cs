@@ -8,7 +8,7 @@ internal class GraphQlErrorResponse
 internal class GraphQlError
 {
     public string Message { get; set; }
-    public GraphQlErrorExtensions Extensions { get; set; }
+    public GraphQlErrorExtensions? Extensions { get; set; }
 }
 
 internal class GraphQlErrorExtensions

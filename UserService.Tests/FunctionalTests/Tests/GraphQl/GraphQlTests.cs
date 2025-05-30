@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
+using UserService.Domain.Resources;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl;
 using UserService.Tests.FunctionalTests.Helpers;
@@ -8,8 +9,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-public class GraphQlTests(FunctionalTestWebAppFactory factory)
-    : BaseFunctionalTest(factory)
+public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
@@ -27,8 +27,26 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotEmpty(result!.Data.Users.Items);
         Assert.NotEmpty(result.Data.Roles.Items);
-        Assert.Equal(result.Data.Users.Items.Count(), result.Data.Users.PageInfo.Size);
-        Assert.Equal(result.Data.Roles.Items.Count(), result.Data.Roles.PageInfo.Size);
+        Assert.Equal(3, result.Data.Users.TotalCount);
+        Assert.Equal(3, result.Data.Roles.TotalCount);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetAllUsers_ShouldBe_InvalidPaginationError()
+    {
+        //Arrange
+        var requestBody = new { query = GraphQlHelper.RequestUsersWithInvalidPaginationQuery };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Single(result!.Errors);
+        Assert.StartsWith(ErrorMessage.InvalidPagination, result.Errors[0].Message);
     }
 
     [Trait("Category", "Functional")]
@@ -103,5 +121,23 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory)
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Null(result!.Data.Role);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RequestWithWrongArgument_ShouldBe_Error()
+    {
+        //Arrange
+        var requestBody = new { query = GraphQlHelper.RequestWithWrongArgument };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Single(result!.Errors);
+        Assert.NotNull(result.Errors[0].Extensions?.Code);
     }
 }

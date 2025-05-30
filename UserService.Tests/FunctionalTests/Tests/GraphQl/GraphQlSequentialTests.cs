@@ -53,9 +53,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Empty(result!.Data.Users.Items);
-        Assert.Equal(0, result.Data.Users.PageInfo.TotalItems);
-        Assert.Equal(0, result.Data.Users.PageInfo.TotalPages);
-        Assert.Equal(0, result.Data.Users.PageInfo.Size);
+        Assert.Equal(0, result.Data.Users.TotalCount);
     }
 
     [Trait("Category", "Functional")]

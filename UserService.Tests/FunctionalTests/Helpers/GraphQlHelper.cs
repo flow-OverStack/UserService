@@ -4,7 +4,7 @@ internal static class GraphQlHelper
 {
     public const string RequestAllQuery = """
                                           {
-                                            users(pagination: { pageNumber: 1, pageSize: 200 }) {
+                                            users(skip: 1, take:2 ) {
                                               items {
                                                 id
                                                 keycloakId
@@ -18,14 +18,9 @@ internal static class GraphQlHelper
                                                   name
                                                 }
                                               }
-                                              pageInfo {
-                                                size
-                                                page
-                                                totalPages
-                                                totalItems
-                                              }
+                                              totalCount
                                             }
-                                            roles(pagination: { pageNumber: 1, pageSize: 200 }) {
+                                            roles(skip: 1, take:2 ) {
                                               items {
                                                 id
                                                 name
@@ -34,12 +29,7 @@ internal static class GraphQlHelper
                                                   username
                                                 }
                                               }
-                                              pageInfo {
-                                                size
-                                                page
-                                                totalPages
-                                                totalItems
-                                              }
+                                              totalCount
                                             }
                                           }
 
@@ -47,7 +37,7 @@ internal static class GraphQlHelper
 
     public const string RequestUsersQuery = """
                                             {
-                                              users(pagination: { pageNumber: 1, pageSize: 200 }) {
+                                              users(skip: 1, take:2 ) {
                                                 items {
                                                   id
                                                   keycloakId
@@ -61,52 +51,89 @@ internal static class GraphQlHelper
                                                     name
                                                   }
                                                 }
-                                                pageInfo {
-                                                  size
-                                                  page
-                                                  totalPages
-                                                  totalItems
-                                                }
+                                                totalCount
                                               }
                                             }
                                             """;
+
+    public const string RequestUsersWithInvalidPaginationQuery = """
+                                                                 {
+                                                                   users(skip:-1, take:101) {
+                                                                     items {
+                                                                       id
+                                                                       keycloakId
+                                                                       username
+                                                                       email
+                                                                       lastLoginAt
+                                                                       reputation
+                                                                       createdAt
+                                                                       roles {
+                                                                         id
+                                                                         name
+                                                                       }
+                                                                     }
+                                                                     totalCount
+                                                                   }
+                                                                 }
+                                                                 """;
+
+    public const string RequestWithWrongArgument = """
+                                                   {
+                                                     users(wrongArg) {
+                                                       items {
+                                                         id
+                                                         keycloakId
+                                                         username
+                                                         email
+                                                         lastLoginAt
+                                                         reputation
+                                                         createdAt
+                                                         roles {
+                                                           id
+                                                           name
+                                                         }
+                                                       }
+                                                       totalCount
+                                                     }
+                                                   }
+                                                   """;
 
     public const string GraphQlEndpoint = "/graphql";
 
     public static string RequestUserByIdQuery(long id)
     {
-      return """
-             {
-               user(id: $ID){
-                 id
-                 keycloakId
-                 username
-                 email
-                 lastLoginAt
-                 reputation
-                 createdAt
-                 roles{
+        return """
+               {
+                 user(id: $ID){
                    id
-                   name
+                   keycloakId
+                   username
+                   email
+                   lastLoginAt
+                   reputation
+                   createdAt
+                   roles{
+                     id
+                     name
+                   }
                  }
                }
-             }
-             """.Replace("$ID", id.ToString());
+               """.Replace("$ID", id.ToString());
     }
 
     public static string RequestRoleByIdQuery(long id)
     {
-      return """
-             {
-               role(id: $ID){
-               id
-               name
-               users{
+        return """
+               {
+                 role(id: $ID){
                  id
-                 username
+                 name
+                 users{
+                   id
+                   username
+                 }
                }
-             }
-             }
-             """.Replace("$ID", id.ToString());
+               }
+               """.Replace("$ID", id.ToString());
     }
 }
