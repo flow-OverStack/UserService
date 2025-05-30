@@ -8,7 +8,7 @@ namespace UserService.GraphQl;
 public class Queries
 {
     [GraphQLDescription("Returns a list of paginated users.")]
-    // Page size is validated in the service
+    // Page size is validated in the PagingValidationMiddleware
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
@@ -35,7 +35,7 @@ public class Queries
 
 
     [GraphQLDescription("Returns a list of paginated roles.")]
-    // Page size is validated in the service
+    // Page size is validated in the PagingValidationMiddleware
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
