@@ -6,9 +6,9 @@ using UserService.Domain.Settings;
 
 namespace UserService.Application.Validators;
 
-public class PageDtoValidator : AbstractValidator<PageDto>, INullSafeValidator<PageDto>
+public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>, INullSafeValidator<OffsetPageDto>
 {
-    public PageDtoValidator(IOptions<BusinessRules> businessRules)
+    public OffsetPageDtoValidator(IOptions<BusinessRules> businessRules)
     {
         var maxPageSize = businessRules.Value.MaxPageSize;
 
@@ -16,7 +16,7 @@ public class PageDtoValidator : AbstractValidator<PageDto>, INullSafeValidator<P
         RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize);
     }
 
-    public bool IsValid(PageDto? instance, out IEnumerable<string> errorMessages)
+    public bool IsValid(OffsetPageDto? instance, out IEnumerable<string> errorMessages)
     {
         errorMessages = [];
 

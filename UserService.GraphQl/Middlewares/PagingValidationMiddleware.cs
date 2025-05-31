@@ -13,7 +13,7 @@ public class PagingValidationMiddleware(FieldDelegate next)
     private const string SkipArgName = "skip";
     private const string TakeArgName = "take";
 
-    public async Task InvokeAsync(IMiddlewareContext context, INullSafeValidator<PageDto> pageValidator,
+    public async Task InvokeAsync(IMiddlewareContext context, INullSafeValidator<OffsetPageDto> pageValidator,
         IOptions<BusinessRules> businessRules)
     {
         if (context.Selection.Field.Arguments.Any(x => x.Name is SkipArgName or TakeArgName))
@@ -22,7 +22,7 @@ public class PagingValidationMiddleware(FieldDelegate next)
             var take = context.ArgumentValue<int?>(TakeArgName) ??
                        businessRules.Value.DefaultPageSize; // Value by default
 
-            var pagination = new PageDto(skip, take);
+            var pagination = new OffsetPageDto(skip, take);
 
             if (!pageValidator.IsValid(pagination, out var errors))
                 throw GraphQlExceptionHelper.GetException(
