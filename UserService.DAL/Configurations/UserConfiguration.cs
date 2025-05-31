@@ -12,6 +12,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.KeycloakId).IsRequired();
         builder.Property(x => x.Username).IsRequired().HasMaxLength(100);
         builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
+        builder.Property(x => x.CreatedAt).IsRequired();
+        builder.Property(x => x.LastLoginAt);
         builder.Property(x => x.ReputationEarnedToday).IsRequired().HasDefaultValue(0);
 
         //Email constraint
@@ -27,6 +29,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         //Unique username and email
         builder.HasIndex(x => x.Username).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
+
+        builder.HasIndex(x => x.CreatedAt);
+        builder.HasIndex(x => x.LastLoginAt);
 
         //relations
         builder.HasMany(x => x.Roles)
