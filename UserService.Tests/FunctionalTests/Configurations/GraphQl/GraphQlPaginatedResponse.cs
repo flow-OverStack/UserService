@@ -1,6 +1,6 @@
 namespace UserService.Tests.FunctionalTests.Configurations.GraphQl;
 
-public class GraphQlPaginatedResponse<T>
+internal class GraphQlPaginatedResponse<T>
 {
     public List<T> Items { get; set; }
 
