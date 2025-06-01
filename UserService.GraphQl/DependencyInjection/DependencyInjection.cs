@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using UserService.Domain.Settings;
 using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.ErrorFilters;
-using UserService.GraphQl.Middlewares;
 using UserService.GraphQl.Types;
 
 namespace UserService.GraphQl.DependencyInjection;
@@ -44,7 +43,6 @@ public static class DependencyInjection
                 opt.DefaultPageSize = defaultSize;
                 opt.IncludeTotalCount = true;
             })
-            .UseField<PagingValidationMiddleware>()
             .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
     }
 

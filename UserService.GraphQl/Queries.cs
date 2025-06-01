@@ -2,13 +2,14 @@ using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Service;
 using UserService.GraphQl.DataLoaders;
+using UserService.GraphQl.Middlewares;
 
 namespace UserService.GraphQl;
 
 public class Queries
 {
     [GraphQLDescription("Returns a list of paginated users.")]
-    // Page size is validated in the PagingValidationMiddleware
+    [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
@@ -35,7 +36,7 @@ public class Queries
 
 
     [GraphQLDescription("Returns a list of paginated roles.")]
-    // Page size is validated in the PagingValidationMiddleware
+    [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
