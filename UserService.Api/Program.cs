@@ -1,4 +1,3 @@
-using Serilog;
 using UserService.Api;
 using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
@@ -28,11 +27,12 @@ builder.Services.AddGrpcServices();
 builder.Services.AddMassTransitServices();
 builder.Services.AddHangfire(builder.Configuration);
 
-builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+builder.Host.AddLogging(builder.Configuration);
 
 builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddApplication();
 
+builder.AddOpenTelemetry();
 builder.WebHost.ConfigurePorts(builder.Configuration);
 
 var app = builder.Build();
