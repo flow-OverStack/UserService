@@ -54,6 +54,7 @@ app.UseGraphQl();
 app.UseGrpcServices();
 app.UseHangfire();
 app.SetupHangfireJobs();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthentication();
 app.UseAuthorization();

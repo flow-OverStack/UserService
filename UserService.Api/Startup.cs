@@ -26,7 +26,8 @@ public static class Startup
     private const string AppStartupSectionName = "AppStartupSettings";
     private const string AppPortsSectionName = "Ports";
     private const string OpenTelemetrySectionName = "OpenTelemetrySettings";
-    private const string AspireDashboardSectionName = "AspireDashboardUrl";
+    private const string AspireDashboardUrlName = "AspireDashboardUrl";
+    private const string JaegerUrlName = "JaegerUrl";
     private const string AppStartupUrlLogName = "AppStartupUrlLog";
     private const string GrpcPortName = "GrpcPort";
     private const string RestApiPortName = "RestApiPort";
@@ -220,10 +221,9 @@ public static class Startup
     {
         var openTelemetryConfiguration =
             builder.Configuration.GetSection(AppStartupSectionName).GetSection(OpenTelemetrySectionName);
-        //const string jaegerUrlName = "JaegerUrl";
 
-        var aspireDashboardUri = new Uri(openTelemetryConfiguration.GetValue<string>(AspireDashboardSectionName)!);
-        //var jaegerUri = new Uri(openTelemetryConfiguration.GetValue<string>(jaegerUrlName));
+        var aspireDashboardUri = new Uri(openTelemetryConfiguration.GetValue<string>(AspireDashboardUrlName)!);
+        var jaegerUri = new Uri(openTelemetryConfiguration.GetValue<string>(JaegerUrlName)!);
 
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(res => res.AddService(ServiceName))
@@ -233,7 +233,7 @@ public static class Startup
                     .AddHttpClientInstrumentation()
                     .AddRuntimeInstrumentation();
 
-                metrics.AddOtlpExporter(options => options.Endpoint = aspireDashboardUri);
+                metrics.AddOtlpExporter(options => options.Endpoint = aspireDashboardUri).AddPrometheusExporter();
             })
             .WithTracing(traces =>
             {
@@ -241,8 +241,8 @@ public static class Startup
                     .AddHttpClientInstrumentation()
                     .AddEntityFrameworkCoreInstrumentation();
 
-                traces.AddOtlpExporter(options => options.Endpoint = aspireDashboardUri);
-                //.AddOtlpExporter(options => options.Endpoint = jaegerUri);
+                traces.AddOtlpExporter(options => options.Endpoint = aspireDashboardUri)
+                    .AddOtlpExporter(options => options.Endpoint = jaegerUri);
             });
 
         builder.Logging.AddOpenTelemetry(logging =>
@@ -267,7 +267,7 @@ public static class Startup
             .OpenTelemetry(options =>
             {
                 options.Endpoint = appConfiguration.GetSection(AppStartupSectionName)
-                    .GetSection(OpenTelemetrySectionName).GetValue<string>(AspireDashboardSectionName);
+                    .GetSection(OpenTelemetrySectionName).GetValue<string>(AspireDashboardUrlName);
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     [serviceNameKey] = ServiceName,
