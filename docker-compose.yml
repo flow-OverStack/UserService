@@ -13,12 +13,17 @@
       - user-service-network
     environment:
       ConnectionStrings__PostgresSQL: Server=postgres-db;Port=5432;Database=user-service-db;User Id=postgres; Password=${USERS_DB_PASSWORD}
-      KeycloakSettings__AdminToken: ${KC_ADMIN_TOKEN}
-      KafkaSettings__Host: broker:29092
+      Serilog__WriteTo__2__Args__requestUri: http://logstash:8080
       KeycloakSettings__Host: http://keycloak:8080
+      KeycloakSettings__AdminToken: ${KC_ADMIN_TOKEN}
       AppStartupSettings__Ports__GrpcPort: 8081
       AppStartupSettings__Ports__RestApiPort: 8080
       AppStartupSettings__Ports__UseHttpsForRestApi: false
+      AppStartupSettings__OpenTelemetrySettings__AspireDashboardUrl: http://aspire-dashboard:18889
+      AppStartupSettings__OpenTelemetrySettings__JaegerUrl: http://jaeger:4317
+      AppStartupSettings__OpenTelemetrySettings__ElasticSearchUrl: http://elasticsearch:9200
+      KafkaSettings__Host: broker:29092
+  
   
   postgres-db:
     image: postgres:latest
@@ -261,6 +266,7 @@
         FLINK_PROPERTIES=
         jobmanager.rpc.address: flink-jobmanager
         taskmanager.numberOfTaskSlots: 10  
+  # End of kafka configuration
 
   jaeger:
     image: jaegertracing/all-in-one:latest
