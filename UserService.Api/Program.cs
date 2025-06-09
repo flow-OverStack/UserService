@@ -1,3 +1,5 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using UserService.Api;
 using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
@@ -33,6 +35,7 @@ builder.Services.AddDataAccessLayer(builder.Configuration);
 builder.Services.AddApplication();
 
 builder.AddOpenTelemetry();
+builder.Services.AddHealthChecks(builder.Configuration);
 builder.WebHost.ConfigurePorts(builder.Configuration);
 
 var app = builder.Build();
@@ -55,6 +58,7 @@ app.UseGrpcServices();
 app.UseHangfire();
 app.SetupHangfireJobs();
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.MapHealthChecks("health", new HealthCheckOptions { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
 
 app.UseAuthentication();
 app.UseAuthorization();

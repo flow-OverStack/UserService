@@ -1,5 +1,6 @@
 using System.Reflection;
 using Asp.Versioning;
+using Confluent.Kafka;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +14,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using UserService.DAL;
 using UserService.Domain.Settings;
 using Path = System.IO.Path;
 
@@ -27,6 +29,7 @@ public static class Startup
     private const string AppPortsSectionName = "Ports";
     private const string OpenTelemetrySectionName = "OpenTelemetrySettings";
     private const string AspireDashboardUrlName = "AspireDashboardUrl";
+    private const string ElasticSearchUrlName = "ElasticSearchUrl";
     private const string JaegerUrlName = "JaegerUrl";
     private const string AppStartupUrlLogName = "AppStartupUrlLog";
     private const string GrpcPortName = "GrpcPort";
@@ -274,6 +277,23 @@ public static class Startup
                     [serviceInstanceIdKey] = $"{ServiceName}-{Guid.NewGuid()}"
                 };
             }));
+    }
+
+    public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+    {
+        var kafkaHost = configuration.GetSection(nameof(KafkaSettings)).GetValue<string>(nameof(KafkaSettings.Host));
+        var elasticSeacrhHost = configuration.GetSection(AppStartupSectionName).GetSection(OpenTelemetrySectionName)
+            .GetValue<string>(ElasticSearchUrlName)!;
+
+        services.AddHealthChecks()
+            .AddDbContextCheck<ApplicationDbContext>()
+            .AddKafka(new ProducerConfig { BootstrapServers = kafkaHost })
+            .AddElasticsearch(elasticSeacrhHost)
+            .AddHangfire(options =>
+            {
+                options.MinimumAvailableServers = 1;
+                options.MaximumJobsFailed = 10; // 10 failed jobs means the server is down
+            });
     }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
