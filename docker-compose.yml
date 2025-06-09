@@ -297,29 +297,44 @@
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
 
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.2
-  #   container_name: elasticsearch
-  #   environment:
-  #     - discovery.type=single-node
-  #     - xpack.security.enabled=false
-  #     - ES_JAVA_OPTS=-Xms512m -Xmx512m
-  #   ports:
-  #     - "9200:9200"
-  #   networks:
-  #     - user-service-network
+  elasticsearch:
+    image: elasticsearch:8.15.0
+    container_name: elasticsearch-elk
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - user-service-network
 
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:8.13.2
-  #   container_name: kibana
-  #   depends_on:
-  #     - elasticsearch
-  #   environment:
-  #     - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-  #   ports:
-  #     - "5601:5601"
-  #   networks:
-  #     - user-service-network
+  kibana:
+    image: kibana:8.15.0
+    container_name: kibana-elk
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    ports:
+      - "5601:5601"
+    networks:
+      - user-service-network
+  
+  logstash:
+    container_name: logstash-elk
+    image: logstash:8.15.0
+    ports:
+      - "5046:5046"
+      - "8000:8080"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+    networks:
+      - user-service-network
 
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest
@@ -339,3 +354,4 @@ volumes:
   keycloak_db_data:
   kafka_data:
   kafka_schema_data:
+  elasticsearch-data:

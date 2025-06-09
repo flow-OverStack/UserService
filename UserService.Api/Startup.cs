@@ -271,7 +271,7 @@ public static class Startup
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     [serviceNameKey] = ServiceName,
-                    [serviceInstanceIdKey] = Guid.NewGuid().ToString()
+                    [serviceInstanceIdKey] = $"{ServiceName}-{Guid.NewGuid()}"
                 };
             }));
     }
