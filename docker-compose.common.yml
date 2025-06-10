@@ -236,19 +236,6 @@ services:
       - "5601:5601"
     networks:
       - flow-overstack_common
-  
-  logstash:
-    container_name: logstash-elk
-    image: logstash:8.15.0
-    ports:
-      - "5046:5046"
-      - "8000:8080"
-    volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    depends_on:
-      - elasticsearch
-    networks:
-      - flow-overstack_common
 
   aspire-dashboard:
     image: mcr.microsoft.com/dotnet/nightly/aspire-dashboard:latest

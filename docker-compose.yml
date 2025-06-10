@@ -5,6 +5,7 @@
     depends_on:
       - postgres-db
       - keycloak
+      - logstash
     ports:
       - "8085:8080"
       - "8086:8081"
@@ -91,6 +92,18 @@
       POSTGRES_DB: flowOverStack
     volumes:
       - keycloak_db_data:/var/lib/postgresql/data
+  
+  logstash:
+    container_name: logstash-user-service
+    image: logstash:8.15.0
+    ports:
+      - "5046:5046"
+      - "8000:8080"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      - user-service-network
+      - flow-overstack_common
 
 
 networks:
