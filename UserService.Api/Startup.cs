@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -247,13 +246,6 @@ public static class Startup
                 traces.AddOtlpExporter(options => options.Endpoint = aspireDashboardUri)
                     .AddOtlpExporter(options => options.Endpoint = jaegerUri);
             });
-
-        builder.Logging.AddOpenTelemetry(logging =>
-        {
-            logging.AddOtlpExporter(options => options.Endpoint = aspireDashboardUri);
-            logging.IncludeScopes = true;
-            logging.IncludeFormattedMessage = true;
-        });
     }
 
     /// <summary>
@@ -274,21 +266,26 @@ public static class Startup
                 options.ResourceAttributes = new Dictionary<string, object>
                 {
                     [serviceNameKey] = ServiceName,
-                    [serviceInstanceIdKey] = $"{ServiceName}-{Guid.NewGuid()}"
+                    [serviceInstanceIdKey] = Guid.NewGuid()
                 };
             }));
     }
 
+    /// <summary>
+    ///     Adds health checks to the application, including checks for database, Kafka, Elasticsearch, and Hangfire services.
+    /// </summary>
+    /// <param name="services">The service collection to which health check services are added.</param>
+    /// <param name="configuration">The application configuration instance used to retrieve settings for health checks.</param>
     public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
     {
         var kafkaHost = configuration.GetSection(nameof(KafkaSettings)).GetValue<string>(nameof(KafkaSettings.Host));
-        var elasticSeacrhHost = configuration.GetSection(AppStartupSectionName).GetSection(OpenTelemetrySectionName)
+        var elasticSearchHost = configuration.GetSection(AppStartupSectionName).GetSection(OpenTelemetrySectionName)
             .GetValue<string>(ElasticSearchUrlName)!;
 
         services.AddHealthChecks()
             .AddDbContextCheck<ApplicationDbContext>()
             .AddKafka(new ProducerConfig { BootstrapServers = kafkaHost })
-            .AddElasticsearch(elasticSeacrhHost)
+            .AddElasticsearch(elasticSearchHost)
             .AddHangfire(options =>
             {
                 options.MinimumAvailableServers = 1;
