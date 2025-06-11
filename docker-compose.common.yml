@@ -1,4 +1,54 @@
 services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: identity-server
+    depends_on:
+      - keycloak-db
+    networks:
+      - flow-overstack_common
+      - keycloak-network
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/flowOverStack
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
+      KC_HTTP_ENABLED: true
+    command: start
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+  
+  keycloak-db:
+    image: postgres:latest
+    container_name: keycloak-db
+    ports:
+      - "5434:5432"
+    networks:
+      - pg-network
+      - keycloak-network
+    environment:
+      POSTGRES_USER: ${KC_DB_USERNAME}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
+      POSTGRES_DB: flowOverStack
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - "8888:80"
+    networks:
+      - pg-network
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+  
   # Ready-made confluent kafka configuration from
   # https://github.com/confluentinc/cp-all-in-one/blob/7.8.0-post/cp-all-in-one/docker-compose.yml
   broker:
@@ -256,10 +306,15 @@ services:
       - redis_data:/data
 
 networks:
+  pg-network:
+    name: pg-network
   flow-overstack_common:
     name: flow-overstack_common
+  keycloak-network:
 volumes:
   kafka_data:
   kafka_schema_data:
   elasticsearch_data:
   redis_data:
+  keycloak_data:
+  keycloak_db_data:

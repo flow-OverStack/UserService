@@ -4,7 +4,6 @@
     container_name: user-service
     depends_on:
       - postgres-db
-      - keycloak
       - logstash
     ports:
       - "8085:8080"
@@ -35,63 +34,11 @@
       - pg-network
       - user-service-network
     environment:
-      POSTGRES_USER: ${USERS_DB_USER}
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${USERS_DB_PASSWORD}
       POSTGRES_DB: user-service-db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    ports:
-      - "8888:80"
-    networks:
-      - pg-network
-      - user-service-network
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    depends_on:
-      - postgres-db
-  
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0.7
-    container_name: identity-server
-    depends_on:
-      - keycloak-db
-    networks:
-      - user-service-network
-    ports:
-      - "8080:8080"
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/flowOverStack
-      KC_DB_USERNAME: ${KC_DB_USERNAME}
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      KC_HOSTNAME_STRICT: 'false'
-      KC_HOSTNAME_STRICT_HTTPS: 'false'
-      KC_HTTP_ENABLED: true
-    command: start
-    volumes:
-      - keycloak_data:/opt/keycloak/data
-  
-  keycloak-db:
-    image: postgres:latest
-    container_name: keycloak-db
-    ports:
-      - "5434:5432"
-    networks:
-      - pg-network
-      - user-service-network
-    environment:
-      POSTGRES_USER: ${KC_DB_USERNAME}
-      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
-      POSTGRES_DB: flowOverStack
-    volumes:
-      - keycloak_db_data:/var/lib/postgresql/data
   
   logstash:
     container_name: logstash-user-service
@@ -108,13 +55,9 @@
 
 networks:
   pg-network:
+    external: true
   user-service-network:
   flow-overstack_common:
     external: true
 volumes:
   postgres_data:
-  keycloak_data:
-  keycloak_db_data:
-  kafka_data:
-  kafka_schema_data:
-  elasticsearch-data:
