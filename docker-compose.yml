@@ -19,9 +19,13 @@
       AppStartupSettings__Ports__GrpcPort: 8081
       AppStartupSettings__Ports__RestApiPort: 8080
       AppStartupSettings__Ports__UseHttpsForRestApi: false
-      AppStartupSettings__OpenTelemetrySettings__AspireDashboardUrl: http://aspire-dashboard:18889
-      AppStartupSettings__OpenTelemetrySettings__JaegerUrl: http://jaeger:4317
-      AppStartupSettings__OpenTelemetrySettings__ElasticSearchUrl: http://elasticsearch:9200
+      AppStartupSettings__TelemetrySettings__AspireDashboardUrl: http://aspire-dashboard:18889
+      AppStartupSettings__TelemetrySettings__JaegerUrl: http://jaeger:4317
+      AppStartupSettings__TelemetrySettings__ElasticSearchUrl: http://elasticsearch:9200
+      AppStartupSettings__TelemetrySettings__LogstashUrl: http://logstash:8080
+      AppStartupSettings__TelemetrySettings__PrometheusUrl: http://prometheus:9090
+      AppStartupSettings__TelemetrySettings__AspireDashboardHealthCheckUrl: http://aspire-dashboard:18888
+      AppStartupSettings__TelemetrySettings__JaegerHealthCheckUrl: http://jaeger:16686
       KafkaSettings__Host: broker:29092
   
   
