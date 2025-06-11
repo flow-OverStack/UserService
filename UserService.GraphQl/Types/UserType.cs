@@ -35,7 +35,7 @@ public class UserType : ObjectType<User>
             var roles = await roleLoader.LoadRequiredAsync(user.Id, cancellationToken);
 
             // Having no roles is a business exception, so we got to check it here
-            if (!roles.Any())
+            if (roles.Length == 0)
                 throw GraphQlExceptionHelper.GetException(ErrorMessage.RolesNotFound);
 
             return roles;

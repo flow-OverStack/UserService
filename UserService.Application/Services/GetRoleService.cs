@@ -34,7 +34,7 @@ public class GetRoleService(
             .Where(x => ids.Contains(x.Id))
             .ToListAsync(cancellationToken);
 
-        if (!roles.Any())
+        if (roles.Count == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
@@ -54,7 +54,7 @@ public class GetRoleService(
             .Select(x => new KeyValuePair<long, IEnumerable<Role>>(x.Id, x.Roles.ToList()))
             .ToListAsync(cancellationToken);
 
-        if (!groupedRoles.Any())
+        if (groupedRoles.Count == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
                 (int)ErrorCodes.RolesNotFound);
 

@@ -39,7 +39,7 @@ public class GetUserService(
     {
         var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
 
-        if (!users.Any())
+        if (users.Count == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound),
@@ -58,7 +58,7 @@ public class GetUserService(
             .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToList()))
             .ToListAsync(cancellationToken);
 
-        if (!groupedUsers.Any())
+        if (groupedUsers.Count == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
                 (int)ErrorCodes.UsersNotFound);
 
