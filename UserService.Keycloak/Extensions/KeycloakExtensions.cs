@@ -54,9 +54,9 @@ public static class KeycloakExtensions
     /// <param name="roles">Collection of Roles (or roles' name providers)</param>
     /// <returns>this KeycloakAttributes class</returns>
     public static KeycloakAttributes AddRoles(this KeycloakAttributes keycloakAttributes, string key,
-        IEnumerable<IRoleNameProvider> roles)
+        IEnumerable<INameProvider> roles)
     {
-        var stringRoles = roles.Select(role => role.GetRoleName()).ToArray();
+        var stringRoles = roles.Select(role => role.Name).ToArray();
 
         return AddRoles(keycloakAttributes, key, stringRoles);
     }
