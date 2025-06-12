@@ -1,8 +1,9 @@
+using UserService.Domain.Interfaces.Entity;
 using UserService.Domain.Results;
 
 namespace UserService.Domain.Interfaces.Service;
 
-public interface IGetService<T>
+public interface IGetService<T> where T : IEntityId<long>
 {
     /// <summary>
     ///     Gets all of T
