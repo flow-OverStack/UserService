@@ -284,6 +284,8 @@ public static class Startup
     {
         var kafkaHost = configuration.GetSection(nameof(KafkaSettings)).GetValue<string>(nameof(KafkaSettings.Host));
         var keycloakSettings = configuration.GetSection(nameof(KeycloakSettings)).Get<KeycloakSettings>()!;
+        var redisSettings = configuration.GetSection(nameof(RedisSettings)).Get<RedisSettings>()!;
+        var redisConnectionString = $"{redisSettings.Host}:{redisSettings.Port},password={redisSettings.Password}";
 
         var telemetrySection = configuration.GetSection(AppStartupSectionName).GetSection(TelemetrySectionName);
         var elasticSearchUrl = telemetrySection.GetValue<string>(ElasticSearchUrlName)!;
@@ -296,6 +298,7 @@ public static class Startup
             .AddDbContextCheck<ApplicationDbContext>()
             .AddKafka(new ProducerConfig { BootstrapServers = kafkaHost })
             .AddElasticsearch(elasticSearchUrl)
+            .AddRedis(redisConnectionString)
             .AddHangfire(options =>
             {
                 options.MinimumAvailableServers = 1;
