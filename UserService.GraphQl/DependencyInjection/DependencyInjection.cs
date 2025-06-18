@@ -7,6 +7,7 @@ using UserService.Domain.Settings;
 using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.ErrorFilters;
 using UserService.GraphQl.Types;
+using UserService.GraphQl.Types.Sharable;
 
 namespace UserService.GraphQl.DependencyInjection;
 
@@ -25,6 +26,7 @@ public static class DependencyInjection
             .AddQueryType<Queries>()
             .AddType<UserType>()
             .AddType<RoleType>()
+            .AddTypeExtension<CollectionSegmentInfoType>()
             .AddSorting()
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()
