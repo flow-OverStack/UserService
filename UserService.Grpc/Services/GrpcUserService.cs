@@ -8,7 +8,7 @@ public class GrpcUserService(IGetUserService userService, IMapper mapper) : User
 {
     public override async Task<GrpcUser> GetUserById(GetUserByIdRequest request, ServerCallContext context)
     {
-        var result = await userService.GetByIdAsync(request.UserId);
+        var result = await userService.GetByIdWithRolesAsync(request.UserId);
 
         if (!result.IsSuccess)
             throw new RpcException(new Status(StatusCode.InvalidArgument, result.ErrorMessage!),

@@ -11,7 +11,7 @@ public interface IGetUserService : IGetService<User>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+    Task<BaseResult<User>> GetByIdWithRolesAsync(long id, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets all users who have the roles by their ids

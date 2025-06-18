@@ -30,7 +30,7 @@ public class GetUserServiceTests
         var getUserService = new GetUserServiceFactory().GetService();
 
         //Act
-        var result = await getUserService.GetByIdAsync(userId);
+        var result = await getUserService.GetByIdWithRolesAsync(userId);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -46,7 +46,7 @@ public class GetUserServiceTests
         var getUserService = new GetUserServiceFactory().GetService();
 
         //Act
-        var result = await getUserService.GetByIdAsync(userId);
+        var result = await getUserService.GetByIdWithRolesAsync(userId);
 
         //Assert
         Assert.False(result.IsSuccess);

@@ -22,7 +22,7 @@ public class GetUserService(
         return Task.FromResult(QueryableResult<User>.Success(users));
     }
 
-    public async Task<BaseResult<User>> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<BaseResult<User>> GetByIdWithRolesAsync(long id, CancellationToken cancellationToken = default)
     {
         var user = await userRepository.GetAll()
             .Include(x => x.Roles)
