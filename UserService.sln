@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		prometheus.yml = prometheus.yml
 		logstash.conf = logstash.conf
 		docker-compose.common.yml = docker-compose.common.yml
+		.github\workflows\qodana_code_quality.yml = .github\workflows\qodana_code_quality.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Keycloak", "UserService.Keycloak\UserService.Keycloak.csproj", "{CEEC3CC5-A840-43BC-8A52-0D9F893D5467}"
