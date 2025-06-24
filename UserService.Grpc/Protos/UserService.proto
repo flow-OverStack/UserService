@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 option csharp_namespace = "UserService.Grpc";
 
 service UserService{
-  rpc GetUserById(GetUserByIdRequest) returns (GrpcUser);
+  rpc GetUserWithRolesById(GetUserByIdRequest) returns (GrpcUser);
   rpc GetUsersByIds(GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
 }
 

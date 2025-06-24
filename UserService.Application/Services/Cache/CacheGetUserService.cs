@@ -122,6 +122,7 @@ public class CacheGetUserService(
             await redisDatabase.SetsAddAsync(userRoleStringId, _redisSettings.TimeToLiveInSeconds, cancellationToken);
             await redisDatabase.StringSetAsync(keyRoles, _redisSettings.TimeToLiveInSeconds, cancellationToken);
 
+            user.Roles = roles;
             return BaseResult<User>.Success(user);
         }
     }

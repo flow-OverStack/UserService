@@ -6,7 +6,7 @@ namespace UserService.Grpc.Services;
 
 public class GrpcUserService(IGetUserService userService, IMapper mapper) : UserService.UserServiceBase
 {
-    public override async Task<GrpcUser> GetUserById(GetUserByIdRequest request, ServerCallContext context)
+    public override async Task<GrpcUser> GetUserWithRolesById(GetUserByIdRequest request, ServerCallContext context)
     {
         var result = await userService.GetByIdWithRolesAsync(request.UserId);
 
