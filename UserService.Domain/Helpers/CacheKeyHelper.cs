@@ -1,6 +1,6 @@
 namespace UserService.Domain.Helpers;
 
-public static class RedisKeyHelper
+public static class CacheKeyHelper
 {
     private const string UserKeyPattern = "user:{0}";
     private const string RoleUsersKeyPattern = "role:{0}:users";

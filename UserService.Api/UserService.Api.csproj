@@ -41,6 +41,7 @@
     <ItemGroup>
         <ProjectReference Include="..\UserService.Application\UserService.Application.csproj"/>
         <ProjectReference Include="..\UserService.BackgroundJobs\UserService.BackgroundJobs.csproj"/>
+        <ProjectReference Include="..\UserService.Cache\UserService.Cache.csproj"/>
         <ProjectReference Include="..\UserService.DAL\UserService.DAL.csproj"/>
         <ProjectReference Include="..\UserService.GraphQl\UserService.GraphQl.csproj"/>
         <ProjectReference Include="..\UserService.Grpc\UserService.Grpc.csproj"/>
