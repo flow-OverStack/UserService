@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Options;
 using UserService.Cache.Repositories;
+using UserService.Domain.Enums;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Resources;
 using UserService.Domain.Results;
 using UserService.Domain.Settings;
 using Role = UserService.Domain.Entities.Role;
@@ -35,27 +37,44 @@ public class CacheGetRoleService : IGetRoleService
         return _inner.GetAllAsync(cancellationToken);
     }
 
-    public Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        return _cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            ids,
-            _inner.GetByIdsAsync,
+        var idsArray = ids.ToArray();
+        var roles = (await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+            idsArray,
+            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
+
+        if (roles.Length == 0)
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
+                > 1 => CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound)
+            };
+
+        return CollectionResult<Role>.Success(roles);
     }
 
-    public Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(IEnumerable<long> userIds,
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(
+        IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        return _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var groupedRoles = (await _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             userIds,
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
-            _inner.GetUsersRolesAsync,
+            async (idsToFetch, ct) => (await _inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
+
+        if (groupedRoles.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
+                (int)ErrorCodes.RolesNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Success(groupedRoles);
     }
 }

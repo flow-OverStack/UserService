@@ -1,11 +1,9 @@
-using UserService.Domain.Results;
-
 namespace UserService.Domain.Interfaces.Repository;
 
 public interface IBaseCacheRepository<TEntity, TEntityId>
 {
     /// <summary>
-    ///     Retrieves a collection of entities from the cache by their identifiers.
+    ///     Retrieves a collection of entities from the cache by their identifiers. 
     ///     If any entities are missing, they are fetched from an external source and cached.
     /// </summary>
     /// <param name="ids">The identifiers of the entities to retrieve.</param>
@@ -13,15 +11,12 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
     /// <param name="timeToLiveInSeconds">The TTL (Time To Live) for cached entities, in seconds.</param>
     /// <param name="cancellationToken">A cancellation token for the asynchronous operation.</param>
     /// <returns>
-    ///     A <see cref="CollectionResult{T}" /> containing the combined results from the cache and the fallback fetch, if
-    ///     needed.
+    ///     A <see cref="IEnumerable{TEntity}"/> containing the combined results from the cache and the fallback fetch, if needed.
     /// </returns>
-    Task<CollectionResult<TEntity>> GetByIdsOrFetchAndCacheAsync(
-        IEnumerable<TEntityId> ids,
-        Func<IEnumerable<TEntityId>, CancellationToken, Task<CollectionResult<TEntity>>> fetch,
+    Task<IEnumerable<TEntity>> GetByIdsOrFetchAndCacheAsync(IEnumerable<TEntityId> ids,
+        Func<IEnumerable<TEntityId>, CancellationToken, Task<IEnumerable<TEntity>>> fetch,
         int timeToLiveInSeconds,
-        CancellationToken cancellationToken = default
-    );
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Retrieves entities grouped by an outer identifier (e.g. tagId -> questions) from the cache.
@@ -35,15 +30,15 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
     /// <param name="timeToLiveInSeconds">The TTL (Time To Live) for cached entities and sets, in seconds.</param>
     /// <param name="cancellationToken">A cancellation token for the asynchronous operation.</param>
     /// <returns>
-    ///     A <see cref="CollectionResult{T}" /> containing a lookup-like list of outer ID to the list of entities.
+    ///     A <see cref="IEnumerable{TEntity}"/> containing a lookup-like list of outer ID to the list of entities.
     /// </returns>
-    Task<CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>
+    Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>
         GetGroupedByOuterIdOrFetchAndCacheAsync<TOuterId>(
             IEnumerable<TOuterId> outerIds,
             Func<TOuterId, string> getOuterKey,
             Func<string, TOuterId> parseOuterIdFromKey,
             Func<IEnumerable<TOuterId>, CancellationToken,
-                Task<CollectionResult<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>> fetch,
+                Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>> fetch,
             int timeToLiveInSeconds,
             CancellationToken cancellationToken = default
         );

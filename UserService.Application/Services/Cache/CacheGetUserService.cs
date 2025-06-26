@@ -1,10 +1,12 @@
 using Microsoft.Extensions.Options;
 using UserService.Cache.Repositories;
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Resources;
 using UserService.Domain.Results;
 using UserService.Domain.Settings;
 using Role = UserService.Domain.Entities.Role;
@@ -46,60 +48,76 @@ public class CacheGetUserService : IGetUserService
         return _inner.GetAllAsync(cancellationToken);
     }
 
-    public Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        return _cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            ids,
-            _inner.GetByIdsAsync,
+        var idsArray = ids.ToArray();
+        var users = (await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+            idsArray,
+            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
+
+        if (users.Length == 0)
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<User>.Failure(ErrorMessage.UserNotFound,
+                    (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<User>.Failure(ErrorMessage.UsersNotFound,
+                    (int)ErrorCodes.UsersNotFound)
+            };
+
+        return CollectionResult<User>.Success(users);
     }
 
     public async Task<BaseResult<User>> GetByIdWithRolesAsync(long id, CancellationToken cancellationToken = default)
     {
-        var userResult = await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+        var users = await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
             [id],
-            _inner.GetByIdsAsync,
+            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         );
 
-        if (!userResult.IsSuccess)
-            return BaseResult<User>.Failure(userResult.ErrorMessage!, userResult.ErrorCode);
+        var user = users.SingleOrDefault();
 
-        var user = userResult.Data.Single();
+        if (user == null)
+            return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var rolesResult = await _roleCacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var roles = (await _roleCacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             [user.Id],
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
-            _roleInner.GetUsersRolesAsync,
+            async (idsToFetch, ct) => (await _roleInner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
 
-        if (!rolesResult.IsSuccess)
-            return BaseResult<User>.Failure(userResult.ErrorMessage!, userResult.ErrorCode);
+        if (roles.Length == 0)
+            return BaseResult<User>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
 
-        var roles = rolesResult.Data.Single().Value;
-
-        user.Roles = roles.ToList();
+        user.Roles = roles.Single().Value.ToList();
 
         return BaseResult<User>.Success(user);
     }
 
-    public Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
         IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
     {
-        return _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var groupedUsers = (await _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             roleIds,
             CacheKeyHelper.GetRoleUsersKey,
             CacheKeyHelper.GetIdFromKey,
-            _inner.GetUsersWithRolesAsync,
+            async (idsToFetch, ct) => (await _inner.GetUsersWithRolesAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
-        );
+        )).ToArray();
+
+        if (groupedUsers.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
+                (int)ErrorCodes.UsersNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers);
     }
 }
