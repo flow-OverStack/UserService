@@ -1,60 +1,36 @@
 using Microsoft.Extensions.Options;
-using UserService.Cache.Repositories;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Helpers;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Resources;
 using UserService.Domain.Results;
 using UserService.Domain.Settings;
-using Role = UserService.Domain.Entities.Role;
 
 namespace UserService.Application.Services.Cache;
 
-public class CacheGetUserService : IGetUserService
+public class CacheGetUserService(
+    IBaseCacheRepository<User, long> cacheRepository,
+    GetUserService inner,
+    IBaseCacheRepository<Role, long> roleCacheRepository,
+    GetRoleService roleInner,
+    IOptions<RedisSettings> redisSettings) : IGetUserService
 {
-    private readonly IBaseCacheRepository<User, long> _cacheRepository;
-    private readonly IGetUserService _inner;
-    private readonly RedisSettings _redisSettings;
-    private readonly IBaseCacheRepository<Role, long> _roleCacheRepository;
-    private readonly IGetRoleService _roleInner;
-
-    public CacheGetUserService(GetUserService inner, GetRoleService roleInner, ICacheProvider cacheProvider,
-        IOptions<RedisSettings> redisSettings)
-    {
-        _cacheRepository = new BaseCacheRepository<User, long>(
-            cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetUserKey,
-            x => x.Id.ToString(),
-            long.Parse
-        );
-        _roleCacheRepository = new BaseCacheRepository<Role, long>(
-            cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetRoleKey,
-            x => x.Id.ToString(),
-            long.Parse
-        );
-        _inner = inner;
-        _roleInner = roleInner;
-        _redisSettings = redisSettings.Value;
-    }
+    private readonly RedisSettings _redisSettings = redisSettings.Value;
 
     public Task<QueryableResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _inner.GetAllAsync(cancellationToken);
+        return inner.GetAllAsync(cancellationToken);
     }
 
     public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var users = (await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+        var users = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
             idsArray,
-            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();
@@ -73,9 +49,9 @@ public class CacheGetUserService : IGetUserService
 
     public async Task<BaseResult<User>> GetByIdWithRolesAsync(long id, CancellationToken cancellationToken = default)
     {
-        var users = await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+        var users = await cacheRepository.GetByIdsOrFetchAndCacheAsync(
             [id],
-            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         );
@@ -85,11 +61,11 @@ public class CacheGetUserService : IGetUserService
         if (user == null)
             return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var roles = (await _roleCacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var roles = (await roleCacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             [user.Id],
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _roleInner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await roleInner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();
@@ -105,11 +81,11 @@ public class CacheGetUserService : IGetUserService
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
         IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
     {
-        var groupedUsers = (await _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var groupedUsers = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             roleIds,
             CacheKeyHelper.GetRoleUsersKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _inner.GetUsersWithRolesAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetUsersWithRolesAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();

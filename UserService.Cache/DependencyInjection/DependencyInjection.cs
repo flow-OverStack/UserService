@@ -2,8 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using UserService.Cache.Providers;
+using UserService.Cache.Repositories;
+using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Provider;
+using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Settings;
+using Role = UserService.Domain.Entities.Role;
 
 namespace UserService.Cache.DependencyInjection;
 
@@ -30,10 +34,17 @@ public static class DependencyInjection
         });
 
         services.InitProviders();
+        services.InitRepositories();
     }
 
     private static void InitProviders(this IServiceCollection services)
     {
         services.AddScoped<ICacheProvider, RedisCacheProvider>();
+    }
+
+    private static void InitRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IBaseCacheRepository<User, long>, UserCacheRepository>();
+        services.AddScoped<IBaseCacheRepository<Role, long>, RoleCacheRepository>();
     }
 }

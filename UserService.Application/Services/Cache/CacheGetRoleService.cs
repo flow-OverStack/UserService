@@ -1,49 +1,34 @@
 using Microsoft.Extensions.Options;
-using UserService.Cache.Repositories;
+using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Helpers;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Resources;
 using UserService.Domain.Results;
 using UserService.Domain.Settings;
-using Role = UserService.Domain.Entities.Role;
 
 namespace UserService.Application.Services.Cache;
 
-public class CacheGetRoleService : IGetRoleService
+public class CacheGetRoleService(
+    IBaseCacheRepository<Role, long> cacheRepository,
+    GetRoleService inner,
+    IOptions<RedisSettings> redisSettings) : IGetRoleService
 {
-    private readonly IBaseCacheRepository<Role, long> _cacheRepository;
-    private readonly IGetRoleService _inner;
-    private readonly RedisSettings _redisSettings;
-
-    public CacheGetRoleService(GetRoleService inner, ICacheProvider cacheProvider,
-        IOptions<RedisSettings> redisSettings)
-    {
-        _cacheRepository = new BaseCacheRepository<Role, long>(
-            cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetRoleKey,
-            x => x.Id.ToString(),
-            long.Parse
-        );
-        _inner = inner;
-        _redisSettings = redisSettings.Value;
-    }
+    private readonly RedisSettings _redisSettings = redisSettings.Value;
 
     public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return _inner.GetAllAsync(cancellationToken);
+        return inner.GetAllAsync(cancellationToken);
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var roles = (await _cacheRepository.GetByIdsOrFetchAndCacheAsync(
+        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
             idsArray,
-            async (idsToFetch, ct) => (await _inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();
@@ -62,11 +47,11 @@ public class CacheGetRoleService : IGetRoleService
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        var groupedRoles = (await _cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var groupedRoles = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             userIds,
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
             _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();
