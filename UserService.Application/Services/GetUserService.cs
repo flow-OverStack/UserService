@@ -40,9 +40,9 @@ public class GetUserService(
     public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync(cancellationToken);
+        var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
-        if (users.Count == 0)
+        if (users.Length == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound),
@@ -58,10 +58,10 @@ public class GetUserService(
         var groupedUsers = await roleRepository.GetAll()
             .Where(x => roleIds.Contains(x.Id))
             .Include(x => x.Users)
-            .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToList()))
-            .ToListAsync(cancellationToken);
+            .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToArray()))
+            .ToArrayAsync(cancellationToken);
 
-        if (groupedUsers.Count == 0)
+        if (groupedUsers.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Failure(ErrorMessage.UsersNotFound,
                 (int)ErrorCodes.UsersNotFound);
 

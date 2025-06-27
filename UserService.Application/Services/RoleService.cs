@@ -46,7 +46,7 @@ public class RoleService(
             return BaseResult<RoleDto>.Failure(ErrorMessage.CannotDeleteDefaultRole,
                 (int)ErrorCodes.CannotDeleteDefaultRole);
 
-        var usersWithRoleToDelete = (await GetUsersWithRoleAsync(role.Id, cancellationToken)).ToList();
+        var usersWithRoleToDelete = (await GetUsersWithRoleAsync(role.Id, cancellationToken)).ToArray();
 
         var areRolesSynced = false;
         await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
@@ -294,7 +294,7 @@ public class RoleService(
         return await unitOfWork.Users.GetAll()
             .Include(x => x.Roles)
             .Where(x => x.Roles.Any(y => y.Id == roleId))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
     }
 
     private Task UpdateRolesAsync(User user, CancellationToken cancellationToken = default)

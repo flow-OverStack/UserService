@@ -32,9 +32,9 @@ public class GetRoleService(
     {
         var roles = await roleRepository.GetAll()
             .Where(x => ids.Contains(x.Id))
-            .ToListAsync(cancellationToken);
+            .ToArrayAsync(cancellationToken);
 
-        if (roles.Count == 0)
+        if (roles.Length == 0)
             return ids.Count() switch
             {
                 <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
@@ -51,10 +51,10 @@ public class GetRoleService(
         var groupedRoles = await userRepository.GetAll()
             .Where(x => userIds.Contains(x.Id))
             .Include(x => x.Roles)
-            .Select(x => new KeyValuePair<long, IEnumerable<Role>>(x.Id, x.Roles.ToList()))
-            .ToListAsync(cancellationToken);
+            .Select(x => new KeyValuePair<long, IEnumerable<Role>>(x.Id, x.Roles.ToArray()))
+            .ToArrayAsync(cancellationToken);
 
-        if (groupedRoles.Count == 0)
+        if (groupedRoles.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,
                 (int)ErrorCodes.RolesNotFound);
 
