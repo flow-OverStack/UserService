@@ -117,20 +117,6 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
-    public static IMock<IBaseRepository<UserRole>> GetMockUserRoleRepository()
-    {
-        var mockRepository = new Mock<IBaseRepository<UserRole>>();
-        var userRoles = GetUserRoles().BuildMockDbSet();
-
-        mockRepository.Setup(x => x.GetAll()).Returns(userRoles.Object);
-        mockRepository.Setup(x => x.CreateAsync(It.IsAny<UserRole>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((UserRole userRole, CancellationToken _) => userRole);
-        mockRepository.Setup(x => x.Update(It.IsAny<UserRole>())).Returns((UserRole userRole) => userRole);
-        mockRepository.Setup(x => x.Remove(It.IsAny<UserRole>())).Returns((UserRole userRole) => userRole);
-
-        return mockRepository;
-    }
-
     public static IQueryable<User> GetUsers()
     {
         return new User[]

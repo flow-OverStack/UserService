@@ -10,7 +10,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_Success()
+    public async Task GetUserWithRolesById_ShouldBe_Success()
     {
         //Arrange
         const long userId = 1;
@@ -19,7 +19,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         var client = new UserService.UserServiceClient(channel);
 
         //Act
-        var user = await client.GetUserByIdAsync(new GetUserByIdRequest { UserId = userId });
+        var user = await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { UserId = userId });
 
         //Assert
         Assert.NotNull(user);
@@ -28,7 +28,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_UserNotFound()
+    public async Task GetUserWithRolesById_ShouldBe_UserNotFound()
     {
         //Arrange
         const long userId = 0;
@@ -37,7 +37,8 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         var client = new UserService.UserServiceClient(channel);
 
         //Act
-        var userRequest = async () => await client.GetUserByIdAsync(new GetUserByIdRequest { UserId = userId });
+        var userRequest = async () =>
+            await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { UserId = userId });
 
         //Assert
         var exception = await Assert.ThrowsAsync<RpcException>(userRequest);

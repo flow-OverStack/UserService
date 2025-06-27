@@ -63,7 +63,7 @@ public class GetRoleServiceTests
     public async Task GetUsersRoles_ShouldBe_RolesNotFound()
     {
         //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
+        var getRoleService = new CacheGetRoleServiceFactory().GetService();
         var roleIds = new List<long> { 0 };
 
         //Act
@@ -73,7 +73,6 @@ public class GetRoleServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RolesNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
     }
 
     [Trait("Category", "Unit")]
@@ -90,7 +89,6 @@ public class GetRoleServiceTests
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.Equal(result.Count, result.Data.Count());
     }
 
     [Trait("Category", "Unit")]
@@ -98,7 +96,7 @@ public class GetRoleServiceTests
     public async Task GetByIds_ShouldBe_RoleNotFound()
     {
         //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
+        var getRoleService = new CacheGetRoleServiceFactory().GetService();
         var roleIds = new List<long> { 0 };
 
         //Act
@@ -108,7 +106,6 @@ public class GetRoleServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
     }
 
     [Trait("Category", "Unit")]
@@ -116,7 +113,7 @@ public class GetRoleServiceTests
     public async Task GetByIds_ShouldBe_RolesNotFound()
     {
         //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
+        var getRoleService = new CacheGetRoleServiceFactory().GetService();
         var roleIds = new List<long> { 0, 0 };
 
         //Act
@@ -126,6 +123,5 @@ public class GetRoleServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RolesNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
-        Assert.Equal(0, result.Count);
     }
 }

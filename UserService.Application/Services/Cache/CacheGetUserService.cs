@@ -61,7 +61,7 @@ public class CacheGetUserService(
         if (user == null)
             return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var roles = (await roleCacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
+        var groupedRoles = (await roleCacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
             [user.Id],
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
@@ -70,10 +70,10 @@ public class CacheGetUserService(
             cancellationToken
         )).ToArray();
 
-        if (roles.Length == 0)
+        if (groupedRoles.Length == 0 || !groupedRoles.Single().Value.Any())
             return BaseResult<User>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
 
-        user.Roles = roles.Single().Value.ToList();
+        user.Roles = groupedRoles.Single().Value.ToList();
 
         return BaseResult<User>.Success(user);
     }

@@ -13,6 +13,7 @@ using UserService.Domain.Resources;
 using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base.Exception;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 
@@ -152,5 +153,26 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.False(result!.IsSuccess);
         Assert.StartsWith(ErrorMessage.InternalServerError, result.ErrorMessage);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetQuestionById_ShouldBe_NoException()
+    {
+        //Arrange
+        var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };
+
+        //Act
+        // 1st request fetches data from DB
+        await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        // 2nd request fetches data from cache
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GraphQlGetUserByIdResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result!.Data.User);
+        Assert.NotNull(result.Data.User.Roles);
     }
 }

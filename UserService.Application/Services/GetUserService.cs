@@ -31,6 +31,9 @@ public class GetUserService(
         if (user == null)
             return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
+        if (user.Roles.Count == 0)
+            return BaseResult<User>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
+
         return BaseResult<User>.Success(user);
     }
 

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using UserService.DAL;
 using UserService.Domain.Settings;
 using UserService.Tests.FunctionalTests.Configurations;
@@ -27,6 +28,10 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
         .WithPassword("root")
         .Build();
 
+    private readonly RedisContainer _redisContainer = new RedisBuilder()
+        .WithImage("redis:latest")
+        .Build();
+
     private readonly PostgreSqlContainer _userServicePostgreSql = new PostgreSqlBuilder()
         .WithImage("postgres:latest")
         .WithDatabase("user-service-db")
@@ -40,12 +45,14 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
     {
         await _userServicePostgreSql.StartAsync();
         await _keycloakPostgreSql.StartAsync();
+        await _redisContainer.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
         await _userServicePostgreSql.StopAsync();
         await _keycloakPostgreSql.StopAsync();
+        await _redisContainer.StopAsync();
         _wireMockServer.StopServer();
         _wireMockServer.Dispose();
     }
@@ -90,6 +97,15 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
                 x.ClientId = "TestClientId";
                 x.RolesClaim = "roles";
                 x.UserIdClaim = "userId";
+            });
+
+            services.RemoveAll<IOptions<RedisSettings>>();
+            services.Configure<RedisSettings>(x =>
+            {
+                _redisContainer.GetConnectionString().ParseConnectionString(out var host, out var port);
+                x.Host = host;
+                x.Port = port;
+                x.Password = null!;
             });
         });
     }

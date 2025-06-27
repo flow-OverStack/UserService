@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using UserService.DAL.Repositories;
+using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.Configurations;
 
@@ -38,6 +39,21 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
         return mockUnitOfWork;
     }
 
+    private static IMock<ICacheProvider> GetExceptionMockCacheProvider()
+    {
+        var mockDatabase = new Mock<ICacheProvider>();
+
+        mockDatabase.Setup(x => x.StringSetAsync(It.IsAny<IEnumerable<KeyValuePair<string, It.IsAnyType>>>(),
+                It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new TestException());
+
+        mockDatabase.Setup(x =>
+                x.GetJsonParsedAsync<It.IsAnyType>(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new TestException());
+
+        return mockDatabase;
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         base.ConfigureWebHost(builder);
@@ -52,6 +68,13 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
                 var exceptionUnitOfWork = GetExceptionMockUnitOfWork(unitOfWork).GetAwaiter().GetResult().Object;
 
                 return exceptionUnitOfWork;
+            });
+
+            services.RemoveAll<ICacheProvider>();
+            services.AddScoped<ICacheProvider>(_ =>
+            {
+                var exceptionRedisDatabase = GetExceptionMockCacheProvider().Object;
+                return exceptionRedisDatabase;
             });
         });
     }
