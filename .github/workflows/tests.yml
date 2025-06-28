@@ -82,6 +82,9 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
+      - name: Install coverlet.console
+        run: dotnet tool install --global coverlet.console
+
       - name: Build project
         run: dotnet build --no-incremental
 
