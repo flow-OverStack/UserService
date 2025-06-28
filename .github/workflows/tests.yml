@@ -107,3 +107,4 @@ jobs:
     name: Trigger SonarQube Analysis
     needs: [ unit-tests, functional-tests ]
     uses: ./.github/workflows/sonarqube.yml
+    secrets: inherit
