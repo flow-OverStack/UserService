@@ -106,10 +106,4 @@ jobs:
   trigger-sonarqube:
     name: Trigger SonarQube Analysis
     needs: [ unit-tests, functional-tests ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger SonarQube workflow
-        uses: peter-evans/workflow-dispatch@v1.2.0
-        with:
-          workflow: sonarqube.yml
-          ref: ${{ github.ref_name }}
+    uses: ./.github/workflows/sonarqube.yml
