@@ -20,6 +20,10 @@ jobs:
         with:
           name: coverage-functional
           path: coverage
+      - name: ls
+        run: |
+          ls
+          ls coverage
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.1
         with:
