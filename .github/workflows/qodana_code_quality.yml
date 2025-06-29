@@ -1,12 +1,6 @@
 name: Qodana
 on:
-  workflow_dispatch:
-  pull_request:
-  push:
-    branches:
-      - master
-      - "feature/*"
-      - "UserService-add-*"
+  workflow_call:
 
 jobs:
   qodana:
@@ -20,10 +14,34 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4.1.0
+        with:
+          dotnet-version: '9.0'
+      - name: Download Unit Test Coverage Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-unit
+          path: coverage
+      - name: Download Functional Test Coverage Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-functional
+          path: coverage
+      - name: Install ReportGenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+      - name: Merge coverage reports
+        run: |
+          reportgenerator \
+            -reports:"coverage/coverage-unit.xml;coverage/coverage-functional.xml" \
+            -targetdir:"coverage" \
+            -reporttypes:opencover \
+            -reportfile:merged
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.1
         with:
           pr-mode: false
+          args: --property=qodana.coverage.file=coverage/merged.xml
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
