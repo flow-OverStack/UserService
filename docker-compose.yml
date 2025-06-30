@@ -27,6 +27,10 @@
       AppStartupSettings__TelemetrySettings__AspireDashboardHealthCheckUrl: http://aspire-dashboard:18888
       AppStartupSettings__TelemetrySettings__JaegerHealthCheckUrl: http://jaeger:16686
       KafkaSettings__Host: broker:29092
+      RedisSettings__Host: redis
+      RedisSettings__Port: 6379
+      RedisSettings__Password: ${REDIS_PASSWORD}
+      RedisSettings__TimeToLiveInSeconds: 300
   
   
   postgres-db:
