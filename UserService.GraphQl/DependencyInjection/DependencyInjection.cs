@@ -34,7 +34,7 @@ public static class DependencyInjection
             .AddDataLoader<RoleDataLoader>()
             .AddDataLoader<GroupUserDataLoader>()
             .AddDataLoader<GroupRoleDataLoader>()
-            .AddApolloFederation()
+            .AddApolloFederation(FederationVersion.Federation23)
             .ModifyPagingOptions(opt =>
             {
                 using var provider = services.BuildServiceProvider();
