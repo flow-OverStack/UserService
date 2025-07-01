@@ -4,7 +4,7 @@ on:
 
 jobs:
   build:
-    name: Build and analyze
+    name: SonarQube Cloud Qodana Code Quality Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 17
