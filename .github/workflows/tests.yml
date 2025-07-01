@@ -2,15 +2,7 @@ name: Tests Pipeline
 
 on:
   push:
-    branches:
-      - master
-      - "feature/*"
-      - "UserService-add-*"
   pull_request:
-    branches:
-      - master
-      - "feature/*"
-      - "UserService-add-*"
 
 jobs:
   unit-tests:
@@ -107,4 +99,16 @@ jobs:
     name: Trigger SonarQube Analysis
     needs: [ unit-tests, functional-tests ]
     uses: ./.github/workflows/sonarqube.yml
+    secrets: inherit
+  
+  trigger-qodana:
+    name: Trigger Qodana Analysis
+    needs: [ unit-tests, functional-tests ]
+    uses: ./.github/workflows/qodana_code_quality.yml
+    secrets: inherit
+  
+  trigger-docker:
+    name: Trigger Docker Build and Push
+    needs: [ unit-tests, functional-tests ]
+    uses: ./.github/workflows/docker.yml
     secrets: inherit
