@@ -1,7 +1,7 @@
 using UserService.Domain.Enums;
-using UserService.ReputationConsumer.Strategies.Reputation.Base;
+using UserService.Messaging.Strategies.Reputation.Base;
 
-namespace UserService.ReputationConsumer.Strategies.Reputation.Strategies;
+namespace UserService.Messaging.Strategies.Reputation.Strategies;
 
 public class AnswerDownvoteStrategy : IReputationStrategy
 {

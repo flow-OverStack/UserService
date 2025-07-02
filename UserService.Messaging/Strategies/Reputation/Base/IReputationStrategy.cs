@@ -1,6 +1,6 @@
 using UserService.Domain.Enums;
 
-namespace UserService.ReputationConsumer.Strategies.Reputation.Base;
+namespace UserService.Messaging.Strategies.Reputation.Base;
 
 public interface IReputationStrategy
 {

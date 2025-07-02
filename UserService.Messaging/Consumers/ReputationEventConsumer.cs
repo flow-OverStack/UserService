@@ -4,10 +4,10 @@ using UserService.Domain.Dtos.User;
 using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
-using UserService.ReputationConsumer.Interfaces;
-using UserService.ReputationConsumer.Strategies.Reputation.Base;
+using UserService.Messaging.Interfaces;
+using UserService.Messaging.Strategies.Reputation.Base;
 
-namespace UserService.ReputationConsumer.Consumers;
+namespace UserService.Messaging.Consumers;
 
 public class ReputationEventConsumer(
     IReputationStrategyResolver reputationResolver,

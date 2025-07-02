@@ -10,7 +10,7 @@ using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
 using UserService.Grpc.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
-using UserService.ReputationConsumer.DependencyInjection;
+using UserService.Messaging.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -3,14 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using UserService.Domain.Events;
 using UserService.Domain.Settings;
-using UserService.ReputationConsumer.Consumers;
-using UserService.ReputationConsumer.Interfaces;
-using UserService.ReputationConsumer.Processors;
-using UserService.ReputationConsumer.Strategies.Reputation;
-using UserService.ReputationConsumer.Strategies.Reputation.Base;
-using UserService.ReputationConsumer.Strategies.Reputation.Strategies;
+using UserService.Messaging.Consumers;
+using UserService.Messaging.Interfaces;
+using UserService.Messaging.Processors;
+using UserService.Messaging.Strategies.Reputation;
+using UserService.Messaging.Strategies.Reputation.Base;
+using UserService.Messaging.Strategies.Reputation.Strategies;
 
-namespace UserService.ReputationConsumer.DependencyInjection;
+namespace UserService.Messaging.DependencyInjection;
 
 public static class DependencyInjection
 {

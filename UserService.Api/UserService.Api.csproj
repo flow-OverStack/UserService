@@ -46,7 +46,7 @@
         <ProjectReference Include="..\UserService.GraphQl\UserService.GraphQl.csproj"/>
         <ProjectReference Include="..\UserService.Grpc\UserService.Grpc.csproj"/>
         <ProjectReference Include="..\UserService.Keycloak\UserService.Keycloak.csproj"/>
-        <ProjectReference Include="..\UserService.ReputationConsumer\UserService.ReputationConsumer.csproj"/>
+        <ProjectReference Include="..\UserService.Messaging\UserService.Messaging.csproj"/>
     </ItemGroup>
 
     <ItemGroup>

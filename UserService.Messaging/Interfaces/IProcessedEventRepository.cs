@@ -1,4 +1,4 @@
-namespace UserService.ReputationConsumer.Interfaces;
+namespace UserService.Messaging.Interfaces;
 
 public interface IProcessedEventRepository
 {
