@@ -13,6 +13,7 @@ UserService is a microservice responsible for all user-related operations within
 * **ASP.NET Core** — HTTP API.
 * **Entity Framework Core with PostgreSQL** — Data access (Repository & Unit of Work patterns) to PostgreSQL database
 * **Clean Architecture** — Layered separation (Domain, Application, Infrastructure)
+* **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
 * **Keycloak** — OAuth2/OpenID Connect identity provider
 * **Hangfire** — Hosted services for background jobs
 * **Redis** — Caching layer
