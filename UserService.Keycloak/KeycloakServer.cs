@@ -38,7 +38,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     {
         try
         {
-            #region Create register request
+            // Create register request
 
             var userPayload = new RegisterUserPayload
             {
@@ -50,9 +50,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
                     .AddRoles(_keycloakSettings.RolesClaim, dto.Roles)
             };
 
-            #endregion
-
-            #region Create user
+            // Create user
 
             var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
             {
@@ -66,9 +64,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             createResponse.EnsureSuccessStatusCode();
 
-            #endregion
-
-            #region Get created user
+            // Get created user
 
             await SetAuthHeaderAsync(cancellationToken);
             var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersEndpoint}?username={dto.Username}",
@@ -80,13 +76,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
             var exactUser = responseUsers!.FirstOrDefault(x => x.Username == dto.Username);
 
-            #endregion
-
-            #region Return KeycloakUserId
+            // Return KeycloakUserId
 
             return new KeycloakUserDto(Guid.Parse(exactUser!.Id));
-
-            #endregion
         }
         catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
         {

@@ -75,7 +75,7 @@ internal static class MockRepositoriesGetters
     {
         var mockRepository = new Mock<IBaseRepository<Role>>();
 
-        #region Adding users to roles
+        // Adding users to roles
 
         var roles = GetRoles().ToList();
         roles.ForEach(x => x.Users = []);
@@ -90,7 +90,6 @@ internal static class MockRepositoriesGetters
             role.Users.Add(user);
         }
 
-        #endregion
 
         var rolesDbSet = roles.BuildMockDbSet();
 
