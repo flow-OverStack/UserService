@@ -48,11 +48,8 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<WarningHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+if (app.Environment.IsDevelopment()) app.UseSwaggerUI();
+app.UseSwagger();
 
 app.UseRouting();
 app.MapControllers();
