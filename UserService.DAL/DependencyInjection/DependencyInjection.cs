@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.DAL.Interceptors;
 using UserService.DAL.Repositories;
 using UserService.Domain.Entities;
 using UserService.Domain.Events;
@@ -14,8 +13,7 @@ public static class DependencyInjection
     public static void AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("PostgresSQL");
-        services.AddSingleton<DateInterceptor>();
-        services.AddDbContext<ApplicationDbContext>(options => { options.UseNpgsql(connectionString); });
+        services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
         services.InitRepositories();
     }
