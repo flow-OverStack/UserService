@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Security;
 using Asp.Versioning;
 using Confluent.Kafka;
 using Hangfire;
@@ -313,6 +314,34 @@ public static class Startup
             .AddUrlGroup(new Uri(keycloakSettings.Host), "keycloak")
             .AddUrlGroup(new Uri(jaegerUrl), "jaeger")
             .AddUrlGroup(new Uri(aspireDashboardUrl), "aspire");
+    }
+
+    /// <summary>
+    ///     Configures Cross-Origin Resource Sharing (CORS) for the application.
+    /// </summary>
+    /// <param name="services">The service collection to which CORS services are added.</param>
+    /// <param name="configuration">The application configuration containing the CORS settings.</param>
+    /// <param name="environment">The web hosting environment used to determine development or production configuration.</param>
+    public static void AddCors(this IServiceCollection services, IConfiguration configuration,
+        IWebHostEnvironment environment)
+    {
+        var allowedOrigins = configuration.GetSection(AppStartupSectionName).GetSection("CorsAllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("DefaultCorsPolicy", builder =>
+            {
+                if (allowedOrigins.Length > 0) builder.WithOrigins(allowedOrigins).AllowCredentials();
+                else if (environment.IsDevelopment()) builder.AllowAnyOrigin();
+                else
+                    throw new SecurityException(
+                        "No CORS origins configured. In non-development environment, at least one allowed origin must be specified.");
+
+                builder.AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+        });
     }
 
     private static IEnumerable<string> GetHosts(this WebApplication app)
