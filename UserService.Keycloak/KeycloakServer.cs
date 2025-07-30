@@ -4,16 +4,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using UserService.Domain.Dtos.Keycloak.Role;
-using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Application.Exceptions.IdentityServer;
+using UserService.Application.Exceptions.IdentityServer.Base;
+using UserService.Domain.Dtos.Identity.Role;
+using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
-using UserService.Domain.Exceptions.IdentityServer;
-using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Interfaces.Service;
-using UserService.Domain.Settings;
 using UserService.Keycloak.Extensions;
 using UserService.Keycloak.HttpModels;
 using UserService.Keycloak.KeycloakModels;
+using UserService.Keycloak.Settings;
 
 namespace UserService.Keycloak;
 
@@ -33,7 +33,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     private static KeycloakServiceToken? Token { get; set; }
 
 
-    public async Task<KeycloakUserDto> RegisterUserAsync(KeycloakRegisterUserDto dto,
+    public async Task<IdentityUserDto> RegisterUserAsync(IdentityRegisterUserDto dto,
         CancellationToken cancellationToken = default)
     {
         try
@@ -78,7 +78,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             // Return KeycloakUserId
 
-            return new KeycloakUserDto(Guid.Parse(exactUser!.Id));
+            return new IdentityUserDto(Guid.Parse(exactUser!.Id));
         }
         catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
         {
@@ -86,7 +86,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         }
     }
 
-    public async Task<TokenDto> LoginUserAsync(KeycloakLoginUserDto dto, CancellationToken cancellationToken = default)
+    public async Task<TokenDto> LoginUserAsync(IdentityLoginUserDto dto, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -176,7 +176,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         }
     }
 
-    public async Task UpdateRolesAsync(KeycloakUpdateRolesDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateRolesAsync(IdentityUpdateRolesDto dto, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -211,7 +211,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         await _httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{userId.ToString()}");
     }
 
-    public async Task RollbackUpdateRolesAsync(KeycloakUpdateRolesDto dto)
+    public async Task RollbackUpdateRolesAsync(IdentityUpdateRolesDto dto)
     {
         var userPayload = new UpdateUserPayload
         {

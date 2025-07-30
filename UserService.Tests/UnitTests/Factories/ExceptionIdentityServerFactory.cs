@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using UserService.Domain.Interfaces.Service;
-using UserService.Domain.Settings;
 using UserService.Keycloak;
+using UserService.Keycloak.Settings;
 using UserService.Tests.UnitTests.Configurations;
 
 namespace UserService.Tests.UnitTests.Factories;
@@ -27,7 +27,7 @@ internal class ExceptionIdentityServerFactory
     public ExceptionIdentityServerFactory()
     {
         _identityServer =
-            new KeycloakServer(new OptionsWrapper<KeycloakSettings>(KeycloakSettings), HttpClientFactory);
+            new KeycloakServer(Options.Create(KeycloakSettings), HttpClientFactory);
     }
 
     public IIdentityServer GetService()

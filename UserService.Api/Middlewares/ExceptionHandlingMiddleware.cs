@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Mime;
-using UserService.Domain.Exceptions.IdentityServer;
-using UserService.Domain.Resources;
+using UserService.Application.Exceptions.IdentityServer;
+using UserService.Application.Resources;
 using UserService.Domain.Results;
 using ILogger = Serilog.ILogger;
 

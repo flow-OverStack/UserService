@@ -1,5 +1,5 @@
-using UserService.Domain.Helpers;
-using UserService.Domain.Resources;
+using UserService.Application.Resources;
+using UserService.GraphQl.Helpers;
 
 namespace UserService.GraphQl.ErrorFilters;
 

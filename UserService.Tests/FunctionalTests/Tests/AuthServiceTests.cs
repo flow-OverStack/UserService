@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
+using UserService.Application.Resources;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
-using UserService.Domain.Resources;
 using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;

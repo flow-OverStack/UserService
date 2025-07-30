@@ -10,12 +10,14 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
     private readonly Func<TEntityId, string> _getEntityKey;
     private readonly Func<TEntity, string> _getEntityValue;
     private readonly Func<string, TEntityId> _parseEntityIdFromValue;
+    private readonly int _timeToLiveInSeconds;
 
     public BaseCacheRepository(ICacheProvider cache,
         Func<TEntity, TEntityId> entityIdSelector,
         Func<TEntityId, string> getEntityKey,
         Func<TEntity, string> getEntityValue,
-        Func<string, TEntityId> parseEntityIdFromValue)
+        Func<string, TEntityId> parseEntityIdFromValue,
+        int timeToLiveInSeconds)
     {
         // We do null checks here because functions are not injected by DI and can be null.
 
@@ -30,11 +32,11 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
         _getEntityKey = getEntityKey;
         _getEntityValue = getEntityValue;
         _parseEntityIdFromValue = parseEntityIdFromValue;
+        _timeToLiveInSeconds = timeToLiveInSeconds;
     }
 
     public async Task<IEnumerable<TEntity>> GetByIdsOrFetchAndCacheAsync(IEnumerable<TEntityId> ids,
         Func<IEnumerable<TEntityId>, CancellationToken, Task<IEnumerable<TEntity>>> fetch,
-        int timeToLiveInSeconds,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(ids);
@@ -74,7 +76,7 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
             {
                 var keyValues = fetchedData.Select(x =>
                     new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(x)), x));
-                await _cache.StringSetAsync(keyValues, timeToLiveInSeconds, true, CancellationToken.None);
+                await _cache.StringSetAsync(keyValues, _timeToLiveInSeconds, true, CancellationToken.None);
             }
             catch (Exception)
             {
@@ -93,7 +95,6 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
             Func<string, TOuterId> parseOuterIdFromKey,
             Func<IEnumerable<TOuterId>, CancellationToken,
                 Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>> fetch,
-            int timeToLiveInSeconds,
             CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(outerIds);
@@ -172,8 +173,8 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
                 var entityToCache = entities.Select(e =>
                     new KeyValuePair<string, TEntity>(_getEntityKey(_entityIdSelector(e)), e));
 
-                await _cache.StringSetAsync(entityToCache, timeToLiveInSeconds, true, CancellationToken.None);
-                await _cache.SetsAddAsync(outerSetToCache, timeToLiveInSeconds, true, CancellationToken.None);
+                await _cache.StringSetAsync(entityToCache, _timeToLiveInSeconds, true, CancellationToken.None);
+                await _cache.SetsAddAsync(outerSetToCache, _timeToLiveInSeconds, true, CancellationToken.None);
             }
             catch (Exception)
             {

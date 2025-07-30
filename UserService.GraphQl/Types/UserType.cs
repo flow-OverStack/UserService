@@ -1,9 +1,9 @@
 using HotChocolate.ApolloFederation.Types;
+using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Extensions;
-using UserService.Domain.Helpers;
-using UserService.Domain.Resources;
 using UserService.GraphQl.DataLoaders;
+using UserService.GraphQl.Helpers;
 
 namespace UserService.GraphQl.Types;
 

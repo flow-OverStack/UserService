@@ -1,14 +1,15 @@
 using AutoMapper;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Dtos.Keycloak.Role;
+using UserService.Application.Enums;
+using UserService.Application.Resources;
+using UserService.Domain.Dtos.Identity.Role;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Domain.Resources;
 using UserService.Domain.Results;
 
 namespace UserService.Application.Services;
@@ -306,7 +307,7 @@ public class RoleService(
     {
         var updateTasks = users.Select(user =>
         {
-            var dto = mapper.Map<KeycloakUpdateRolesDto>(user);
+            var dto = mapper.Map<IdentityUpdateRolesDto>(user);
             return identityServer.UpdateRolesAsync(dto, cancellationToken);
         });
 
@@ -322,7 +323,7 @@ public class RoleService(
     {
         foreach (var user in users)
         {
-            var dto = mapper.Map<KeycloakUpdateRolesDto>(user);
+            var dto = mapper.Map<IdentityUpdateRolesDto>(user);
             dto.NewRoles.ForEach(x => x.Users = null!); //Removing loop dependencies
             BackgroundJob.Enqueue(() => identityServer.RollbackUpdateRolesAsync(dto));
         }

@@ -3,11 +3,11 @@ using System.Runtime.CompilerServices;
 using HotChocolate.Resolvers;
 using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
-using UserService.Domain.Dtos.Request.Page;
-using UserService.Domain.Helpers;
+using UserService.Application.Resources;
+using UserService.Application.Settings;
+using UserService.Domain.Dtos.Page;
 using UserService.Domain.Interfaces.Validation;
-using UserService.Domain.Resources;
-using UserService.Domain.Settings;
+using UserService.GraphQl.Helpers;
 
 namespace UserService.GraphQl.Middlewares;
 
@@ -17,7 +17,7 @@ public class OffsetPagingValidationMiddleware(FieldDelegate next)
     private const string TakeArgName = "take";
 
     public async Task InvokeAsync(IMiddlewareContext context, INullSafeValidator<OffsetPageDto> pageValidator,
-        IOptions<BusinessRules> businessRules)
+        IOptions<PaginationRules> businessRules)
     {
         if (context.Selection.Field.Arguments.Any(x => x.Name is SkipArgName or TakeArgName))
         {
@@ -36,6 +36,7 @@ public class OffsetPagingValidationMiddleware(FieldDelegate next)
     }
 }
 
+[AttributeUsage(AttributeTargets.Method)]
 public class UseOffsetPagingValidationMiddlewareAttribute : ObjectFieldDescriptorAttribute
 {
     public UseOffsetPagingValidationMiddlewareAttribute([CallerLineNumber] int order = 0)

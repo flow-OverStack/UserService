@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
-using UserService.Domain.Dtos.Request.Role;
-using UserService.Domain.Dtos.Request.UserRole;
+using UserService.Api.Dtos.Role;
+using UserService.Api.Dtos.UserRole;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Enums;

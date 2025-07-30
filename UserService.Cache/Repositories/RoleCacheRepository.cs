@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using UserService.Cache.Settings;
 using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Provider;
@@ -9,24 +11,26 @@ public class RoleCacheRepository : IBaseCacheRepository<Role, long>
 {
     private readonly IBaseCacheRepository<Role, long> _repository;
 
-    public RoleCacheRepository(ICacheProvider cacheProvider)
+    public RoleCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
     {
+        var settings = redisSettings.Value;
+
         _repository = new BaseCacheRepository<Role, long>(
             cacheProvider,
             x => x.Id,
             CacheKeyHelper.GetRoleKey,
             x => x.Id.ToString(),
-            long.Parse
+            long.Parse,
+            settings.TimeToLiveInSeconds
         );
     }
 
     public Task<IEnumerable<Role>> GetByIdsOrFetchAndCacheAsync(
         IEnumerable<long> ids,
         Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<Role>>> fetch,
-        int timeToLiveInSeconds,
         CancellationToken cancellationToken = default)
     {
-        return _repository.GetByIdsOrFetchAndCacheAsync(ids, fetch, timeToLiveInSeconds, cancellationToken);
+        return _repository.GetByIdsOrFetchAndCacheAsync(ids, fetch, cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<Role>>>>
@@ -36,10 +40,9 @@ public class RoleCacheRepository : IBaseCacheRepository<Role, long>
             Func<string, TOuterId> parseOuterIdFromKey,
             Func<IEnumerable<TOuterId>, CancellationToken,
                 Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<Role>>>>> fetch,
-            int timeToLiveInSeconds,
             CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(outerIds, getOuterKey, parseOuterIdFromKey, fetch,
-            timeToLiveInSeconds, cancellationToken);
+            cancellationToken);
     }
 }

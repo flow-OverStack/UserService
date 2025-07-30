@@ -1,8 +1,8 @@
-using UserService.Domain.Dtos.Keycloak.Role;
-using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Application.Exceptions.IdentityServer;
+using UserService.Domain.Dtos.Identity.Role;
+using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Entities;
-using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
@@ -17,7 +17,7 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new KeycloakRegisterUserDto(4, "testuser4", "TestsUser4@test.com",
+        var dto = new IdentityRegisterUserDto(4, "testuser4", "TestsUser4@test.com",
             [new Role { Id = 1, Name = "User" }]);
 
         //Act
@@ -33,7 +33,7 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new KeycloakLoginUserDto("testuser1")
+        var dto = new IdentityLoginUserDto("testuser1")
         {
             Password = TestConstants.TestPassword + "1"
         };
@@ -69,7 +69,7 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new KeycloakUpdateRolesDto
+        var dto = new IdentityUpdateRolesDto
         {
             UserId = 1,
             KeycloakUserId = Guid.NewGuid(),

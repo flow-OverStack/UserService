@@ -1,10 +1,10 @@
+using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
-using ErrorMessage = UserService.Domain.Resources.ErrorMessage;
 
 namespace UserService.Tests.UnitTests.Tests;
 

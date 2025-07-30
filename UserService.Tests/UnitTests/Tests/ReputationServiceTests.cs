@@ -1,5 +1,5 @@
+using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
-using UserService.Domain.Resources;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;

@@ -1,22 +1,16 @@
-using Microsoft.Extensions.Options;
+using UserService.Application.Enums;
+using UserService.Application.Resources;
 using UserService.Domain.Entities;
-using UserService.Domain.Enums;
 using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Domain.Resources;
 using UserService.Domain.Results;
-using UserService.Domain.Settings;
 
 namespace UserService.Application.Services.Cache;
 
-public class CacheGetRoleService(
-    IBaseCacheRepository<Role, long> cacheRepository,
-    GetRoleService inner,
-    IOptions<RedisSettings> redisSettings) : IGetRoleService
+public class CacheGetRoleService(IBaseCacheRepository<Role, long> cacheRepository, GetRoleService inner)
+    : IGetRoleService
 {
-    private readonly RedisSettings _redisSettings = redisSettings.Value;
-
     public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return inner.GetAllAsync(cancellationToken);
@@ -29,7 +23,6 @@ public class CacheGetRoleService(
         var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
             idsArray,
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();
 
@@ -52,7 +45,6 @@ public class CacheGetRoleService(
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
-            _redisSettings.TimeToLiveInSeconds,
             cancellationToken
         )).ToArray();
 

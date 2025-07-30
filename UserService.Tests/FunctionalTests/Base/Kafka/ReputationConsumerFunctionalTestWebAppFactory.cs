@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using UserService.Domain.Events;
-using UserService.Domain.Settings;
 using UserService.Messaging.Consumers;
+using UserService.Messaging.Settings;
 
 namespace UserService.Tests.FunctionalTests.Base.Kafka;
 

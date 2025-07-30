@@ -1,6 +1,6 @@
 using AutoMapper;
+using UserService.Application.Exceptions.IdentityServer.Base;
 using UserService.Domain.Dtos.Token;
-using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 
@@ -14,11 +14,11 @@ public class TokenService(
     public async Task<BaseResult<TokenDto>> RefreshTokenAsync(RefreshTokenDto dto,
         CancellationToken cancellationToken = default)
     {
-        var keycloakResponse = await SafeRefreshTokenAsync(identityServer, dto, cancellationToken);
+        var identityResponse = await SafeRefreshTokenAsync(identityServer, dto, cancellationToken);
 
-        if (!keycloakResponse.IsSuccess) return keycloakResponse;
+        if (!identityResponse.IsSuccess) return identityResponse;
 
-        var tokenDto = mapper.Map<TokenDto>(keycloakResponse.Data);
+        var tokenDto = mapper.Map<TokenDto>(identityResponse.Data);
 
         return BaseResult<TokenDto>.Success(tokenDto);
     }

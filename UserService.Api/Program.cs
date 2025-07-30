@@ -3,21 +3,26 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using UserService.Api;
 using UserService.Api.Middlewares;
 using UserService.Application.DependencyInjection;
+using UserService.Application.Settings;
 using UserService.BackgroundJobs.DependencyInjection;
 using UserService.Cache.DependencyInjection;
+using UserService.Cache.Settings;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
 using UserService.Grpc.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
+using UserService.Keycloak.Settings;
 using UserService.Messaging.DependencyInjection;
+using UserService.Messaging.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<KeycloakSettings>(builder.Configuration.GetSection(nameof(KeycloakSettings)));
 builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection(nameof(RedisSettings)));
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
-builder.Services.Configure<BusinessRules>(builder.Configuration.GetSection(nameof(BusinessRules)));
+builder.Services.Configure<PaginationRules>(builder.Configuration.GetSection(nameof(PaginationRules)));
+builder.Services.Configure<ReputationRules>(builder.Configuration.GetSection(nameof(ReputationRules)));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();

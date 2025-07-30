@@ -21,4 +21,10 @@
         <PackageReference Include="StackExchange.Redis" Version="2.8.41"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Update="Resources\ErrorMessage.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+        </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

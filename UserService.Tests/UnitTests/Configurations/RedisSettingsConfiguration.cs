@@ -1,4 +1,4 @@
-using UserService.Domain.Settings;
+using UserService.Cache.Settings;
 
 namespace UserService.Tests.UnitTests.Configurations;
 

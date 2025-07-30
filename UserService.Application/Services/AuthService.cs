@@ -2,15 +2,16 @@ using System.Net.Mail;
 using AutoMapper;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Application.Enums;
+using UserService.Application.Exceptions.IdentityServer.Base;
+using UserService.Application.Resources;
+using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
-using UserService.Domain.Exceptions.IdentityServer.Base;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Domain.Resources;
 using UserService.Domain.Results;
 
 namespace UserService.Application.Services;
@@ -35,7 +36,7 @@ public class AuthService(
         if (user != null)
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
 
-        KeycloakUserDto? keycloakResponse = null;
+        IdentityUserDto? identityResponse = null;
         await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
         {
             try
@@ -58,11 +59,11 @@ public class AuthService(
                 user.Roles = [role];
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                var keycloakDto = mapper.Map<KeycloakRegisterUserDto>(user);
-                keycloakDto.Password = dto.Password;
+                var identityDto = mapper.Map<IdentityRegisterUserDto>(user);
+                identityDto.Password = dto.Password;
 
-                keycloakResponse = await identityServer.RegisterUserAsync(keycloakDto, cancellationToken);
-                user.KeycloakId = keycloakResponse.KeycloakId;
+                identityResponse = await identityServer.RegisterUserAsync(identityDto, cancellationToken);
+                user.KeycloakId = identityResponse.KeycloakId;
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
@@ -70,8 +71,8 @@ public class AuthService(
             catch (Exception)
             {
                 await transaction.RollbackAsync(CancellationToken.None);
-                if (keycloakResponse != null)
-                    BackgroundJob.Enqueue(() => identityServer.RollbackRegistrationAsync(keycloakResponse.KeycloakId));
+                if (identityResponse != null)
+                    BackgroundJob.Enqueue(() => identityServer.RollbackRegistrationAsync(identityResponse.KeycloakId));
 
                 throw;
             }
@@ -107,10 +108,10 @@ public class AuthService(
         if (user == null)
             return BaseResult<TokenDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var keycloakDto = mapper.Map<KeycloakLoginUserDto>(user);
-        keycloakDto.Password = password;
+        var identityDto = mapper.Map<IdentityLoginUserDto>(user);
+        identityDto.Password = password;
 
-        var keycloakSafeResponse = await SafeLoginUserAsync(identityServer, keycloakDto, cancellationToken);
+        var keycloakSafeResponse = await SafeLoginUserAsync(identityServer, identityDto, cancellationToken);
         if (!keycloakSafeResponse.IsSuccess)
             return keycloakSafeResponse;
 
@@ -135,7 +136,7 @@ public class AuthService(
     }
 
     private static async Task<BaseResult<TokenDto>> SafeLoginUserAsync(IIdentityServer identityServer,
-        KeycloakLoginUserDto dto, CancellationToken cancellationToken = default)
+        IdentityLoginUserDto dto, CancellationToken cancellationToken = default)
     {
         try
         {

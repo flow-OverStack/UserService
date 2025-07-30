@@ -12,10 +12,10 @@ namespace UserService.DAL;
 public sealed class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
     ILogger logger,
-    IOptions<BusinessRules> businessRules)
+    IOptions<ReputationRules> reputationRules)
     : DbContext(options)
 {
-    private readonly BusinessRules _businessRules = businessRules.Value;
+    private readonly ReputationRules _reputationRules = reputationRules.Value;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -32,18 +32,18 @@ public sealed class ApplicationDbContext(
     private void ApplyReputationRules(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
-            .Property(x => x.Reputation).IsRequired().HasDefaultValue(_businessRules.MinReputation);
+            .Property(x => x.Reputation).IsRequired().HasDefaultValue(_reputationRules.MinReputation);
 
         //Reputation constraint
         modelBuilder.Entity<User>()
             .ToTable(t => t.HasCheckConstraint("CK_User_Reputation", $"""
-                                                                      "Reputation" >= {_businessRules.MinReputation}
+                                                                      "Reputation" >= {_reputationRules.MinReputation}
                                                                       """));
 
         //ReputationEarnedToday constraint
         modelBuilder.Entity<User>()
             .ToTable(t => t.HasCheckConstraint("CK_User_ReputationEarnedToday", $"""
-                 "ReputationEarnedToday" >= 0 AND "ReputationEarnedToday" <= {_businessRules.MaxDailyReputation}
+                 "ReputationEarnedToday" >= 0 AND "ReputationEarnedToday" <= {_reputationRules.MaxDailyReputation}
                  """));
     }
 }

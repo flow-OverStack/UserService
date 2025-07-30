@@ -16,8 +16,10 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using UserService.Cache.Settings;
 using UserService.DAL;
-using UserService.Domain.Settings;
+using UserService.Keycloak.Settings;
+using UserService.Messaging.Settings;
 using Path = System.IO.Path;
 
 namespace UserService.Api;

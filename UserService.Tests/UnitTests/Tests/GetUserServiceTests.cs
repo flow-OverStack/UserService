@@ -1,4 +1,4 @@
-using UserService.Domain.Resources;
+using UserService.Application.Resources;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
 

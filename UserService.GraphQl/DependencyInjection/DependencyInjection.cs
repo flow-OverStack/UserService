@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using UserService.Domain.Settings;
+using UserService.Application.Settings;
 using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.ErrorFilters;
 using UserService.GraphQl.Types;
@@ -39,7 +39,7 @@ public static class DependencyInjection
             {
                 using var provider = services.BuildServiceProvider();
                 using var scope = provider.CreateScope();
-                var defaultSize = scope.ServiceProvider.GetRequiredService<IOptions<BusinessRules>>().Value
+                var defaultSize = scope.ServiceProvider.GetRequiredService<IOptions<PaginationRules>>().Value
                     .DefaultPageSize;
 
                 opt.DefaultPageSize = defaultSize;

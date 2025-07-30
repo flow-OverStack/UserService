@@ -1,6 +1,6 @@
 using Grpc.Core;
 using Grpc.Net.Client;
-using UserService.Domain.Resources;
+using UserService.Application.Resources;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 

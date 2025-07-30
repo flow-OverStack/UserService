@@ -1,7 +1,7 @@
 using Moq;
-using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Application.Exceptions.IdentityServer;
+using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
-using UserService.Domain.Exceptions.IdentityServer;
 using UserService.Domain.Interfaces.Service;
 using UserService.Tests.Constants;
 
@@ -21,8 +21,8 @@ internal static class IdentityServerConfiguration
             RefreshExpires = DateTime.UtcNow.AddMinutes(30) //random value
         };
 
-        mockIdentityServer.Setup(x => x.LoginUserAsync(It.IsAny<KeycloakLoginUserDto>(), It.IsAny<CancellationToken>()))
-            .Returns((KeycloakLoginUserDto dto, CancellationToken _) =>
+        mockIdentityServer.Setup(x => x.LoginUserAsync(It.IsAny<IdentityLoginUserDto>(), It.IsAny<CancellationToken>()))
+            .Returns((IdentityLoginUserDto dto, CancellationToken _) =>
             {
                 if (dto.Password == TestConstants.WrongPassword)
                     throw new IdentityServerPasswordIsWrongException("TestsIdentityServer", "Wrong password");
@@ -30,8 +30,8 @@ internal static class IdentityServerConfiguration
                 return Task.FromResult(randomKeycloakUserTokenDto);
             });
         mockIdentityServer
-            .Setup(x => x.RegisterUserAsync(It.IsAny<KeycloakRegisterUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new KeycloakUserDto(Guid.NewGuid()));
+            .Setup(x => x.RegisterUserAsync(It.IsAny<IdentityRegisterUserDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new IdentityUserDto(Guid.NewGuid()));
         mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<RefreshTokenDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(randomKeycloakUserTokenDto);
 

@@ -12,7 +12,7 @@ internal class ReputationServiceFactory
 {
     private readonly IReputationService _reputationService;
 
-    public readonly BusinessRules BusinessRules = new()
+    public readonly ReputationRules ReputationRules = new()
     {
         MinReputation = MockRepositoriesGetters.MinReputation,
         MaxDailyReputation = MockRepositoriesGetters.MaxDailyReputation
@@ -22,7 +22,7 @@ internal class ReputationServiceFactory
 
     public ReputationServiceFactory()
     {
-        _reputationService = new ReputationService(UserRepository, new OptionsWrapper<BusinessRules>(BusinessRules));
+        _reputationService = new ReputationService(UserRepository, Options.Create(ReputationRules));
     }
 
     public IReputationService GetService()

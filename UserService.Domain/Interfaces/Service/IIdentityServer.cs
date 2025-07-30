@@ -1,11 +1,11 @@
-using UserService.Domain.Dtos.Keycloak.Role;
-using UserService.Domain.Dtos.Keycloak.User;
+using UserService.Domain.Dtos.Identity.Role;
+using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
 
 namespace UserService.Domain.Interfaces.Service;
 
 /// <summary>
-///     Service for user authentication in keycloak
+///     Service for user authentication in an identity server
 /// </summary>
 public interface IIdentityServer
 {
@@ -15,7 +15,7 @@ public interface IIdentityServer
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<KeycloakUserDto> RegisterUserAsync(KeycloakRegisterUserDto dto, CancellationToken cancellationToken = default);
+    Task<IdentityUserDto> RegisterUserAsync(IdentityRegisterUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Logs user in identity server
@@ -23,7 +23,7 @@ public interface IIdentityServer
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<TokenDto> LoginUserAsync(KeycloakLoginUserDto dto, CancellationToken cancellationToken = default);
+    Task<TokenDto> LoginUserAsync(IdentityLoginUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Refresh user's token in identity server
@@ -39,7 +39,7 @@ public interface IIdentityServer
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateRolesAsync(KeycloakUpdateRolesDto dto, CancellationToken cancellationToken = default);
+    Task UpdateRolesAsync(IdentityUpdateRolesDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Rolls back the registration of a user; does not catch errors
@@ -53,5 +53,5 @@ public interface IIdentityServer
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task RollbackUpdateRolesAsync(KeycloakUpdateRolesDto dto);
+    Task RollbackUpdateRolesAsync(IdentityUpdateRolesDto dto);
 }

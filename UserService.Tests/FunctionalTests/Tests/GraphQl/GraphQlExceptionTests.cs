@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using Newtonsoft.Json;
-using UserService.Domain.Resources;
+using UserService.Application.Resources;
 using UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl;
 using UserService.Tests.FunctionalTests.Helpers;

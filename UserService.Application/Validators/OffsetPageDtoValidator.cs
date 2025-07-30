@@ -1,14 +1,14 @@
 using FluentValidation;
 using Microsoft.Extensions.Options;
-using UserService.Domain.Dtos.Request.Page;
+using UserService.Application.Settings;
+using UserService.Domain.Dtos.Page;
 using UserService.Domain.Interfaces.Validation;
-using UserService.Domain.Settings;
 
 namespace UserService.Application.Validators;
 
 public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>, INullSafeValidator<OffsetPageDto>
 {
-    public OffsetPageDtoValidator(IOptions<BusinessRules> businessRules)
+    public OffsetPageDtoValidator(IOptions<PaginationRules> businessRules)
     {
         var maxPageSize = businessRules.Value.MaxPageSize;
 

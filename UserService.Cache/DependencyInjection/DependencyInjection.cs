@@ -3,10 +3,10 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
+using UserService.Cache.Settings;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
-using UserService.Domain.Settings;
 using Role = UserService.Domain.Entities.Role;
 
 namespace UserService.Cache.DependencyInjection;

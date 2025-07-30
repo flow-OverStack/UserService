@@ -8,14 +8,12 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
     /// </summary>
     /// <param name="ids">The identifiers of the entities to retrieve.</param>
     /// <param name="fetch">A function that fetches missing entities from an external source.</param>
-    /// <param name="timeToLiveInSeconds">The TTL (Time To Live) for cached entities, in seconds.</param>
     /// <param name="cancellationToken">A cancellation token for the asynchronous operation.</param>
     /// <returns>
     ///     A <see cref="IEnumerable{TEntity}"/> containing the combined results from the cache and the fallback fetch, if needed.
     /// </returns>
     Task<IEnumerable<TEntity>> GetByIdsOrFetchAndCacheAsync(IEnumerable<TEntityId> ids,
         Func<IEnumerable<TEntityId>, CancellationToken, Task<IEnumerable<TEntity>>> fetch,
-        int timeToLiveInSeconds,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -27,7 +25,6 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
     /// <param name="getOuterKey">A function that maps an outer ID to a cache set key.</param>
     /// <param name="parseOuterIdFromKey">A function that parses the outer ID from the cache key.</param>
     /// <param name="fetch">A function that fetches grouped data from an external source.</param>
-    /// <param name="timeToLiveInSeconds">The TTL (Time To Live) for cached entities and sets, in seconds.</param>
     /// <param name="cancellationToken">A cancellation token for the asynchronous operation.</param>
     /// <returns>
     ///     A <see cref="IEnumerable{TEntity}"/> containing a lookup-like list of outer ID to the list of entities.
@@ -39,7 +36,6 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
             Func<string, TOuterId> parseOuterIdFromKey,
             Func<IEnumerable<TOuterId>, CancellationToken,
                 Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>> fetch,
-            int timeToLiveInSeconds,
             CancellationToken cancellationToken = default
         );
 }

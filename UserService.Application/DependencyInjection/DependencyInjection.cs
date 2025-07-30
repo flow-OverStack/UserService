@@ -3,7 +3,7 @@ using UserService.Application.Mappings;
 using UserService.Application.Services;
 using UserService.Application.Services.Cache;
 using UserService.Application.Validators;
-using UserService.Domain.Dtos.Request.Page;
+using UserService.Domain.Dtos.Page;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Interfaces.Validation;
 
