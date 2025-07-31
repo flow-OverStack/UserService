@@ -2,7 +2,7 @@ using UserService.Domain.Dtos.Identity.Role;
 using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
 
-namespace UserService.Domain.Interfaces.Service;
+namespace UserService.Domain.Interfaces.Identity;
 
 /// <summary>
 ///     Service for user authentication in an identity server
@@ -44,9 +44,9 @@ public interface IIdentityServer
     /// <summary>
     ///     Rolls back the registration of a user; does not catch errors
     /// </summary>
-    /// <param name="userId"></param>
+    /// <param name="dto"></param>
     /// <returns></returns>
-    Task RollbackRegistrationAsync(Guid userId);
+    Task RollbackRegistrationAsync(IdentityUserDto dto);
 
     /// <summary>
     ///     Rolls back user's roles update; does not catch errors

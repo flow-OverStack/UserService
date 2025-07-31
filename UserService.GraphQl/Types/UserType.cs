@@ -13,7 +13,7 @@ public class UserType : ObjectType<User>
     {
         descriptor.Description("The user type.");
         descriptor.Field(x => x.Id).Description("The ID of the user.");
-        descriptor.Field(x => x.KeycloakId).Description("The ID of the user in keycloak identity server.");
+        descriptor.Field(x => x.IdentityId).Description("The ID of the user in identity server.");
         descriptor.Field(x => x.Username).Description("The name of the user.");
         descriptor.Field(x => x.Email).Description("The email address of the user.");
         descriptor.Field(x => x.LastLoginAt).Description("The last login time of the user.");

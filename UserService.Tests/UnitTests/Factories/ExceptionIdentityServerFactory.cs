@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Options;
-using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Keycloak;
 using UserService.Keycloak.Settings;
 using UserService.Tests.UnitTests.Configurations;

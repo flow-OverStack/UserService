@@ -14,8 +14,7 @@ public class UserMapping : Profile
         CreateMap<User, IdentityRegisterUserDto>().ReverseMap();
         CreateMap<User, IdentityLoginUserDto>().ReverseMap();
         CreateMap<IdentityUpdateRolesDto, User>().ReverseMap()
-            .ForMember(x => x.UserId, x => x.MapFrom(y => y.Id))
-            .ForMember(x => x.KeycloakUserId, x => x.MapFrom(y => y.KeycloakId))
-            .ForMember(x => x.NewRoles, x => x.MapFrom(y => y.Roles));
+            .ForCtorParam(nameof(IdentityUpdateRolesDto.UserId), x => x.MapFrom(y => y.Id))
+            .ForCtorParam(nameof(IdentityUpdateRolesDto.NewRoles), x => x.MapFrom(y => y.Roles));
     }
 }

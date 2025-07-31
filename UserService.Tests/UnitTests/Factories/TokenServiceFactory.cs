@@ -1,5 +1,6 @@
 using AutoMapper;
 using UserService.Application.Services;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Service;
 using UserService.Tests.UnitTests.Configurations;
 using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;

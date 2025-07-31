@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Keycloak.Settings;
 
 namespace UserService.Keycloak.DependencyInjection;

@@ -18,7 +18,7 @@ internal static class PrepDb
             .Where(x => x.Roles.Count >= 1)
             .Select(x => new User
             {
-                KeycloakId = x.KeycloakId,
+                IdentityId = x.IdentityId,
                 Username = x.Username,
                 Email = x.Email,
                 Reputation = x.Reputation,

@@ -1,5 +1,6 @@
 using AutoMapper;
 using UserService.Application.Services;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Tests.Configurations;

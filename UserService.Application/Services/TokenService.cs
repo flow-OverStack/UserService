@@ -1,6 +1,7 @@
 using AutoMapper;
 using UserService.Application.Exceptions.IdentityServer.Base;
 using UserService.Domain.Dtos.Token;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 

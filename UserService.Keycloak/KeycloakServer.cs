@@ -9,7 +9,7 @@ using UserService.Application.Exceptions.IdentityServer.Base;
 using UserService.Domain.Dtos.Identity.Role;
 using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
-using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Keycloak.Extensions;
 using UserService.Keycloak.HttpModels;
 using UserService.Keycloak.KeycloakModels;
@@ -78,7 +78,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             // Return KeycloakUserId
 
-            return new IdentityUserDto(Guid.Parse(exactUser!.Id));
+            return new IdentityUserDto(exactUser!.Id);
         }
         catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
         {
@@ -195,7 +195,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             await SetAuthHeaderAsync(cancellationToken);
             var response = await _httpClient.PutAsync(
-                $"{_keycloakSettings.UsersEndpoint}/{dto.KeycloakUserId.ToString()}", content, cancellationToken);
+                $"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
 
             response.EnsureSuccessStatusCode();
         }
@@ -205,10 +205,10 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         }
     }
 
-    public async Task RollbackRegistrationAsync(Guid userId)
+    public async Task RollbackRegistrationAsync(IdentityUserDto dto)
     {
         await SetAuthHeaderAsync();
-        await _httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{userId.ToString()}");
+        await _httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}");
     }
 
     public async Task RollbackUpdateRolesAsync(IdentityUpdateRolesDto dto)
@@ -227,7 +227,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         await SetAuthHeaderAsync();
-        await _httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.KeycloakUserId.ToString()}", content);
+        await _httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content);
     }
 
 

@@ -9,7 +9,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
-        builder.Property(x => x.KeycloakId).IsRequired();
+        builder.Property(x => x.IdentityId).IsRequired();
         builder.Property(x => x.Username).IsRequired().HasMaxLength(100);
         builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
         builder.Property(x => x.CreatedAt).IsRequired();

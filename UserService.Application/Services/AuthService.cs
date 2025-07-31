@@ -10,6 +10,7 @@ using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -45,7 +46,8 @@ public class AuthService(
                 {
                     Username = lowerUsername,
                     Email = dto.Email,
-                    LastLoginAt = DateTime.UtcNow
+                    LastLoginAt = DateTime.UtcNow,
+                    IdentityId = "PENDING"
                 };
 
                 await unitOfWork.Users.CreateAsync(user, cancellationToken);
@@ -63,7 +65,7 @@ public class AuthService(
                 identityDto.Password = dto.Password;
 
                 identityResponse = await identityServer.RegisterUserAsync(identityDto, cancellationToken);
-                user.KeycloakId = identityResponse.KeycloakId;
+                user.IdentityId = identityResponse.IdentityId;
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
@@ -72,7 +74,8 @@ public class AuthService(
             {
                 await transaction.RollbackAsync(CancellationToken.None);
                 if (identityResponse != null)
-                    BackgroundJob.Enqueue(() => identityServer.RollbackRegistrationAsync(identityResponse.KeycloakId));
+                    BackgroundJob.Enqueue(() =>
+                        identityServer.RollbackRegistrationAsync(new IdentityUserDto(identityResponse.IdentityId)));
 
                 throw;
             }
@@ -108,18 +111,17 @@ public class AuthService(
         if (user == null)
             return BaseResult<TokenDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
-        var identityDto = mapper.Map<IdentityLoginUserDto>(user);
-        identityDto.Password = password;
+        var identityDto = new IdentityLoginUserDto(user.Username, password);
 
-        var keycloakSafeResponse = await SafeLoginUserAsync(identityServer, identityDto, cancellationToken);
-        if (!keycloakSafeResponse.IsSuccess)
-            return keycloakSafeResponse;
+        var identitySafeResponse = await SafeLoginUserAsync(identityServer, identityDto, cancellationToken);
+        if (!identitySafeResponse.IsSuccess)
+            return identitySafeResponse;
 
         user.LastLoginAt = DateTime.UtcNow;
         unitOfWork.Users.Update(user);
         await unitOfWork.Users.SaveChangesAsync(cancellationToken);
 
-        return BaseResult<TokenDto>.Success(keycloakSafeResponse.Data);
+        return BaseResult<TokenDto>.Success(identitySafeResponse.Data);
     }
 
     private static bool IsEmail(string email)

@@ -8,6 +8,7 @@ using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -60,7 +61,7 @@ public class RoleService(
                 await UpdateRolesAsync(usersWithRoleToDelete.Select(x => new User
                 {
                     Id = x.Id,
-                    KeycloakId = x.KeycloakId,
+                    IdentityId = x.IdentityId,
                     Email = x.Email,
                     Roles = x.Roles.Where(y => y.Id != role.Id).ToList()
                 }), cancellationToken);

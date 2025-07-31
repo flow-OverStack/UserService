@@ -123,7 +123,7 @@ internal static class MockRepositoriesGetters
             new()
             {
                 Id = 1,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid().ToString(),
                 Username = "testuser1",
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
@@ -135,7 +135,7 @@ internal static class MockRepositoriesGetters
             new()
             {
                 Id = 2,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid().ToString(),
                 Username = "testuser2",
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
@@ -147,7 +147,7 @@ internal static class MockRepositoriesGetters
             new()
             {
                 Id = 3,
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid().ToString(),
                 Username = "testuser3",
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
@@ -159,7 +159,7 @@ internal static class MockRepositoriesGetters
             new() //user without roles
             {
                 Id = 5, //id is not 4 because 4 is used to create a new user
-                KeycloakId = Guid.NewGuid(),
+                IdentityId = Guid.NewGuid().ToString(),
                 Username = "testuser5",
                 Email = "TestUser5@test.com",
                 LastLoginAt = DateTime.UtcNow,

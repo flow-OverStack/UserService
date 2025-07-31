@@ -107,7 +107,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
         {
             Username = "testuser4",
             Email = "TestUser4@test.com",
-            KeycloakId = Guid.NewGuid(),
+            IdentityId = Guid.NewGuid().ToString(),
             CreatedAt = DateTime.Now,
             LastLoginAt = DateTime.UtcNow,
             Reputation = 1,

@@ -2,7 +2,7 @@ using Moq;
 using UserService.Application.Exceptions.IdentityServer;
 using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
-using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Tests.Constants;
 
 namespace UserService.Tests.UnitTests.Configurations;
@@ -31,7 +31,7 @@ internal static class IdentityServerConfiguration
             });
         mockIdentityServer
             .Setup(x => x.RegisterUserAsync(It.IsAny<IdentityRegisterUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new IdentityUserDto(Guid.NewGuid()));
+            .ReturnsAsync(new IdentityUserDto(Guid.NewGuid().ToString()));
         mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<RefreshTokenDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(randomKeycloakUserTokenDto);
 

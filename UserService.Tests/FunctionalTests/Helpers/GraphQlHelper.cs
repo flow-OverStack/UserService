@@ -7,7 +7,7 @@ internal static class GraphQlHelper
                                             users(skip: 1, take:2 ) {
                                               items {
                                                 id
-                                                keycloakId
+                                                identityId
                                                 username
                                                 email
                                                 lastLoginAt
@@ -40,7 +40,7 @@ internal static class GraphQlHelper
                                               users(skip: 1, take:2 ) {
                                                 items {
                                                   id
-                                                  keycloakId
+                                                  identityId
                                                   username
                                                   email
                                                   lastLoginAt
@@ -61,7 +61,7 @@ internal static class GraphQlHelper
                                                                    users(skip:-1, take:101) {
                                                                      items {
                                                                        id
-                                                                       keycloakId
+                                                                       identityId
                                                                        username
                                                                        email
                                                                        lastLoginAt
@@ -82,7 +82,7 @@ internal static class GraphQlHelper
                                                      users(wrongArg) {
                                                        items {
                                                          id
-                                                         keycloakId
+                                                         identityId
                                                          username
                                                          email
                                                          lastLoginAt
@@ -106,7 +106,7 @@ internal static class GraphQlHelper
                {
                  user(id: $ID){
                    id
-                   keycloakId
+                   identityId
                    username
                    email
                    lastLoginAt

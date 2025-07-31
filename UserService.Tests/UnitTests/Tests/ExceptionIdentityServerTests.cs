@@ -33,10 +33,7 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new IdentityLoginUserDto("testuser1")
-        {
-            Password = TestConstants.TestPassword + "1"
-        };
+        var dto = new IdentityLoginUserDto("testuser1", TestConstants.TestPassword + "1");
 
         //Act
         var action = async () => await identityServer.LoginUserAsync(dto);
@@ -69,13 +66,8 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new IdentityUpdateRolesDto
-        {
-            UserId = 1,
-            KeycloakUserId = Guid.NewGuid(),
-            Email = "TestUser1@test.com",
-            NewRoles = [new Role { Id = 1, Name = "User" }, new Role { Id = 2, Name = "Admin" }]
-        };
+        var dto = new IdentityUpdateRolesDto(Guid.NewGuid().ToString(), 1, "TestUser1",
+            [new Role { Id = 1, Name = "User" }, new Role { Id = 2, Name = "Admin" }]);
 
         //Act
         var action = async () => await identityServer.UpdateRolesAsync(dto);
