@@ -51,34 +51,32 @@ public class RoleService(
         var usersWithRoleToDelete = (await GetUsersWithRoleAsync(role.Id, cancellationToken)).ToArray();
 
         var areRolesSynced = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
+            unitOfWork.Roles.Remove(role);
+            await unitOfWork.Roles.SaveChangesAsync(cancellationToken);
+
+            await UpdateRolesAsync(usersWithRoleToDelete.Select(x => new User
             {
-                unitOfWork.Roles.Remove(role);
-                await unitOfWork.Roles.SaveChangesAsync(cancellationToken);
+                Id = x.Id,
+                IdentityId = x.IdentityId,
+                Email = x.Email,
+                Roles = x.Roles.Where(y => y.Id != role.Id).ToList()
+            }), cancellationToken);
+            areRolesSynced = true;
 
-                await UpdateRolesAsync(usersWithRoleToDelete.Select(x => new User
-                {
-                    Id = x.Id,
-                    IdentityId = x.IdentityId,
-                    Email = x.Email,
-                    Roles = x.Roles.Where(y => y.Id != role.Id).ToList()
-                }), cancellationToken);
-                areRolesSynced = true;
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
+            if (!areRolesSynced) throw;
 
-                if (!areRolesSynced) throw;
+            RollbackRoles(usersWithRoleToDelete);
 
-                RollbackRoles(usersWithRoleToDelete);
-
-                throw;
-            }
+            throw;
         }
 
         return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
@@ -91,31 +89,29 @@ public class RoleService(
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         var areRolesSynced = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
-            {
-                role.Name = dto.Name;
-                unitOfWork.Roles.Update(role);
-                await unitOfWork.Roles.SaveChangesAsync(cancellationToken);
+            role.Name = dto.Name;
+            unitOfWork.Roles.Update(role);
+            await unitOfWork.Roles.SaveChangesAsync(cancellationToken);
 
-                var usersWithUpdatedRole = await GetUsersWithRoleAsync(role.Id, cancellationToken);
-                await UpdateRolesAsync(usersWithUpdatedRole, cancellationToken);
-                areRolesSynced = true;
+            var usersWithUpdatedRole = await GetUsersWithRoleAsync(role.Id, cancellationToken);
+            await UpdateRolesAsync(usersWithUpdatedRole, cancellationToken);
+            areRolesSynced = true;
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
 
-                if (!areRolesSynced) throw;
+            if (!areRolesSynced) throw;
 
-                var usersWithOldRole = await GetUsersWithRoleAsync(role.Id, CancellationToken.None);
-                RollbackRoles(usersWithOldRole);
+            var usersWithOldRole = await GetUsersWithRoleAsync(role.Id, CancellationToken.None);
+            RollbackRoles(usersWithOldRole);
 
-                throw;
-            }
+            throw;
         }
 
         return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
@@ -140,29 +136,27 @@ public class RoleService(
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
         var areRolesSynced = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
-            {
-                user.Roles.Add(role);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            user.Roles.Add(role);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await UpdateRolesAsync(user, cancellationToken);
-                areRolesSynced = true;
+            await UpdateRolesAsync(user, cancellationToken);
+            areRolesSynced = true;
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
 
-                if (!areRolesSynced) throw;
+            if (!areRolesSynced) throw;
 
-                var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-                RollbackRoles(userWithOldRole!);
+            var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
+            RollbackRoles(userWithOldRole!);
 
-                throw;
-            }
+            throw;
         }
 
         return BaseResult<UserRoleDto>.Success(new UserRoleDto
@@ -192,29 +186,27 @@ public class RoleService(
                 (int)ErrorCodes.CannotDeleteDefaultRole);
 
         var areRolesSynced = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
-            {
-                user.Roles.Remove(role);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            user.Roles.Remove(role);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await UpdateRolesAsync(user, cancellationToken);
-                areRolesSynced = true;
+            await UpdateRolesAsync(user, cancellationToken);
+            areRolesSynced = true;
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
 
-                if (!areRolesSynced) throw;
+            if (!areRolesSynced) throw;
 
-                var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-                RollbackRoles(userWithOldRole!);
+            var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
+            RollbackRoles(userWithOldRole!);
 
-                throw;
-            }
+            throw;
         }
 
         return BaseResult<UserRoleDto>.Success(new UserRoleDto
@@ -250,30 +242,28 @@ public class RoleService(
                 (int)ErrorCodes.UserAlreadyHasThisRole);
 
         var areRolesSynced = false;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
-            {
-                user.Roles.Remove(role);
-                user.Roles.Add(newRole);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            user.Roles.Remove(role);
+            user.Roles.Add(newRole);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await UpdateRolesAsync(user, cancellationToken);
-                areRolesSynced = true;
+            await UpdateRolesAsync(user, cancellationToken);
+            areRolesSynced = true;
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
 
-                if (!areRolesSynced) throw;
+            if (!areRolesSynced) throw;
 
-                var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-                RollbackRoles(userWithOldRole!);
+            var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
+            RollbackRoles(userWithOldRole!);
 
-                throw;
-            }
+            throw;
         }
 
         return BaseResult<UserRoleDto>.Success(new UserRoleDto

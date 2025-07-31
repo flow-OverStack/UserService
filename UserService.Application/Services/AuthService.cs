@@ -38,47 +38,45 @@ public class AuthService(
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
 
         IdentityUserDto? identityResponse = null;
-        await using (var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken))
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            try
+            user = new User
             {
-                user = new User
-                {
-                    Username = lowerUsername,
-                    Email = dto.Email,
-                    LastLoginAt = DateTime.UtcNow,
-                    IdentityId = "PENDING"
-                };
+                Username = lowerUsername,
+                Email = dto.Email,
+                LastLoginAt = DateTime.UtcNow,
+                IdentityId = "PENDING"
+            };
 
-                await unitOfWork.Users.CreateAsync(user, cancellationToken);
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.Users.CreateAsync(user, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                var role = await unitOfWork.Roles.GetAll()
-                    .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
-                if (role == null)
-                    return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+            var role = await unitOfWork.Roles.GetAll()
+                .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
+            if (role == null)
+                return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
-                user.Roles = [role];
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            user.Roles = [role];
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                var identityDto = mapper.Map<IdentityRegisterUserDto>(user);
-                identityDto.Password = dto.Password;
+            var identityDto = mapper.Map<IdentityRegisterUserDto>(user);
+            identityDto.Password = dto.Password;
 
-                identityResponse = await identityServer.RegisterUserAsync(identityDto, cancellationToken);
-                user.IdentityId = identityResponse.IdentityId;
-                await unitOfWork.SaveChangesAsync(cancellationToken);
+            identityResponse = await identityServer.RegisterUserAsync(identityDto, cancellationToken);
+            user.IdentityId = identityResponse.IdentityId;
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
-                if (identityResponse != null)
-                    BackgroundJob.Enqueue(() =>
-                        identityServer.RollbackRegistrationAsync(new IdentityUserDto(identityResponse.IdentityId)));
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            if (identityResponse != null)
+                BackgroundJob.Enqueue(() =>
+                    identityServer.RollbackRegistrationAsync(new IdentityUserDto(identityResponse.IdentityId)));
 
-                throw;
-            }
+            throw;
         }
 
         return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
