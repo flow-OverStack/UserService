@@ -4,10 +4,8 @@ using StackExchange.Redis;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
 using UserService.Cache.Settings;
-using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Provider;
-using UserService.Domain.Interfaces.Repository;
-using Role = UserService.Domain.Entities.Role;
+using UserService.Domain.Interfaces.Repository.Cache;
 
 namespace UserService.Cache.DependencyInjection;
 
@@ -44,7 +42,7 @@ public static class DependencyInjection
 
     private static void InitRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IBaseCacheRepository<User, long>, UserCacheRepository>();
-        services.AddScoped<IBaseCacheRepository<Role, long>, RoleCacheRepository>();
+        services.AddScoped<IUserCacheRepository, UserCacheRepository>();
+        services.AddScoped<IRoleCacheRepository, RoleCacheRepository>();
     }
 }

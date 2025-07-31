@@ -1,4 +1,4 @@
-namespace UserService.Domain.Interfaces.Repository;
+namespace UserService.Domain.Interfaces.Repository.Cache;
 
 public interface IBaseCacheRepository<TEntity, TEntityId>
 {

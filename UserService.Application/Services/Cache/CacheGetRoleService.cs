@@ -1,14 +1,13 @@
 using UserService.Application.Enums;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
-using UserService.Domain.Helpers;
-using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 
 namespace UserService.Application.Services.Cache;
 
-public class CacheGetRoleService(IBaseCacheRepository<Role, long> cacheRepository, GetRoleService inner)
+public class CacheGetRoleService(IRoleCacheRepository cacheRepository, GetRoleService inner)
     : IGetRoleService
 {
     public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -20,11 +19,7 @@ public class CacheGetRoleService(IBaseCacheRepository<Role, long> cacheRepositor
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(
-            idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
-            cancellationToken
-        )).ToArray();
+        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray, cancellationToken)).ToArray();
 
         if (roles.Length == 0)
             return idsArray.Length switch
@@ -40,13 +35,8 @@ public class CacheGetRoleService(IBaseCacheRepository<Role, long> cacheRepositor
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        var groupedRoles = (await cacheRepository.GetGroupedByOuterIdOrFetchAndCacheAsync(
-            userIds,
-            CacheKeyHelper.GetUserRolesKey,
-            CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
-            cancellationToken
-        )).ToArray();
+        var groupedRoles =
+            (await cacheRepository.GetUsersRolesOrFetchAndCacheAsync(userIds, cancellationToken)).ToArray();
 
         if (groupedRoles.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,

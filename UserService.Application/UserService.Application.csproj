@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\UserService.Cache\UserService.Cache.csproj"/>
         <ProjectReference Include="..\UserService.Domain\UserService.Domain.csproj"/>
     </ItemGroup>
 

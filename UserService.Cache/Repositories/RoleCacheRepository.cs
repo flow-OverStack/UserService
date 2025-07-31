@@ -1,17 +1,21 @@
 using Microsoft.Extensions.Options;
+using UserService.Application.Services;
+using UserService.Cache.Helpers;
 using UserService.Cache.Settings;
 using UserService.Domain.Entities;
-using UserService.Domain.Helpers;
 using UserService.Domain.Interfaces.Provider;
-using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Interfaces.Repository.Cache;
+using UserService.Domain.Interfaces.Service;
 
 namespace UserService.Cache.Repositories;
 
-public class RoleCacheRepository : IBaseCacheRepository<Role, long>
+public class RoleCacheRepository : IRoleCacheRepository
 {
     private readonly IBaseCacheRepository<Role, long> _repository;
+    private readonly IGetRoleService _roleInner;
 
-    public RoleCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
+    public RoleCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
+        GetRoleService roleInner)
     {
         var settings = redisSettings.Value;
 
@@ -23,26 +27,26 @@ public class RoleCacheRepository : IBaseCacheRepository<Role, long>
             long.Parse,
             settings.TimeToLiveInSeconds
         );
+        _roleInner = roleInner;
     }
 
-    public Task<IEnumerable<Role>> GetByIdsOrFetchAndCacheAsync(
-        IEnumerable<long> ids,
-        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<Role>>> fetch,
+    public Task<IEnumerable<Role>> GetByIdsOrFetchAndCacheAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        return _repository.GetByIdsOrFetchAndCacheAsync(ids, fetch, cancellationToken);
+        return _repository.GetByIdsOrFetchAndCacheAsync(
+            ids,
+            async (idsToFetch, ct) => (await _roleInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken);
     }
 
-    public Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<Role>>>>
-        GetGroupedByOuterIdOrFetchAndCacheAsync<TOuterId>(
-            IEnumerable<TOuterId> outerIds,
-            Func<TOuterId, string> getOuterKey,
-            Func<string, TOuterId> parseOuterIdFromKey,
-            Func<IEnumerable<TOuterId>, CancellationToken,
-                Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<Role>>>>> fetch,
-            CancellationToken cancellationToken = default)
+    public Task<IEnumerable<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesOrFetchAndCacheAsync(
+        IEnumerable<long> userIds,
+        CancellationToken cancellationToken = default)
     {
-        return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(outerIds, getOuterKey, parseOuterIdFromKey, fetch,
+        return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(userIds,
+            CacheKeyHelper.GetUserRolesKey,
+            CacheKeyHelper.GetIdFromKey,
+            async (idsToFetch, ct) => (await _roleInner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
     }
 }

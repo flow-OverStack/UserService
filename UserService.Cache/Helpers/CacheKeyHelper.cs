@@ -1,4 +1,4 @@
-namespace UserService.Domain.Helpers;
+namespace UserService.Cache.Helpers;
 
 public static class CacheKeyHelper
 {
