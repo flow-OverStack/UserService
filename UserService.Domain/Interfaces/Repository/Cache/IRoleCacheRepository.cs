@@ -21,7 +21,7 @@ public interface IRoleCacheRepository
     ///     Retrieves roles grouped by user identifiers from the cache.
     ///     If any user or roles are missing, the data is fetched and cached accordingly.
     /// </summary>
-    /// <param name="userIds">The list of user IDs whose users should be retrieved.</param>
+    /// <param name="userIds">The list of user IDs whose roles should be retrieved.</param>
     /// <param name="cancellationToken">A cancellation token for the asynchronous operation.</param>
     /// ///
     /// <returns>
