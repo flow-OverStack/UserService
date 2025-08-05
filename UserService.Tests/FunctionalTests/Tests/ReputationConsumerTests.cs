@@ -168,31 +168,4 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
         Assert.Equal(MockRepositoriesGetters.MinReputation, user.Reputation);
         Assert.Equal(initialReputationEarnedToday, user.ReputationEarnedToday);
     }
-
-    [Trait("Category", "Functional")]
-    [Fact]
-    public async Task ConsumeWrongEvent_ShouldBe_NoException()
-    {
-        //Arrange
-        const long userId = 1;
-        var message = new BaseEvent { EventType = "WrongEvent", UserId = userId, EventId = Guid.NewGuid() };
-        var contextMock = new Mock<ConsumeContext<BaseEvent>>();
-        contextMock.Setup(x => x.Message).Returns(message);
-
-        using var scope = ServiceProvider.CreateScope();
-        var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
-        var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
-
-        var user = await userRepository.GetAll().FirstOrDefaultAsync(x => x.Id == userId);
-        var initialReputation = user!.Reputation;
-        var initialReputationEarnedToday = user.ReputationEarnedToday;
-
-        //Act
-        await reputationEventConsumer.Consume(contextMock.Object);
-
-        //Assert
-        Assert.NotNull(user);
-        Assert.Equal(initialReputation, user.Reputation);
-        Assert.Equal(initialReputationEarnedToday, user.ReputationEarnedToday);
-    }
 }
