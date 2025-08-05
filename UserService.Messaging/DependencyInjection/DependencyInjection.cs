@@ -14,6 +14,24 @@ namespace UserService.Messaging.DependencyInjection;
 
 public static class DependencyInjection
 {
+    private static TimeSpan[] ImmediateRetryIntervals =>
+    [
+        TimeSpan.FromSeconds(5),
+        TimeSpan.FromSeconds(10),
+        TimeSpan.FromSeconds(15),
+        TimeSpan.FromSeconds(30)
+    ];
+
+    /*private static TimeSpan[] ScheduledRedeliveryIntervals =>
+    [
+        TimeSpan.FromMinutes(1),
+        TimeSpan.FromMinutes(5),
+        TimeSpan.FromMinutes(10),
+        TimeSpan.FromHours(1),
+        TimeSpan.FromHours(12),
+        TimeSpan.FromHours(24)
+    ];*/
+
     /// <summary>
     ///     Adds message brokers with MassTransit
     /// </summary>
@@ -45,7 +63,16 @@ public static class DependencyInjection
 
                     factoryConfigurator.TopicEndpoint<BaseEvent>(kafkaSettings.ReputationTopic,
                         kafkaSettings.ReputationConsumerGroup,
-                        e => { e.ConfigureConsumer<ReputationEventConsumer>(context); });
+                        cfg =>
+                        {
+                            cfg.ConfigureConsumer<ReputationEventConsumer>(context);
+
+                            // Kafka-only configuration
+                            cfg.UseMessageRetry(r => r.Intervals(ImmediateRetryIntervals));
+
+                            cfg.UseInMemoryOutbox(context);
+                        }
+                    );
                 });
             });
         });

@@ -19,8 +19,8 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
     {
         return
         [
-            BaseEventType.AnswerAccepted.ToString(), BaseEventType.AnswerUpvote.ToString(),
-            BaseEventType.QuestionUpvote.ToString(), BaseEventType.UserAcceptedAnswer.ToString()
+            nameof(BaseEventType.AnswerAccepted), nameof(BaseEventType.AnswerUpvote),
+            nameof(BaseEventType.QuestionUpvote), nameof(BaseEventType.UserAcceptedAnswer)
         ];
     }
 
@@ -28,8 +28,8 @@ public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFacto
     {
         return
         [
-            BaseEventType.AnswerDownvote.ToString(), BaseEventType.DownvoteGivenForAnswer.ToString(),
-            BaseEventType.QuestionDownvote.ToString()
+            nameof(BaseEventType.AnswerDownvote), nameof(BaseEventType.DownvoteGivenForAnswer),
+            nameof(BaseEventType.QuestionDownvote)
         ];
     }
 

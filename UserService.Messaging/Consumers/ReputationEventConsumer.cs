@@ -17,32 +17,22 @@ public class ReputationEventConsumer(
 {
     public async Task Consume(ConsumeContext<BaseEvent> context)
     {
-        try
+        if (await processedEventRepository.IsEventProcessedAsync(context.Message.EventId))
         {
-            if (await processedEventRepository.IsEventProcessedAsync(context.Message.EventId))
-            {
-                logger.Warning(
-                    "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
-                    context.Message.UserId, context.Message.EventType, context.Message.EventId);
-                return;
-            }
-
-
-            var strategy = reputationResolver.Resolve(context.Message.EventType);
-            var reputationChange = strategy.CalculateReputationChange();
-
-            var result = await UpdateReputationAsync(context.Message, reputationChange);
-
-            await processedEventRepository.MarkAsProcessedAsync(context.Message.EventId);
-
-            LogReputationResult(context.Message, result);
+            logger.Warning(
+                "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
+                context.Message.UserId, context.Message.EventType, context.Message.EventId);
+            return;
         }
-        catch (Exception e)
-        {
-            logger.Error(e,
-                "Failed to update reputation: {ErrorMessage} UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
-                e.Message, context.Message.UserId, context.Message.EventType, context.Message.EventId);
-        }
+
+        var strategy = reputationResolver.Resolve(context.Message.EventType);
+        var reputationChange = strategy.CalculateReputationChange();
+
+        var result = await UpdateReputationAsync(context.Message, reputationChange);
+
+        await processedEventRepository.MarkAsProcessedAsync(context.Message.EventId);
+
+        LogReputationResult(context.Message, result);
     }
 
     private async Task<BaseResult<ReputationDto>> UpdateReputationAsync(BaseEvent message, int reputationChange,

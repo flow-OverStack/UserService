@@ -207,7 +207,8 @@ public static class Startup
             .UseFilter(new AutomaticRetryAttribute
             {
                 Attempts = 10,
-                DelaysInSeconds = [30, 60, 300, 600, 1800, 43200, 86400] //30sec, 1min, 5min, 10min, 1h, 12h, 24h
+                //5sec, 10 sec, 15sec, 30sec, 1min, 5min, 10min, 1h, 12h, 24h
+                DelaysInSeconds = [5, 10, 15, 30, 60, 300, 600, 1800, 43200, 86400]
             }));
 
         services.AddHangfireServer();
