@@ -1,8 +1,10 @@
+using Confluent.Kafka;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using UserService.Domain.Events;
 using UserService.Messaging.Consumers;
+using UserService.Messaging.Filters;
 using UserService.Messaging.Interfaces;
 using UserService.Messaging.Processors;
 using UserService.Messaging.Settings;
@@ -14,24 +16,6 @@ namespace UserService.Messaging.DependencyInjection;
 
 public static class DependencyInjection
 {
-    private static TimeSpan[] ImmediateRetryIntervals =>
-    [
-        TimeSpan.FromSeconds(5),
-        TimeSpan.FromSeconds(10),
-        TimeSpan.FromSeconds(15),
-        TimeSpan.FromSeconds(30)
-    ];
-
-    /*private static TimeSpan[] ScheduledRedeliveryIntervals =>
-    [
-        TimeSpan.FromMinutes(1),
-        TimeSpan.FromMinutes(5),
-        TimeSpan.FromMinutes(10),
-        TimeSpan.FromHours(1),
-        TimeSpan.FromHours(12),
-        TimeSpan.FromHours(24)
-    ];*/
-
     /// <summary>
     ///     Adds message brokers with MassTransit
     /// </summary>
@@ -55,6 +39,12 @@ public static class DependencyInjection
             {
                 rider.AddConsumer<ReputationEventConsumer>();
 
+                // Scope is not created because IOptions<KafkaSettings> is a singleton
+                using var provider = rider.BuildServiceProvider();
+                var kafkaReputationTopic = provider.GetRequiredService<IOptions<KafkaSettings>>().Value.ReputationTopic;
+                rider.AddProducer<BaseEvent>(kafkaReputationTopic,
+                    new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
+
                 rider.UsingKafka((context, factoryConfigurator) =>
                 {
                     var kafkaSettings = context.GetRequiredService<IOptions<KafkaSettings>>().Value;
@@ -66,11 +56,7 @@ public static class DependencyInjection
                         cfg =>
                         {
                             cfg.ConfigureConsumer<ReputationEventConsumer>(context);
-
-                            // Kafka-only configuration
-                            cfg.UseMessageRetry(r => r.Intervals(ImmediateRetryIntervals));
-
-                            cfg.UseInMemoryOutbox(context);
+                            cfg.UseFilter(new RetryAndRedeliveryFilter<BaseEvent>());
                         }
                     );
                 });
