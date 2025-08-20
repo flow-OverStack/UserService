@@ -54,7 +54,7 @@ public class RetryAndRedeliveryFilter<TEvent> : IFilter<ConsumeContext<TEvent>> 
             if (redeliveryCountObj is string s && int.TryParse(s, out var parsed))
                 redeliveryCount = ++parsed;
 
-            if (redeliveryCount >= ScheduledRedeliveryIntervals.Length) return;
+            if (redeliveryCount >= ScheduledRedeliveryIntervals.Length) throw;
 
             var message = context.Message;
             BackgroundJob.Schedule<RedeliveryJob>(

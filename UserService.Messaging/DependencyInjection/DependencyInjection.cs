@@ -6,6 +6,7 @@ using UserService.Domain.Events;
 using UserService.Messaging.Consumers;
 using UserService.Messaging.Filters;
 using UserService.Messaging.Interfaces;
+using UserService.Messaging.Messages;
 using UserService.Messaging.Processors;
 using UserService.Messaging.Settings;
 using UserService.Messaging.Strategies.Reputation;
@@ -41,8 +42,11 @@ public static class DependencyInjection
 
                 // Scope is not created because IOptions<KafkaSettings> is a singleton
                 using var provider = rider.BuildServiceProvider();
-                var kafkaReputationTopic = provider.GetRequiredService<IOptions<KafkaSettings>>().Value.ReputationTopic;
-                rider.AddProducer<BaseEvent>(kafkaReputationTopic,
+                var kafkaSettings = provider.GetRequiredService<IOptions<KafkaSettings>>().Value;
+
+                rider.AddProducer<BaseEvent>(kafkaSettings.ReputationTopic,
+                    new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
+                rider.AddProducer<FaultedMessage>(kafkaSettings.DeadLetterTopic,
                     new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
 
                 rider.UsingKafka((context, factoryConfigurator) =>
@@ -56,6 +60,9 @@ public static class DependencyInjection
                         cfg =>
                         {
                             cfg.ConfigureConsumer<ReputationEventConsumer>(context);
+
+                            cfg.UseFilter(
+                                new DeadLetterFilter<BaseEvent>(context.GetRequiredService<IServiceScopeFactory>()));
                             cfg.UseFilter(new RetryAndRedeliveryFilter<BaseEvent>());
                         }
                     );
