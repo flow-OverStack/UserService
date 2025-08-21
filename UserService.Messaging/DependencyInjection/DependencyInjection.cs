@@ -61,9 +61,13 @@ public static class DependencyInjection
                         {
                             cfg.ConfigureConsumer<ReputationEventConsumer>(context);
 
-                            cfg.UseFilter(
-                                new DeadLetterFilter<BaseEvent>(context.GetRequiredService<IServiceScopeFactory>()));
-                            cfg.UseFilter(new RetryAndRedeliveryFilter<BaseEvent>());
+                            cfg.UseFilter(new ResilientConsumeFilter<BaseEvent>());
+
+                            cfg.UseKillSwitch(options => options
+                                .SetActivationThreshold(10)
+                                .SetTrackingPeriod(TimeSpan.FromMinutes(3))
+                                .SetTripThreshold(15)
+                                .SetRestartTimeout(TimeSpan.FromMinutes(1)));
                         }
                     );
                 });

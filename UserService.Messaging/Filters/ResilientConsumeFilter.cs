@@ -1,9 +1,11 @@
 using Hangfire;
 using MassTransit;
+using Newtonsoft.Json;
+using UserService.Messaging.Messages;
 
 namespace UserService.Messaging.Filters;
 
-public class RetryAndRedeliveryFilter<TEvent> : IFilter<ConsumeContext<TEvent>> where TEvent : class
+public class ResilientConsumeFilter<TEvent> : IFilter<ConsumeContext<TEvent>> where TEvent : class
 {
     private const string RedeliveryCountHeader = "RedeliveryCount";
 
@@ -31,7 +33,7 @@ public class RetryAndRedeliveryFilter<TEvent> : IFilter<ConsumeContext<TEvent>> 
         {
             await next.Send(context);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             var redeliveryHeaderExists =
                 context.Headers.TryGetHeader(RedeliveryCountHeader, out var redeliveryCountObj);
@@ -54,19 +56,37 @@ public class RetryAndRedeliveryFilter<TEvent> : IFilter<ConsumeContext<TEvent>> 
             if (redeliveryCountObj is string s && int.TryParse(s, out var parsed))
                 redeliveryCount = ++parsed;
 
-            if (redeliveryCount >= ScheduledRedeliveryIntervals.Length) throw;
+            if (redeliveryCount >= ScheduledRedeliveryIntervals.Length) MoveToDeadLetterQueue(context, e);
 
             var message = context.Message;
             BackgroundJob.Schedule<RedeliveryJob>(
                 job => job.PublishWithRedelivery(message, redeliveryCount),
                 ScheduledRedeliveryIntervals[redeliveryCount]);
+
+            // Throwing the exception for killswitch to handle it
+            throw;
         }
     }
 
     public void Probe(ProbeContext context)
     {
-        context.CreateFilterScope(nameof(RetryAndRedeliveryFilter<TEvent>));
+        context.CreateFilterScope(nameof(ResilientConsumeFilter<TEvent>));
         context.Add("maxRetries", ScheduledRedeliveryIntervals.Length);
+    }
+
+    private static void MoveToDeadLetterQueue(ConsumeContext<TEvent> context, Exception e)
+    {
+        var message = new FaultedMessage
+        {
+            SerializedMessage = JsonConvert.SerializeObject(context.Message),
+            ErrorMessage = e.Message,
+            StackTrace = e.StackTrace!,
+            Source = context.DestinationAddress!.AbsoluteUri
+        };
+        var ct = context.CancellationToken;
+
+        BackgroundJob.Enqueue<ITopicProducer<FaultedMessage>>(producer =>
+            producer.Produce(message, ct));
     }
 
     private sealed class RedeliveryJob(ITopicProducer<TEvent> producer)
