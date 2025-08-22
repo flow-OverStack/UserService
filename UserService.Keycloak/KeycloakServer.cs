@@ -17,7 +17,7 @@ using UserService.Keycloak.Settings;
 
 namespace UserService.Keycloak;
 
-public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpClientFactory httpClientFactory)
+public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpClient httpClient)
     : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
@@ -28,7 +28,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     private const int TokenExpirationThresholdInSeconds = 5;
 
     private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
-    private readonly HttpClient _httpClient = httpClientFactory.CreateClient(nameof(KeycloakServer));
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceToken? Token { get; set; }
 
@@ -60,14 +59,14 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             await SetAuthHeaderAsync(cancellationToken);
             var createResponse =
-                await _httpClient.PostAsync(_keycloakSettings.UsersEndpoint, content, cancellationToken);
+                await httpClient.PostAsync(_keycloakSettings.UsersEndpoint, content, cancellationToken);
 
             createResponse.EnsureSuccessStatusCode();
 
             // Get created user
 
             await SetAuthHeaderAsync(cancellationToken);
-            var getResponse = await _httpClient.GetAsync($"{_keycloakSettings.UsersEndpoint}?username={dto.Username}",
+            var getResponse = await httpClient.GetAsync($"{_keycloakSettings.UsersEndpoint}?username={dto.Username}",
                 cancellationToken);
 
             getResponse.EnsureSuccessStatusCode();
@@ -101,7 +100,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             var content = new FormUrlEncodedContent(parameters);
 
-            var response = await _httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
+            var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
 
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
             var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
@@ -145,7 +144,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
             var content = new FormUrlEncodedContent(parameters);
 
-            var response = await _httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
+            var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
 
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
             var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
@@ -194,7 +193,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             await SetAuthHeaderAsync(cancellationToken);
-            var response = await _httpClient.PutAsync(
+            var response = await httpClient.PutAsync(
                 $"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
 
             response.EnsureSuccessStatusCode();
@@ -208,7 +207,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     public async Task RollbackRegistrationAsync(IdentityUserDto dto)
     {
         await SetAuthHeaderAsync();
-        await _httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}");
+        await httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}");
     }
 
     public async Task RollbackUpdateRolesAsync(IdentityUpdateRolesDto dto)
@@ -227,7 +226,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         await SetAuthHeaderAsync();
-        await _httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content);
+        await httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content);
     }
 
 
@@ -245,7 +244,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
 
         var content = new FormUrlEncodedContent(parameters);
 
-        var response = await _httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
+        var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
@@ -282,7 +281,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, IHttpCl
     private async Task SetAuthHeaderAsync(CancellationToken cancellationToken = default)
     {
         await UpdateServiceTokenIfNeededAsync(cancellationToken);
-        _httpClient.DefaultRequestHeaders.Authorization =
+        httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
     }
 }

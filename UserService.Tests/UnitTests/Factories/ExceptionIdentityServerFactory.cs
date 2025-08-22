@@ -10,8 +10,8 @@ internal class ExceptionIdentityServerFactory
 {
     private readonly IIdentityServer _identityServer;
 
-    public readonly IHttpClientFactory HttpClientFactory =
-        ExceptionHttpClientFactoryConfiguration.GetHttpClientFactoryConfiguration();
+    public readonly HttpClient HttpClient =
+        ExceptionHttpClientConfiguration.GetHttpClientConfiguration();
 
     public readonly KeycloakSettings KeycloakSettings = new()
     {
@@ -27,7 +27,7 @@ internal class ExceptionIdentityServerFactory
     public ExceptionIdentityServerFactory()
     {
         _identityServer =
-            new KeycloakServer(Options.Create(KeycloakSettings), HttpClientFactory);
+            new KeycloakServer(Options.Create(KeycloakSettings), HttpClient);
     }
 
     public IIdentityServer GetService()

@@ -24,6 +24,8 @@ builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameo
 builder.Services.Configure<PaginationRules>(builder.Configuration.GetSection(nameof(PaginationRules)));
 builder.Services.Configure<ReputationRules>(builder.Configuration.GetSection(nameof(ReputationRules)));
 
+builder.Services.ConfigureHttpClientDefaults(clientBuilder => clientBuilder.AddStandardResilienceHandler());
+
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
 
