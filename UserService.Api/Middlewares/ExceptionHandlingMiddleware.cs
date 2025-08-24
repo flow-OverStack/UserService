@@ -23,7 +23,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
 
     private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
-        logger.Error(exception, "Error: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+        logger.Error(exception, "Error: {ErrorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
             exception.Message.TrimEnd('.'),
             httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
 
