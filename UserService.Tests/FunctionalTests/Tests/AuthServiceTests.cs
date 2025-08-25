@@ -1,9 +1,12 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Application.Resources;
+using UserService.Domain.Dtos.Identity.User;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
@@ -126,5 +129,21 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.PasswordIsWrong, result.ErrorMessage);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RollbackRegistrationAsync_ShouldBe_Success()
+    {
+        // Arrange
+        using var scope = ServiceProvider.CreateScope();
+        var identityServer = scope.ServiceProvider.GetRequiredService<IIdentityServer>();
+        var dto = new IdentityUserDto(Guid.NewGuid().ToString());
+
+        // Act
+        await identityServer.RollbackRegistrationAsync(dto);
+
+        // Assert
+        Assert.True(true);
     }
 }

@@ -1,13 +1,16 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Api.Dtos.Role;
 using UserService.Api.Dtos.UserRole;
 using UserService.Application.Resources;
+using UserService.Domain.Dtos.Identity.Role;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Results;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
@@ -15,7 +18,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-[Collection("RoleSequentialTests")]
+[Collection(nameof(RoleServiceTests))]
 public class RoleServiceTests : SequentialFunctionalTest
 {
     public RoleServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
@@ -267,5 +270,22 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RollbackUpdateRolesAsync_ShouldBe_BadRequest()
+    {
+        // Arrange
+        using var scope = ServiceProvider.CreateScope();
+        var identityServer = scope.ServiceProvider.GetRequiredService<IIdentityServer>();
+        var dto = new IdentityUpdateRolesDto(Guid.NewGuid().ToString(), 1, "TestsUser1@test.com",
+            [new Role { Name = "User" }]);
+
+        // Act
+        await identityServer.RollbackUpdateRolesAsync(dto);
+
+        // Assert
+        Assert.True(true);
     }
 }

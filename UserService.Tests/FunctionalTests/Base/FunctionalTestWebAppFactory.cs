@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,11 +7,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Moq;
 using Testcontainers.PostgreSql;
 using Testcontainers.Redis;
 using UserService.Cache.Settings;
 using UserService.DAL;
+using UserService.Domain.Events;
 using UserService.Keycloak.Settings;
+using UserService.Messaging.Consumers;
+using UserService.Messaging.Messages;
+using UserService.Messaging.Settings;
 using UserService.Tests.FunctionalTests.Configurations;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using UserService.Tests.FunctionalTests.Extensions;
@@ -62,6 +68,8 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
     {
         builder.ConfigureAppConfiguration((_, config) =>
         {
+            // Even though we use in-memory storage for hangfire
+            // We have to specify connection string to avoid getting the exception
             var testConfig = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
@@ -108,6 +116,22 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
                 x.Port = port;
                 x.Password = null!;
             });
+
+            services.RemoveAll<IOptions<KafkaSettings>>();
+            services.Configure<KafkaSettings>(x =>
+            {
+                x.Host = "test-host";
+                x.ReputationTopic = "test-topic";
+                x.ReputationConsumerGroup = "test-consumer-group";
+            });
+
+            var mockBaseEventProducer = new Mock<ITopicProducer<BaseEvent>>();
+            var mockFaultedMessageProducer = new Mock<ITopicProducer<FaultedMessage>>();
+            mockBaseEventProducer.Setup(x => x.Produce(It.IsAny<BaseEvent>(), It.IsAny<CancellationToken>()));
+            mockFaultedMessageProducer.Setup(x => x.Produce(It.IsAny<FaultedMessage>(), It.IsAny<CancellationToken>()));
+            services.AddScoped<IConsumer<BaseEvent>, ReputationEventConsumer>();
+            services.AddScoped<ITopicProducer<BaseEvent>>(_ => mockBaseEventProducer.Object);
+            services.AddScoped<ITopicProducer<FaultedMessage>>(_ => mockFaultedMessageProducer.Object);
         });
     }
 }

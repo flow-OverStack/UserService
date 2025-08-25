@@ -14,7 +14,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
-[Collection("GraphQlSequentialTests")]
+[Collection(nameof(GraphQlSequentialTests))]
 public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]

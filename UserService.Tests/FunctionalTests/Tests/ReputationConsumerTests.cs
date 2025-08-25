@@ -7,13 +7,13 @@ using UserService.Domain.Enums;
 using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.Configurations;
-using UserService.Tests.FunctionalTests.Base.Kafka;
+using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-public class ReputationConsumerTests(ReputationConsumerFunctionalTestWebAppFactory factory)
-    : ReputationConsumerBaseFunctionalTest(factory)
+[Collection(nameof(ReputationConsumerTests))]
+public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     public static TheoryData<string> GetPositiveEvents()
     {

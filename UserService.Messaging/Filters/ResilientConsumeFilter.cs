@@ -56,7 +56,11 @@ public class ResilientConsumeFilter<TEvent> : IFilter<ConsumeContext<TEvent>> wh
             if (redeliveryCountObj is string s && int.TryParse(s, out var parsed))
                 redeliveryCount = ++parsed;
 
-            if (redeliveryCount >= ScheduledRedeliveryIntervals.Length) MoveToDeadLetterQueue(context, e);
+            if (redeliveryCount >= ScheduledRedeliveryIntervals.Length)
+            {
+                MoveToDeadLetterQueue(context, e);
+                throw;
+            }
 
             var message = context.Message;
             BackgroundJob.Schedule<RedeliveryJob>(
