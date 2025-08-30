@@ -1,5 +1,8 @@
+using System.Globalization;
 using System.Net;
 using Newtonsoft.Json;
+using UserService.Application.Enums;
+using UserService.Application.Resources;
 using UserService.Domain.Results;
 using ILogger = Serilog.ILogger;
 
@@ -37,10 +40,12 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
                 swapStream.Seek(0, SeekOrigin.Begin);
 
                 var data = JsonConvert.DeserializeObject<BaseResult>(responseBody);
+                var errorMessage = GetDefaultErrorMessage(data?.ErrorCode, data?.ErrorMessage);
 
-                logger.Warning("Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
-                    data?.ErrorMessage?.TrimEnd('.') ?? responseBody,
-                    httpContext.Request.Path, httpContext.Request.Method, httpContext.Connection.RemoteIpAddress);
+                logger.Warning(
+                    "Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+                    errorMessage ?? responseBody, httpContext.Request.Path, httpContext.Request.Method,
+                    httpContext.Connection.RemoteIpAddress);
             }
 
             // Copy the intercepted response back to the original response stream
@@ -50,5 +55,16 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
         {
             httpContext.Response.Body = originalResponseBody;
         }
+    }
+
+    private static string? GetDefaultErrorMessage(int? errorCode, string? fallbackErrorMessage)
+    {
+        var errorMessage = errorCode is { } code && Enum.GetName(typeof(ErrorCodes), code) is { } name
+            ? ErrorMessage.ResourceManager.GetString(name, CultureInfo.DefaultThreadCurrentCulture) ??
+              fallbackErrorMessage
+            : fallbackErrorMessage;
+
+
+        return errorMessage?.TrimEnd('.');
     }
 }

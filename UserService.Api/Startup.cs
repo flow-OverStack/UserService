@@ -347,11 +347,27 @@ public static class Startup
         });
     }
 
-    private static IEnumerable<string> GetHosts(this WebApplication app)
+    /// <summary>
+    ///     Configures the application to use localization with specified supported cultures and default request culture.
+    /// </summary>
+    /// <param name="app">The web application to which the localization middleware is added.</param>
+    public static void UseLocalization(this IApplicationBuilder app)
+    {
+        app.UseRequestLocalization(options =>
+        {
+            string[] supportedCultures = ["en", "ru-by"];
+            options.SetDefaultCulture(supportedCultures[0]);
+            options.AddSupportedCultures(supportedCultures);
+            options.AddSupportedUICultures(supportedCultures);
+            options.ApplyCurrentCultureToResponseHeaders = true;
+        });
+    }
+
+    private static IEnumerable<string> GetHosts(this IApplicationBuilder app)
     {
         HashSet<string> hosts = [];
 
-        var serverAddressesFeature = ((IApplicationBuilder)app).ServerFeatures.Get<IServerAddressesFeature>();
+        var serverAddressesFeature = app.ServerFeatures.Get<IServerAddressesFeature>();
         serverAddressesFeature?.Addresses.ToList().ForEach(x => hosts.Add(x));
 
         return hosts;

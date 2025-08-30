@@ -25,6 +25,7 @@ builder.Services.Configure<PaginationRules>(builder.Configuration.GetSection(nam
 builder.Services.Configure<ReputationRules>(builder.Configuration.GetSection(nameof(ReputationRules)));
 
 builder.Services.ConfigureHttpClientDefaults(clientBuilder => clientBuilder.AddStandardResilienceHandler());
+builder.Services.AddLocalization(options => options.ResourcesPath = nameof(UserService.Application.Resources));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
@@ -61,6 +62,7 @@ app.UseSwagger();
 
 app.UseRouting();
 app.MapControllers();
+app.UseLocalization();
 app.UseGraphQl();
 app.UseGrpcServices();
 app.UseHangfire();
