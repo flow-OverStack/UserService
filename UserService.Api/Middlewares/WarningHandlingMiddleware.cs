@@ -43,7 +43,7 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
                 var errorMessage = GetDefaultErrorMessage(data?.ErrorCode, data?.ErrorMessage);
 
                 logger.Warning(
-                    "Bad request: {errorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
+                    "Bad request: {ErrorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
                     errorMessage ?? responseBody, httpContext.Request.Path, httpContext.Request.Method,
                     httpContext.Connection.RemoteIpAddress);
             }
