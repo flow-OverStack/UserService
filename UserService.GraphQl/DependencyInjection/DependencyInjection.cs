@@ -43,7 +43,6 @@ public static class DependencyInjection
                     .DefaultPageSize;
 
                 opt.DefaultPageSize = defaultSize;
-                opt.MaxPageSize = int.MaxValue; // Unlimited, we will handle it in middleware
                 opt.IncludeTotalCount = true;
             })
             .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
