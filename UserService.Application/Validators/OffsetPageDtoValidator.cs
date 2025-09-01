@@ -13,7 +13,7 @@ public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>, INullSaf
         var maxPageSize = businessRules.Value.MaxPageSize;
 
         RuleFor(x => x.Skip).NotNull().GreaterThanOrEqualTo(0);
-        RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize + 1);
+        RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize);
     }
 
     public bool IsValid(OffsetPageDto? instance, out IEnumerable<string> errorMessages)
