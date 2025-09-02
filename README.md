@@ -66,12 +66,13 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
     }
    }
    ```
-4. Start supporting services:
+3. Start supporting services:
 
    ```bash
    docker-compose -p flowoverstack -f docker-compose.common.yml up -d
    docker-compose -p userservice -f docker-compose.yml up -d
    ```
+4. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing)
 5. Run the API:
 
    ```bash
