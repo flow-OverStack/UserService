@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security;
 using Asp.Versioning;
@@ -69,7 +70,8 @@ public static class Startup
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
-                ValidateIssuerSigningKey = true
+                ValidateIssuerSigningKey = true,
+                NameClaimType = JwtRegisteredClaimNames.PreferredUsername
             };
         });
     }

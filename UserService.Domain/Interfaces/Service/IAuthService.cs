@@ -31,4 +31,12 @@ public interface IAuthService
     /// <returns></returns>
     Task<BaseResult<TokenDto>>
         LoginWithEmailAsync(LoginEmailUserDto dto, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Inits user from his access token
+    /// </summary>
+    /// <param name="dto"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<BaseResult<UserDto>> InitAsync(InitUserDto dto, CancellationToken cancellationToken = default);
 }

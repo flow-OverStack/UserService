@@ -74,7 +74,7 @@ internal static class TokenHelper
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([new Claim(ClaimTypes.Name, username)]),
+            Subject = new ClaimsIdentity([new Claim(JwtRegisteredClaimNames.PreferredUsername, username)]),
             Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
             Audience = Audience,

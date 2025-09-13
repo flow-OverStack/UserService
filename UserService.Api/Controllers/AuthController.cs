@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
 using UserService.Domain.Dtos.Token;
@@ -86,5 +88,41 @@ public class AuthController(IAuthService authService) : BaseController
         var result = await authService.LoginWithUsernameAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
+    }
+
+    /// <summary>
+    ///     Initializes user profile.
+    ///     Must be called once after registration.
+    ///     Frontend is responsible for guaranteed invocation of this endpoint.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <remarks>
+    ///     Request for user initialization:
+    ///     POST init
+    /// </remarks>
+    [Authorize]
+    [HttpPost("init")]
+    public async Task<ActionResult<BaseResult<UserDto>>> Init(CancellationToken cancellationToken)
+    {
+        var (username, email, identityId) = GetIdentityClaims();
+
+        if (username == null || email == null || identityId == null)
+            return Unauthorized("Required claims are missing");
+
+        var dto = new InitUserDto(username, email, identityId);
+
+        var result = await authService.InitAsync(dto, cancellationToken);
+
+        return HandleBaseResult(result);
+    }
+
+    private (string? username, string? email, string? identityId) GetIdentityClaims()
+    {
+        var username = User.Identity?.Name;
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var identityId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        return (username, email, identityId);
     }
 }

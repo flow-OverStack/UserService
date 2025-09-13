@@ -103,6 +103,52 @@ public class AuthService(
         return await LoginAsync(user, dto.Password, cancellationToken);
     }
 
+    public async Task<BaseResult<UserDto>> InitAsync(InitUserDto dto, CancellationToken cancellationToken = default)
+    {
+        if (!IsEmail(dto.Email))
+            return BaseResult<UserDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
+
+        var lowerUsername = dto.Username.ToLowerInvariant();
+
+        var user = await unitOfWork.Users.GetAll()
+                       .FirstOrDefaultAsync(x => x.Username == lowerUsername, cancellationToken) ??
+                   await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
+        if (user != null)
+            return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
+
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            user = new User
+            {
+                Username = lowerUsername,
+                Email = dto.Email,
+                LastLoginAt = DateTime.UtcNow,
+                IdentityId = dto.IdentityId
+            };
+
+            await unitOfWork.Users.CreateAsync(user, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var role = await unitOfWork.Roles.GetAll()
+                .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
+            if (role == null)
+                return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+
+            user.Roles = [role];
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            throw;
+        }
+
+        return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
+    }
+
     private async Task<BaseResult<TokenDto>> LoginAsync(User? user, string password,
         CancellationToken cancellationToken = default)
     {
@@ -124,15 +170,7 @@ public class AuthService(
 
     private static bool IsEmail(string email)
     {
-        try
-        {
-            _ = new MailAddress(email);
-            return true;
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
+        return MailAddress.TryCreate(email, out _);
     }
 
     private static async Task<BaseResult<TokenDto>> SafeLoginUserAsync(IIdentityServer identityServer,
