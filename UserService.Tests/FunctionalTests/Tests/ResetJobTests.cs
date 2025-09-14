@@ -17,7 +17,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
     public async Task RunReputationResetJob_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationResetJob = ActivatorUtilities.CreateInstance<ReputationResetJob>(scope.ServiceProvider);
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
@@ -35,7 +35,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
     public async Task RunProcessedEvent_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var processedEventsResetJob = ActivatorUtilities.CreateInstance<ProcessedEventsResetJob>(scope.ServiceProvider);
         var eventRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<ProcessedEvent>>();
 

@@ -1,5 +1,6 @@
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using UserService.BackgroundJobs.Jobs;
 
 namespace UserService.BackgroundJobs.DependencyInjection;
@@ -14,9 +15,11 @@ public static class DependencyInjection
     {
         app.Lifetime.ApplicationStarted.Register(() =>
             {
-                RecurringJob.AddOrUpdate<ReputationResetJob>("ReputationDailyReset",
+                using var scope = app.Services.CreateAsyncScope();
+                var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+                recurringJobManager.AddOrUpdate<ReputationResetJob>("ReputationDailyReset",
                     job => job.RunAsync(CancellationToken.None), Cron.Daily);
-                RecurringJob.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset",
+                recurringJobManager.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset",
                     job => job.RunAsync(CancellationToken.None), Cron.Daily);
             }
         );

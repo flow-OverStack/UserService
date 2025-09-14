@@ -18,7 +18,8 @@ namespace UserService.Application.Services;
 public class RoleService(
     IMapper mapper,
     IUnitOfWork unitOfWork,
-    IIdentityServer identityServer)
+    IIdentityServer identityServer,
+    IBackgroundJobClient backgroundJob)
     : IRoleService
 {
     public async Task<BaseResult<RoleDto>> CreateRoleAsync(CreateRoleDto dto,
@@ -316,7 +317,7 @@ public class RoleService(
         {
             var dto = mapper.Map<IdentityUpdateRolesDto>(user);
             dto.NewRoles.ForEach(x => x.Users = null!); //Removing loop dependencies
-            BackgroundJob.Enqueue(() => identityServer.RollbackUpdateRolesAsync(dto));
+            backgroundJob.Enqueue<IIdentityServer>(server => server.RollbackUpdateRolesAsync(dto));
         }
     }
 }

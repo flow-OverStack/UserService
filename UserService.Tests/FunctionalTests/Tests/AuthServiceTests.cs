@@ -136,7 +136,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctio
     public async Task RollbackRegistrationAsync_ShouldBe_Success()
     {
         // Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var identityServer = scope.ServiceProvider.GetRequiredService<IIdentityServer>();
         var dto = new IdentityUserDto(Guid.NewGuid().ToString());
 

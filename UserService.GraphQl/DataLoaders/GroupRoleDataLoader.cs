@@ -18,7 +18,7 @@ public class GroupRoleDataLoader(
     protected override async Task<ILookup<long, Role>> LoadGroupedBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var roleService = scope.ServiceProvider.GetRequiredService<IGetRoleService>();
 
         var result = await roleService.GetUsersRolesAsync(keys, cancellationToken);

@@ -61,7 +61,9 @@ public static class DependencyInjection
                         {
                             cfg.ConfigureConsumer<ReputationEventConsumer>(context);
 
-                            cfg.UseFilter(new ResilientConsumeFilter<BaseEvent>());
+                            cfg.UseFilter(
+                                new ResilientConsumeFilter<BaseEvent>(
+                                    context.GetRequiredService<IServiceScopeFactory>()));
 
                             cfg.UseKillSwitch(options => options
                                 .SetActivationThreshold(10)

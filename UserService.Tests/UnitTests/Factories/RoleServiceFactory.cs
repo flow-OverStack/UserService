@@ -1,4 +1,5 @@
 using AutoMapper;
+using Hangfire;
 using UserService.Application.Services;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
@@ -12,6 +13,10 @@ namespace UserService.Tests.UnitTests.Factories;
 internal class RoleServiceFactory
 {
     private readonly IRoleService _roleService;
+
+    public readonly IBackgroundJobClient BackgroundJob =
+        BackgroundJobClientConfiguration.GetBackgroundJobClientConfiguration();
+
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
 
@@ -22,8 +27,7 @@ internal class RoleServiceFactory
         if (unitOfWork != null)
             UnitOfWork = unitOfWork;
 
-        _roleService = new RoleService(Mapper, UnitOfWork,
-            IdentityServer);
+        _roleService = new RoleService(Mapper, UnitOfWork, IdentityServer, BackgroundJob);
     }
 
     public IRoleService GetService()

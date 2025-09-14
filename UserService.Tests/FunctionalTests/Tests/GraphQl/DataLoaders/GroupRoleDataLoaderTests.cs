@@ -13,7 +13,7 @@ public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task LoadGrouped_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupRoleDataLoader>();
         const long userId = 1;
 
@@ -29,7 +29,7 @@ public class GroupRoleDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task Load_ShouldBe_NoRoles()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var dataLoader = scope.ServiceProvider.GetRequiredService<GroupRoleDataLoader>();
         const long userId = 0;
 

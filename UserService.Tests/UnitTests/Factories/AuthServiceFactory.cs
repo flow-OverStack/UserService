@@ -1,4 +1,5 @@
 using AutoMapper;
+using Hangfire;
 using UserService.Application.Services;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Identity;
@@ -13,6 +14,10 @@ namespace UserService.Tests.UnitTests.Factories;
 internal class AuthServiceFactory
 {
     private readonly IAuthService _authService;
+
+    public readonly IBackgroundJobClient BackgroundJob =
+        BackgroundJobClientConfiguration.GetBackgroundJobClientConfiguration();
+
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
     public readonly IUnitOfWork UnitOfWork;
@@ -23,7 +28,7 @@ internal class AuthServiceFactory
     {
         UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork(userRepository, roleRepository).Object;
 
-        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork);
+        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, BackgroundJob);
     }
 
     public IAuthService GetService()

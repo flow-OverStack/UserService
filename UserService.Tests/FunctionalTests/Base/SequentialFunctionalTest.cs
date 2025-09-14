@@ -4,20 +4,12 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Base;
 
-public class SequentialFunctionalTest : BaseFunctionalTest, IAsyncLifetime
+public class SequentialFunctionalTest(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory), IAsyncLifetime
 {
-    protected readonly IServiceProvider ServiceProvider;
-
-    protected SequentialFunctionalTest(FunctionalTestWebAppFactory factory) : base(factory)
+    public async Task InitializeAsync()
     {
-        ServiceProvider = factory.Services;
-    }
-
-    public Task InitializeAsync()
-    {
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         ResetDb(scope);
-        return Task.CompletedTask;
     }
 
     public Task DisposeAsync()

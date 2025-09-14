@@ -20,7 +20,8 @@ namespace UserService.Application.Services;
 public class AuthService(
     IMapper mapper,
     IIdentityServer identityServer,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IBackgroundJobClient backgroundJob)
     : IAuthService
 {
     public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto,
@@ -73,8 +74,8 @@ public class AuthService(
         {
             await transaction.RollbackAsync(CancellationToken.None);
             if (identityResponse != null)
-                BackgroundJob.Enqueue(() =>
-                    identityServer.RollbackRegistrationAsync(new IdentityUserDto(identityResponse.IdentityId)));
+                backgroundJob.Enqueue<IIdentityServer>(server =>
+                    server.RollbackRegistrationAsync(new IdentityUserDto(identityResponse.IdentityId)));
 
             throw;
         }

@@ -42,7 +42,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
     public async Task GetQuestionByIdWithWrongEntryInCache_ShouldBe_Success()
     {
         //Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var cache = scope.ServiceProvider.GetRequiredService<IDatabase>();
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };
 

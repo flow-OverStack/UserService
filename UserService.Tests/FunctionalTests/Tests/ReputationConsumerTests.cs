@@ -44,7 +44,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
@@ -72,7 +72,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
@@ -99,7 +99,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
@@ -127,7 +127,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
@@ -153,7 +153,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationEventConsumer = scope.ServiceProvider.GetRequiredService<IConsumer<BaseEvent>>();
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 

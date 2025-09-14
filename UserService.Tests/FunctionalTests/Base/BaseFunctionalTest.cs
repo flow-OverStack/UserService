@@ -1,4 +1,3 @@
-using Hangfire;
 using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Base;
@@ -12,9 +11,5 @@ public class BaseFunctionalTest : IClassFixture<FunctionalTestWebAppFactory>
     {
         HttpClient = factory.CreateClient();
         ServiceProvider = factory.Services;
-
-        // Hangfire sometimes fails to work with the database in tests (throws exceptions),
-        // so we use in-memory storage to keep tests stable and prevent it from using the DB.
-        GlobalConfiguration.Configuration.UseInMemoryStorage();
     }
 }

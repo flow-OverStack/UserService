@@ -277,7 +277,7 @@ public class RoleServiceTests : SequentialFunctionalTest
     public async Task RollbackUpdateRolesAsync_ShouldBe_BadRequest()
     {
         // Arrange
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var identityServer = scope.ServiceProvider.GetRequiredService<IIdentityServer>();
         var dto = new IdentityUpdateRolesDto(Guid.NewGuid().ToString(), 1, "TestsUser1@test.com",
             [new Role { Name = "User" }]);

@@ -112,7 +112,7 @@ internal static class WireMockIdentityServerExtensions
 
     private static bool ValidateUserCredentials(IDictionary<string, string> body, IServiceCollection services)
     {
-        using var scope = services.BuildServiceProvider().CreateScope();
+        using var scope = services.BuildServiceProvider().CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         return body.TryGetValue("username", out var username) &&
@@ -140,7 +140,7 @@ internal static class WireMockIdentityServerExtensions
         if (user == null || user.Credentials.All(x => x.Type != "password"))
             return BadRequest();
 
-        using var scope = services.BuildServiceProvider().CreateScope();
+        using var scope = services.BuildServiceProvider().CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         dbContext.Set<KeycloakUser>().Add(new KeycloakUser
@@ -167,7 +167,7 @@ internal static class WireMockIdentityServerExtensions
         if (username == null)
             return BadRequest();
 
-        using var scope = services.BuildServiceProvider().CreateScope();
+        using var scope = services.BuildServiceProvider().CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
         var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToList();

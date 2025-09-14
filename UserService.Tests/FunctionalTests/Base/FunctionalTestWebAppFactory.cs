@@ -1,3 +1,4 @@
+using Hangfire;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,6 +18,7 @@ using UserService.Keycloak.Settings;
 using UserService.Messaging.Consumers;
 using UserService.Messaging.Messages;
 using UserService.Messaging.Settings;
+using UserService.Tests.Configurations.Mocks;
 using UserService.Tests.FunctionalTests.Configurations;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
 using UserService.Tests.FunctionalTests.Extensions;
@@ -68,8 +70,6 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
     {
         builder.ConfigureAppConfiguration((_, config) =>
         {
-            // Even though we use in-memory storage for hangfire
-            // We have to specify connection string to avoid getting the exception
             var testConfig = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>
                 {
@@ -82,16 +82,16 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
+            services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
             var userServiceConnectionString = _userServicePostgreSql.GetConnectionString();
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(userServiceConnectionString));
 
-            services.RemoveAll(typeof(DbContextOptions<KeycloakDbContext>));
+            services.RemoveAll<DbContextOptions<KeycloakDbContext>>();
             var keycloakConnectionString = _keycloakPostgreSql.GetConnectionString();
             services.AddDbContext<KeycloakDbContext>(options => options.UseNpgsql(keycloakConnectionString));
 
             using var serviceProvider = services.BuildServiceProvider();
-            using var scope = serviceProvider.CreateScope();
+            using var scope = serviceProvider.CreateAsyncScope();
             scope.PrepPopulation();
 
             _wireMockServer = _wireMockServer.StartServer(services);
@@ -132,6 +132,9 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             services.AddScoped<IConsumer<BaseEvent>, ReputationEventConsumer>();
             services.AddScoped<ITopicProducer<BaseEvent>>(_ => mockBaseEventProducer.Object);
             services.AddScoped<ITopicProducer<FaultedMessage>>(_ => mockFaultedMessageProducer.Object);
+
+            services.RemoveAll<IBackgroundJobClient>();
+            services.AddScoped<IBackgroundJobClient>(provider => new TestBackgroundJobClient(provider));
         });
     }
 }

@@ -13,7 +13,7 @@ public class UserDataLoader(
     protected override async Task<IReadOnlyDictionary<long, User>> LoadBatchAsync(IReadOnlyList<long> keys,
         CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
+        await using var scope = scopeFactory.CreateAsyncScope();
         var userService = scope.ServiceProvider.GetRequiredService<IGetUserService>();
 
         var result = await userService.GetByIdsAsync(keys, cancellationToken);

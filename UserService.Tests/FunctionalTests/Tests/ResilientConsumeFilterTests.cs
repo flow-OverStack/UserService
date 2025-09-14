@@ -1,5 +1,6 @@
 using MassTransit;
 using MassTransit.Transports;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using UserService.Domain.Enums;
 using UserService.Domain.Events;
@@ -17,7 +18,9 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     public async Task Probe_ShouldBe_Success()
     {
         //Arrange
-        var filter = new ResilientConsumeFilter<BaseEvent>();
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
         var probeContext = new Mock<ProbeContext>();
         probeContext.Setup(x => x.CreateScope(It.IsAny<string>())).Returns(new Mock<ProbeContext>().Object);
 
@@ -34,7 +37,9 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        var filter = new ResilientConsumeFilter<BaseEvent>();
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
         var message = new BaseEvent
             { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
 
@@ -58,7 +63,9 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        var filter = new ResilientConsumeFilter<BaseEvent>();
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
         var message = new BaseEvent
             { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
 
@@ -83,7 +90,9 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        var filter = new ResilientConsumeFilter<BaseEvent>();
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
         var message = new BaseEvent
             { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
 

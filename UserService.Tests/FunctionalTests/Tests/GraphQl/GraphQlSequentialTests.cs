@@ -79,7 +79,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     private async Task DeleteRolesAsync()
     {
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         await dbContext.Set<Role>().ExecuteDeleteAsync();
@@ -89,7 +89,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     private async Task DeleteUsersAsync()
     {
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         await using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         await dbContext.Set<User>().ExecuteDeleteAsync();
@@ -100,7 +100,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     private async Task AddUserWithNoRolesAsync()
     {
-        using var scope = ServiceProvider.CreateScope();
+        await using var scope = ServiceProvider.CreateAsyncScope();
         var userRepository = scope.ServiceProvider.GetRequiredService<IBaseRepository<User>>();
 
         await userRepository.CreateAsync(new User
