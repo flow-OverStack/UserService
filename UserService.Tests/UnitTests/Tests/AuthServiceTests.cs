@@ -86,6 +86,75 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task InitUser_ShouldBe_Success()
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new InitUserDto("TestUser4", "TestsUser4@test.com", "test-identity-id-4");
+
+        //Act
+        var result = await authService.InitAsync(dto);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task InitUser_ShouldBe_EmailNotValid()
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new InitUserDto("TestUser4", "NotEmail", "test-identity-id-4");
+
+        //Act
+        var result = await authService.InitAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task InitUser_ShouldBe_UserAlreadyExists()
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new InitUserDto("TestUser1", "TestsUser1@test.com", "test-identity-id-1");
+
+        //Act
+        var result = await authService.InitAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.UserAlreadyExists, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task InitUser_ShouldBe_RoleNotFound()
+    {
+        //Arrange
+        var authService =
+            new AuthServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
+                .GetService();
+        var dto = new InitUserDto("TestUser4", "TestsUser4@test.com", "test-identity-id-4");
+
+        //Act
+        var result = await authService.InitAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task LoginUserWithUsername_ShouldBe_Success()
     {
         //Arrange

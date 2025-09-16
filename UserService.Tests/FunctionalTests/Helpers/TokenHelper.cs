@@ -66,20 +66,42 @@ internal static class TokenHelper
 
     public static string GetRsaTokenWithRoleClaims(string username, IEnumerable<Role> roles)
     {
-        var claims = new Dictionary<string, object>
-        {
-            { ClaimTypes.Role, roles.Select(x => x.Name).ToList() }
-        };
+        var claims = roles
+            .Select(r => new Claim(ClaimTypes.Role, r.Name))
+            .Prepend(new Claim(JwtRegisteredClaimNames.PreferredUsername, username));
 
+        var token = claims.GetRsaTokenFromClaims();
+        return token;
+    }
+
+    public static string GetRsaTokenWithIdentityData(string? username = null, string? email = null,
+        string? identityId = null)
+    {
+        var claims = new List<Claim>();
+
+        if (username != null)
+            claims.Add(new Claim(JwtRegisteredClaimNames.PreferredUsername, username));
+
+        if (email != null)
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, email));
+
+        if (identityId != null)
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, identityId));
+
+        var token = claims.GetRsaTokenFromClaims();
+        return token;
+    }
+
+    private static string GetRsaTokenFromClaims(this IEnumerable<Claim> claims)
+    {
         var tokenHandler = new JwtSecurityTokenHandler();
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([new Claim(JwtRegisteredClaimNames.PreferredUsername, username)]),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
             Audience = Audience,
-            Issuer = Issuer,
-            Claims = claims
+            Issuer = Issuer
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);

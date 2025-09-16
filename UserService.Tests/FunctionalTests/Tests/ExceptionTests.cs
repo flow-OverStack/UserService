@@ -52,6 +52,27 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
+    public async Task InitUser_ShouldBe_Exception()
+    {
+        //Arrange
+        var accessToken =
+            TokenHelper.GetRsaTokenWithIdentityData("testuser4", "TestUser4@test.com", "test-identity-id-4");
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        //Act
+        var response = await HttpClient.PostAsync("/api/v1.0/Auth/init", null);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.StartsWith(ErrorMessage.InternalServerError, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
     public async Task DeleteRole_ShouldBe_Exception()
     {
         //Arrange
