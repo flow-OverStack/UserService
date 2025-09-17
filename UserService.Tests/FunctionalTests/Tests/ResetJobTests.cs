@@ -14,7 +14,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunReputationResetJob_ShouldBe_Success()
+    public async Task RunReputationResetJob_ShouldBe_Ok()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -32,7 +32,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunProcessedEvent_ShouldBe_Success()
+    public async Task RunProcessedEvent_ShouldBe_Ok()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

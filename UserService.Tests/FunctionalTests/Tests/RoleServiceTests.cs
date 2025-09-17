@@ -1,16 +1,13 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Api.Dtos.Role;
 using UserService.Api.Dtos.UserRole;
 using UserService.Application.Resources;
-using UserService.Domain.Dtos.Identity.Role;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
-using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Results;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
@@ -33,7 +30,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CreateRole_ShouldBe_Success()
+    public async Task CreateRole_ShouldBe_Created()
     {
         //Arrange
         var dto = new CreateRoleDto("NewTestRole");
@@ -44,14 +41,14 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
     }
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CreateRole_ShouldBe_BadRequest()
+    public async Task CreateRole_ShouldBe_Conflict()
     {
         //Arrange
         var dto = new CreateRoleDto("User");
@@ -62,7 +59,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.RoleAlreadyExists, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -70,7 +67,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_Success()
+    public async Task DeleteRole_ShouldBe_Ok()
     {
         //Arrange
         const long roleId = 3;
@@ -88,7 +85,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_BadRequest()
+    public async Task DeleteRole_ShouldBe_NotFound()
     {
         //Arrange
         const long roleId = 0;
@@ -99,7 +96,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -107,7 +104,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_Success()
+    public async Task UpdateRole_ShouldBe_Ok()
     {
         //Arrange
         const long roleId = 3;
@@ -126,7 +123,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_BadRequest()
+    public async Task UpdateRole_ShouldBe_NotFound()
     {
         //Arrange
         const long roleId = 0;
@@ -138,7 +135,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<RoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -146,7 +143,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_Success()
+    public async Task AddRoleForUser_ShouldBe_Ok()
     {
         //Arrange
         const string username = "TestUser1";
@@ -165,7 +162,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_BadRequest()
+    public async Task AddRoleForUser_ShouldBe_NotFound()
     {
         //Arrange
         const string username = "NotExistingUser";
@@ -177,7 +174,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -185,7 +182,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_Success()
+    public async Task DeleteRoleForUser_ShouldBe_Ok()
     {
         //Arrange
         const string username = "TestUser2";
@@ -206,7 +203,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_BadRequest()
+    public async Task DeleteRoleForUser_ShouldBe_NotFound()
     {
         //Arrange
         const string username = "NotExistingUser";
@@ -219,7 +216,7 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
@@ -227,7 +224,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_Success()
+    public async Task UpdateRoleForUser_ShouldBe_Ok()
     {
         //Arrange
         const string username = "TestUser2";
@@ -250,7 +247,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_BadRequest()
+    public async Task UpdateRoleForUser_ShouldBe_NotFound()
     {
         //Arrange
         const string username = "NotExistingUser";
@@ -266,26 +263,9 @@ public class RoleServiceTests : SequentialFunctionalTest
         var result = JsonConvert.DeserializeObject<BaseResult<UserRoleDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.False(result!.IsSuccess);
         Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
-    public async Task RollbackUpdateRolesAsync_ShouldBe_BadRequest()
-    {
-        // Arrange
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var identityServer = scope.ServiceProvider.GetRequiredService<IIdentityServer>();
-        var dto = new IdentityUpdateRolesDto(Guid.NewGuid().ToString(), 1, "TestsUser1@test.com",
-            [new Role { Name = "User" }]);
-
-        // Act
-        await identityServer.RollbackUpdateRolesAsync(dto);
-
-        // Assert
-        Assert.True(true);
     }
 }

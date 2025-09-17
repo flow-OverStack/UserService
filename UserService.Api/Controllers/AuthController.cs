@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ public class AuthController(IAuthService authService) : BaseController
     {
         var result = await authService.RegisterAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return HandleBaseResult(result, HttpStatusCode.Created);
     }
 
     /// <summary>
@@ -114,7 +115,7 @@ public class AuthController(IAuthService authService) : BaseController
 
         var result = await authService.InitAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return HandleBaseResult(result, HttpStatusCode.Created);
     }
 
     private (string? username, string? email, string? identityId) GetIdentityClaims()

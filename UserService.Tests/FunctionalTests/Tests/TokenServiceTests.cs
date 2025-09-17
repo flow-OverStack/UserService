@@ -14,7 +14,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
 {
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RefreshToken_ShouldBe_Success()
+    public async Task RefreshToken_ShouldBe_Ok()
     {
         //Arrange
         var dto = new RefreshTokenDto

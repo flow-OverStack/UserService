@@ -15,7 +15,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Probe_ShouldBe_Success()
+    public async Task Probe_ShouldBe_Ok()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -33,7 +33,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Success()
+    public async Task Send_ShouldBe_Ok()
     {
         //Arrange
         const long userId = 1;

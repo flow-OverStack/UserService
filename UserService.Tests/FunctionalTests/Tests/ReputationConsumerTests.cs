@@ -36,7 +36,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
     [Trait("Category", "Functional")]
     [Theory]
     [MemberData(nameof(GetPositiveEvents))]
-    public async Task ConsumePositiveEvent_ShouldBe_Success(string eventName)
+    public async Task ConsumePositiveEvent_ShouldBe_Ok(string eventName)
     {
         //Arrange
         const long userId = 1;
@@ -64,7 +64,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
     [Trait("Category", "Functional")]
     [Theory]
     [MemberData(nameof(GetNegativeEvents))]
-    public async Task ConsumeNegativeEvent_ShouldBe_Success(string eventName)
+    public async Task ConsumeNegativeEvent_ShouldBe_Ok(string eventName)
     {
         //Arrange
         const long userId = 3;

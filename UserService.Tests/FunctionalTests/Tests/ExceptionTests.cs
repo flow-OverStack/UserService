@@ -32,7 +32,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Exception()
+    public async Task RegisterUser_ShouldBe_InternalServerError()
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
@@ -52,7 +52,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_Exception()
+    public async Task InitUser_ShouldBe_InternalServerError()
     {
         //Arrange
         var accessToken =
@@ -73,7 +73,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_Exception()
+    public async Task DeleteRole_ShouldBe_InternalServerError()
     {
         //Arrange
         const long roleId = 3;
@@ -92,7 +92,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_Exception()
+    public async Task UpdateRole_ShouldBe_InternalServerError()
     {
         //Arrange
         const long roleId = 3;
@@ -112,7 +112,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_Exception()
+    public async Task AddRoleForUser_ShouldBe_InternalServerError()
     {
         //Arrange
         const string username = "TestUser1";
@@ -132,7 +132,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_Exception()
+    public async Task DeleteRoleForUser_ShouldBe_InternalServerError()
     {
         //Arrange
         const string username = "TestUser2";
@@ -154,7 +154,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_Exception()
+    public async Task UpdateRoleForUser_ShouldBe_InternalServerError()
     {
         //Arrange
         const string username = "TestUser2";
@@ -178,7 +178,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetQuestionById_ShouldBe_NoException()
+    public async Task GetQuestionById_ShouldBe_Ok()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };

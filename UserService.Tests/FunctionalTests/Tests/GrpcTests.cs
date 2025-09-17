@@ -10,7 +10,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserWithRolesById_ShouldBe_Success()
+    public async Task GetUserWithRolesById_ShouldBe_Ok()
     {
         //Arrange
         const long userId = 1;
@@ -48,7 +48,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_Success()
+    public async Task GetUsersByIds_ShouldBe_Ok()
     {
         //Arrange
         var userIds = new List<long> { 1, 2, 0 };

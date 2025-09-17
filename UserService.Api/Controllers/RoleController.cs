@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
@@ -40,7 +41,7 @@ public class RoleController(IRoleService roleService) : BaseController
     {
         var result = await roleService.CreateRoleAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return HandleBaseResult(result, HttpStatusCode.Created);
     }
 
     /// <summary>
