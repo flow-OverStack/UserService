@@ -10,7 +10,7 @@ UserService is a microservice responsible for all user-related operations within
 ## 🚀 Quick Start a ready-made API
 1. Intall [Docker Desktop](https://www.docker.com/)
 2. Copy [docker-compose.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) and [docker-compose.common.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) files into one directory
-3. Cope (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/UserService/blob/master/logstash.conf) and [prometheus.yml](https://github.com/flow-OverStack/UserService/blob/master/prometheus.yml) files in the same directory
+3. Copy (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/UserService/blob/master/logstash.conf) and [prometheus.yml](https://github.com/flow-OverStack/UserService/blob/master/prometheus.yml) files in the same directory
 4. Create and configure `.env` file in the same directory:
    ```env
    USERS_DB_PASSWORD=my_password
