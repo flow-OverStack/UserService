@@ -7,19 +7,34 @@
 
 UserService is a microservice responsible for all user-related operations within the flow OverStack platform. It provides user authentication with Keycloak for identity management and roles management.
 
+## 🚀 Quick Start a ready-made API
+1. Intall [Docker Desktop](https://www.docker.com/)
+2. Copy [docker-compose.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) and [docker-compose.common.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) files into one directory
+3. Create and configure `.env` file in the same directory:
+   ```env
+   USERS_DB_PASSWORD=my_password
+   ...
+   ```
+4. Start services
+    ```bash
+   docker-compose -p flowoverstack -f docker-compose.common.yml up -d
+   docker-compose -p userservice -f docker-compose.yml up -d
+   ```
+   
+
 ## Technologies and Patterns Used
 
 * **.NET 9 & C#** — Core framework and language
 * **ASP.NET Core** — HTTP API.
 * **Entity Framework Core with PostgreSQL** — Data access (Repository & Unit of Work patterns) to PostgreSQL database
+* **Kafka** — Message queue that listens to main events
+* **gRPC** — High-performance RPC interface
+* **Redis** — Caching layer
+* **Hot Chocolate** — GraphQL endpoint with built-in support for pagination, filtering, and sorting
 * **Clean Architecture** — Layered separation (Domain, Application, Infrastructure, Presentation)
 * **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
 * **Keycloak** — OAuth2/OpenID Connect identity provider
 * **Hangfire** — Hosted services for background jobs
-* **Redis** — Caching layer
-* **Kafka** — Message queue that listens to main events
-* **Hot Chocolate** — GraphQL endpoint with built-in support for pagination, filtering, and sorting
-* **gRPC** — High-performance RPC interface
 * **Observability** — Traces, logs, and metrics collected via OpenTelemetry and Logstash, exported to Aspire dashboard, Jaeger, ElasticSearch, and Prometheus
 * **Monitoring & Visualization** — Dashboards in Grafana, Kibana and Aspire
 * **Health Checks** — Status endpoints to monitor service availability and dependencies
@@ -40,13 +55,12 @@ This service follows the principles of Clean Architecture. The solution is split
 
 Full system design on Miro: [Application Structure Board](https://miro.com/app/board/uXjVLx6YYx4=/?share_link_id=993967197754)
 
-## Getting Started
+## Getting Started for developers
 
 ### Prerequisites
 
 * [.NET 9 SDK](https://dotnet.microsoft.com/download)
-* [Docker Desktop](https://docs.docker.com/desktop)
-* Running service dependencies
+* [Docker Desktop](https://www.docker.com/)
 
 ### Installation
 
@@ -66,14 +80,18 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
     }
    }
    ```
-3. Start supporting services:
+3. Create and configure `.env` file in the same directory as `docker-compose` files:
+   ```env
+   KC_DB_PASSWORD=my_password
+   ...
+   ```
+4. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing)
+5. Start supporting services:
 
    ```bash
    docker-compose -p flowoverstack -f docker-compose.common.yml up -d
-   docker-compose -p userservice -f docker-compose.yml up -d
    ```
-4. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing)
-5. Run the API:
+6. Run the API:
 
    ```bash
    cd UserService.Api
