@@ -2,6 +2,7 @@ using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.JsonWebTokens;
 using UserService.Api.Controllers.Base;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
@@ -121,8 +122,8 @@ public class AuthController(IAuthService authService) : BaseController
     private (string? username, string? email, string? identityId) GetIdentityClaims()
     {
         var username = User.Identity?.Name;
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        var identityId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = User.FindFirstValue(JwtRegisteredClaimNames.Email);
+        var identityId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
         return (username, email, identityId);
     }

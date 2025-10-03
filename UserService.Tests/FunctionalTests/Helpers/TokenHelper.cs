@@ -94,20 +94,18 @@ internal static class TokenHelper
 
     private static string GetRsaTokenFromClaims(this IEnumerable<Claim> claims)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(15),
-            SigningCredentials = new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256),
-            Audience = Audience,
-            Issuer = Issuer
-        };
+        var header = new JwtHeader(new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256));
+        var payload = new JwtPayload(
+            Issuer,
+            Audience,
+            claims,
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddMinutes(15)
+        );
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        var tokenString = tokenHandler.WriteToken(token);
+        var token = new JwtSecurityToken(header, payload);
 
-        return tokenString;
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private static string Base64UrlEncode(byte[] input)

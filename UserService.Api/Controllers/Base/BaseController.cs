@@ -65,6 +65,11 @@ public class BaseController : ControllerBase
         return StatusCode(statusCode, result);
     }
 
+    /// <summary>
+    ///     Handles the BaseResult and returns the corresponding ActionResult with the appropriate HTTP status code.
+    /// </summary>
+    /// <param name="result">The BaseResult representing the outcome of the operation.</param>
+    /// <returns>An ActionResult containing the BaseResult and corresponding HTTP status code.</returns>
     protected ActionResult<BaseResult> HandleBaseResult(BaseResult result)
     {
         var statusCode = GetStatusCode(result.IsSuccess, result.ErrorCode, StatusCodes.Status204NoContent);
