@@ -67,7 +67,7 @@ public class BaseController : ControllerBase
 
     protected ActionResult<BaseResult> HandleBaseResult(BaseResult result)
     {
-        var statusCode = GetStatusCode(result.IsSuccess, result.ErrorCode, (int)HttpStatusCode.NoContent);
+        var statusCode = GetStatusCode(result.IsSuccess, result.ErrorCode, StatusCodes.Status204NoContent);
         return StatusCode(statusCode, result);
     }
 
