@@ -12,10 +12,7 @@ public class TokenServiceTests
     {
         //Arrange
         var tokenService = new TokenServiceFactory().GetService();
-        var dto = new RefreshTokenDto
-        {
-            RefreshToken = "TestRefreshToken1"
-        };
+        var dto = new RefreshTokenDto("TestRefreshToken1");
 
         //Act
         var result = await tokenService.RefreshTokenAsync(dto);

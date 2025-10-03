@@ -114,6 +114,15 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Received from cache data is of invalid format.
+        /// </summary>
+        public static string InvalidCacheDataFormat {
+            get {
+                return ResourceManager.GetString("InvalidCacheDataFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pagination parametrs are invalid.
         /// </summary>
         public static string InvalidPagination {

@@ -11,4 +11,7 @@ public interface IBaseRepository<TEntity> : IStateSaveChanges
     TEntity Update(TEntity entity);
 
     TEntity Remove(TEntity entity);
+
+    Task BulkUpdateAsync(IEnumerable<TEntity> entities, IEnumerable<string> propertiesToUpdate,
+        CancellationToken cancellationToken = default);
 }

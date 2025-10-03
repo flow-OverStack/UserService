@@ -29,6 +29,8 @@ public static class DependencyInjection
         services.AddScoped<IReputationService, ReputationService>();
         services.AddScoped<IReputationResetService, ReputationService>();
         services.AddScoped<IProcessedEventsResetService, ProcessedEventsResetService>();
+        services.AddScoped<IUserActivityService, UserActivityService>();
+        services.AddScoped<IUserActivityDatabaseService, UserActivityService>();
 
         services.AddScoped<INullSafeValidator<OffsetPageDto>, OffsetPageDtoValidator>();
     }

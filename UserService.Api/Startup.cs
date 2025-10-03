@@ -65,6 +65,10 @@ public static class Startup
             options.RequireHttpsMetadata = false;
             options.MetadataAddress = keycloakSettings.MetadataAddress;
             options.Audience = keycloakSettings.Audience;
+
+            // Maintains original OAuth2 claims for reliable microservice communication.
+            options.MapInboundClaims = false;
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,

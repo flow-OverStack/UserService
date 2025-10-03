@@ -65,6 +65,12 @@ public class BaseController : ControllerBase
         return StatusCode(statusCode, result);
     }
 
+    protected ActionResult<BaseResult> HandleBaseResult(BaseResult result)
+    {
+        var statusCode = GetStatusCode(result.IsSuccess, result.ErrorCode, (int)HttpStatusCode.NoContent);
+        return StatusCode(statusCode, result);
+    }
+
     private static int GetStatusCode(bool isSuccess, int? errorCode, int successStatusCode)
     {
         const int defaultCode = StatusCodes.Status400BadRequest;

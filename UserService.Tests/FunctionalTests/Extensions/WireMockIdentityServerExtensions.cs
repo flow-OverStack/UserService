@@ -1,5 +1,5 @@
-using System.Net;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Tests.Constants;
@@ -61,7 +61,7 @@ internal static class WireMockIdentityServerExtensions
         if (grantType == "password" && !ValidateUserCredentials(body, services))
             return new ResponseMessage
             {
-                StatusCode = HttpStatusCode.BadRequest,
+                StatusCode = StatusCodes.Status400BadRequest,
                 BodyData = new BodyData
                 {
                     BodyAsString = """
@@ -78,7 +78,7 @@ internal static class WireMockIdentityServerExtensions
             refreshToken == TestConstants.WrongRefreshToken)
             return new ResponseMessage
             {
-                StatusCode = HttpStatusCode.BadRequest,
+                StatusCode = StatusCodes.Status400BadRequest,
                 BodyData = new BodyData
                 {
                     BodyAsString = """
@@ -131,7 +131,7 @@ internal static class WireMockIdentityServerExtensions
                 .WithSuccess());
 
         server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users/*").UsingPut())
-            .RespondWith(Response.Create().WithStatusCode(HttpStatusCode.NoContent));
+            .RespondWith(Response.Create().WithStatusCode(StatusCodes.Status204NoContent));
     }
 
     private static ResponseMessage HandleUserCreation(IRequestMessage message, IServiceCollection services)
@@ -153,7 +153,7 @@ internal static class WireMockIdentityServerExtensions
         try
         {
             dbContext.SaveChanges();
-            return new ResponseMessage { StatusCode = HttpStatusCode.Created };
+            return new ResponseMessage { StatusCode = StatusCodes.Status201Created };
         }
         catch (Exception)
         {
@@ -179,7 +179,7 @@ internal static class WireMockIdentityServerExtensions
     {
         return new ResponseMessage
         {
-            StatusCode = HttpStatusCode.OK,
+            StatusCode = StatusCodes.Status200OK,
             BodyData = new BodyData
             {
                 BodyAsJson = data,
@@ -190,7 +190,7 @@ internal static class WireMockIdentityServerExtensions
 
     private static ResponseMessage BadRequest()
     {
-        return new ResponseMessage { StatusCode = HttpStatusCode.BadRequest };
+        return new ResponseMessage { StatusCode = StatusCodes.Status400BadRequest };
     }
 
     private static WireMockServer SafeStartServer(this WireMockServer server)

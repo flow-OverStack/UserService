@@ -21,6 +21,8 @@ public static class DependencyInjection
                     job => job.RunAsync(CancellationToken.None), Cron.Daily);
                 recurringJobManager.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset",
                     job => job.RunAsync(CancellationToken.None), Cron.Daily);
+                recurringJobManager.AddOrUpdate<SyncUserActivitiesJob>("ActivitiesSynchronization",
+                    job => job.RunAsync(CancellationToken.None), "*/10 * * * *"); // Every ten minutes 
             }
         );
     }

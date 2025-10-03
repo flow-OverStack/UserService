@@ -1,3 +1,4 @@
+using EFCore.BulkExtensions;
 using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.DAL.Repositories;
@@ -40,5 +41,15 @@ public class BaseRepository<TEntity>(ApplicationDbContext dbContext) : IBaseRepo
         dbContext.Remove(entity);
 
         return entity;
+    }
+
+    public async Task BulkUpdateAsync(IEnumerable<TEntity> entities, IEnumerable<string> propertiesToUpdate,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        await dbContext.BulkUpdateAsync(entities,
+            config => config.PropertiesToIncludeOnUpdate = propertiesToUpdate.ToList(),
+            cancellationToken: cancellationToken);
     }
 }

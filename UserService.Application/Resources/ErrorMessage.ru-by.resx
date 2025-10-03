@@ -72,4 +72,7 @@
     <data name="InvalidPagination" xml:space="preserve">
         <value>Параметры пагинации невалидны</value>
     </data>
+    <data name="InvalidCacheDataFormat" xml:space="preserve">
+        <value>Полученные из кэша данные неверного формата</value>
+    </data>
 </root>

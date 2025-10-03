@@ -44,5 +44,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IUserCacheRepository, UserCacheRepository>();
         services.AddScoped<IRoleCacheRepository, RoleCacheRepository>();
+        services.AddScoped<IUserActivityCacheRepository, UserActivityCacheRepository>();
     }
 }

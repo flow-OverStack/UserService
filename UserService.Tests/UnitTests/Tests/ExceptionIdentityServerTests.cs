@@ -48,10 +48,7 @@ public class ExceptionIdentityServerTests
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new RefreshTokenDto
-        {
-            RefreshToken = "refresh_token"
-        };
+        var dto = new RefreshTokenDto("refresh_token");
 
         //Act
         var action = async () => await identityServer.RefreshTokenAsync(dto);

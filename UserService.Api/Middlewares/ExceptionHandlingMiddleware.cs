@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Mime;
 using UserService.Application.Exceptions.IdentityServer;
 using UserService.Application.Resources;
@@ -33,14 +32,14 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger logger)
         var (message, statusCode) = exception switch
         {
             IdentityServerInternalException => ($"{ErrorMessage.IdentityServerError}: {exception.Message}",
-                (int)HttpStatusCode.InternalServerError),
+                StatusCodes.Status500InternalServerError),
 
-            _ => ($"{ErrorMessage.InternalServerError}: {exception.Message}", (int)HttpStatusCode.InternalServerError)
+            _ => ($"{ErrorMessage.InternalServerError}: {exception.Message}", StatusCodes.Status500InternalServerError)
         };
         var response = BaseResult.Failure(message, statusCode);
 
         httpContext.Response.ContentType = MediaTypeNames.Application.Json;
-        httpContext.Response.StatusCode = response.ErrorCode ?? (int)HttpStatusCode.InternalServerError;
+        httpContext.Response.StatusCode = response.ErrorCode ?? StatusCodes.Status500InternalServerError;
         await httpContext.Response.WriteAsJsonAsync(response);
     }
 }

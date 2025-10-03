@@ -17,10 +17,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
     public async Task RefreshToken_ShouldBe_Ok()
     {
         //Arrange
-        var dto = new RefreshTokenDto
-        {
-            RefreshToken = "TestRefreshToken1"
-        };
+        var dto = new RefreshTokenDto("TestRefreshToken1");
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("api/v1/token/refresh", dto);
@@ -38,10 +35,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
     public async Task RefreshToken_ShouldBe_BadRequest()
     {
         //Arrange
-        var dto = new RefreshTokenDto
-        {
-            RefreshToken = TestConstants.WrongRefreshToken
-        };
+        var dto = new RefreshTokenDto(TestConstants.WrongRefreshToken);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("api/v1/token/refresh", dto);
