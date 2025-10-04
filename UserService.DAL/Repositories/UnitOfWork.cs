@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore.Storage;
 using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.DAL.Repositories;
@@ -13,9 +13,10 @@ public class UnitOfWork(
     public IBaseRepository<User> Users { get; set; } = users;
     public IBaseRepository<Role> Roles { get; set; } = roles;
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        return await context.Database.BeginTransactionAsync(cancellationToken);
+        var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+        return new DbContextTransaction(transaction);
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

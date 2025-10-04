@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore.Storage;
 using MockQueryable.Moq;
 using Moq;
 using UserService.Domain.Entities;
 using UserService.Domain.Events;
+using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Repository;
 
 namespace UserService.Tests.Configurations;
@@ -39,9 +39,9 @@ internal static class MockRepositoriesGetters
         };
     }
 
-    private static IMock<IDbContextTransaction> GetMockTransaction()
+    private static IMock<ITransaction> GetMockTransaction()
     {
-        return new Mock<IDbContextTransaction>();
+        return new Mock<ITransaction>();
     }
 
     public static IMock<IUnitOfWork> GetMockUnitOfWork(IBaseRepository<User>? userRepository = null,
