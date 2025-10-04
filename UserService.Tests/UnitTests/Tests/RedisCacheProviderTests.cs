@@ -34,7 +34,7 @@ public class RedisCacheProviderTests
     {
         //Arrange
         var cache = new RedisCacheProvider(
-            RedisDatabaseConfiguration.GetRedisDatabaseConfiguration());
+            RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration());
         var keysWithValues = new KeyValuePair<string, object>[]
         {
             new("key1", "value1"),
