@@ -13,11 +13,8 @@ internal class TokenServiceFactory
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
 
-    public TokenServiceFactory(IIdentityServer? identityServer = null, IMapper? mapper = null)
+    public TokenServiceFactory()
     {
-        if (identityServer != null) IdentityServer = identityServer;
-        if (mapper != null) Mapper = mapper;
-
         _tokenService = new TokenService(IdentityServer, Mapper);
     }
 

@@ -24,9 +24,7 @@ public class GroupUserDataLoader(
         var result = await userService.GetUsersWithRolesAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
-            return Enumerable.Empty<KeyValuePair<long, IEnumerable<User>>>()
-                .SelectMany(x => x.Value.Select(y => new { x.Key, User = y }))
-                .ToLookup(x => x.Key, x => x.User);
+            return Enumerable.Empty<IGrouping<long, User>>().ToLookup(_ => 0L, _ => default(User)!); // Empty lookup
 
         var lookup = result.Data
             .SelectMany(x => x.Value.Select(y => new { x.Key, User = y }))

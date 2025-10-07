@@ -12,12 +12,8 @@ internal class GetRoleServiceFactory
     public readonly IBaseRepository<Role> RoleRepository = MockRepositoriesGetters.GetMockRoleRepository().Object;
     public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
 
-    public GetRoleServiceFactory(IBaseRepository<User>? userRepository = null,
-        IBaseRepository<Role>? roleRepository = null)
+    public GetRoleServiceFactory(IBaseRepository<Role>? roleRepository = null)
     {
-        if (userRepository != null)
-            UserRepository = userRepository;
-
         if (roleRepository != null)
             RoleRepository = roleRepository;
 

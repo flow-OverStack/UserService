@@ -22,11 +22,8 @@ internal class RoleServiceFactory
 
     public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
 
-    public RoleServiceFactory(IUnitOfWork? unitOfWork = null)
+    public RoleServiceFactory()
     {
-        if (unitOfWork != null)
-            UnitOfWork = unitOfWork;
-
         _roleService = new RoleService(Mapper, UnitOfWork, IdentityServer, BackgroundJob);
     }
 

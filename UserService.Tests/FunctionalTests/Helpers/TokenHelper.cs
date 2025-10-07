@@ -92,6 +92,17 @@ internal static class TokenHelper
         return token;
     }
 
+    public static string GetRsaTokenWithUserId(long userId)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+        };
+
+        var token = claims.GetRsaTokenFromClaims();
+        return token;
+    }
+
     private static string GetRsaTokenFromClaims(this IEnumerable<Claim> claims)
     {
         var header = new JwtHeader(new SigningCredentials(PrivateKey, SecurityAlgorithms.RsaSha256));
