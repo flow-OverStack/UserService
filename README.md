@@ -13,14 +13,24 @@ UserService is a microservice responsible for all user-related operations within
 3. Copy (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/UserService/blob/master/logstash.conf) and [prometheus.yml](https://github.com/flow-OverStack/UserService/blob/master/prometheus.yml) files in the same directory
 4. Create and configure `.env` file in the same directory:
    ```env
-   USERS_DB_PASSWORD=my_password
-   ...
+   USERS_DB_PASSWORD=db_password
+   PGADMIN_EMAIL=pg_email@email.com
+   PGADMIN_PASSWORD=pg_password
+   KC_BOOTSTRAP_ADMIN_USERNAME=kc_admin_username
+   KC_BOOTSTRAP_ADMIN_PASSWORD=kc_admin_password
+   KC_DB_USERNAME=kc_username
+   KC_DB_PASSWORD=kc_password
+   KC_ADMIN_TOKEN=kc_token
+   GF_SECURITY_ADMIN_USER=gf_user
+   GF_SECURITY_ADMIN_PASSWORD=gf_password
+   REDIS_PASSWORD=redis_password
    ```
 5. Start services
     ```bash
    docker-compose -p flowoverstack -f docker-compose.common.yml up -d
    docker-compose -p userservice -f docker-compose.yml up -d
    ```
+6. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing) (and pass the admin token to the env file)
 
 ## Technologies and Patterns Used
 
@@ -80,17 +90,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
     }
    }
    ```
-3. Create and configure `.env` file in the same directory as `docker-compose` files:
-   ```env
-   KC_DB_PASSWORD=my_password
-   ...
-   ```
-4. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing)
-5. Start supporting services:
-
-   ```bash
-   docker-compose -p flowoverstack -f docker-compose.common.yml up -d
-   ```
+4. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) or run your own services)
 6. Run the API:
 
    ```bash
