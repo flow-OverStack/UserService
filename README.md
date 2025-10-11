@@ -30,7 +30,7 @@ UserService is a microservice responsible for all user-related operations within
    docker-compose -p flowoverstack -f docker-compose.common.yml up -d
    docker-compose -p userservice -f docker-compose.yml up -d
    ```
-6. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing) (and pass the admin token to the env file)
+6. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing). After that, pass the admin token to the `.env` file and restart the `user-service` container.
 
 ## Technologies and Patterns Used
 
@@ -75,28 +75,29 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 ### Installation
 
 1. Clone the repo
-2. Configure `appsettings.json` and `.NET User Secrets` in `UserService.Api` with your database, Redis, and Keycloak settings.
-   Example: 
+2. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) without running the `user-service` container or run your own services)
+3. Reconfigure if needed `appsettings.json` and `.NET User Secrets` in `UserService.Api` with your database, Redis and Keycloak settings.
+   `.NET User Secrets` example: 
    ```json
     {
-    "ConnectionStrings": {
-    "PostgresSQL": "Server=localhost;Port=5433; Database=user-service-db; User Id=<YOUR-USER-ID>; Password=<YOUR-PASSWORD>"
-    },
-    "KeycloakSettings": {
-      "AdminToken": "<YOUR-TOKEN>"
-    },
-    "RedisSettings": {
-      "Password": "<YOUR-PASSWORD>"
-    }
+       "ConnectionStrings": {
+          "PostgresSQL": "Server=localhost;Port=5433; Database=user-service-db; User Id=<YOUR-USER-ID>; Password=<YOUR-PASSWORD>"
+       },
+       "KeycloakSettings": {
+         "AdminToken": "<YOUR-TOKEN>"
+       },
+       "RedisSettings": {
+         "Password": "<YOUR-PASSWORD>"
+       }
    }
    ```
-4. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) or run your own services)
-6. Run the API:
+4. Run the API:
 
    ```bash
    cd UserService.Api
    dotnet run
    ```
+   or use your IDE.
 ## API Documentation
 
 The following endpoints are available by default:
