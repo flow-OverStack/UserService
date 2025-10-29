@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL.Repositories;
 using UserService.Domain.Entities;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Messaging.Events;
 
 namespace UserService.DAL.DependencyInjection;
 

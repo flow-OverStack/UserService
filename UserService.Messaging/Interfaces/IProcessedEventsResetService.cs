@@ -1,6 +1,6 @@
 using UserService.Domain.Results;
 
-namespace UserService.Domain.Interfaces.Service;
+namespace UserService.Messaging.Interfaces;
 
 public interface IProcessedEventsResetService
 {

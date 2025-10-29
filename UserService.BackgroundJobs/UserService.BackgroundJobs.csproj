@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\UserService.Domain\UserService.Domain.csproj"/>
+        <ProjectReference Include="..\UserService.Messaging\UserService.Messaging.csproj"/>
     </ItemGroup>
 
 </Project>

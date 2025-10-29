@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using UserService.DAL.Repositories;
 using UserService.Domain.Entities;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Messaging.Events;
 using UserService.Tests.Configurations;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception.ResetJob;

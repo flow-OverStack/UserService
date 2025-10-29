@@ -1,9 +1,9 @@
 using MassTransit;
 using Serilog;
 using UserService.Domain.Dtos.User;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
+using UserService.Messaging.Events;
 using UserService.Messaging.Interfaces;
 using UserService.Messaging.Strategies.Reputation.Base;
 
@@ -28,11 +28,19 @@ public class ReputationEventConsumer(
         var strategy = reputationResolver.Resolve(context.Message.EventType);
         var reputationChange = strategy.CalculateReputationChange();
 
+        if (context.Message.CancelsEvent != null)
+        {
+            var cancelStrategy = reputationResolver.Resolve(context.Message.CancelsEvent);
+            var cancelReputationChange = -cancelStrategy.CalculateReputationChange();
+
+            reputationChange += cancelReputationChange;
+        }
+
         var result = await UpdateReputationAsync(context.Message, reputationChange);
 
         await processedEventRepository.MarkAsProcessedAsync(context.Message.EventId);
 
-        LogReputationResult(context.Message, result);
+        LogUpdateResult(context.Message, result);
     }
 
     private async Task<BaseResult<ReputationDto>> UpdateReputationAsync(BaseEvent message, int reputationChange,
@@ -49,7 +57,7 @@ public class ReputationEventConsumer(
         return result;
     }
 
-    private void LogReputationResult(BaseEvent message, BaseResult<ReputationDto> result)
+    private void LogUpdateResult(BaseEvent message, BaseResult<ReputationDto> result)
     {
         if (!result.IsSuccess)
             logger.Warning(

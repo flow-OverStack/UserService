@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repository;
-using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
+using UserService.Messaging.Events;
+using UserService.Messaging.Interfaces;
 
-namespace UserService.Application.Services;
+namespace UserService.Messaging.Services;
 
 public class ProcessedEventsResetService(IBaseRepository<ProcessedEvent> eventRepository) : IProcessedEventsResetService
 {

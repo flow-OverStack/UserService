@@ -1,4 +1,4 @@
-namespace UserService.Domain.Events;
+namespace UserService.Messaging.Events;
 
 public class BaseEvent
 {
@@ -7,4 +7,6 @@ public class BaseEvent
     public string EventType { get; set; }
 
     public long UserId { get; set; }
+
+    public string? CancelsEvent { get; set; }
 }

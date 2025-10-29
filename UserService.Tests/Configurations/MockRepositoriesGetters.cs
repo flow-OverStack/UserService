@@ -1,9 +1,9 @@
 using MockQueryable.Moq;
 using Moq;
 using UserService.Domain.Entities;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Messaging.Events;
 
 namespace UserService.Tests.Configurations;
 

@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.BackgroundJobs.Jobs;
 using UserService.Domain.Entities;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Messaging.Events;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 

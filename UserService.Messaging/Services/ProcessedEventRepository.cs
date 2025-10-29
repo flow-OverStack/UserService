@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Events;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Messaging.Events;
 using UserService.Messaging.Interfaces;
 
-namespace UserService.Messaging.Processors;
+namespace UserService.Messaging.Services;
 
 public class ProcessedEventRepository(IBaseRepository<ProcessedEvent> eventRepository) : IProcessedEventRepository
 {

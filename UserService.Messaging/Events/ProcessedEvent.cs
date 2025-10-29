@@ -1,4 +1,4 @@
-namespace UserService.Domain.Events;
+namespace UserService.Messaging.Events;
 
 public class ProcessedEvent
 {

@@ -3,7 +3,7 @@ using MassTransit.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using UserService.Domain.Enums;
-using UserService.Domain.Events;
+using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
 using UserService.Tests.Configurations;
 using UserService.Tests.FunctionalTests.Base;

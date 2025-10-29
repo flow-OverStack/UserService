@@ -2,12 +2,12 @@ using Confluent.Kafka;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using UserService.Domain.Events;
 using UserService.Messaging.Consumers;
+using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
 using UserService.Messaging.Interfaces;
 using UserService.Messaging.Messages;
-using UserService.Messaging.Processors;
+using UserService.Messaging.Services;
 using UserService.Messaging.Settings;
 using UserService.Messaging.Strategies.Reputation;
 using UserService.Messaging.Strategies.Reputation.Base;
@@ -25,7 +25,7 @@ public static class DependencyInjection
     {
         services.InitMassTransit();
         services.InitStrategies();
-        services.InitEventProcessors();
+        services.InitEventServices();
     }
 
     private static void InitMassTransit(this IServiceCollection services)
@@ -89,8 +89,9 @@ public static class DependencyInjection
         services.AddSingleton<IReputationStrategyResolver, ReputationStrategyResolver>();
     }
 
-    private static void InitEventProcessors(this IServiceCollection services)
+    private static void InitEventServices(this IServiceCollection services)
     {
         services.AddScoped<IProcessedEventRepository, ProcessedEventRepository>();
+        services.AddScoped<IProcessedEventsResetService, ProcessedEventsResetService>();
     }
 }

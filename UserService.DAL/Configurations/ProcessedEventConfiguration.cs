@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using UserService.Domain.Events;
+using UserService.Messaging.Events;
 
 namespace UserService.DAL.Configurations;
 
