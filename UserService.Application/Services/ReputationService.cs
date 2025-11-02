@@ -74,6 +74,7 @@ public class ReputationService(IBaseRepository<User> userRepository, IOptions<Re
                 (int)ErrorCodes.ReputationMinimumReached);
 
         user.Reputation -= reputationToDecrease;
+        user.ReputationEarnedToday -= reputationToDecrease;
 
         await userRepository.SaveChangesAsync(cancellationToken);
 
