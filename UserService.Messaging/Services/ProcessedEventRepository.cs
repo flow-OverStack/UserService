@@ -23,4 +23,9 @@ public class ProcessedEventRepository(IBaseRepository<ProcessedEvent> eventRepos
         await eventRepository.CreateAsync(processedEvent, cancellationToken);
         await eventRepository.SaveChangesAsync(cancellationToken);
     }
+
+    public Task ResetProcessedAsync(DateTime olderThen, CancellationToken cancellationToken = default)
+    {
+        return eventRepository.GetAll().Where(x => x.ProcessedAt < olderThen).ExecuteDeleteAsync(cancellationToken);
+    }
 }

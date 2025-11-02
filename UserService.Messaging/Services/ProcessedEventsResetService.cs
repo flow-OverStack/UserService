@@ -1,12 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Results;
-using UserService.Messaging.Events;
 using UserService.Messaging.Interfaces;
 
 namespace UserService.Messaging.Services;
 
-public class ProcessedEventsResetService(IBaseRepository<ProcessedEvent> eventRepository) : IProcessedEventsResetService
+public class ProcessedEventsResetService(IProcessedEventRepository eventRepository) : IProcessedEventsResetService
 {
     private const int MaxProcessedEventLifetimeInDays = 7;
 
@@ -15,9 +12,7 @@ public class ProcessedEventsResetService(IBaseRepository<ProcessedEvent> eventRe
         // Subtracting MaxProcessedEventLifetimeInDays
         var thresholdDate = DateTime.UtcNow.AddDays(-MaxProcessedEventLifetimeInDays);
 
-        await eventRepository.GetAll().Where(x => x.ProcessedAt <= thresholdDate).ExecuteDeleteAsync(cancellationToken);
-
-        await eventRepository.SaveChangesAsync(cancellationToken);
+        await eventRepository.ResetProcessedAsync(thresholdDate, cancellationToken);
 
         return BaseResult.Success();
     }
