@@ -3,7 +3,7 @@ using Hangfire.Common;
 using Hangfire.States;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace UserService.Tests.Configurations.Mocks;
+namespace UserService.Tests.FunctionalTests.Configurations.TestServices;
 
 internal class TestBackgroundJobClient(IServiceProvider provider) : IBackgroundJobClient
 {

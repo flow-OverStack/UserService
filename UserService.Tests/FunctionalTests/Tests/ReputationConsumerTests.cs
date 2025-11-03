@@ -40,7 +40,11 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
     {
         //Arrange
         const long userId = 1;
-        var message = new BaseEvent { EventType = eventName, UserId = userId, EventId = Guid.NewGuid() };
+        var message = new BaseEvent
+        {
+            EventType = eventName, UserId = userId, EventId = Guid.NewGuid(),
+            CancelsEvent = nameof(BaseEventType.AnswerDownvote) // Negative event to cancel
+        };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
@@ -68,7 +72,11 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
     {
         //Arrange
         const long userId = 3;
-        var message = new BaseEvent { EventType = eventName, UserId = userId, EventId = Guid.NewGuid() };
+        var message = new BaseEvent
+        {
+            EventType = eventName, UserId = userId, EventId = Guid.NewGuid(),
+            CancelsEvent = nameof(BaseEventType.AnswerUpvote) // Positive event to cancel
+        };
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
 
@@ -86,7 +94,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         //Assert
         Assert.NotNull(user);
         Assert.True(user.Reputation < initialReputation);
-        Assert.Equal(initialReputationEarnedToday, user.ReputationEarnedToday);
+        Assert.True(user.ReputationEarnedToday < initialReputationEarnedToday);
     }
 
     [Trait("Category", "Functional")]

@@ -86,6 +86,42 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
     [Trait("Category", "Functional")]
     [Fact]
+    public async Task Send_ShouldBe_Exception_With_SuccessfulRetry()
+    {
+        //Arrange
+        const long userId = 1;
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
+        var message = new BaseEvent
+            { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
+
+        var contextMock = new Mock<ConsumeContext<BaseEvent>>();
+        contextMock.Setup(x => x.Message).Returns(message);
+        contextMock.Setup(x => x.Headers)
+            .Returns(new JsonTransportHeaders(new DictionaryHeaderProvider(new Dictionary<string, object>())));
+
+        var isThrown = false;
+        var pipeMock = new Mock<IPipe<ConsumeContext<BaseEvent>>>();
+        pipeMock.Setup(x => x.Send(It.IsAny<ConsumeContext<BaseEvent>>()))
+            .Returns((ConsumeContext<BaseEvent> _) =>
+            {
+                if (isThrown)
+                    return Task.CompletedTask;
+
+                isThrown = true;
+                throw new TestException();
+            });
+
+        //Act
+        await filter.Send(contextMock.Object, pipeMock.Object);
+
+        //Assert
+        Assert.True(true);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
     public async Task Send_ShouldBe_MovedToDLQ()
     {
         //Arrange

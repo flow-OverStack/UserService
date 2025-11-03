@@ -45,7 +45,7 @@ public static class DependencyInjection
                 opt.DefaultPageSize = defaultSize;
                 opt.IncludeTotalCount = true;
             })
-            .ModifyCostOptions(opt => opt.MaxFieldCost *= 2);
+            .ModifyCostOptions(opt => opt.MaxFieldCost *= 3);
     }
 
     /// <summary>
