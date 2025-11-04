@@ -31,6 +31,7 @@ UserService is a microservice responsible for all user-related operations within
    docker-compose -p userservice -f docker-compose.yml up -d
    ```
 6. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing). After that, pass the admin token to the `.env` file and restart the `user-service` container.
+7. Explore endpoints at `/swagger/v1/swagger.json` endpoint.
 
 ## Technologies and Patterns Used
 
@@ -104,8 +105,8 @@ The following endpoints are available by default:
 
 | `UseHttpsForRestApi` | REST API & Swagger | GraphQL Endpoint | gRPC Endpoint |
 | ------------------ | ------------------ | ---------------- | ------------- |
-| `true` | https://localhost:7163/swagger |	https://localhost:7163/graphql | https://localhost:7163 http://localhost:5044 |
-| `false`	| http://localhost:7163/swagger |	http://localhost:7163/graphql |	http://localhost:5044 |
+| `true` | https://localhost:7163/swagger/v1/swagger.json |	https://localhost:7163/graphql | https://localhost:7163 http://localhost:5044 |
+| `false`	| http://localhost:7163/swagger/v1/swagger.json |	http://localhost:7163/graphql |	http://localhost:5044 |
 
 ## Testing
 
