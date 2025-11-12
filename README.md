@@ -46,12 +46,12 @@ UserService is a microservice responsible for all user-related operations within
 * **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
 * **Keycloak** — OAuth2/OpenID Connect identity provider
 * **Hangfire** — Hosted services for background jobs
+* **Resilience** — Standard .NET resilience handler for HTTP clients (retries, circuit breaker, timeout), Hangfire retries and MassTransit retries, circuit breaker and kill switch
 * **Observability** — Traces, logs, and metrics collected via OpenTelemetry and Logstash, exported to Aspire dashboard, Jaeger, ElasticSearch, and Prometheus
 * **Monitoring & Visualization** — Dashboards in Grafana, Kibana and Aspire
 * **Health Checks** — Status endpoints to monitor service availability and dependencies
 * **xUnit & Coverlet** — Automated unit and integration testing with code coverage
 * **SonarQube & Qodana** — Code quality and coverage analysis
-
 ## Architecture and Design
 This service follows the principles of Clean Architecture. The solution is split into multiple projects that correspond to each architectural layer.
 
