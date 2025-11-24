@@ -14,9 +14,10 @@ namespace UserService.Api.Controllers;
 /// <summary>
 ///     Authentication controller
 /// </summary>
-/// <response code="200">If user was registered/logged in</response>
-/// <response code="400">If user was not registered/logged in</response>
-/// <response code="500">If internal server error occured</response>
+/// <response code="200">If a user was registered/logged in</response>
+/// <response code="400">If a user was not registered/logged in</response>
+/// <response code="500">If internal server error occurred</response>
+[Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
 public class AuthController(IAuthService authService) : BaseController
 {
     /// <summary>

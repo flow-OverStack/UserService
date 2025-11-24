@@ -17,6 +17,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using UserService.Api.Filters;
 using UserService.Cache.Settings;
 using UserService.DAL;
 using UserService.Keycloak.Settings;
@@ -144,6 +145,7 @@ public static class Startup
 
             var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+            options.OperationFilter<ObsoleteDescriptionOperationFilter>();
         });
     }
 
