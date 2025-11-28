@@ -16,7 +16,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v4.1.0
         with:
-          dotnet-version: '9.0'
+          dotnet-version: '10.0'
 
       - name: Cache NuGet packages
         uses: actions/cache@v3
@@ -38,7 +38,7 @@ jobs:
       - name: Run unit tests
         run: |
           mkdir -p coverage
-          coverlet ./UserService.Tests/bin/Debug/net9.0/UserService.Tests.dll \
+          coverlet ./UserService.Tests/bin/Debug/net10.0/UserService.Tests.dll \
             --target "dotnet" \
             --targetargs "test --no-build --filter Category=Unit" \
             -f opencover \
@@ -61,7 +61,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v4.1.0
         with:
-          dotnet-version: '9.0'
+          dotnet-version: '10.0'
 
       - name: Cache NuGet packages
         uses: actions/cache@v3
@@ -83,7 +83,7 @@ jobs:
       - name: Run functional tests with Coverlet and generate OpenCover report
         run: |
           mkdir -p coverage
-          coverlet ./UserService.Tests/bin/Debug/net9.0/UserService.Tests.dll \
+          coverlet ./UserService.Tests/bin/Debug/net10.0/UserService.Tests.dll \
             --target "dotnet" \
             --targetargs "test --no-build --filter Category=Functional" \
             -f opencover \
