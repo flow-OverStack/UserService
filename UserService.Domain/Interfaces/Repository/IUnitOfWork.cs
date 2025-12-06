@@ -7,6 +7,8 @@ public interface IUnitOfWork : IStateSaveChanges
 {
     IBaseRepository<User> Users { get; set; }
     IBaseRepository<Role> Roles { get; set; }
+    IBaseRepository<ReputationRule> ReputationRules { get; set; }
+    IBaseRepository<ReputationRecord> ReputationRecords { get; set; }
 
     Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 }

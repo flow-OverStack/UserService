@@ -50,7 +50,7 @@ public class UserActivityCacheRepository(ICacheProvider cache) : IUserActivityCa
     private static string GetActivityValue(UserActivityDto dto)
     {
         var obj = JObject.FromObject(dto);
-        obj.Remove(nameof(dto.UserId)); // UserId is stored in the key (SSOT)
+        obj.Remove(nameof(dto.UserId)); // UserId is stored in the key (SSoT)
         return obj.ToString();
     }
 

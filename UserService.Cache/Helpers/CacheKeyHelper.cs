@@ -4,6 +4,8 @@ public static class CacheKeyHelper
 {
     private const string UserKeyPattern = "user:{0}";
     private const string UserRolesKeyPattern = "user:{0}:roles";
+    private const string UserCurrentReputationKeyPattern = "user:{0}:current_reputation";
+    private const string UserRemainingReputationKeyPattern = "user:{0}:remaining_reputation";
 
     private const string RoleUsersKeyPattern = "role:{0}:users";
     private const string RoleKeyPattern = "role:{0}";
@@ -39,6 +41,16 @@ public static class CacheKeyHelper
     public static string GetUserActivitiesKey()
     {
         return UserActivitiesKey;
+    }
+
+    public static string GetUserCurrentReputationKey(long userId)
+    {
+        return string.Format(UserCurrentReputationKeyPattern, userId);
+    }
+
+    public static string GetUserRemainingReputationKey(long userId)
+    {
+        return string.Format(UserRemainingReputationKeyPattern, userId);
     }
 
     public static long GetIdFromKey(string key)

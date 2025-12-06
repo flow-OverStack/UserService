@@ -4,17 +4,35 @@ using UserService.Domain.Interfaces.Service;
 
 namespace UserService.Grpc.Services;
 
-public class GrpcUserService(IGetUserService userService, IMapper mapper) : UserService.UserServiceBase
+public class GrpcUserService(IGetUserService userService, IGetRoleService roleService, IMapper mapper)
+    : UserService.UserServiceBase
 {
     public override async Task<GrpcUser> GetUserWithRolesById(GetUserByIdRequest request, ServerCallContext context)
     {
-        var result = await userService.GetByIdWithRolesAsync(request.UserId);
+        var userResult = await userService.GetByIdsAsync([request.UserId], context.CancellationToken);
+        if (!userResult.IsSuccess)
+            throw new RpcException(new Status(StatusCode.InvalidArgument, userResult.ErrorMessage!),
+                new Metadata { { nameof(userResult.ErrorCode), userResult.ErrorCode?.ToString() ?? string.Empty } });
 
-        if (!result.IsSuccess)
-            throw new RpcException(new Status(StatusCode.InvalidArgument, result.ErrorMessage!),
-                new Metadata { { nameof(result.ErrorCode), result.ErrorCode?.ToString() ?? string.Empty } });
+        var rolesResult = await roleService.GetUsersRolesAsync([request.UserId], context.CancellationToken);
+        if (!rolesResult.IsSuccess)
+            throw new RpcException(new Status(StatusCode.InvalidArgument, rolesResult.ErrorMessage!),
+                new Metadata { { nameof(rolesResult.ErrorCode), rolesResult.ErrorCode?.ToString() ?? string.Empty } });
 
-        return mapper.Map<GrpcUser>(result.Data);
+        var currentReputation =
+            await userService.GetCurrentReputationsAsync([request.UserId], context.CancellationToken);
+        if (!currentReputation.IsSuccess)
+            throw new RpcException(new Status(StatusCode.InvalidArgument, currentReputation.ErrorMessage!),
+                new Metadata
+                {
+                    { nameof(currentReputation.ErrorCode), currentReputation.ErrorCode?.ToString() ?? string.Empty }
+                });
+
+        var grpcUser = mapper.Map<GrpcUser>(userResult.Data.Single());
+        grpcUser.Roles.AddRange(rolesResult.Data.Single().Value.Select(mapper.Map<GrpcRole>));
+        grpcUser.Reputation = currentReputation.Data.Single().Value;
+
+        return grpcUser;
     }
 
     public override async Task<GetUsersByIdsResponse> GetUsersByIds(GetUsersByIdsRequest request,

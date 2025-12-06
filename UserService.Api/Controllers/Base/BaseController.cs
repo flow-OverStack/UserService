@@ -25,9 +25,7 @@ public class BaseController : ControllerBase
     private static readonly IReadOnlyDictionary<int, int> ErrorStatusCodeMap = new Dictionary<int, int>
     {
         // Reputation
-        { (int)ErrorCodes.DailyReputationLimitExceeded, StatusCodes.Status429TooManyRequests },
-        { (int)ErrorCodes.ReputationMinimumReached, StatusCodes.Status400BadRequest },
-        { (int)ErrorCodes.CannotIncreaseOrDecreaseNegativeReputation, StatusCodes.Status400BadRequest },
+        { (int)ErrorCodes.ReputationRuleNotFound, StatusCodes.Status404NotFound },
 
         // User
         { (int)ErrorCodes.UserNotFound, StatusCodes.Status404NotFound },

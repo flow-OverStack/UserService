@@ -7,10 +7,7 @@ using UserService.Domain.Results;
 
 namespace UserService.Application.Services.Cache;
 
-public class CacheGetUserService(
-    IUserCacheRepository cacheRepository,
-    GetUserService inner,
-    IRoleCacheRepository roleCacheRepository) : IGetUserService
+public class CacheGetUserService(IUserCacheRepository cacheRepository, GetUserService inner) : IGetUserService
 {
     public Task<QueryableResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -35,26 +32,6 @@ public class CacheGetUserService(
         return CollectionResult<User>.Success(users);
     }
 
-    public async Task<BaseResult<User>> GetByIdWithRolesAsync(long id, CancellationToken cancellationToken = default)
-    {
-        var users = await cacheRepository.GetByIdsOrFetchAndCacheAsync([id], cancellationToken);
-
-        var user = users.SingleOrDefault();
-
-        if (user == null)
-            return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
-
-        var groupedRoles = (await roleCacheRepository.GetUsersRolesOrFetchAndCacheAsync([user.Id], cancellationToken))
-            .ToArray();
-
-        if (groupedRoles.Length == 0 || !groupedRoles.Single().Value.Any())
-            return BaseResult<User>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
-
-        user.Roles = groupedRoles.Single().Value.ToList();
-
-        return BaseResult<User>.Success(user);
-    }
-
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
         IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
     {
@@ -66,5 +43,31 @@ public class CacheGetUserService(
                 (int)ErrorCodes.UsersNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
+    {
+        var reputations = (await cacheRepository.GetCurrentReputationsOrFetchAndCacheAsync(ids, cancellationToken))
+            .ToArray();
+
+        if (reputations.Length == 0)
+            return CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
+                (int)ErrorCodes.UsersNotFound);
+
+        return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
+    {
+        var reputations = (await cacheRepository.GetRemainingReputationsOrFetchAndCacheAsync(ids, cancellationToken))
+            .ToArray();
+
+        if (reputations.Length == 0)
+            return CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
+                (int)ErrorCodes.UsersNotFound);
+
+        return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }
 }

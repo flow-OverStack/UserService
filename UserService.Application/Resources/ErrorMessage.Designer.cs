@@ -69,24 +69,6 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot increase or decrease negative reputation.
-        /// </summary>
-        public static string CannotIncreaseOrDecreaseNegativeReputation {
-            get {
-                return ResourceManager.GetString("CannotIncreaseOrDecreaseNegativeReputation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Daily reputation limit exceeded.
-        /// </summary>
-        public static string DailyReputationLimitExceeded {
-            get {
-                return ResourceManager.GetString("DailyReputationLimitExceeded", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Not valid email.
         /// </summary>
         public static string EmailNotValid {
@@ -150,11 +132,11 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Reputation reached its minimum.
+        ///   Looks up a localized string similar to Reputation rule not found.
         /// </summary>
-        public static string ReputationMinimumReached {
+        public static string ReputationRuleNotFound {
             get {
-                return ResourceManager.GetString("ReputationMinimumReached", resourceCulture);
+                return ResourceManager.GetString("ReputationRuleNotFound", resourceCulture);
             }
         }
         

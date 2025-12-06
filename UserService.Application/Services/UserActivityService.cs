@@ -22,7 +22,8 @@ public class UserActivityService(
         var users = activities.Select(mapper.Map<User>).ToArray();
 
         var propertiesToUpdate = typeof(UserActivityDto).GetProperties()
-            .Select(p => p.Name == nameof(UserActivityDto.UserId) ? nameof(User.Id) : p.Name);
+            .Select(x => x.Name)
+            .Where(x => x != nameof(UserActivityDto.UserId));
         await userRepository.BulkUpdateAsync(users, propertiesToUpdate, cancellationToken);
 
         await cacheRepository.DeleteAllActivitiesAsync(cancellationToken);

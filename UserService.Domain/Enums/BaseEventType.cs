@@ -8,5 +8,8 @@ public enum BaseEventType
     DownvoteGivenForAnswer,
     QuestionDownvote,
     QuestionUpvote,
-    UserAcceptedAnswer
+    UserAcceptedAnswer,
+    QuestionDeleted,
+    CommentDeleted,
+    AnswerDeleted
 }

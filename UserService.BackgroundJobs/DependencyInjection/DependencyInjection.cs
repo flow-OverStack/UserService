@@ -17,8 +17,6 @@ public static class DependencyInjection
             {
                 using var scope = app.Services.CreateAsyncScope();
                 var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-                recurringJobManager.AddOrUpdate<ReputationResetJob>("ReputationDailyReset",
-                    job => job.RunAsync(CancellationToken.None), Cron.Daily);
                 recurringJobManager.AddOrUpdate<ProcessedEventsResetJob>("ProcessedEventsReset",
                     job => job.RunAsync(CancellationToken.None), Cron.Daily);
                 recurringJobManager.AddOrUpdate<SyncUserActivitiesJob>("ActivitiesSynchronization",

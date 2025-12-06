@@ -57,15 +57,6 @@
     <data name="RolesNotFound" xml:space="preserve">
         <value>Роли не найдены</value>
     </data>
-    <data name="DailyReputationLimitExceeded" xml:space="preserve">
-        <value>Превышен дневной лимит репутации</value>
-    </data>
-    <data name="ReputationMinimumReached" xml:space="preserve">
-        <value>Дотигнут минимум репутации</value>
-    </data>
-    <data name="CannotIncreaseOrDecreaseNegativeReputation" xml:space="preserve">
-        <value>Невозможно увеличить или уменьшить отрицательную репутацию</value>
-    </data>
     <data name="CannotDeleteDefaultRole" xml:space="preserve">
         <value>Невозможно удалить роль по умолчанию</value>
     </data>
@@ -74,5 +65,8 @@
     </data>
     <data name="InvalidCacheDataFormat" xml:space="preserve">
         <value>Полученные из кэша данные неверного формата</value>
+    </data>
+    <data name="ReputationRuleNotFound" xml:space="preserve">
+        <value>Правило репутации не найдено</value>
     </data>
 </root>

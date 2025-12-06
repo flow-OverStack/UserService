@@ -17,7 +17,6 @@ namespace UserService.Api.Controllers;
 /// <response code="200">If a user was registered/logged in</response>
 /// <response code="400">If a user was not registered/logged in</response>
 /// <response code="500">If internal server error occurred</response>
-[Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
 public class AuthController(IAuthService authService) : BaseController
 {
     /// <summary>
@@ -37,6 +36,7 @@ public class AuthController(IAuthService authService) : BaseController
     ///     }
     /// </remarks>
     [HttpPost("register")]
+    [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
     public async Task<ActionResult<BaseResult<UserDto>>> Register([FromBody] RegisterUserDto dto,
         CancellationToken cancellationToken)
     {
@@ -61,6 +61,7 @@ public class AuthController(IAuthService authService) : BaseController
     ///     }
     /// </remarks>
     [HttpPost("login-email")]
+    [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginEmailUserDto dto,
         CancellationToken cancellationToken)
     {
@@ -85,6 +86,7 @@ public class AuthController(IAuthService authService) : BaseController
     ///     }
     /// </remarks>
     [HttpPost("login-username")]
+    [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUsernameUserDto dto,
         CancellationToken cancellationToken)
     {

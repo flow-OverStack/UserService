@@ -8,9 +8,7 @@ public enum ErrorCodes
     // Roles: 41-50
     // Validity: 51-60
 
-    DailyReputationLimitExceeded = 11,
-    ReputationMinimumReached = 12,
-    CannotIncreaseOrDecreaseNegativeReputation = 13,
+    ReputationRuleNotFound = 11,
 
     UserNotFound = 21,
     UserAlreadyExists = 22,

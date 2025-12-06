@@ -8,5 +8,7 @@ public class BaseEvent
 
     public long UserId { get; set; }
 
-    public string? CancelsEvent { get; set; }
+    public string EntityType { get; set; }
+
+    public long EntityId { get; set; }
 }

@@ -35,5 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IBaseRepository<Role>, BaseRepository<Role>>();
         services.AddScoped<IBaseRepository<UserRole>, BaseRepository<UserRole>>();
         services.AddScoped<IBaseRepository<ProcessedEvent>, BaseRepository<ProcessedEvent>>();
+        services.AddScoped<IBaseRepository<ReputationRecord>, BaseRepository<ReputationRecord>>();
+        services.AddScoped<IBaseRepository<ReputationRule>, BaseRepository<ReputationRule>>();
     }
 }

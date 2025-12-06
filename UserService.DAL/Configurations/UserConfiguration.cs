@@ -14,7 +14,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastLoginAt);
-        builder.Property(x => x.ReputationEarnedToday).IsRequired().HasDefaultValue(0);
 
         //Email constraint
         builder.ToTable(t =>
@@ -40,5 +39,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 x => x.HasOne<Role>().WithMany().HasForeignKey(y => y.RoleId),
                 x => x.HasOne<User>().WithMany().HasForeignKey(y => y.UserId)
             );
+
+        builder.HasMany(x => x.ReputationRecords)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
+            .HasPrincipalKey(x => x.Id);
     }
 }

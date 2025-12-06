@@ -1,18 +1,24 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using UserService.Application.Enums;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
+using UserService.Domain.Settings;
 
 namespace UserService.Application.Services;
 
 public class GetUserService(
     IBaseRepository<User> userRepository,
-    IBaseRepository<Role> roleRepository)
+    IBaseRepository<Role> roleRepository,
+    IBaseRepository<ReputationRecord> reputationRecordRepository,
+    IOptions<ReputationRules> reputationRules)
     : IGetUserService
 {
+    private readonly ReputationRules _reputationRules = reputationRules.Value;
+
     public Task<QueryableResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -20,21 +26,6 @@ public class GetUserService(
         var users = userRepository.GetAll();
 
         return Task.FromResult(QueryableResult<User>.Success(users));
-    }
-
-    public async Task<BaseResult<User>> GetByIdWithRolesAsync(long id, CancellationToken cancellationToken = default)
-    {
-        var user = await userRepository.GetAll()
-            .Include(x => x.Roles)
-            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-        if (user == null)
-            return BaseResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
-
-        if (user.Roles.Count == 0)
-            return BaseResult<User>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound);
-
-        return BaseResult<User>.Success(user);
     }
 
     public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
@@ -66,5 +57,77 @@ public class GetUserService(
                 (int)ErrorCodes.UsersNotFound);
 
         return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
+    {
+        var idsArray = ids.ToArray();
+
+        var reputations = await reputationRecordRepository.GetAll()
+            .Where(x => idsArray.Contains(x.UserId) && x.Enabled)
+            .Include(x => x.ReputationRule)
+            .GroupBy(x => new { x.UserId, x.CreatedAt.Date })
+            .Select(x => new KeyValuePair<long, int>(x.Key.UserId,
+                Math.Max(_reputationRules.MinReputation,
+                    Math.Min(x.Sum(y => y.ReputationRule.ReputationChange),
+                        _reputationRules.MaxDailyReputation))))
+            .ToArrayAsync(cancellationToken);
+
+        var missingIds = idsArray.Except(reputations.Select(x => x.Key)).ToArray();
+        KeyValuePair<long, int>[] missingReputations = [];
+        if (missingIds.Length > 0)
+            missingReputations = await userRepository.GetAll()
+                .Where(x => missingIds.Contains(x.Id))
+                .Select(x => new KeyValuePair<long, int>(x.Id, _reputationRules.MinReputation))
+                .ToArrayAsync(cancellationToken);
+
+
+        var allReputations = reputations.Concat(missingReputations).ToArray();
+
+        if (allReputations.Length == 0)
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UserNotFound,
+                    (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
+                    (int)ErrorCodes.UsersNotFound)
+            };
+
+        return CollectionResult<KeyValuePair<long, int>>.Success(allReputations);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(IEnumerable<long> ids,
+        CancellationToken cancellationToken = default)
+    {
+        var idsArray = ids.ToArray();
+        var reputations = await reputationRecordRepository.GetAll()
+            .Where(x => idsArray.Contains(x.UserId) && x.Enabled && x.CreatedAt.Date == DateTime.UtcNow.Date)
+            .Include(x => x.ReputationRule)
+            .GroupBy(x => x.UserId)
+            .Select(x => new KeyValuePair<long, int>(x.Key,
+                Math.Max(0, _reputationRules.MaxDailyReputation - x.Sum(y => y.ReputationRule.ReputationChange))))
+            .ToArrayAsync(cancellationToken);
+
+        var missingIds = idsArray.Except(reputations.Select(x => x.Key)).ToArray();
+        KeyValuePair<long, int>[] missingReputations = [];
+        if (missingIds.Length > 0)
+            missingReputations = await userRepository.GetAll()
+                .Where(x => missingIds.Contains(x.Id))
+                .Select(x => new KeyValuePair<long, int>(x.Id, _reputationRules.MaxDailyReputation))
+                .ToArrayAsync(cancellationToken);
+
+        var allReputations = reputations.Concat(missingReputations).ToArray();
+
+        if (allReputations.Length == 0)
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UserNotFound,
+                    (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
+                    (int)ErrorCodes.UsersNotFound)
+            };
+
+        return CollectionResult<KeyValuePair<long, int>>.Success(allReputations);
     }
 }

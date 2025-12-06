@@ -171,6 +171,37 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         return jsonResults;
     }
 
+    public async Task<IEnumerable<KeyValuePair<string, string>>> StringGetAsync(IEnumerable<string> keys,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(keys);
+
+        var redisKeys = keys.Distinct().Select(x => (RedisKey)x).ToArray();
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var result = await redisDatabase.StringGetAsync(redisKeys);
+
+        var stringResults = new List<KeyValuePair<string, string>>();
+        for (var i = 0; i < redisKeys.Length; i++)
+            try
+            {
+                var value = result[i];
+                var key = redisKeys[i];
+
+                if (value.IsNull) continue;
+
+                stringResults.Add(new KeyValuePair<string, string>(key!, value!));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+        return stringResults;
+    }
+
     public Task<long> KeysDeleteAsync(IEnumerable<string> keys, bool fireAndForget = false,
         CancellationToken cancellationToken = default)
     {

@@ -9,9 +9,6 @@ using UserService.Messaging.Interfaces;
 using UserService.Messaging.Messages;
 using UserService.Messaging.Services;
 using UserService.Messaging.Settings;
-using UserService.Messaging.Strategies.Reputation;
-using UserService.Messaging.Strategies.Reputation.Base;
-using UserService.Messaging.Strategies.Reputation.Strategies;
 
 namespace UserService.Messaging.DependencyInjection;
 
@@ -24,7 +21,6 @@ public static class DependencyInjection
     public static void AddMassTransitServices(this IServiceCollection services)
     {
         services.InitMassTransit();
-        services.InitStrategies();
         services.InitEventServices();
     }
 
@@ -38,16 +34,16 @@ public static class DependencyInjection
 
             configurator.AddRider(rider =>
             {
-                rider.AddConsumer<ReputationEventConsumer>();
+                rider.AddConsumer<BaseEventConsumer>();
 
                 // Scope is not created because IOptions<KafkaSettings> is a singleton
                 using var provider = rider.BuildServiceProvider();
                 var kafkaSettings = provider.GetRequiredService<IOptions<KafkaSettings>>().Value;
 
-                rider.AddProducer<BaseEvent>(kafkaSettings.ReputationTopic,
-                    new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
-                rider.AddProducer<FaultedMessage>(kafkaSettings.DeadLetterTopic,
-                    new ProducerConfig { Acks = Acks.All, EnableIdempotence = false });
+                var defaultProducerConfig = new ProducerConfig { Acks = Acks.All, EnableIdempotence = false };
+
+                rider.AddProducer<BaseEvent>(kafkaSettings.BaseEventTopic, defaultProducerConfig);
+                rider.AddProducer<FaultedMessage>(kafkaSettings.DeadLetterTopic, defaultProducerConfig);
 
                 rider.UsingKafka((context, factoryConfigurator) =>
                 {
@@ -55,21 +51,12 @@ public static class DependencyInjection
 
                     factoryConfigurator.Host(kafkaSettings.Host);
 
-                    factoryConfigurator.TopicEndpoint<BaseEvent>(kafkaSettings.ReputationTopic,
-                        kafkaSettings.ReputationConsumerGroup,
+                    factoryConfigurator.TopicEndpoint<BaseEvent>(kafkaSettings.BaseEventTopic,
+                        kafkaSettings.BaseEventConsumerGroup,
                         cfg =>
                         {
-                            cfg.ConfigureConsumer<ReputationEventConsumer>(context);
-
-                            cfg.UseFilter(
-                                new ResilientConsumeFilter<BaseEvent>(
-                                    context.GetRequiredService<IServiceScopeFactory>()));
-
-                            cfg.UseKillSwitch(options => options
-                                .SetActivationThreshold(10)
-                                .SetTrackingPeriod(TimeSpan.FromMinutes(3))
-                                .SetTripThreshold(15)
-                                .SetRestartTimeout(TimeSpan.FromMinutes(1)));
+                            cfg.ConfigureConsumer<BaseEventConsumer>(context);
+                            cfg.ConfigureKafkaEndpointDefaults(context);
                         }
                     );
                 });
@@ -77,21 +64,25 @@ public static class DependencyInjection
         });
     }
 
-    private static void InitStrategies(this IServiceCollection services)
-    {
-        services.AddTransient<IReputationStrategy, AnswerAcceptedStrategy>();
-        services.AddTransient<IReputationStrategy, AnswerDownvoteStrategy>();
-        services.AddTransient<IReputationStrategy, AnswerUpvoteStrategy>();
-        services.AddTransient<IReputationStrategy, DownvoteGivenForAnswerStrategy>();
-        services.AddTransient<IReputationStrategy, QuestionDownvoteStrategy>();
-        services.AddTransient<IReputationStrategy, QuestionUpvoteStrategy>();
-        services.AddTransient<IReputationStrategy, UserAcceptedAnswerStrategy>();
-        services.AddSingleton<IReputationStrategyResolver, ReputationStrategyResolver>();
-    }
-
     private static void InitEventServices(this IServiceCollection services)
     {
         services.AddScoped<IProcessedEventRepository, ProcessedEventRepository>();
         services.AddScoped<IProcessedEventsResetService, ProcessedEventsResetService>();
+    }
+
+    private static void ConfigureKafkaEndpointDefaults<TEvent>(
+        this IKafkaTopicReceiveEndpointConfigurator<Ignore, TEvent> cfg,
+        IRiderRegistrationContext context) where TEvent : class
+    {
+        cfg.CreateIfMissing();
+
+        cfg.UseConsumeFilter(typeof(ResilientConsumeFilter<>), context);
+        cfg.UseConsumeFilter(typeof(ProcessedEventFilter<>), context);
+
+        cfg.UseKillSwitch(options => options
+            .SetActivationThreshold(10)
+            .SetTrackingPeriod(TimeSpan.FromMinutes(3))
+            .SetTripThreshold(15)
+            .SetRestartTimeout(TimeSpan.FromMinutes(1)));
     }
 }

@@ -80,7 +80,7 @@ public class ResilientConsumeFilter<TEvent>(IServiceScopeFactory serviceFactory)
 
     public void Probe(ProbeContext context)
     {
-        context.CreateFilterScope(nameof(ResilientConsumeFilter<TEvent>));
+        context.CreateFilterScope(nameof(ResilientConsumeFilter<>));
         context.Add("maxRetries", ScheduledRedeliveryIntervals.Length);
     }
 

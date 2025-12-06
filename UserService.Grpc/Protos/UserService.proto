@@ -28,9 +28,8 @@ message GrpcUser {
   string email = 4;
   google.protobuf.Timestamp last_login_at = 5;
   int32 reputation = 8;
-  int32 reputation_earned_today = 9;
-  repeated GrpcRole roles = 10;
-  google.protobuf.Timestamp created_at = 11;
+  repeated GrpcRole roles = 9;
+  google.protobuf.Timestamp created_at = 10;
 }
 
 message GrpcRole{

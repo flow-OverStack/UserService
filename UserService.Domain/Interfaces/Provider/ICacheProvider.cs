@@ -106,6 +106,19 @@ public interface ICacheProvider
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    ///     Retrieves the string values associated with the given keys from the cache.
+    /// </summary>
+    /// <param name="keys">A collection of keys whose associated string values need to be retrieved.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
+    /// <returns>
+    ///     A collection of key-value pairs, where each key matches one of the requested keys,
+    ///     and the value is its associated string value from the cache.
+    /// </returns>
+    Task<IEnumerable<KeyValuePair<string, string>>> StringGetAsync(
+        IEnumerable<string> keys,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     ///     Asynchronously deletes a key and its associated value from the cache.
     /// </summary>
     /// <param name="keys">The keys to be removed from the cache.</param>

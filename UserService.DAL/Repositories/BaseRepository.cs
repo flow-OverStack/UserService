@@ -11,9 +11,9 @@ public class BaseRepository<TEntity>(ApplicationDbContext dbContext) : IBaseRepo
         return dbContext.Set<TEntity>();
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await dbContext.SaveChangesAsync(cancellationToken);
+        return dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<TEntity> CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -43,12 +43,13 @@ public class BaseRepository<TEntity>(ApplicationDbContext dbContext) : IBaseRepo
         return entity;
     }
 
-    public async Task BulkUpdateAsync(IEnumerable<TEntity> entities, IEnumerable<string> propertiesToUpdate,
+    public Task BulkUpdateAsync(IEnumerable<TEntity> entities, IEnumerable<string> propertiesToUpdate,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entities);
+        ArgumentNullException.ThrowIfNull(propertiesToUpdate);
 
-        await dbContext.BulkUpdateAsync(entities,
+        return dbContext.BulkUpdateAsync(entities,
             config => config.PropertiesToIncludeOnUpdate = propertiesToUpdate.ToList(),
             cancellationToken: cancellationToken);
     }
