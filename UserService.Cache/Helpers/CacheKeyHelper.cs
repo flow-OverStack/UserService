@@ -4,11 +4,18 @@ public static class CacheKeyHelper
 {
     private const string UserKeyPattern = "user:{0}";
     private const string UserRolesKeyPattern = "user:{0}:roles";
+    private const string UserReputationKeyPattern = "user:{0}:reputation_record";
     private const string UserCurrentReputationKeyPattern = "user:{0}:current_reputation";
     private const string UserRemainingReputationKeyPattern = "user:{0}:remaining_reputation";
 
     private const string RoleUsersKeyPattern = "role:{0}:users";
     private const string RoleKeyPattern = "role:{0}";
+
+    private const string ReputationRecordKeyPattern = "reputation_record:{0}";
+
+    private const string ReputationRuleKeyPattern = "reputation_rule:{0}";
+    private const string ReputationRuleRecordsKeyPattern = "reputation_rule:{0}:records";
+
 
     private const string UserActivitiesKey = "activity:users";
     private const string UserActivityKeyPattern = "activity:user:{0}";
@@ -51,6 +58,26 @@ public static class CacheKeyHelper
     public static string GetUserRemainingReputationKey(long userId)
     {
         return string.Format(UserRemainingReputationKeyPattern, userId);
+    }
+
+    public static string GetReputationRecordKey(long id)
+    {
+        return string.Format(ReputationRecordKeyPattern, id);
+    }
+
+    public static string GetReputationRuleKey(long id)
+    {
+        return string.Format(ReputationRuleKeyPattern, id);
+    }
+
+    public static string GetReputationRuleRecordsKey(long ruleId)
+    {
+        return string.Format(ReputationRuleRecordsKeyPattern, ruleId);
+    }
+
+    public static string GetUserReputationRecordsKey(long userId)
+    {
+        return string.Format(UserReputationKeyPattern, userId);
     }
 
     public static long GetIdFromKey(string key)

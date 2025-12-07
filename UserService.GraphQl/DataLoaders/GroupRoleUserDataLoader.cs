@@ -9,7 +9,7 @@ namespace UserService.GraphQl.DataLoaders;
 /// </summary>
 /// <param name="batchScheduler"></param>
 /// <param name="options"></param>
-public class GroupUserDataLoader(
+public class GroupRoleUserDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)

@@ -78,4 +78,13 @@
     <data name="ReputationRuleNotFound" xml:space="preserve">
         <value>Reputation rule not found</value>
     </data>
+    <data name="ReputationRulesNotFound" xml:space="preserve">
+        <value>Reputation rules not found</value>
+    </data>
+    <data name="ReputationRecordNotFound" xml:space="preserve">
+        <value>Reputation record not found</value>
+    </data>
+    <data name="ReputationRecordsNotFound" xml:space="preserve">
+        <value>Reputation records not found</value>
+    </data>
 </root>

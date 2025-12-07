@@ -60,4 +60,58 @@ public class Queries
 
         return role;
     }
+
+    [GraphQLDescription("Returns a list of paginated reputation records.")]
+    [UseCursorPagingValidationMiddleware]
+    [UsePaging]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<IQueryable<ReputationRecord>> GetReputationRecords(
+        [Service] IGetReputationRecordService recordService, CancellationToken cancellationToken)
+    {
+        var result = await recordService.GetAllAsync(cancellationToken);
+
+        if (!result.IsSuccess)
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+
+        return result.Data;
+    }
+
+    [GraphQLDescription("Returns a reputation record by its id.")]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<ReputationRecord?> GetReputationRecord(long id, ReputationRecordDataLoader recordLoader,
+        CancellationToken cancellationToken)
+    {
+        var record = await recordLoader.LoadAsync(id, cancellationToken);
+
+        return record;
+    }
+
+    [GraphQLDescription("Returns a list of paginated reputation rules.")]
+    [UseOffsetPagingValidationMiddleware]
+    [UseOffsetPaging]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<IQueryable<ReputationRule>> GetReputationRules(
+        [Service] IGetReputationRuleService ruleService, CancellationToken cancellationToken)
+    {
+        var result = await ruleService.GetAllAsync(cancellationToken);
+
+        if (!result.IsSuccess)
+            throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
+
+        return result.Data;
+    }
+
+    [GraphQLDescription("Returns a reputation rule by its id.")]
+    [UseFiltering]
+    [UseSorting]
+    public async Task<ReputationRule?> GetReputationRule(long id, ReputationRuleDataLoader ruleLoader,
+        CancellationToken cancellationToken)
+    {
+        var rule = await ruleLoader.LoadAsync(id, cancellationToken);
+
+        return rule;
+    }
 }

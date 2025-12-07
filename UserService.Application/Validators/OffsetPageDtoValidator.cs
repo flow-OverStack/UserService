@@ -8,9 +8,9 @@ namespace UserService.Application.Validators;
 
 public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>, INullSafeValidator<OffsetPageDto>
 {
-    public OffsetPageDtoValidator(IOptions<PaginationRules> businessRules)
+    public OffsetPageDtoValidator(IOptions<PaginationRules> paginationRules)
     {
-        var maxPageSize = businessRules.Value.MaxPageSize;
+        var maxPageSize = paginationRules.Value.MaxPageSize;
 
         RuleFor(x => x.Skip).NotNull().GreaterThanOrEqualTo(0);
         RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize);

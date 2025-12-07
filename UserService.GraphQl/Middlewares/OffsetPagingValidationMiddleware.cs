@@ -17,13 +17,13 @@ public class OffsetPagingValidationMiddleware(FieldDelegate next)
     private const string TakeArgName = "take";
 
     public async Task InvokeAsync(IMiddlewareContext context, INullSafeValidator<OffsetPageDto> pageValidator,
-        IOptions<PaginationRules> businessRules)
+        IOptions<PaginationRules> paginationRules)
     {
         if (context.Selection.Field.Arguments.Any(x => x.Name is SkipArgName or TakeArgName))
         {
             var skip = context.ArgumentValue<int?>(SkipArgName) ?? 0; // Value by default
             var take = context.ArgumentValue<int?>(TakeArgName) ??
-                       businessRules.Value.DefaultPageSize; // Value by default
+                       paginationRules.Value.DefaultPageSize; // Value by default
 
             var pagination = new OffsetPageDto(skip, take);
 

@@ -9,6 +9,9 @@ public enum ErrorCodes
     // Validity: 51-60
 
     ReputationRuleNotFound = 11,
+    ReputationRulesNotFound = 12,
+    ReputationRecordNotFound = 13,
+    ReputationRecordsNotFound = 14,
 
     UserNotFound = 21,
     UserAlreadyExists = 22,

@@ -26,14 +26,22 @@ public static class DependencyInjection
             .AddQueryType<Queries>()
             .AddType<UserType>()
             .AddType<RoleType>()
+            .AddType<ReputationRecordType>()
+            .AddType<ReputationRuleType>()
             .AddTypeExtension<CollectionSegmentInfoType>()
             .AddSorting()
             .AddFiltering()
             .AddErrorFilter<PublicErrorFilter>()
             .AddDataLoader<UserDataLoader>()
             .AddDataLoader<RoleDataLoader>()
-            .AddDataLoader<GroupUserDataLoader>()
+            .AddDataLoader<ReputationRuleDataLoader>()
+            .AddDataLoader<ReputationRecordDataLoader>()
+            .AddDataLoader<CurrentReputationDataLoader>()
+            .AddDataLoader<RemainingReputationDataLoader>()
+            .AddDataLoader<GroupRoleUserDataLoader>()
             .AddDataLoader<GroupRoleDataLoader>()
+            .AddDataLoader<GroupReputationRecordDataLoader>()
+            .AddDataLoader<GroupReputationRuleReputationRecordDataLoader>()
             .AddApolloFederation(FederationVersion.Federation23)
             .ModifyPagingOptions(opt =>
             {
@@ -45,6 +53,7 @@ public static class DependencyInjection
                 opt.DefaultPageSize = defaultSize;
                 opt.IncludeTotalCount = true;
             })
+            .AddDbContextCursorPagingProvider()
             .ModifyCostOptions(opt => opt.MaxFieldCost *= 3);
     }
 

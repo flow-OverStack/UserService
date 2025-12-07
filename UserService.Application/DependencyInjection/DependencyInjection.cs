@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using QuestionService.Domain.Dtos.Page;
 using UserService.Application.Mappings;
 using UserService.Application.Services;
 using UserService.Application.Services.Cache;
@@ -29,7 +30,12 @@ public static class DependencyInjection
         services.AddScoped<IReputationService, ReputationService>();
         services.AddScoped<IUserActivityService, UserActivityService>();
         services.AddScoped<IUserActivityDatabaseService, UserActivityService>();
+        services.AddScoped<GetReputationRuleService>();
+        services.AddScoped<IGetReputationRuleService, CacheGetReputationRuleService>();
+        services.AddScoped<GetReputationRecordService>();
+        services.AddScoped<IGetReputationRecordService, CacheGetReputationRecordService>();
 
         services.AddScoped<INullSafeValidator<OffsetPageDto>, OffsetPageDtoValidator>();
+        services.AddScoped<INullSafeValidator<CursorPageDto>, CursorPageDtoValidator>();
     }
 }

@@ -132,11 +132,38 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reputation record not found.
+        /// </summary>
+        public static string ReputationRecordNotFound {
+            get {
+                return ResourceManager.GetString("ReputationRecordNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reputation records not found.
+        /// </summary>
+        public static string ReputationRecordsNotFound {
+            get {
+                return ResourceManager.GetString("ReputationRecordsNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reputation rule not found.
         /// </summary>
         public static string ReputationRuleNotFound {
             get {
                 return ResourceManager.GetString("ReputationRuleNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reputation rules not found.
+        /// </summary>
+        public static string ReputationRulesNotFound {
+            get {
+                return ResourceManager.GetString("ReputationRulesNotFound", resourceCulture);
             }
         }
         

@@ -17,10 +17,10 @@ public class RoleType : ObjectType<Role>
 
     private sealed class Resolvers
     {
-        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, GroupUserDataLoader userLoader,
+        public async Task<IEnumerable<User>> GetUsersAsync([Parent] Role role, GroupRoleUserDataLoader roleUserLoader,
             CancellationToken cancellationToken)
         {
-            var users = await userLoader.LoadRequiredAsync(role.Id, cancellationToken);
+            var users = await roleUserLoader.LoadRequiredAsync(role.Id, cancellationToken);
 
             return users;
         }

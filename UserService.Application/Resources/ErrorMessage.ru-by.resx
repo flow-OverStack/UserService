@@ -69,4 +69,13 @@
     <data name="ReputationRuleNotFound" xml:space="preserve">
         <value>Правило репутации не найдено</value>
     </data>
+    <data name="ReputationRulesNotFound" xml:space="preserve">
+        <value>Правила репутации не найдены</value>
+    </data>
+    <data name="ReputationRecordNotFound" xml:space="preserve">
+        <value>Запись репутации не найдена</value>
+    </data>
+    <data name="ReputationRecordsNotFound" xml:space="preserve">
+        <value>Записи репутации не найдены</value>
+    </data>
 </root>
