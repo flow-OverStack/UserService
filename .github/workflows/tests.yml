@@ -38,7 +38,7 @@ jobs:
       - name: Run unit tests
         run: |
           mkdir -p coverage
-          coverlet ./UserService.Tests/bin/Debug/net9.0/UserService.Tests.dll \
+          coverlet ./UserService.Tests/bin/Debug/net10.0/UserService.Tests.dll \
             --target "dotnet" \
             --targetargs "test --no-build --filter Category=Unit" \
             -f opencover \
@@ -83,7 +83,7 @@ jobs:
       - name: Run functional tests with Coverlet and generate OpenCover report
         run: |
           mkdir -p coverage
-          coverlet ./UserService.Tests/bin/Debug/net9.0/UserService.Tests.dll \
+          coverlet ./UserService.Tests/bin/Debug/net10.0/UserService.Tests.dll \
             --target "dotnet" \
             --targetargs "test --no-build --filter Category=Functional" \
             -f opencover \
