@@ -121,15 +121,15 @@ public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyn
             services.Configure<KafkaSettings>(x =>
             {
                 x.Host = "test-host";
-                x.ReputationTopic = "test-topic";
-                x.ReputationConsumerGroup = "test-consumer-group";
+                x.BaseEventTopic = "test-topic";
+                x.BaseEventConsumerGroup = "test-consumer-group";
             });
 
             var mockBaseEventProducer = new Mock<ITopicProducer<BaseEvent>>();
             var mockFaultedMessageProducer = new Mock<ITopicProducer<FaultedMessage>>();
             mockBaseEventProducer.Setup(x => x.Produce(It.IsAny<BaseEvent>(), It.IsAny<CancellationToken>()));
             mockFaultedMessageProducer.Setup(x => x.Produce(It.IsAny<FaultedMessage>(), It.IsAny<CancellationToken>()));
-            services.AddScoped<IConsumer<BaseEvent>, ReputationEventConsumer>();
+            services.AddScoped<IConsumer<BaseEvent>, BaseEventConsumer>();
             services.AddScoped<ITopicProducer<BaseEvent>>(_ => mockBaseEventProducer.Object);
             services.AddScoped<ITopicProducer<FaultedMessage>>(_ => mockFaultedMessageProducer.Object);
 

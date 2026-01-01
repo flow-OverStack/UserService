@@ -6,9 +6,6 @@ internal static class RedisSettingsConfiguration
 {
     public static RedisSettings GetRedisSettingsConfiguration()
     {
-        return new RedisSettings
-        {
-            TimeToLiveInSeconds = 300
-        };
+        return new RedisSettings { TimeToLiveInSeconds = 300 };
     }
 }

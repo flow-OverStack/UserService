@@ -15,18 +15,15 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
     public async Task<BaseResult> ApplyReputationEventAsync(ReputationEventDto dto,
         CancellationToken cancellationToken = default)
     {
-        var rule = await unitOfWork.ReputationRules.GetAll()
-            .FirstOrDefaultAsync(x => x.EventType == dto.EventType.ToString(), cancellationToken);
-
-        if (dto.EventType is BaseEventType.CommentDeleted or BaseEventType.AnswerDeleted
-            or BaseEventType.QuestionDeleted)
+        if (dto.EventType is BaseEventType.EntityDeleted)
             return await RevokeReputationForEntityAsync(dto.EntityId, dto.EntityType, cancellationToken);
 
         var user = await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Id == dto.UserId, cancellationToken);
-
         if (user == null)
             return BaseResult.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
+        var rule = await unitOfWork.ReputationRules.GetAll()
+            .FirstOrDefaultAsync(x => x.EventType == dto.EventType.ToString(), cancellationToken);
         if (rule == null)
             return BaseResult.Failure(ErrorMessage.ReputationRuleNotFound, (int)ErrorCodes.ReputationRuleNotFound);
 
@@ -41,8 +38,8 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
         {
             var oldRecords = unitOfWork.ReputationRecords.GetAll()
                 .Include(x => x.ReputationRule)
-                .Where(x => x.UserId == userId && x.EntityId == entityId && x.ReputationRule.Group == rule.Group &&
-                            x.Enabled);
+                .Where(x => x.UserId == userId && x.EntityId == entityId && x.ReputationRule.Group != null &&
+                            x.ReputationRule.Group == rule.Group && x.Enabled);
 
             await oldRecords.ExecuteUpdateAsync(x => x.SetProperty(p => p.Enabled, p => false), cancellationToken);
 

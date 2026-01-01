@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using QuestionService.Domain.Dtos.Page;
 using UserService.Application.Mappings;
 using UserService.Application.Services;
 using UserService.Application.Services.Cache;

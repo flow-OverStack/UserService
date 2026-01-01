@@ -184,20 +184,14 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         var stringResults = new List<KeyValuePair<string, string>>();
         for (var i = 0; i < redisKeys.Length; i++)
-            try
-            {
-                var value = result[i];
-                var key = redisKeys[i];
+        {
+            var value = result[i];
+            var key = redisKeys[i];
 
-                if (value.IsNull) continue;
+            if (value.IsNull) continue;
 
-                stringResults.Add(new KeyValuePair<string, string>(key!, value!));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            stringResults.Add(new KeyValuePair<string, string>(key!, value!));
+        }
 
         return stringResults;
     }

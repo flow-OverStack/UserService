@@ -9,6 +9,8 @@ internal class GraphQlGetAllResponse
 
 internal class GraphQlGetAllData
 {
-    public GraphQlPaginatedResponse<User> Users { get; set; }
-    public GraphQlPaginatedResponse<Role> Roles { get; set; }
+    public GraphQlOffsetPaginatedResponse<User> Users { get; set; }
+    public GraphQlOffsetPaginatedResponse<Role> Roles { get; set; }
+    public GraphQlCursorPaginatedResponse<ReputationRecord> ReputationRecords { get; set; }
+    public GraphQlOffsetPaginatedResponse<ReputationRule> ReputationRules { get; set; }
 }

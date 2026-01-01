@@ -1,3 +1,4 @@
+using Hangfire;
 using MassTransit;
 using MassTransit.Transports;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,8 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
+        var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
         var probeContext = new Mock<ProbeContext>();
         probeContext.Setup(x => x.CreateScope(It.IsAny<string>())).Returns(new Mock<ProbeContext>().Object);
 
@@ -37,11 +38,19 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
+        const long entityId = 2;
+
         var message = new BaseEvent
-            { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
+        {
+            EventType = nameof(BaseEventType.AnswerAccepted),
+            EntityType = nameof(EntityType.Answer),
+            UserId = userId,
+            EntityId = entityId,
+            EventId = Guid.NewGuid()
+        };
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -63,11 +72,20 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
+        const long entityId = 2;
+
         var message = new BaseEvent
-            { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
+        {
+            EventType = nameof(BaseEventType.AnswerAccepted),
+            EntityType = nameof(EntityType.Answer),
+            UserId = userId,
+            EntityId = entityId,
+            EventId = Guid.NewGuid()
+        };
+
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -90,11 +108,19 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
+        const long entityId = 2;
+
         var message = new BaseEvent
-            { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
+        {
+            EventType = nameof(BaseEventType.AnswerAccepted),
+            EntityType = nameof(EntityType.Answer),
+            UserId = userId,
+            EntityId = entityId,
+            EventId = Guid.NewGuid()
+        };
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -126,11 +152,19 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
     {
         //Arrange
         const long userId = 1;
-        await using var scope = ServiceProvider.CreateAsyncScope();
-        var scopeFactory = scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(scopeFactory);
+        const long entityId = 2;
+
         var message = new BaseEvent
-            { EventType = nameof(BaseEventType.AnswerAccepted), UserId = userId, EventId = Guid.NewGuid() };
+        {
+            EventType = nameof(BaseEventType.AnswerAccepted),
+            EntityType = nameof(EntityType.Answer),
+            UserId = userId,
+            EntityId = entityId,
+            EventId = Guid.NewGuid()
+        };
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);

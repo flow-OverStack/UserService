@@ -1,12 +1,11 @@
 using Hangfire;
 using MassTransit;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Messaging.Messages;
 
 namespace UserService.Messaging.Filters;
 
-public class ResilientConsumeFilter<TEvent>(IServiceScopeFactory serviceFactory)
+public class ResilientConsumeFilter<TEvent>(IBackgroundJobClient backgroundJob)
     : IFilter<ConsumeContext<TEvent>> where TEvent : class
 {
     private const string RedeliveryCountHeader = "RedeliveryCount";
@@ -56,17 +55,13 @@ public class ResilientConsumeFilter<TEvent>(IServiceScopeFactory serviceFactory)
 
             var redeliveryCount = 0;
             if (redeliveryCountObj is string s && int.TryParse(s, out var parsed))
-                redeliveryCount = ++parsed;
+                redeliveryCount = parsed + 1;
 
             if (redeliveryCount >= ScheduledRedeliveryIntervals.Length)
             {
-                await MoveToDeadLetterQueue(context, e);
+                MoveToDeadLetterQueue(context, e);
                 throw;
             }
-
-            await using var scope = serviceFactory.CreateAsyncScope();
-            var provider = scope.ServiceProvider;
-            var backgroundJob = provider.GetRequiredService<IBackgroundJobClient>();
 
             var message = context.Message;
             backgroundJob.Schedule<RedeliveryJob>(
@@ -84,7 +79,7 @@ public class ResilientConsumeFilter<TEvent>(IServiceScopeFactory serviceFactory)
         context.Add("maxRetries", ScheduledRedeliveryIntervals.Length);
     }
 
-    private async Task MoveToDeadLetterQueue(ConsumeContext<TEvent> context, Exception e)
+    private void MoveToDeadLetterQueue(ConsumeContext<TEvent> context, Exception e)
     {
         var message = new FaultedMessage
         {
@@ -94,10 +89,6 @@ public class ResilientConsumeFilter<TEvent>(IServiceScopeFactory serviceFactory)
             Source = context.DestinationAddress!.AbsoluteUri
         };
         var ct = context.CancellationToken;
-
-        await using var scope = serviceFactory.CreateAsyncScope();
-        var provider = scope.ServiceProvider;
-        var backgroundJob = provider.GetRequiredService<IBackgroundJobClient>();
 
         backgroundJob.Enqueue<ITopicProducer<FaultedMessage>>(producer =>
             producer.Produce(message, ct));

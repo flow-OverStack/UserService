@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.Options;
-using QuestionService.Domain.Dtos.Page;
 using UserService.Application.Settings;
+using UserService.Domain.Dtos.Page;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Validation;
 

@@ -13,8 +13,9 @@ public class ProcessedEventFilter<TEvent>(IProcessedEventRepository processedEve
         if (await processedEventRepository.IsEventProcessedAsync(context.Message.EventId))
         {
             logger.Warning(
-                "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
-                context.Message.UserId, context.Message.EventType, context.Message.EventId);
+                "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
+                context.Message.UserId, context.Message.EventType, context.Message.EventId, context.Message.EntityType,
+                context.Message.EntityId);
             return;
         }
 

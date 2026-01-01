@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Api.Dtos.Role;
 using UserService.Api.Dtos.UserRole;
@@ -10,7 +11,10 @@ using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
+using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
+using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base.Exception;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl;
@@ -178,7 +182,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetQuestionById_ShouldBe_Ok()
+    public async Task GetUserById_ShouldBe_Ok()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };
@@ -195,5 +199,22 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(result!.Data.User);
         Assert.NotNull(result.Data.User.Roles);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task ConsumeBaseEvent_ShouldBe_Exception()
+    {
+        //Arrange
+        var dto = new ReputationEventDto(1, 1, EntityType.Answer, BaseEventType.AnswerAccepted);
+
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var reputationService = scope.ServiceProvider.GetRequiredService<IReputationService>();
+
+        //Act
+        var action = () => reputationService.ApplyReputationEventAsync(dto);
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
     }
 }

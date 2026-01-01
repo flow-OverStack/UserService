@@ -13,17 +13,8 @@ internal class CacheGetUserServiceFactory
 {
     private readonly IGetUserService _cacheGetUserService;
 
-    public readonly GetRoleService InnerGetRoleService =
-        (GetRoleService)new GetRoleServiceFactory().GetService();
-
     public readonly GetUserService InnerGetUserService =
         (GetUserService)new GetUserServiceFactory().GetService();
-
-    public readonly IRoleCacheRepository RoleCacheRepository =
-        new RoleCacheRepository(
-            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetRoleService)new GetRoleServiceFactory().GetService());
 
     public readonly IUserCacheRepository UserCacheRepository =
         new UserCacheRepository(
@@ -33,7 +24,7 @@ internal class CacheGetUserServiceFactory
 
     public CacheGetUserServiceFactory()
     {
-        _cacheGetUserService = new CacheGetUserService(UserCacheRepository, InnerGetUserService, RoleCacheRepository);
+        _cacheGetUserService = new CacheGetUserService(UserCacheRepository, InnerGetUserService);
     }
 
     public IGetUserService GetService()

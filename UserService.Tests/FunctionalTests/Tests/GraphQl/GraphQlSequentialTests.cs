@@ -110,8 +110,6 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
             IdentityId = Guid.NewGuid().ToString(),
             CreatedAt = DateTime.Now,
             LastLoginAt = DateTime.UtcNow,
-            Reputation = 1,
-            ReputationEarnedToday = 0
         });
 
         await userRepository.SaveChangesAsync();

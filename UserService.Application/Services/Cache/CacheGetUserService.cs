@@ -48,12 +48,18 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, GetUserSe
     public async Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var reputations = (await cacheRepository.GetCurrentReputationsOrFetchAndCacheAsync(ids, cancellationToken))
+        var idsArray = ids.ToArray();
+        var reputations = (await cacheRepository.GetCurrentReputationsOrFetchAndCacheAsync(idsArray, cancellationToken))
             .ToArray();
 
         if (reputations.Length == 0)
-            return CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
-                (int)ErrorCodes.UsersNotFound);
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UserNotFound,
+                    (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
+                    (int)ErrorCodes.UsersNotFound)
+            };
 
         return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }
@@ -61,12 +67,19 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, GetUserSe
     public async Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var reputations = (await cacheRepository.GetRemainingReputationsOrFetchAndCacheAsync(ids, cancellationToken))
+        var idsArray = ids.ToArray();
+        var reputations =
+            (await cacheRepository.GetRemainingReputationsOrFetchAndCacheAsync(idsArray, cancellationToken))
             .ToArray();
 
         if (reputations.Length == 0)
-            return CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
-                (int)ErrorCodes.UsersNotFound);
+            return idsArray.Length switch
+            {
+                <= 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UserNotFound,
+                    (int)ErrorCodes.UserNotFound),
+                > 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
+                    (int)ErrorCodes.UsersNotFound)
+            };
 
         return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }

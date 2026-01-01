@@ -18,7 +18,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetQuestionById_ShouldBe_Ok()
+    public async Task GetUserById_ShouldBe_Ok()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };
@@ -39,7 +39,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetQuestionByIdWithWrongEntryInCache_ShouldBe_Ok()
+    public async Task GetUserByIdWithWrongEntryInCache_ShouldBe_Ok()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

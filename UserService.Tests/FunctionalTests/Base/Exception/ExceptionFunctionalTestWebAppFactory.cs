@@ -35,6 +35,8 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
             .ReturnsAsync(GetExceptionMockTransaction(originalTransaction).Object);
         mockUnitOfWork.Setup(x => x.Users).Returns(originalUnitOfWork.Users);
         mockUnitOfWork.Setup(x => x.Roles).Returns(originalUnitOfWork.Roles);
+        mockUnitOfWork.Setup(x => x.ReputationRules).Returns(originalUnitOfWork.ReputationRules);
+        mockUnitOfWork.Setup(x => x.ReputationRecords).Returns(originalUnitOfWork.ReputationRecords);
 
         return mockUnitOfWork;
     }

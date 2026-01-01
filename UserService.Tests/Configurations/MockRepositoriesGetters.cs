@@ -1,6 +1,7 @@
 using MockQueryable.Moq;
 using Moq;
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Messaging.Events;
@@ -45,12 +46,18 @@ internal static class MockRepositoriesGetters
     }
 
     public static IMock<IUnitOfWork> GetMockUnitOfWork(IBaseRepository<User>? userRepository = null,
-        IBaseRepository<Role>? roleRepository = null)
+        IBaseRepository<Role>? roleRepository = null,
+        IBaseRepository<ReputationRecord>? reputationRecordRepository = null,
+        IBaseRepository<ReputationRule>? reputationRuleRepository = null)
     {
         var mockUnitOfWork = new Mock<IUnitOfWork>();
 
         mockUnitOfWork.Setup(x => x.Users).Returns(userRepository ?? GetMockUserRepository().Object);
         mockUnitOfWork.Setup(x => x.Roles).Returns(roleRepository ?? GetMockRoleRepository().Object);
+        mockUnitOfWork.Setup(x => x.ReputationRecords)
+            .Returns(reputationRecordRepository ?? GetMockReputationRecordRepository().Object);
+        mockUnitOfWork.Setup(x => x.ReputationRules)
+            .Returns(reputationRuleRepository ?? GetMockReputationRuleRepository().Object);
         mockUnitOfWork.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(GetMockTransaction().Object);
 
@@ -102,6 +109,34 @@ internal static class MockRepositoriesGetters
         return mockRepository;
     }
 
+    public static IMock<IBaseRepository<ReputationRule>> GetMockReputationRuleRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<ReputationRule>>();
+        var rules = GetReputationRules().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(rules.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<ReputationRule>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ReputationRule rule, CancellationToken _) => rule);
+        mockRepository.Setup(x => x.Update(It.IsAny<ReputationRule>())).Returns((ReputationRule rule) => rule);
+        mockRepository.Setup(x => x.Remove(It.IsAny<ReputationRule>())).Returns((ReputationRule rule) => rule);
+
+        return mockRepository;
+    }
+
+    public static IMock<IBaseRepository<ReputationRecord>> GetMockReputationRecordRepository()
+    {
+        var mockRepository = new Mock<IBaseRepository<ReputationRecord>>();
+        var records = GetReputationRecords().BuildMockDbSet();
+
+        mockRepository.Setup(x => x.GetAll()).Returns(records.Object);
+        mockRepository.Setup(x => x.CreateAsync(It.IsAny<ReputationRecord>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ReputationRecord record, CancellationToken _) => record);
+        mockRepository.Setup(x => x.Update(It.IsAny<ReputationRecord>())).Returns((ReputationRecord record) => record);
+        mockRepository.Setup(x => x.Remove(It.IsAny<ReputationRecord>())).Returns((ReputationRecord record) => record);
+
+        return mockRepository;
+    }
+
     public static IMock<IBaseRepository<T>> GetEmptyMockRepository<T>() where T : class
     {
         var mockRepository = new Mock<IBaseRepository<T>>();
@@ -128,8 +163,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = MinReputation,
-                ReputationEarnedToday = 0,
+                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 1).ToList(),
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
             new()
@@ -140,8 +174,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = MinReputation,
-                ReputationEarnedToday = 0,
+                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 2).ToList(),
                 Roles = [GetRoleUser(), GetRoleModer()]
             },
             new()
@@ -152,8 +185,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = 200,
-                ReputationEarnedToday = MaxDailyReputation,
+                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 3).ToList(),
                 Roles = [GetRoleModer()]
             },
             new() //user without roles
@@ -164,8 +196,7 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser5@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                Reputation = MinReputation,
-                ReputationEarnedToday = 0,
+                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 5).ToList(),
                 Roles = []
             }
         }.AsQueryable();
@@ -226,6 +257,129 @@ internal static class MockRepositoriesGetters
             {
                 EventId = Guid.NewGuid(),
                 ProcessedAt = DateTime.UtcNow.AddDays(-7)
+            }
+        }.AsQueryable();
+    }
+
+    public static IQueryable<ReputationRule> GetReputationRules()
+    {
+        return new[]
+        {
+            new ReputationRule
+            {
+                Id = 1, EventType = nameof(BaseEventType.AnswerAccepted), EntityType = nameof(EntityType.Answer),
+                Group = null, ReputationChange = 15
+            },
+            new ReputationRule
+            {
+                Id = 2, EventType = nameof(BaseEventType.DownvoteGivenForAnswer),
+                EntityType = nameof(EntityType.Answer), Group = null, ReputationChange = -1
+            },
+            new ReputationRule
+            {
+                Id = 3, EventType = nameof(BaseEventType.AnswerDownvote), EntityType = nameof(EntityType.Answer),
+                Group = "AnswerVote", ReputationChange = -2
+            },
+            new ReputationRule
+            {
+                Id = 4, EventType = nameof(BaseEventType.AnswerUpvote), EntityType = nameof(EntityType.Answer),
+                Group = "AnswerVote", ReputationChange = 10
+            },
+            new ReputationRule
+            {
+                Id = 5, EventType = nameof(BaseEventType.UserAcceptedAnswer), EntityType = nameof(EntityType.Answer),
+                Group = null, ReputationChange = 2
+            },
+            new ReputationRule
+            {
+                Id = 6, EventType = nameof(BaseEventType.QuestionDownvote), EntityType = nameof(EntityType.Question),
+                Group = "QuestionVote", ReputationChange = -2
+            },
+            new ReputationRule
+            {
+                Id = 7, EventType = nameof(BaseEventType.QuestionUpvote), EntityType = nameof(EntityType.Question),
+                Group = "QuestionVote", ReputationChange = 10
+            },
+            new ReputationRule
+            {
+                Id = 8, EventType = "TestSuperEvent", EntityType = nameof(EntityType.Answer),
+                Group = null, ReputationChange = MaxDailyReputation
+            }
+        }.AsQueryable();
+    }
+
+    public static IQueryable<ReputationRecord> GetReputationRecords()
+    {
+        var rules = GetReputationRules().ToList();
+
+        var ruleAnswerUpvote = rules.First(x => x.Id == 4);
+        var ruleAnswerDownvote = rules.First(x => x.Id == 3);
+        var ruleAnswerAccepted = rules.First(x => x.Id == 1);
+        var ruleQuestionUpvote = rules.First(x => x.Id == 7);
+        var ruleQuestionDownvote = rules.First(x => x.Id == 6);
+        var superRule = rules.First(x => x.Id == 8);
+
+        return new[]
+        {
+            new ReputationRecord
+            {
+                Id = 1,
+                UserId = 1,
+                ReputationRuleId = ruleQuestionUpvote.Id,
+                ReputationRule = ruleQuestionUpvote,
+                EntityId = 1,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddHours(-5)
+            },
+            new ReputationRecord
+            {
+                Id = 2,
+                UserId = 2,
+                ReputationRuleId = ruleAnswerUpvote.Id,
+                ReputationRule = ruleAnswerUpvote,
+                EntityId = 1,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddHours(-4)
+            },
+            new ReputationRecord
+            {
+                Id = 3,
+                UserId = 2,
+                ReputationRuleId = ruleAnswerAccepted.Id,
+                ReputationRule = ruleAnswerAccepted,
+                EntityId = 2,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddHours(-3)
+            },
+            new ReputationRecord
+            {
+                Id = 4,
+                UserId = 2,
+                ReputationRuleId = ruleAnswerDownvote.Id,
+                ReputationRule = ruleAnswerDownvote,
+                EntityId = 3,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddHours(-3)
+            },
+            new ReputationRecord
+            {
+                Id = 5,
+                UserId = 3,
+                ReputationRuleId = superRule.Id,
+                ReputationRule = superRule,
+                EntityId = 1,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddHours(-1)
+            },
+            new ReputationRecord
+            {
+                Id = 6,
+                UserId = 1,
+                ReputationRuleId = ruleQuestionDownvote.Id,
+                ReputationRule = ruleQuestionDownvote,
+                EntityId = 2,
+                Enabled = false,
+                CreatedAt = DateTime.UtcNow.AddDays(-2)
             }
         }.AsQueryable();
     }

@@ -25,11 +25,12 @@ public class BaseEventConsumer(
     {
         if (!result.IsSuccess)
             logger.Warning(
-                "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
-                result.ErrorMessage, message.UserId, message.EventType, message.EventId);
+                "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
+                result.ErrorMessage, message.UserId, message.EventType, message.EventId, message.EntityType,
+                message.EntityId);
         else
             logger.Information(
-                "Successfully updated reputation. UserId: {UserId}. Event: {EventType}. EventId: {EventId}",
-                message.UserId, message.EventType, message.EventId);
+                "Successfully updated reputation. UserId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
+                message.UserId, message.EventType, message.EventId, message.EntityType, message.EntityId);
     }
 }

@@ -27,13 +27,17 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotEmpty(result!.Data.Users.Items);
         Assert.NotEmpty(result.Data.Roles.Items);
+        Assert.NotEmpty(result.Data.ReputationRecords.Edges);
+        Assert.NotEmpty(result.Data.ReputationRules.Items);
         Assert.Equal(3, result.Data.Users.TotalCount);
         Assert.Equal(3, result.Data.Roles.TotalCount);
+        Assert.Equal(5, result.Data.ReputationRecords.TotalCount);
+        Assert.Equal(8, result.Data.ReputationRules.TotalCount);
     }
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllUsers_ShouldBe_InvalidPaginationError()
+    public async Task GetAll_ShouldBe_InvalidPaginationError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUsersWithInvalidPaginationQuery };
@@ -45,82 +49,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Single(result!.Errors);
-        Assert.StartsWith(ErrorMessage.InvalidPagination, result.Errors[0].Message);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
-    public async Task GetUserById_ShouldBe_Success()
-    {
-        //Arrange
-        const long userId = 1;
-        var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(userId) };
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlGetUserByIdResponse>(body);
-
-        //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(result!.Data.User);
-        Assert.NotNull(result.Data.User.Roles);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
-    public async Task GetUserById_ShouldBe_Null()
-    {
-        //Arrange
-        const long userId = 0;
-        var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(userId) };
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlGetUserByIdResponse>(body);
-
-        //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Null(result!.Data.User);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
-    public async Task GetRoleById_ShouldBe_Success()
-    {
-        //Arrange
-        const long roleId = 1;
-        var requestBody = new { query = GraphQlHelper.RequestRoleByIdQuery(roleId) };
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlGetRoleByIdResponse>(body);
-
-        //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(result!.Data.Role);
-        Assert.NotNull(result.Data.Role.Users);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
-    public async Task GetRoleById_ShouldBe_Null()
-    {
-        //Arrange
-        const long roleId = 0;
-        var requestBody = new { query = GraphQlHelper.RequestRoleByIdQuery(roleId) };
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlGetRoleByIdResponse>(body);
-
-        //Assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Null(result!.Data.Role);
+        Assert.Equal(4, result!.Errors.Count);
+        Assert.All(result.Errors, x => Assert.StartsWith(ErrorMessage.InvalidPagination, x.Message));
     }
 
     [Trait("Category", "Functional")]
@@ -139,5 +69,49 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Single(result!.Errors);
         Assert.NotNull(result.Errors[0].Extensions?.Code);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetAllByIds_ShouldBe_Success()
+    {
+        //Arrange
+        const long userId = 1, roleId = 1, reputationRuleId = 1, reputationRecordId = 1;
+        var requestBody = new
+            { query = GraphQlHelper.RequestAllByIdsQuery(userId, roleId, reputationRecordId, reputationRuleId) };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GetAllByIdsResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.NotNull(result!.Data.User);
+        Assert.NotNull(result.Data.Role);
+        Assert.NotNull(result.Data.ReputationRule);
+        Assert.NotNull(result.Data.ReputationRecord);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task GetAllByIds_ShouldBe_Null()
+    {
+        //Arrange
+        const long userId = 0, roleId = 0, reputationRuleId = 0, reputationRecordId = 0;
+        var requestBody = new
+            { query = GraphQlHelper.RequestAllByIdsQuery(userId, roleId, reputationRecordId, reputationRuleId) };
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<GetAllByIdsResponse>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Null(result!.Data.User);
+        Assert.Null(result.Data.Role);
+        Assert.Null(result.Data.ReputationRule);
+        Assert.Null(result.Data.ReputationRecord);
     }
 }

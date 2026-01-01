@@ -21,15 +21,13 @@ internal static class PrepDb
                 IdentityId = x.IdentityId,
                 Username = x.Username,
                 Email = x.Email,
-                Reputation = x.Reputation,
-                ReputationEarnedToday = x.ReputationEarnedToday,
                 CreatedAt = x.CreatedAt,
                 LastLoginAt = x.LastLoginAt
             });
 
-        PrepAppDb(serviceScope, users);
+        serviceScope.PrepAppDb(users);
 
-        PrepKeycloakDb(serviceScope, users);
+        serviceScope.PrepKeycloakDb(users);
     }
 
     private static void PrepAppDb(this IServiceScope serviceScope, IEnumerable<User> users)
@@ -39,13 +37,26 @@ internal static class PrepDb
         dbContext.Database.EnsureDeleted();
         dbContext.Database.Migrate();
 
-
         var userRoles = MockRepositoriesGetters.GetUserRoles();
         var processedEvents = MockRepositoriesGetters.GetProcessedEvents();
+        var reputationRecords = MockRepositoriesGetters.GetReputationRecords();
+        var superRule = MockRepositoriesGetters.GetReputationRules().First(x => x.Id == 8);
+        superRule.Id = 0;
+
+        reputationRecords.ToList().ForEach(x =>
+        {
+            x.Id = 0;
+            x.ReputationRule = null!;
+        });
 
         dbContext.Set<User>().AddRange(users);
         dbContext.Set<UserRole>().AddRange(userRoles);
         dbContext.Set<ProcessedEvent>().AddRange(processedEvents);
+        dbContext.Set<ReputationRule>().Add(superRule);
+
+        dbContext.SaveChanges();
+
+        dbContext.Set<ReputationRecord>().AddRange(reputationRecords);
 
         dbContext.SaveChanges();
     }

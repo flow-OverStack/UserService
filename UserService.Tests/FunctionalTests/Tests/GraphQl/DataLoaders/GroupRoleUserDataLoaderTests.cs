@@ -6,7 +6,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
-public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
+public class GroupRoleUserDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
@@ -14,7 +14,7 @@ public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupUserDataLoader>();
+        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupRoleUserDataLoader>();
         const long roleId = 1;
 
         //Act
@@ -30,7 +30,7 @@ public class GroupUserDataLoaderTests(FunctionalTestWebAppFactory factory) : Bas
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupUserDataLoader>();
+        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupRoleUserDataLoader>();
         const long roleId = 0;
 
         //Act

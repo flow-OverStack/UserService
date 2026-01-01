@@ -47,4 +47,22 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
         Assert.Equal(MediaTypeNames.Text.Plain, response.Content.Headers.ContentType?.MediaType);
         Assert.NotNull(body);
     }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RequestSwagger_ShouldBe_Success()
+    {
+        //Arrange
+        const string swaggerUrl = "/swagger/v1/swagger.json";
+
+        //Act
+        var response = await HttpClient.GetAsync(swaggerUrl);
+        var body = await response.Content.ReadAsStringAsync();
+
+        //Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(MediaTypeNames.Application.Json, response.Content.Headers.ContentType?.MediaType);
+        Assert.NotNull(body);
+        Assert.Contains("\"deprecated\": true", body);
+    }
 }
