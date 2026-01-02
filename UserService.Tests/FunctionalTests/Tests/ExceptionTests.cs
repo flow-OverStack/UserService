@@ -7,7 +7,6 @@ using UserService.Api.Dtos.Role;
 using UserService.Api.Dtos.UserRole;
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.Role;
-using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
@@ -45,7 +44,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/register", dto);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
@@ -66,7 +65,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         //Act
         var response = await HttpClient.PostAsync("/api/v1.0/Auth/init", null);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
+        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
