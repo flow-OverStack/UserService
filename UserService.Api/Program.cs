@@ -57,7 +57,12 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<WarningHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwaggerUI();
+    await app.Services.MigrateDatabaseAsync();
+}
+
 app.UseSwagger();
 
 app.UseRouting();
@@ -74,10 +79,6 @@ app.UseCors("DefaultCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-await builder.Services.MigrateDatabaseAsync();
-
 app.LogListeningUrls();
 
 await app.RunAsync();
-
-public partial class Program;

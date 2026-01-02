@@ -1,4 +1,4 @@
-# Flow OverStack - UserService
+# Flow OverStack – UserService
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=flow-OverStack_UserService&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=flow-OverStack_UserService)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=flow-OverStack_UserService&metric=coverage)](https://sonarcloud.io/summary/new_code?id=flow-OverStack_UserService)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=flow-OverStack_UserService&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=flow-OverStack_UserService)
@@ -8,7 +8,8 @@
 UserService is a microservice responsible for all user-related operations within the flow OverStack platform. It provides user authentication with Keycloak for identity management and roles management.
 
 ## 🚀 Quick Start a ready-made API
-1. Intall [Docker Desktop](https://www.docker.com/)
+
+1. Install [Docker Desktop](https://www.docker.com/)
 2. Copy [docker-compose.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) and [docker-compose.common.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) files into one directory
 3. Copy (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/UserService/blob/master/logstash.conf) and [prometheus.yml](https://github.com/flow-OverStack/UserService/blob/master/prometheus.yml) files in the same directory
 4. Create and configure `.env` file in the same directory:
@@ -25,13 +26,19 @@ UserService is a microservice responsible for all user-related operations within
    GF_SECURITY_ADMIN_PASSWORD=gf_password
    REDIS_PASSWORD=redis_password
    ```
-5. Start services
+5. On the first run (or after updating migrations), you can apply EF Core migrations in two ways:
+   1. Start the development version — migrations will be applied automatically to the configured database.
+   2. Generate a SQL script with `dotnet ef migrations script` and apply it to the database
+      manually ([Production approach](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#sql-scripts))
+6. Start services
     ```bash
    docker-compose -p flowoverstack -f docker-compose.common.yml up -d
    docker-compose -p userservice -f docker-compose.yml up -d
    ```
-6. Configure the [Keycloak](https://www.keycloak.org/) identity server with my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing). After that, pass the admin token to the `.env` file and restart the `user-service` container.
-7. Explore endpoints at `/swagger/v1/swagger.json` endpoint.
+7. Configure the [Keycloak](https://www.keycloak.org/) identity server with
+   my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing).
+   After that, pass the admin token to the `.env` file and restart the `user-service` container.
+8. Explore endpoints at `/swagger/v1/swagger.json` endpoint.
 
 ## Technologies and Patterns Used
 
@@ -48,7 +55,7 @@ UserService is a microservice responsible for all user-related operations within
 * **Hangfire** — Hosted services for background jobs
 * **Resilience** — Standard .NET resilience handler for HTTP clients (retries, circuit breaker, timeout), Hangfire retries and MassTransit retries, circuit breaker and kill switch
 * **Observability** — Traces, logs, and metrics collected via OpenTelemetry and Logstash, exported to Aspire dashboard, Jaeger, ElasticSearch, and Prometheus
-* **Monitoring & Visualization** — Dashboards in Grafana, Kibana and Aspire
+* **Monitoring & Visualization** — Dashboards in Grafana, Kibana, and Aspire
 * **Health Checks** — Status endpoints to monitor service availability and dependencies
 * **xUnit & Coverlet** — Automated unit and integration testing with code coverage
 * **SonarQube & Qodana** — Code quality and coverage analysis
@@ -57,11 +64,11 @@ This service follows the principles of Clean Architecture. The solution is split
 
 ![Clean Architecture](https://www.milanjovanovic.tech/blogs/mnw_017/clean_architecture.png?imwidth=1920)
 
-| Layer | Project |
-| ----- | ------- |
-| **Presentation** | UserService.Grpc, UserService.GraphQl, UserService.Api |
-| **Application** | UserService.Application |
-| **Domain** | UserService.Domain |
+| Layer              | Project                                                                                                     |
+|--------------------|-------------------------------------------------------------------------------------------------------------|
+| **Presentation**   | UserService.Grpc, UserService.GraphQl, UserService.Api                                                      |
+| **Application**    | UserService.Application                                                                                     |
+| **Domain**         | UserService.Domain                                                                                          |
 | **Infrastructure** | UserService.BackgroundJobs, UserService.Cache, UserService.DAL, UserService.Keycloak, UserService.Messaging |
 
 Full system design on Miro: [Application Structure Board](https://miro.com/app/board/uXjVLx6YYx4=/?share_link_id=993967197754)
@@ -77,7 +84,8 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 
 1. Clone the repo
 2. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) without running the `user-service` container or run your own services)
-3. Reconfigure if needed `appsettings.json` and `.NET User Secrets` in `UserService.Api` with your database, Redis and Keycloak settings.
+3. Reconfigure if needed `appsettings.json` and `.NET User Secrets` in `UserService.Api` with your database, Redis, and
+   Keycloak settings.
    `.NET User Secrets` example: 
    ```json
     {
@@ -103,10 +111,10 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 
 The following endpoints are available by default:
 
-| `UseHttpsForRestApi` | REST API & Swagger | GraphQL Endpoint | gRPC Endpoint |
-| ------------------ | ------------------ | ---------------- | ------------- |
-| `true` | https://localhost:7163/swagger/v1/swagger.json |	https://localhost:7163/graphql | https://localhost:7163 http://localhost:5044 |
-| `false`	| http://localhost:7163/swagger/v1/swagger.json |	http://localhost:7163/graphql |	http://localhost:5044 |
+| `UseHttpsForRestApi` | REST API & Swagger                             | GraphQL Endpoint                | gRPC Endpoint                                |
+|----------------------|------------------------------------------------|---------------------------------|----------------------------------------------|
+| `true`               | https://localhost:7163/swagger/v1/swagger.json | 	https://localhost:7163/graphql | https://localhost:7163 http://localhost:5044 |
+| `false`	             | http://localhost:7163/swagger/v1/swagger.json  | 	http://localhost:7163/graphql  | 	http://localhost:5044                       |
 
 ## Testing
 
