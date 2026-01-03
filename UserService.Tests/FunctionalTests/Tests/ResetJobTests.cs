@@ -8,7 +8,7 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
-[Collection("ReputationResetSequentialTests")]
+[Collection(nameof(ResetJobTests))]
 public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]

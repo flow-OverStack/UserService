@@ -2,12 +2,10 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Serilog;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
-using UserService.Messaging.Interfaces;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
@@ -21,9 +19,7 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IProcessedEventRepository>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
-        var filter = new ProcessedEventFilter<BaseEvent>(repository, logger);
+        var filter = ActivatorUtilities.CreateInstance<ProcessedEventFilter<BaseEvent>>(scope.ServiceProvider);
         var probeContext = new Mock<ProbeContext>();
         probeContext.Setup(x => x.CreateScope(It.IsAny<string>())).Returns(new Mock<ProbeContext>().Object);
 
@@ -51,9 +47,7 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
             EventId = Guid.NewGuid()
         };
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IProcessedEventRepository>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
-        var filter = new ProcessedEventFilter<BaseEvent>(repository, logger);
+        var filter = ActivatorUtilities.CreateInstance<ProcessedEventFilter<BaseEvent>>(scope.ServiceProvider);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -85,10 +79,8 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
             EventId = id
         };
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var eventRepository = scope.ServiceProvider.GetRequiredService<IProcessedEventRepository>();
         var repository = scope.ServiceProvider.GetRequiredService<IBaseRepository<ProcessedEvent>>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
-        var filter = new ProcessedEventFilter<BaseEvent>(eventRepository, logger);
+        var filter = ActivatorUtilities.CreateInstance<ProcessedEventFilter<BaseEvent>>(scope.ServiceProvider);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);

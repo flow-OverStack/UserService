@@ -5,11 +5,12 @@ using UserService.Messaging.Interfaces;
 
 namespace UserService.Messaging.Services;
 
-public class ProcessedEventRepository(IBaseRepository<ProcessedEvent> eventRepository) : IProcessedEventRepository
+public class ProcessedEventRepository(IBaseRepository<ProcessedEvent> eventRepository)
+    : IProcessedEventRepository
 {
-    public async Task<bool> IsEventProcessedAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public Task<bool> IsEventProcessedAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
-        return await eventRepository.GetAll().AnyAsync(x => x.EventId == eventId, cancellationToken);
+        return eventRepository.GetAll().AnyAsync(x => x.EventId == eventId, cancellationToken);
     }
 
     public async Task MarkAsProcessedAsync(Guid eventId, CancellationToken cancellationToken = default)

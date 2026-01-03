@@ -1,3 +1,4 @@
+using UserService.DAL.Transactions;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Repository;
@@ -19,12 +20,21 @@ public class UnitOfWork(
 
     public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-        return new DbContextTransaction(transaction);
+        var transaction = context.Database.CurrentTransaction;
+        if (transaction == null)
+        {
+            transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+            return new OwnedDbContextTransaction(transaction);
+        }
+
+        var savepointName = $"Savepoint_{Guid.NewGuid():N}";
+        await transaction.CreateSavepointAsync(savepointName, cancellationToken);
+
+        return new SavepointDbContextTransaction(transaction, savepointName);
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await context.SaveChangesAsync(cancellationToken);
+        return context.SaveChangesAsync(cancellationToken);
     }
 }

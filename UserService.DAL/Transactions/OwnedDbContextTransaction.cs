@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using UserService.Domain.Interfaces.Database;
 
-namespace UserService.DAL.Repositories;
+namespace UserService.DAL.Transactions;
 
-public class DbContextTransaction(IDbContextTransaction transaction) : ITransaction
+public class OwnedDbContextTransaction(IDbContextTransaction transaction) : ITransaction
 {
     public Task CommitAsync(CancellationToken cancellationToken = default)
     {
