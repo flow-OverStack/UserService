@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Newtonsoft.Json;
 using UserService.Api.Dtos.Role;
 using UserService.Api.Dtos.UserRole;
@@ -13,6 +15,8 @@ using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
+using UserService.Messaging.Events;
+using UserService.Messaging.Filters;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base.Exception;
@@ -212,6 +216,37 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
         //Act
         var action = () => reputationService.ApplyReputationEventAsync(dto);
+
+        //Assert
+        await Assert.ThrowsAsync<TestException>(action);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task Send_ShouldBe_Exception()
+    {
+        //Arrange
+        const long userId = 1;
+        const long entityId = 2;
+
+        var message = new BaseEvent
+        {
+            EventType = nameof(BaseEventType.AnswerAccepted),
+            EntityType = nameof(EntityType.Answer),
+            UserId = userId,
+            EntityId = entityId,
+            EventId = Guid.NewGuid()
+        };
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var filter = ActivatorUtilities.CreateInstance<ProcessedEventFilter<BaseEvent>>(scope.ServiceProvider);
+
+        var contextMock = new Mock<ConsumeContext<BaseEvent>>();
+        contextMock.Setup(x => x.Message).Returns(message);
+
+        var pipeMock = new Mock<IPipe<ConsumeContext<BaseEvent>>>();
+
+        //Act
+        var action = () => filter.Send(contextMock.Object, pipeMock.Object);
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
