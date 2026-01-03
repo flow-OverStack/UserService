@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using UserService.Application.Services;
 using UserService.Cache.Helpers;
+using UserService.Cache.Repositories.Base;
 using UserService.Cache.Settings;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Provider;

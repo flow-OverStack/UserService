@@ -1,7 +1,7 @@
 using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository.Cache;
 
-namespace UserService.Cache.Repositories;
+namespace UserService.Cache.Repositories.Base;
 
 public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEntity, TEntityId>
 {
