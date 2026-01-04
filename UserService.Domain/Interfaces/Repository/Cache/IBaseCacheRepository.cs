@@ -17,11 +17,12 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Retrieves entities grouped by an outer identifier (e.g. tagId -> questions) from the cache.
+    ///     Retrieves entities grouped by an outer identifier (e.g., tagId -> questions) from the cache.
     ///     If any group or group members are missing, the data is fetched and cached accordingly.
     /// </summary>
     /// <typeparam name="TOuterId">The type of the outer grouping identifier.</typeparam>
     /// <param name="outerIds">The list of outer IDs whose group data should be retrieved.</param>
+    /// <param name="getOuterEntityKey">A function that maps an outer ID to outer entity's key.</param>
     /// <param name="getOuterKey">A function that maps an outer ID to a cache set key.</param>
     /// <param name="parseOuterIdFromKey">A function that parses the outer ID from the cache key.</param>
     /// <param name="fetch">A function that fetches grouped data from an external source.</param>
@@ -32,6 +33,7 @@ public interface IBaseCacheRepository<TEntity, TEntityId>
     Task<IEnumerable<KeyValuePair<TOuterId, IEnumerable<TEntity>>>>
         GetGroupedByOuterIdOrFetchAndCacheAsync<TOuterId>(
             IEnumerable<TOuterId> outerIds,
+            Func<TOuterId, string> getOuterEntityKey,
             Func<TOuterId, string> getOuterKey,
             Func<string, TOuterId> parseOuterIdFromKey,
             Func<IEnumerable<TOuterId>, CancellationToken,

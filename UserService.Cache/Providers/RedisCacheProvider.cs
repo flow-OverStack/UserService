@@ -7,6 +7,8 @@ namespace UserService.Cache.Providers;
 public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 {
     private const string RedisErrorMessage = "An exception occurred while executing the Redis command.";
+    private const string EntityNullKeyPattern = "{0}:null";
+    private static readonly object NullValue = 1;
 
     public async Task<long> SetsAddAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> keysWithValues,
         int? timeToLiveInSeconds = null, bool fireAndForget = false, CancellationToken cancellationToken = default)
@@ -217,5 +219,45 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 
         var values = (await redisDatabase.SetMembersAsync(key)).Select(x => x.ToString());
         return values;
+    }
+
+    public Task MarkAsNullAsync(IEnumerable<string> keys, int? timeToLiveInSeconds = null, bool fireAndForget = false,
+        CancellationToken cancellationToken = default)
+    {
+        var nullKeys = keys.Distinct().Select(GetNullKey);
+
+        var kvps = nullKeys.Select(x => new KeyValuePair<string, object>(x, NullValue));
+
+        return StringSetAsync(kvps, timeToLiveInSeconds, fireAndForget, cancellationToken);
+    }
+
+    public async Task<IReadOnlySet<string>> GetNullKeysAsync(IEnumerable<string> keys,
+        CancellationToken cancellationToken = default)
+    {
+        var nullKeys = keys.Select(GetNullKey);
+
+        var results = await Task.WhenAll(
+            nullKeys.Select(async key =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    return (Key: RemoveNullKeyPattern(key), Exists: await redisDatabase.KeyExistsAsync(key));
+                }
+            )
+        );
+
+        return results
+            .Where(x => x.Exists)
+            .Select(x => x.Key)
+            .ToHashSet().AsReadOnly();
+    }
+
+    private static string GetNullKey(string key)
+    {
+        return string.Format(EntityNullKeyPattern, key);
+    }
+
+    private static string RemoveNullKeyPattern(string nullKey)
+    {
+        return nullKey.Replace(":null", string.Empty);
     }
 }

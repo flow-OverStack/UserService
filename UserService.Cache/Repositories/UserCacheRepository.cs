@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using UserService.Application.Services;
 using UserService.Cache.Helpers;
+using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
 using UserService.Cache.Settings;
 using UserService.Domain.Entities;
@@ -24,11 +25,9 @@ public class UserCacheRepository : IUserCacheRepository
 
         _repository = new BaseCacheRepository<User, long>(
             cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetUserKey,
-            x => x.Id.ToString(),
-            long.Parse,
-            settings.TimeToLiveInSeconds
+            new CacheUserMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _cacheProvider = cacheProvider;
         _redisSettings = settings;
@@ -48,6 +47,7 @@ public class UserCacheRepository : IUserCacheRepository
         CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(roleIds,
+            CacheKeyHelper.GetRoleKey,
             CacheKeyHelper.GetRoleUsersKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _userInner.GetUsersWithRolesAsync(idsToFetch, ct)).Data ?? [],
@@ -165,6 +165,34 @@ public class UserCacheRepository : IUserCacheRepository
 
             var allReputations = fetchedData.UnionBy(cachedData, x => x.Key);
             return allReputations;
+        }
+    }
+
+    private sealed class CacheUserMapping : ICacheEntityMapping<User, long>
+    {
+        public long GetId(User entity)
+        {
+            return entity.Id;
+        }
+
+        public string GetKey(long id)
+        {
+            return CacheKeyHelper.GetUserKey(id);
+        }
+
+        public string GetValue(User entity)
+        {
+            return entity.Id.ToString();
+        }
+
+        public long ParseIdFromKey(string key)
+        {
+            return CacheKeyHelper.GetIdFromKey(key);
+        }
+
+        public long ParseIdFromValue(string value)
+        {
+            return long.Parse(value);
         }
     }
 }

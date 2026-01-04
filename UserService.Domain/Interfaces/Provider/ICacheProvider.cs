@@ -127,4 +127,28 @@ public interface ICacheProvider
     /// <returns>The number of keys that were removed from the cache.</returns>
     Task<long> KeysDeleteAsync(IEnumerable<string> keys, bool fireAndForget = false,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Marks the specified keys as null in the cache. This operation can help denote keys with explicitly
+    ///     null values for tracking or logical purposes. Optionally sets a time-to-live for these null markers.
+    /// </summary>
+    /// <param name="keys">A collection of keys to mark as null in the cache.</param>
+    /// <param name="timeToLiveInSeconds">
+    ///     The time-to-live (TTL) in seconds for the null markers. After the TTL expires, the markers will be removed from the
+    ///     cache.
+    /// </param>
+    /// <param name="fireAndForget">If true, sends the command in fire-and-forget mode (no result or error reported).</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task MarkAsNullAsync(IEnumerable<string> keys, int? timeToLiveInSeconds = null, bool fireAndForget = false,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Retrieves a collection of keys that are currently marked as null in the cache.
+    /// </summary>
+    /// <param name="keys">The collection of keys to check for null status in the cache.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests during the operation.</param>
+    /// <returns>A read-only set of keys that are marked as null in the cache.</returns>
+    Task<IReadOnlySet<string>>
+        GetNullKeysAsync(IEnumerable<string> keys, CancellationToken cancellationToken = default);
 }

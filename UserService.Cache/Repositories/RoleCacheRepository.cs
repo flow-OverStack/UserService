@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using UserService.Application.Services;
 using UserService.Cache.Helpers;
+using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
 using UserService.Cache.Settings;
 using UserService.Domain.Entities;
@@ -22,11 +23,9 @@ public class RoleCacheRepository : IRoleCacheRepository
 
         _repository = new BaseCacheRepository<Role, long>(
             cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetRoleKey,
-            x => x.Id.ToString(),
-            long.Parse,
-            settings.TimeToLiveInSeconds
+            new CacheRoleMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _roleInner = roleInner;
     }
@@ -45,9 +44,38 @@ public class RoleCacheRepository : IRoleCacheRepository
         CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(userIds,
+            CacheKeyHelper.GetUserKey,
             CacheKeyHelper.GetUserRolesKey,
             CacheKeyHelper.GetIdFromKey,
             async (idsToFetch, ct) => (await _roleInner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
+    }
+
+    private sealed class CacheRoleMapping : ICacheEntityMapping<Role, long>
+    {
+        public long GetId(Role entity)
+        {
+            return entity.Id;
+        }
+
+        public string GetKey(long id)
+        {
+            return CacheKeyHelper.GetRoleKey(id);
+        }
+
+        public string GetValue(Role entity)
+        {
+            return entity.Id.ToString();
+        }
+
+        public long ParseIdFromKey(string key)
+        {
+            return CacheKeyHelper.GetIdFromKey(key);
+        }
+
+        public long ParseIdFromValue(string value)
+        {
+            return long.Parse(value);
+        }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using UserService.Application.Services;
 using UserService.Cache.Helpers;
+using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
 using UserService.Cache.Settings;
 using UserService.Domain.Entities;
@@ -22,11 +23,9 @@ public class ReputationRuleCacheRepository : IReputationRuleCacheRepository
 
         _repository = new BaseCacheRepository<ReputationRule, long>(
             cacheProvider,
-            x => x.Id,
-            CacheKeyHelper.GetReputationRuleKey,
-            x => x.Id.ToString(),
-            long.Parse,
-            settings.TimeToLiveInSeconds
+            new CacheReputationRuleMapping(),
+            settings.TimeToLiveInSeconds,
+            settings.NullTimeToLiveInSeconds
         );
         _reputationRuleInner = reputationRuleInner;
     }
@@ -38,5 +37,33 @@ public class ReputationRuleCacheRepository : IReputationRuleCacheRepository
             ids,
             async (idsToFetch, ct) => (await _reputationRuleInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
+    }
+
+    private sealed class CacheReputationRuleMapping : ICacheEntityMapping<ReputationRule, long>
+    {
+        public long GetId(ReputationRule entity)
+        {
+            return entity.Id;
+        }
+
+        public string GetKey(long id)
+        {
+            return CacheKeyHelper.GetReputationRuleKey(id);
+        }
+
+        public string GetValue(ReputationRule entity)
+        {
+            return entity.Id.ToString();
+        }
+
+        public long ParseIdFromKey(string key)
+        {
+            return CacheKeyHelper.GetIdFromKey(key);
+        }
+
+        public long ParseIdFromValue(string value)
+        {
+            return long.Parse(value);
+        }
     }
 }
