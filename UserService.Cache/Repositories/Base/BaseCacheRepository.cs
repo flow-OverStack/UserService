@@ -103,7 +103,7 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
         try
         {
-            var outerEntityKeys = idsList.Select(getOuterEntityKey);
+            string[] outerEntityKeys = [..idsList.Select(getOuterEntityKey), ..idsList.Select(getOuterKey)];
             var nullOuterEntityKeys = await _cache.GetNullKeysAsync(outerEntityKeys, cancellationToken);
             var aliveIds = idsList.Except(nullOuterEntityKeys.Select(parseOuterIdFromKey)).ToArray();
 
@@ -163,7 +163,7 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
             try
             {
                 var notFoundIds = missingIdsArray.Except(fetchedData.Select(x => x.Key)).ToArray();
-                var notFoundKeys = notFoundIds.Select(getOuterEntityKey);
+                var notFoundKeys = notFoundIds.Select(getOuterKey);
                 await _cache.MarkAsNullAsync(notFoundKeys, _nullTimeToLiveInSeconds, true, CancellationToken.None);
 
                 var outerSetToCache = fetchedData.Select(kvp =>
