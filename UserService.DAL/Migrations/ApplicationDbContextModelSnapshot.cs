@@ -17,7 +17,7 @@ namespace UserService.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.9")
+                .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -54,7 +54,7 @@ namespace UserService.DAL.Migrations
                     b.HasIndex("UserId", "EntityId", "ReputationRuleId", "Enabled")
                         .IsUnique();
 
-                    b.ToTable("ReputationRecord");
+                    b.ToTable("ReputationRecord", (string)null);
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.ReputationRule", b =>
@@ -84,7 +84,7 @@ namespace UserService.DAL.Migrations
                     b.HasIndex("EventType")
                         .IsUnique();
 
-                    b.ToTable("ReputationRule");
+                    b.ToTable("ReputationRule", (string)null);
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.Role", b =>
@@ -101,7 +101,7 @@ namespace UserService.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Role");
+                    b.ToTable("Role", (string)null);
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.User", b =>
@@ -144,7 +144,7 @@ namespace UserService.DAL.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("User", t =>
+                    b.ToTable("User", null, t =>
                         {
                             t.HasCheckConstraint("CK_User_Email", "\"Email\" ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
 
@@ -165,7 +165,7 @@ namespace UserService.DAL.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRole", (string)null);
                 });
 
             modelBuilder.Entity("UserService.Messaging.Events.ProcessedEvent", b =>
@@ -181,7 +181,7 @@ namespace UserService.DAL.Migrations
 
                     b.HasIndex("ProcessedAt");
 
-                    b.ToTable("ProcessedEvent");
+                    b.ToTable("ProcessedEvent", (string)null);
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.ReputationRecord", b =>

@@ -216,18 +216,19 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var hasEnabledRecords = await repository.GetAll()
             .Include(x => x.ReputationRule)
             .AnyAsync(x =>
-                x.EntityId == entityId && x.ReputationRule.EntityType == nameof(EntityType.Question) && x.Enabled);
+                x.EntityId == entityId &&
+                x.ReputationRule.EntityType == nameof(EntityType.Question));
         Assert.False(hasEnabledRecords);
     }
 
     private async Task<int> GetCurrentReputation(IBaseRepository<ReputationRecord> repository, long userId)
     {
-        if (!await repository.GetAll().AnyAsync(x => x.UserId == userId && x.Enabled))
+        if (!await repository.GetAll().AnyAsync(x => x.UserId == userId))
             return MockRepositoriesGetters.MinReputation;
 
         return await repository.GetAll()
             .AsNoTracking()
-            .Where(x => x.UserId == userId && x.Enabled)
+            .Where(x => x.UserId == userId)
             .Include(x => x.ReputationRule)
             .GroupBy(x => new { x.UserId, x.CreatedAt.Date })
             .Select(x => Math.Max(MockRepositoriesGetters.MinReputation,
@@ -239,14 +240,14 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
     private async Task<int> GetRemainingReputation(IBaseRepository<ReputationRecord> repository, long userId)
     {
         if (!await repository.GetAll().AnyAsync(x =>
-                x.UserId == userId && x.Enabled && x.CreatedAt.Date == DateTime.UtcNow.Date &&
+                x.UserId == userId && x.CreatedAt.Date == DateTime.UtcNow.Date &&
                 x.ReputationRule.ReputationChange > 0))
             return MockRepositoriesGetters.MaxDailyReputation;
 
         return await repository
             .GetAll().AsNoTracking()
             .Include(x => x.ReputationRule)
-            .Where(x => x.UserId == userId && x.Enabled && x.CreatedAt.Date == DateTime.UtcNow.Date &&
+            .Where(x => x.UserId == userId && x.CreatedAt.Date == DateTime.UtcNow.Date &&
                         x.ReputationRule.ReputationChange > 0)
             .GroupBy(x => x.UserId)
             .Select(x => Math.Max(0,
@@ -254,10 +255,10 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
             .FirstOrDefaultAsync();
     }
 
-    private Task DisableAllReputationRecords(IBaseRepository<ReputationRecord> repository, long userId)
+    private static Task DisableAllReputationRecords(IBaseRepository<ReputationRecord> repository, long userId)
     {
         return repository.GetAll()
-            .Where(x => x.Enabled && x.UserId == userId)
+            .Where(x => x.UserId == userId)
             .ExecuteUpdateAsync(x => x.SetProperty(p => p.Enabled, p => false));
     }
 }

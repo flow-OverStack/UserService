@@ -39,7 +39,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
             var oldRecords = unitOfWork.ReputationRecords.GetAll()
                 .Include(x => x.ReputationRule)
                 .Where(x => x.UserId == userId && x.EntityId == entityId && x.ReputationRule.Group != null &&
-                            x.ReputationRule.Group == rule.Group && x.Enabled);
+                            x.ReputationRule.Group == rule.Group);
 
             await oldRecords.ExecuteUpdateAsync(x => x.SetProperty(p => p.Enabled, p => false), cancellationToken);
 
@@ -69,7 +69,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
     {
         var records = unitOfWork.ReputationRecords.GetAll()
             .Include(x => x.ReputationRule)
-            .Where(x => x.EntityId == entityId && x.ReputationRule.EntityType == entityType.ToString() && x.Enabled);
+            .Where(x => x.EntityId == entityId && x.ReputationRule.EntityType == entityType.ToString());
 
         await records.ExecuteUpdateAsync(x => x.SetProperty(p => p.Enabled, p => false), cancellationToken);
         return BaseResult.Success();

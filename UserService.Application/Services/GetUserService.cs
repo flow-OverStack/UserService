@@ -65,7 +65,7 @@ public class GetUserService(
         var idsArray = ids.ToArray();
 
         var reputations = await reputationRecordRepository.GetAll()
-            .Where(x => idsArray.Contains(x.UserId) && x.Enabled)
+            .Where(x => idsArray.Contains(x.UserId))
             .Include(x => x.ReputationRule)
             .GroupBy(x => new { x.UserId, x.CreatedAt.Date })
             .Select(x => new KeyValuePair<long, int>(x.Key.UserId,
@@ -103,7 +103,7 @@ public class GetUserService(
         var idsArray = ids.ToArray();
         var reputations = await reputationRecordRepository.GetAll()
             .Include(x => x.ReputationRule)
-            .Where(x => idsArray.Contains(x.UserId) && x.Enabled && x.CreatedAt.Date == DateTime.UtcNow.Date &&
+            .Where(x => idsArray.Contains(x.UserId) && x.CreatedAt.Date == DateTime.UtcNow.Date &&
                         x.ReputationRule.ReputationChange > 0)
             .GroupBy(x => x.UserId)
             .Select(x => new KeyValuePair<long, int>(x.Key,

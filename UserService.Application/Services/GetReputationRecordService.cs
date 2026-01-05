@@ -15,7 +15,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var records = recordsRepository.GetAll().Where(x => x.Enabled);
+        var records = recordsRepository.GetAll();
 
         return Task.FromResult(QueryableResult<ReputationRecord>.Success(records));
     }
@@ -23,7 +23,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
     public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IEnumerable<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var records = await recordsRepository.GetAll().Where(x => ids.Contains(x.Id) && x.Enabled)
+        var records = await recordsRepository.GetAll().Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
         if (records.Length == 0)
@@ -43,7 +43,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
-                .Where(x => userIds.Contains(x.UserId) && x.Enabled)
+                .Where(x => userIds.Contains(x.UserId))
                 .GroupBy(x => x.UserId)
                 .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<ReputationRecord>>(x.Key, x))
@@ -60,7 +60,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         GetRecordsWithReputationRules(IEnumerable<long> ruleIds, CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
-                .Where(x => ruleIds.Contains(x.ReputationRuleId) && x.Enabled)
+                .Where(x => ruleIds.Contains(x.ReputationRuleId))
                 .GroupBy(x => x.ReputationRuleId)
                 .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<ReputationRecord>>(x.Key, x))

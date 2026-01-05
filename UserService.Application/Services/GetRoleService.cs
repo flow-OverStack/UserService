@@ -13,18 +13,18 @@ public class GetRoleService(
     IBaseRepository<Role> roleRepository)
     : IGetRoleService
 {
-    public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var roles = roleRepository.GetAll();
 
-        if (!roles.Any())
-            return Task.FromResult(QueryableResult<Role>.Failure(
+        if (!await roles.AnyAsync(cancellationToken))
+            return QueryableResult<Role>.Failure(
                 ErrorMessage.RolesNotFound,
-                (int)ErrorCodes.RolesNotFound));
+                (int)ErrorCodes.RolesNotFound);
 
-        return Task.FromResult(QueryableResult<Role>.Success(roles));
+        return QueryableResult<Role>.Success(roles);
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
