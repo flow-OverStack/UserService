@@ -2,12 +2,11 @@ namespace UserService.Domain.Enums;
 
 public enum BaseEventType
 {
-    AnswerAccepted,
-    AnswerDownvote,
-    AnswerUpvote,
-    DownvoteGivenForAnswer,
-    QuestionDownvote,
-    QuestionUpvote,
-    UserAcceptedAnswer,
-    EntityDeleted
+    EntityAccepted,
+    EntityUpvoted,
+    EntityDownvoted,
+    EntityDeleted,
+
+    EntityVoteRemoved,
+    EntityAcceptanceRevoked
 }

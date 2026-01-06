@@ -14,7 +14,8 @@ public class BaseEventConsumer(
 {
     public async Task Consume(ConsumeContext<BaseEvent> context)
     {
-        var dto = new ReputationEventDto(context.Message.UserId, context.Message.EntityId,
+        var dto = new ReputationEventDto(context.Message.AuthorId, context.Message.InitiatorId,
+            context.Message.EntityId,
             Enum.Parse<EntityType>(context.Message.EntityType), Enum.Parse<BaseEventType>(context.Message.EventType));
         var result = await reputationService.ApplyReputationEventAsync(dto, context.CancellationToken);
 
@@ -25,12 +26,13 @@ public class BaseEventConsumer(
     {
         if (!result.IsSuccess)
             logger.Warning(
-                "Failed to update reputation. Error: {ErrorMessage}. UserId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
-                result.ErrorMessage, message.UserId, message.EventType, message.EventId, message.EntityType,
-                message.EntityId);
+                "Failed to update reputation. Error: {ErrorMessage}. InitiatorId: {InitiatorId}. AuthorId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
+                result.ErrorMessage, message.InitiatorId, message.AuthorId, message.EventType, message.EventId,
+                message.EntityType, message.EntityId);
         else
             logger.Information(
-                "Successfully updated reputation. UserId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
-                message.UserId, message.EventType, message.EventId, message.EntityType, message.EntityId);
+                "Successfully updated reputation. InitiatorId: {InitiatorId}. AuthorId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
+                message.InitiatorId, message.AuthorId, message.EventType, message.EventId, message.EntityType,
+                message.EntityId);
     }
 }

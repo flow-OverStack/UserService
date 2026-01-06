@@ -91,15 +91,15 @@ namespace UserService.DAL.Migrations
                 unique: true);
             
             migrationBuilder.InsertData("ReputationRule", new[] { "EventType", "EntityType", "Group", "ReputationChange" }, new object[,]
-            {
-                { nameof(BaseEventType.AnswerAccepted), nameof(EntityType.Answer), null, 15 },
-                { nameof(BaseEventType.DownvoteGivenForAnswer), nameof(EntityType.Answer), null, -1 },
-                { nameof(BaseEventType.AnswerDownvote), nameof(EntityType.Answer), "AnswerVote", -2 },
-                { nameof(BaseEventType.AnswerUpvote), nameof(EntityType.Answer), "AnswerVote", 10 },
-                { nameof(BaseEventType.UserAcceptedAnswer), nameof(EntityType.Answer), null, 2 },
-                { nameof(BaseEventType.QuestionDownvote), nameof(EntityType.Question), "QuestionVote", -2 },
-                { nameof(BaseEventType.QuestionUpvote), nameof(EntityType.Question), "QuestionVote", 10 }
-            });
+                {
+                    { "AnswerAccepted", "Answer", null, 15 },
+                    { "DownvoteGivenForAnswer", "Answer", null, -1 },
+                    { "AnswerDownvote", "Answer", "AnswerVote", -2 },
+                    { "AnswerUpvote", "Answer", "AnswerVote", 10 },
+                    { "UserAcceptedAnswer", "Answer", null, 2 },
+                    { "QuestionDownvote", "Question", "QuestionVote", -2 },
+                    { "QuestionUpvote", "Question", "QuestionVote", 10 }
+                });
         }
 
         /// <inheritdoc />

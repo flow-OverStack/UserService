@@ -6,7 +6,7 @@ namespace UserService.Domain.Interfaces.Service;
 public interface IReputationService
 {
     /// <summary>
-    ///     Applies a reputation event to a user based on the specified event data.
+    ///     Applies a reputation event to a user/users based on the specified event data.
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>

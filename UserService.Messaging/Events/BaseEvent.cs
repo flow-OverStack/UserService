@@ -6,7 +6,9 @@ public class BaseEvent
 
     public string EventType { get; set; }
 
-    public long UserId { get; set; }
+    public long AuthorId { get; set; }
+
+    public long InitiatorId { get; set; }
 
     public string EntityType { get; set; }
 

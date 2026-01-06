@@ -20,9 +20,9 @@ public class ProcessedEventFilter<TEvent>(
             if (await processedEventRepository.IsEventProcessedAsync(context.Message.EventId))
             {
                 logger.Warning(
-                    "Event has already been processed: UserId: {UserId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
-                    context.Message.UserId, context.Message.EventType, context.Message.EventId,
-                    context.Message.EntityType, context.Message.EntityId);
+                    "Event has already been processed: InitiatorId: {InitiatorId}. AuthorId: {AuthorId}. Event: {EventType}. EventId: {EventId}. Entity type: {EntityType}. EntityId: {EntityId}",
+                    context.Message.InitiatorId, context.Message.AuthorId, context.Message.EventType,
+                    context.Message.EventId, context.Message.EntityType, context.Message.EntityId);
 
                 await transaction.CommitAsync(context.CancellationToken);
 
