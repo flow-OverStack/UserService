@@ -37,7 +37,7 @@ public class ProcessedEventFilter<TEvent>(
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync(context.CancellationToken);
+            await transaction.RollbackAsync(CancellationToken.None);
             throw;
         }
     }

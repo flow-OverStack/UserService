@@ -63,7 +63,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
             var authorResult = await ApplyReputationRuleAsync(authorRule, authorId, entityId, cancellationToken);
             if (!authorResult.IsSuccess)
             {
-                await transaction.RollbackAsync(cancellationToken);
+                await transaction.RollbackAsync(CancellationToken.None);
                 return authorResult;
             }
 
@@ -76,7 +76,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
         }
         catch (Exception)
         {
-            await transaction.RollbackAsync(cancellationToken);
+            await transaction.RollbackAsync(CancellationToken.None);
             throw;
         }
 
