@@ -4,8 +4,10 @@ namespace UserService.Domain.Entities;
 
 public class ReputationRecord : IEntityId<long>, IAuditable
 {
-    public long UserId { get; set; }
-    public User User { get; set; }
+    public long ReputationTargetId { get; set; }
+    public User ReputationTarget { get; set; }
+    public long InitiatorId { get; set; }
+    public User Initiator { get; set; }
     public long ReputationRuleId { get; set; }
     public ReputationRule ReputationRule { get; set; }
     public long EntityId { get; set; }

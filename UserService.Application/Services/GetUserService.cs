@@ -65,9 +65,9 @@ public class GetUserService(
         var idsArray = ids.ToArray();
 
         var reputations = await reputationRecordRepository.GetAll()
-            .Where(x => idsArray.Contains(x.UserId))
+            .Where(x => idsArray.Contains(x.ReputationTargetId))
             .Include(x => x.ReputationRule)
-            .GroupBy(x => new { x.UserId, x.CreatedAt.Date })
+            .GroupBy(x => new { UserId = x.ReputationTargetId, x.CreatedAt.Date })
             .Select(x => new KeyValuePair<long, int>(x.Key.UserId,
                 Math.Max(_reputationRules.MinReputation,
                     Math.Min(x.Sum(y => y.ReputationRule.ReputationChange),
@@ -103,9 +103,9 @@ public class GetUserService(
         var idsArray = ids.ToArray();
         var reputations = await reputationRecordRepository.GetAll()
             .Include(x => x.ReputationRule)
-            .Where(x => idsArray.Contains(x.UserId) && x.CreatedAt.Date == DateTime.UtcNow.Date &&
+            .Where(x => idsArray.Contains(x.ReputationTargetId) && x.CreatedAt.Date == DateTime.UtcNow.Date &&
                         x.ReputationRule.ReputationChange > 0)
-            .GroupBy(x => x.UserId)
+            .GroupBy(x => x.ReputationTargetId)
             .Select(x => new KeyValuePair<long, int>(x.Key,
                 Math.Max(0, _reputationRules.MaxDailyReputation - x.Sum(y => y.ReputationRule.ReputationChange))))
             .ToArrayAsync(cancellationToken);

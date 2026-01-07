@@ -41,9 +41,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                 x => x.HasOne<User>().WithMany().HasForeignKey(y => y.UserId)
             );
 
-        builder.HasMany(x => x.ReputationRecords)
-            .WithOne(x => x.User)
-            .HasForeignKey(x => x.UserId)
+        builder.HasMany(x => x.OwnedReputationRecords)
+            .WithOne(x => x.ReputationTarget)
+            .HasForeignKey(x => x.ReputationTargetId)
+            .HasPrincipalKey(x => x.Id);
+
+        builder.HasMany(x => x.InitiatedReputationRecords)
+            .WithOne(x => x.Initiator)
+            .HasForeignKey(x => x.InitiatorId)
             .HasPrincipalKey(x => x.Id);
     }
 }

@@ -43,8 +43,8 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
-                .Where(x => userIds.Contains(x.UserId))
-                .GroupBy(x => x.UserId)
+                .Where(x => userIds.Contains(x.ReputationTargetId))
+                .GroupBy(x => x.ReputationTargetId)
                 .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<ReputationRecord>>(x.Key, x))
             .ToArray();

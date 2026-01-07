@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using UserService.DAL;
@@ -11,9 +12,11 @@ using UserService.DAL;
 namespace UserService.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260107063320_UniqueIndexRemovedFromReputationRecord")]
+    partial class UniqueIndexRemovedFromReputationRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,22 +44,17 @@ namespace UserService.DAL.Migrations
                     b.Property<long>("EntityId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("InitiatorId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("ReputationRuleId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ReputationTargetId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InitiatorId");
-
                     b.HasIndex("ReputationRuleId");
 
-                    b.HasIndex("ReputationTargetId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("ReputationRecord");
                 });
@@ -198,29 +196,21 @@ namespace UserService.DAL.Migrations
 
             modelBuilder.Entity("UserService.Domain.Entities.ReputationRecord", b =>
                 {
-                    b.HasOne("UserService.Domain.Entities.User", "Initiator")
-                        .WithMany("InitiatedReputationRecords")
-                        .HasForeignKey("InitiatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("UserService.Domain.Entities.ReputationRule", "ReputationRule")
                         .WithMany("ReputationRecords")
                         .HasForeignKey("ReputationRuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UserService.Domain.Entities.User", "ReputationTarget")
-                        .WithMany("OwnedReputationRecords")
-                        .HasForeignKey("ReputationTargetId")
+                    b.HasOne("UserService.Domain.Entities.User", "User")
+                        .WithMany("ReputationRecords")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Initiator");
-
                     b.Navigation("ReputationRule");
 
-                    b.Navigation("ReputationTarget");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("UserService.Domain.Entities.UserRole", b =>
@@ -245,9 +235,7 @@ namespace UserService.DAL.Migrations
 
             modelBuilder.Entity("UserService.Domain.Entities.User", b =>
                 {
-                    b.Navigation("InitiatedReputationRecords");
-
-                    b.Navigation("OwnedReputationRecords");
+                    b.Navigation("ReputationRecords");
                 });
 #pragma warning restore 612, 618
         }

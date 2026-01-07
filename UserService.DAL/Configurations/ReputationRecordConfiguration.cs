@@ -13,7 +13,5 @@ public class ReputationRecordConfiguration : IEntityTypeConfiguration<Reputation
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.Enabled).IsRequired().HasDefaultValue(true);
         builder.HasQueryFilter(x => x.Enabled);
-
-        builder.HasIndex(x => new { x.UserId, x.EntityId, x.ReputationRuleId, x.Enabled }).IsUnique();
     }
 }

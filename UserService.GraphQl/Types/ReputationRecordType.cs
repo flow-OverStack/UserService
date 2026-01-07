@@ -10,15 +10,16 @@ public class ReputationRecordType : ObjectType<ReputationRecord>
         descriptor.Description("The reputation record type.");
 
         descriptor.Field(x => x.Id).Description("The ID of the reputation record.");
-        descriptor.Field(x => x.UserId).Description("The ID of the user this record belongs to.");
+        descriptor.Field(x => x.ReputationTargetId).Description("The ID of the user this record belongs to.");
         descriptor.Field(x => x.ReputationRuleId).Description("The ID of the reputation rule applied.");
         descriptor.Field(x => x.EntityId).Description("The ID of the related entity that triggered the rule.");
         descriptor.Field(x => x.Enabled).Ignore();
         descriptor.Field(x => x.CreatedAt).Description("The creation time of the record.");
-        descriptor.Field(x => x.User).Description("The user associated with this reputation record.");
+        descriptor.Field(x => x.ReputationTarget).Description("The user associated with this reputation record.");
         descriptor.Field(x => x.ReputationRule).Description("The reputation rule that was applied for this record.");
 
-        descriptor.Field(x => x.User).ResolveWith<Resolvers>(x => x.GetUserAsync(default!, default!, default!));
+        descriptor.Field(x => x.ReputationTarget)
+            .ResolveWith<Resolvers>(x => x.GetUserAsync(default!, default!, default!));
         descriptor.Field(x => x.ReputationRule)
             .ResolveWith<Resolvers>(x => x.GetReputationRuleAsync(default!, default!, default!));
     }
@@ -28,7 +29,7 @@ public class ReputationRecordType : ObjectType<ReputationRecord>
         public async Task<User> GetUserAsync([Parent] ReputationRecord record, UserDataLoader userLoader,
             CancellationToken cancellationToken)
         {
-            var user = await userLoader.LoadRequiredAsync(record.UserId, cancellationToken);
+            var user = await userLoader.LoadRequiredAsync(record.ReputationTargetId, cancellationToken);
             return user;
         }
 

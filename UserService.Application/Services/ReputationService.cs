@@ -22,7 +22,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
                 cancellationToken),
             BaseEventType.EntityAcceptanceRevoked => RevokeAcceptanceAsync(dto.EntityId,
                 dto.EntityType.ToString(), cancellationToken),
-            BaseEventType.EntityVoteRemoved => RemoveVoteAsync(dto.AuthorId, dto.InitiatorId, dto.EntityId,
+            BaseEventType.EntityVoteRemoved => RemoveVoteAsync(dto.InitiatorId, dto.EntityId,
                 dto.EntityType.ToString(),
                 cancellationToken),
 
@@ -37,7 +37,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            // Finding any rule for the current entity
+            // Finding ruleS for the current entity
             var rules = await unitOfWork.ReputationRules.GetAll()
                 .Where(x => x.EventType == eventType && x.EntityType == entityType)
                 .ToArrayAsync(cancellationToken);
@@ -51,8 +51,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
 
             // Disabling all records for both the initiator and the author if the records are in the same group as the rule 
             await DisableReputationRecordsAsync(x =>
-                ((x.UserId == authorId && x.ReputationRule.ReputationTarget == ReputationTarget.Author) ||
-                 (x.UserId == initiatorId && x.ReputationRule.ReputationTarget == ReputationTarget.Initiator))
+                x.InitiatorId == initiatorId
                 && x.ReputationRule.EntityType == entityType
                 && x.EntityId == entityId
                 && x.ReputationRule.Group != null
@@ -60,7 +59,8 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
 
             // Applying a reputation rule for the author
             var authorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Author);
-            var authorResult = await ApplyReputationRuleAsync(authorRule, authorId, entityId, cancellationToken);
+            var authorResult =
+                await ApplyReputationRuleAsync(authorRule, authorId, initiatorId, entityId, cancellationToken);
             if (!authorResult.IsSuccess)
             {
                 await transaction.RollbackAsync(CancellationToken.None);
@@ -70,7 +70,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
             // There can be no rules for initiator
             var initiatorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Initiator);
             if (initiatorRule != null)
-                await ApplyReputationRuleAsync(initiatorRule, initiatorId, entityId, cancellationToken);
+                await ApplyReputationRuleAsync(initiatorRule, initiatorId, initiatorId, entityId, cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }
@@ -83,19 +83,23 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
         return BaseResult.Success();
     }
 
-    private async Task<BaseResult> ApplyReputationRuleAsync(ReputationRule? rule, long userId, long entityId,
+    private async Task<BaseResult> ApplyReputationRuleAsync(ReputationRule? rule, long targetId, long initiatorId,
+        long entityId,
         CancellationToken cancellationToken = default)
     {
         if (rule == null)
             return BaseResult.Failure(ErrorMessage.ReputationRuleNotFound, (int)ErrorCodes.ReputationRuleNotFound);
 
-        var user = await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
-        if (user == null)
+
+        if (!await unitOfWork.Users.GetAll().AnyAsync(x => x.Id == targetId, cancellationToken)
+            || !await unitOfWork.Users.GetAll().AnyAsync(x => x.Id == initiatorId, cancellationToken))
             return BaseResult.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
+
 
         var newRecord = new ReputationRecord
         {
-            UserId = userId,
+            ReputationTargetId = targetId,
+            InitiatorId = initiatorId,
             ReputationRuleId = rule.Id,
             EntityId = entityId
         };
@@ -114,12 +118,11 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
     }
 
 
-    private Task<BaseResult> RemoveVoteAsync(long authorId, long initiatorId, long entityId,
-        string entityType, CancellationToken cancellationToken = default)
+    private Task<BaseResult> RemoveVoteAsync(long initiatorId, long entityId, string entityType,
+        CancellationToken cancellationToken = default)
     {
         return DisableReputationRecordsAsync(x =>
-                ((x.UserId == authorId && x.ReputationRule.ReputationTarget == ReputationTarget.Author) ||
-                 (x.UserId == initiatorId && x.ReputationRule.ReputationTarget == ReputationTarget.Initiator))
+                x.InitiatorId == initiatorId
                 && x.ReputationRule.EntityType == entityType
                 && x.EntityId == entityId
                 && (x.ReputationRule.EventType ==

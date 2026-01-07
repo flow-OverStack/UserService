@@ -19,10 +19,10 @@ public class UserType : ObjectType<User>
         descriptor.Field(x => x.LastLoginAt).Description("The last login time of the user.");
         descriptor.Field(x => x.Roles).Description("The roles of the user.");
         descriptor.Field(x => x.CreatedAt).Description("User creation time.");
-        descriptor.Field(x => x.ReputationRecords).Description("The reputation records of the user.");
+        descriptor.Field(x => x.OwnedReputationRecords).Description("The reputation records of the user.");
 
         descriptor.Field(x => x.Roles).ResolveWith<Resolvers>(x => x.GetRolesAsync(default!, default!, default!));
-        descriptor.Field(x => x.ReputationRecords)
+        descriptor.Field(x => x.OwnedReputationRecords)
             .ResolveWith<Resolvers>(x => x.GetReputationRecordsAsync(default!, default!, default!));
 
         descriptor.Key(nameof(User.Id).LowercaseFirstLetter())
