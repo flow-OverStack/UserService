@@ -206,10 +206,10 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeBaseEvent_ShouldBe_Exception()
+    public async Task ApplyReputationEvent_ShouldBe_Exception()
     {
         //Arrange
-        var dto = new ReputationEventDto(1, 1, EntityType.Answer, BaseEventType.AnswerAccepted);
+        var dto = new ReputationEventDto(1, 1, 1, EntityType.Answer, BaseEventType.EntityAccepted);
 
         await using var scope = ServiceProvider.CreateAsyncScope();
         var reputationService = scope.ServiceProvider.GetRequiredService<IReputationService>();
@@ -228,12 +228,14 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         //Arrange
         const long userId = 1;
         const long entityId = 2;
+        const long initiatorId = 1;
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = userId,
+            InitiatorId = initiatorId,
             EntityId = entityId,
             EventId = Guid.NewGuid()
         };

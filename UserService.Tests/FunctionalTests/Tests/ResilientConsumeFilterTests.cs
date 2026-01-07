@@ -39,12 +39,14 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         //Arrange
         const long userId = 1;
         const long entityId = 2;
+        const long initiatorId = 2;
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = userId,
+            InitiatorId = initiatorId,
             EntityId = entityId,
             EventId = Guid.NewGuid()
         };
@@ -73,12 +75,14 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         //Arrange
         const long userId = 1;
         const long entityId = 2;
+        const long initiatorId = 2;
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = userId,
+            InitiatorId = initiatorId,
             EntityId = entityId,
             EventId = Guid.NewGuid()
         };
@@ -109,12 +113,14 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         //Arrange
         const long userId = 1;
         const long entityId = 2;
+        const long initiatorId = 2;
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = userId,
+            InitiatorId = initiatorId,
             EntityId = entityId,
             EventId = Guid.NewGuid()
         };
@@ -153,12 +159,14 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         //Arrange
         const long userId = 1;
         const long entityId = 2;
+        const long initiatorId = 2;
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = userId,
+            InitiatorId = initiatorId,
             EntityId = entityId,
             EventId = Guid.NewGuid()
         };

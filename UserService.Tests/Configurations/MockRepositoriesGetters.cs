@@ -163,7 +163,8 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 1).ToList(),
+                OwnedReputationRecords = GetReputationRecords().Where(x => x.ReputationTargetId == 1).ToList(),
+                InitiatedReputationRecords = GetReputationRecords().Where(x => x.InitiatorId == 1).ToList(),
                 Roles = [GetRoleUser(), GetRoleAdmin()]
             },
             new()
@@ -174,7 +175,8 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser2@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 2).ToList(),
+                OwnedReputationRecords = GetReputationRecords().Where(x => x.ReputationTargetId == 2).ToList(),
+                InitiatedReputationRecords = GetReputationRecords().Where(x => x.InitiatorId == 2).ToList(),
                 Roles = [GetRoleUser(), GetRoleModer()]
             },
             new()
@@ -185,7 +187,8 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser3@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 3).ToList(),
+                OwnedReputationRecords = GetReputationRecords().Where(x => x.ReputationTargetId == 3).ToList(),
+                InitiatedReputationRecords = GetReputationRecords().Where(x => x.InitiatorId == 3).ToList(),
                 Roles = [GetRoleModer()]
             },
             new() //user without roles
@@ -196,7 +199,8 @@ internal static class MockRepositoriesGetters
                 Email = "TestUser5@test.com",
                 LastLoginAt = DateTime.UtcNow,
                 CreatedAt = DateTime.UtcNow,
-                ReputationRecords = GetReputationRecords().Where(x => x.UserId == 5).ToList(),
+                OwnedReputationRecords = GetReputationRecords().Where(x => x.ReputationTargetId == 5).ToList(),
+                InitiatedReputationRecords = GetReputationRecords().Where(x => x.InitiatorId == 5).ToList(),
                 Roles = []
             }
         }.AsQueryable();
@@ -267,43 +271,44 @@ internal static class MockRepositoriesGetters
         {
             new ReputationRule
             {
-                Id = 1, EventType = nameof(BaseEventType.AnswerAccepted), EntityType = nameof(EntityType.Answer),
-                Group = null, ReputationChange = 15
+                Id = 1, EventType = nameof(BaseEventType.EntityAccepted), EntityType = nameof(EntityType.Answer),
+                Group = null, ReputationChange = 15, ReputationTarget = ReputationTarget.Author
             },
             new ReputationRule
             {
-                Id = 2, EventType = nameof(BaseEventType.DownvoteGivenForAnswer),
-                EntityType = nameof(EntityType.Answer), Group = null, ReputationChange = -1
+                Id = 2, EventType = nameof(BaseEventType.EntityDownvoted),
+                ReputationTarget = ReputationTarget.Initiator, EntityType = nameof(EntityType.Answer), Group = null,
+                ReputationChange = -1
             },
             new ReputationRule
             {
-                Id = 3, EventType = nameof(BaseEventType.AnswerDownvote), EntityType = nameof(EntityType.Answer),
-                Group = "AnswerVote", ReputationChange = -2
+                Id = 3, EventType = nameof(BaseEventType.EntityDownvoted), EntityType = nameof(EntityType.Answer),
+                Group = "Vote", ReputationChange = -2, ReputationTarget = ReputationTarget.Author
             },
             new ReputationRule
             {
-                Id = 4, EventType = nameof(BaseEventType.AnswerUpvote), EntityType = nameof(EntityType.Answer),
-                Group = "AnswerVote", ReputationChange = 10
+                Id = 4, EventType = nameof(BaseEventType.EntityUpvoted), EntityType = nameof(EntityType.Answer),
+                Group = "Vote", ReputationChange = 10, ReputationTarget = ReputationTarget.Author
             },
             new ReputationRule
             {
-                Id = 5, EventType = nameof(BaseEventType.UserAcceptedAnswer), EntityType = nameof(EntityType.Answer),
-                Group = null, ReputationChange = 2
+                Id = 5, EventType = nameof(BaseEventType.EntityAccepted), EntityType = nameof(EntityType.Answer),
+                Group = null, ReputationChange = 2, ReputationTarget = ReputationTarget.Initiator
             },
             new ReputationRule
             {
-                Id = 6, EventType = nameof(BaseEventType.QuestionDownvote), EntityType = nameof(EntityType.Question),
-                Group = "QuestionVote", ReputationChange = -2
+                Id = 6, EventType = nameof(BaseEventType.EntityDownvoted), EntityType = nameof(EntityType.Question),
+                Group = "Vote", ReputationChange = -2, ReputationTarget = ReputationTarget.Author
             },
             new ReputationRule
             {
-                Id = 7, EventType = nameof(BaseEventType.QuestionUpvote), EntityType = nameof(EntityType.Question),
-                Group = "QuestionVote", ReputationChange = 10
+                Id = 7, EventType = nameof(BaseEventType.EntityUpvoted), EntityType = nameof(EntityType.Question),
+                Group = "Vote", ReputationChange = 10, ReputationTarget = ReputationTarget.Author
             },
             new ReputationRule
             {
-                Id = 8, EventType = "TestSuperEvent", EntityType = nameof(EntityType.Answer),
-                Group = null, ReputationChange = MaxDailyReputation
+                Id = 8, EventType = "TestSuperEvent", EntityType = nameof(EntityType.Question),
+                Group = null, ReputationChange = MaxDailyReputation, ReputationTarget = ReputationTarget.Author
             }
         }.AsQueryable();
     }
@@ -312,11 +317,13 @@ internal static class MockRepositoriesGetters
     {
         var rules = GetReputationRules().ToList();
 
-        var ruleAnswerUpvote = rules.First(x => x.Id == 4);
-        var ruleAnswerDownvote = rules.First(x => x.Id == 3);
         var ruleAnswerAccepted = rules.First(x => x.Id == 1);
-        var ruleQuestionUpvote = rules.First(x => x.Id == 7);
+        var ruleAnswerDownvoteInitiator = rules.First(x => x.Id == 2);
+        var ruleAnswerDownvote = rules.First(x => x.Id == 3);
+        var ruleAnswerUpvote = rules.First(x => x.Id == 4);
+        var ruleAnswerAcceptedInitiator = rules.First(x => x.Id == 5);
         var ruleQuestionDownvote = rules.First(x => x.Id == 6);
+        var ruleQuestionUpvote = rules.First(x => x.Id == 7);
         var superRule = rules.First(x => x.Id == 8);
 
         return new[]
@@ -324,62 +331,112 @@ internal static class MockRepositoriesGetters
             new ReputationRecord
             {
                 Id = 1,
-                UserId = 1,
-                ReputationRuleId = ruleQuestionUpvote.Id,
-                ReputationRule = ruleQuestionUpvote,
+                ReputationTargetId = 2,
+                InitiatorId = 1,
                 EntityId = 1,
+                ReputationRule = ruleQuestionDownvote,
+                ReputationRuleId = ruleQuestionDownvote.Id,
                 Enabled = true,
-                CreatedAt = DateTime.UtcNow.AddHours(-5)
+                CreatedAt = DateTime.UtcNow.AddDays(-2)
             },
             new ReputationRecord
             {
                 Id = 2,
-                UserId = 2,
-                ReputationRuleId = ruleAnswerUpvote.Id,
-                ReputationRule = ruleAnswerUpvote,
+                ReputationTargetId = 3,
+                InitiatorId = 1,
                 EntityId = 1,
+                ReputationRule = ruleAnswerDownvote,
+                ReputationRuleId = ruleAnswerDownvote.Id,
                 Enabled = true,
-                CreatedAt = DateTime.UtcNow.AddHours(-4)
+                CreatedAt = DateTime.UtcNow.AddDays(-3)
             },
             new ReputationRecord
             {
                 Id = 3,
-                UserId = 2,
-                ReputationRuleId = ruleAnswerAccepted.Id,
-                ReputationRule = ruleAnswerAccepted,
-                EntityId = 2,
+                ReputationTargetId = 1,
+                InitiatorId = 1,
+                EntityId = 1,
+                ReputationRule = ruleAnswerDownvoteInitiator,
+                ReputationRuleId = ruleAnswerDownvoteInitiator.Id,
                 Enabled = true,
-                CreatedAt = DateTime.UtcNow.AddHours(-3)
+                CreatedAt = DateTime.UtcNow.AddDays(-4)
             },
             new ReputationRecord
             {
                 Id = 4,
-                UserId = 2,
-                ReputationRuleId = ruleAnswerDownvote.Id,
-                ReputationRule = ruleAnswerDownvote,
-                EntityId = 3,
+                ReputationTargetId = 3,
+                InitiatorId = 2,
+                EntityId = 2,
+                ReputationRule = ruleQuestionUpvote,
+                ReputationRuleId = ruleQuestionUpvote.Id,
                 Enabled = true,
-                CreatedAt = DateTime.UtcNow.AddHours(-3)
+                CreatedAt = DateTime.UtcNow.AddDays(-1)
             },
             new ReputationRecord
             {
                 Id = 5,
-                UserId = 3,
-                ReputationRuleId = superRule.Id,
-                ReputationRule = superRule,
-                EntityId = 1,
+                ReputationTargetId = 1,
+                InitiatorId = 2,
+                EntityId = 2,
+                ReputationRule = ruleAnswerUpvote,
+                ReputationRuleId = ruleAnswerUpvote.Id,
                 Enabled = true,
-                CreatedAt = DateTime.UtcNow.AddHours(-1)
+                CreatedAt = DateTime.UtcNow.AddDays(-2)
             },
             new ReputationRecord
             {
                 Id = 6,
-                UserId = 1,
-                ReputationRuleId = ruleQuestionDownvote.Id,
-                ReputationRule = ruleQuestionDownvote,
+                ReputationTargetId = 1,
+                InitiatorId = 2,
                 EntityId = 2,
+                ReputationRule = ruleAnswerAccepted,
+                ReputationRuleId = ruleAnswerAccepted.Id,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-3)
+            },
+            new ReputationRecord
+            {
+                Id = 7,
+                ReputationTargetId = 2,
+                InitiatorId = 2,
+                EntityId = 2,
+                ReputationRule = ruleAnswerAcceptedInitiator,
+                ReputationRuleId = ruleAnswerAcceptedInitiator.Id,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-4)
+            },
+            new ReputationRecord
+            {
+                Id = 8,
+                ReputationTargetId = 2,
+                InitiatorId = 3,
+                EntityId = 3,
+                ReputationRuleId = ruleAnswerUpvote.Id,
+                ReputationRule = ruleAnswerUpvote,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow.AddDays(-5)
+            },
+            new ReputationRecord
+            {
+                Id = 9,
+                ReputationTargetId = 3,
+                InitiatorId = 3,
+                EntityId = 3,
+                ReputationRuleId = superRule.Id,
+                ReputationRule = superRule,
+                Enabled = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new ReputationRecord
+            {
+                Id = 10,
+                ReputationTargetId = 2,
+                InitiatorId = 3,
+                EntityId = 4,
+                ReputationRuleId = ruleAnswerUpvote.Id,
+                ReputationRule = ruleAnswerUpvote,
                 Enabled = false,
-                CreatedAt = DateTime.UtcNow.AddDays(-2)
+                CreatedAt = DateTime.UtcNow.AddDays(-6)
             }
         }.AsQueryable();
     }

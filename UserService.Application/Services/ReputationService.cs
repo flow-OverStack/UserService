@@ -37,7 +37,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            // Finding ruleS for the current entity
+            // Finding rules for the current entity
             var rules = await unitOfWork.ReputationRules.GetAll()
                 .Where(x => x.EventType == eventType && x.EntityType == entityType)
                 .ToArrayAsync(cancellationToken);
@@ -69,8 +69,7 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
 
             // There can be no rules for initiator
             var initiatorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Initiator);
-            if (initiatorRule != null)
-                await ApplyReputationRuleAsync(initiatorRule, initiatorId, initiatorId, entityId, cancellationToken);
+            await ApplyReputationRuleAsync(initiatorRule, initiatorId, initiatorId, entityId, cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
         }
@@ -145,11 +144,11 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
     private async Task<BaseResult> DisableReputationRecordsAsync(Expression<Func<ReputationRecord, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var record = unitOfWork.ReputationRecords.GetAll()
+        var records = unitOfWork.ReputationRecords.GetAll()
             .Include(x => x.ReputationRule)
             .Where(predicate);
 
-        await DisableReputationRecordsAsync(record, cancellationToken);
+        await DisableReputationRecordsAsync(records, cancellationToken);
         return BaseResult.Success();
     }
 

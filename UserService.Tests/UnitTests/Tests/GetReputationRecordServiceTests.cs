@@ -73,14 +73,14 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersReputationRecords_ShouldBe_Success()
+    public async Task GetUsersOwnedReputationRecords_ShouldBe_Success()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
         var userIds = new List<long> { 1, 2, 0 };
 
         //Act
-        var result = await getReputationRecordService.GetUsersRecordsAsync(userIds);
+        var result = await getReputationRecordService.GetUsersOwnedRecordsAsync(userIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -89,14 +89,47 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersReputationRecords_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetUsersOwnedReputationRecords_ShouldBe_ReputationRecordsNotFound()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
         var userIds = new List<long> { 0, 0 };
 
         //Act
-        var result = await getReputationRecordService.GetUsersRecordsAsync(userIds);
+        var result = await getReputationRecordService.GetUsersOwnedRecordsAsync(userIds);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.ReputationRecordsNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUsersInitiatedReputationRecords_ShouldBe_Success()
+    {
+        //Arrange
+        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var userIds = new List<long> { 1, 2, 0 };
+
+        //Act
+        var result = await getReputationRecordService.GetUsersInitiatedRecordsAsync(userIds);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task GetUsersInitiatedReputationRecords_ShouldBe_ReputationRecordsNotFound()
+    {
+        //Arrange
+        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var userIds = new List<long> { 0, 0 };
+
+        //Act
+        var result = await getReputationRecordService.GetUsersInitiatedRecordsAsync(userIds);
 
         //Assert
         Assert.False(result.IsSuccess);

@@ -6,7 +6,8 @@ using Xunit;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
-public class GroupReputationRecordDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
+public class GroupInitiatedReputationRecordDataLoaderTests(FunctionalTestWebAppFactory factory)
+    : BaseFunctionalTest(factory)
 {
     [Trait("Category", "Functional")]
     [Fact]
@@ -14,14 +15,14 @@ public class GroupReputationRecordDataLoaderTests(FunctionalTestWebAppFactory fa
     {
         //Arrange    
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupReputationRecordDataLoader>();
-        const long userId = 2;
+        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupInitiatedReputationRecordDataLoader>();
+        const long userId = 1;
 
         //Act
         var records = await dataLoader.LoadRequiredAsync(userId);
 
         //Assert
-        Assert.Equal(3, records.Length); // User with id 2 has 3 reputation records
+        Assert.Equal(3, records.Length); // User with id 1 has 3 initiated reputation records
     }
 
     [Trait("Category", "Functional")]
@@ -30,7 +31,7 @@ public class GroupReputationRecordDataLoaderTests(FunctionalTestWebAppFactory fa
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
-        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupReputationRecordDataLoader>();
+        var dataLoader = scope.ServiceProvider.GetRequiredService<GroupInitiatedReputationRecordDataLoader>();
         const long userId = 0;
 
         //Act

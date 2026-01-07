@@ -15,8 +15,34 @@ internal static class GraphQlHelper
                                                 lastLoginAt
                                                 currentReputation
                                                 remainingReputation
-                                                reputationRecords {
-                                                  userId
+                                                initiatedReputationRecords {
+                                                  reputationTarget {
+                                                    id
+                                                    username
+                                                  }
+                                                  initiator {
+                                                    id
+                                                    username
+                                                  }
+                                                  entityId
+                                                  reputationRule {
+                                                    entityType
+                                                    eventType
+                                                    reputationChange
+                                                    reputationRecords {
+                                                      id
+                                                    }
+                                                  }
+                                                }
+                                                ownedReputationRecords {
+                                                  reputationTarget {
+                                                    id
+                                                    username
+                                                  }
+                                                  initiator {
+                                                    id
+                                                    username
+                                                  }
                                                   entityId
                                                   reputationRule {
                                                     entityType
@@ -66,9 +92,13 @@ internal static class GraphQlHelper
                                                 cursor
                                                 node {
                                                   id
-                                                  user {
-                                                  id
-                                                  username
+                                                  reputationTarget {
+                                                    id
+                                                    username
+                                                  }
+                                                  initiator {
+                                                    id
+                                                    username
                                                   }
                                                   entityId
                                                   reputationRule {
@@ -97,7 +127,11 @@ internal static class GraphQlHelper
                                                 reputationChange
                                                 reputationRecords {
                                                   id
-                                                  user {
+                                                  reputationTarget {
+                                                    id
+                                                    username
+                                                  }
+                                                  initiator {
                                                     id
                                                     username
                                                   }
@@ -123,8 +157,34 @@ internal static class GraphQlHelper
                                                   lastLoginAt
                                                   currentReputation
                                                   remainingReputation
-                                                  reputationRecords {
-                                                    userId
+                                                  initiatedReputationRecords {
+                                                    reputationTarget {
+                                                      id
+                                                      username
+                                                    }
+                                                    initiator {
+                                                      id
+                                                      username
+                                                    }
+                                                    entityId
+                                                    reputationRule {
+                                                      entityType
+                                                      eventType
+                                                      reputationChange
+                                                      reputationRecords {
+                                                        id
+                                                      }
+                                                    }
+                                                  }
+                                                  ownedReputationRecords {
+                                                    reputationTarget {
+                                                      id
+                                                      username
+                                                    }
+                                                    initiator {
+                                                      id
+                                                      username
+                                                    }
                                                     entityId
                                                     reputationRule {
                                                       entityType
@@ -157,18 +217,44 @@ internal static class GraphQlHelper
                                                                        lastLoginAt
                                                                        currentReputation
                                                                        remainingReputation
-                                                                       reputationRecords {
-                                                                         userId
-                                                                         entityId
-                                                                         reputationRule {
-                                                                           entityType
-                                                                           eventType
-                                                                           reputationChange
-                                                                           reputationRecords {
-                                                                             id
-                                                                           }
-                                                                         }
-                                                                       }
+                                                                       initiatedReputationRecords {
+                                                                          reputationTarget {
+                                                                            id
+                                                                            username
+                                                                          }
+                                                                          initiator {
+                                                                            id
+                                                                            username
+                                                                          }
+                                                                          entityId
+                                                                          reputationRule {
+                                                                            entityType
+                                                                            eventType
+                                                                            reputationChange
+                                                                            reputationRecords {
+                                                                              id
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                        ownedReputationRecords {
+                                                                          reputationTarget {
+                                                                            id
+                                                                            username
+                                                                          }
+                                                                          initiator {
+                                                                            id
+                                                                            username
+                                                                          }
+                                                                          entityId
+                                                                          reputationRule {
+                                                                            entityType
+                                                                            eventType
+                                                                            reputationChange
+                                                                            reputationRecords {
+                                                                              id
+                                                                            }
+                                                                          }
+                                                                        }
                                                                        createdAt
                                                                        roles {
                                                                          id
@@ -208,10 +294,14 @@ internal static class GraphQlHelper
                                                                        cursor
                                                                        node {
                                                                          id
-                                                                         user {
-                                                                         id
-                                                                         username
-                                                                         }
+                                                                         reputationTarget {
+                                                                            id
+                                                                            username
+                                                                          }
+                                                                          initiator {
+                                                                            id
+                                                                            username
+                                                                          }
                                                                          entityId
                                                                          reputationRule {
                                                                            entityType
@@ -239,10 +329,14 @@ internal static class GraphQlHelper
                                                                        reputationChange
                                                                        reputationRecords {
                                                                          id
-                                                                         user {
-                                                                           id
-                                                                           username
-                                                                         }
+                                                                         reputationTarget {
+                                                                            id
+                                                                            username
+                                                                          }
+                                                                          initiator {
+                                                                            id
+                                                                            username
+                                                                          }
                                                                        }
                                                                      }
                                                                      pageInfo {
@@ -264,18 +358,44 @@ internal static class GraphQlHelper
                                                        lastLoginAt
                                                        currentReputation
                                                        remainingReputation
-                                                       reputationRecords {
-                                                         userId
-                                                         entityId
-                                                         reputationRule {
-                                                           entityType
-                                                           eventType
-                                                           reputationChange
-                                                           reputationRecords {
-                                                             id
-                                                           }
-                                                         }
-                                                       }
+                                                       initiatedReputationRecords {
+                                                          reputationTarget {
+                                                            id
+                                                            username
+                                                          }
+                                                          initiator {
+                                                            id
+                                                            username
+                                                          }
+                                                          entityId
+                                                          reputationRule {
+                                                            entityType
+                                                            eventType
+                                                            reputationChange
+                                                            reputationRecords {
+                                                              id
+                                                            }
+                                                          }
+                                                        }
+                                                        ownedReputationRecords {
+                                                          reputationTarget {
+                                                            id
+                                                            username
+                                                          }
+                                                          initiator {
+                                                            id
+                                                            username
+                                                          }
+                                                          entityId
+                                                          reputationRule {
+                                                            entityType
+                                                            eventType
+                                                            reputationChange
+                                                            reputationRecords {
+                                                              id
+                                                            }
+                                                          }
+                                                        }
                                                        createdAt
                                                        roles {
                                                          id
@@ -332,8 +452,34 @@ internal static class GraphQlHelper
                 lastLoginAt
                 currentReputation
                 remainingReputation
-                reputationRecords {
-                  userId
+                initiatedReputationRecords {
+                  reputationTarget {
+                    id
+                    username
+                  }
+                  initiator {
+                    id
+                    username
+                  }
+                  entityId
+                  reputationRule {
+                    entityType
+                    eventType
+                    reputationChange
+                    reputationRecords {
+                      id
+                    }
+                  }
+                }
+                ownedReputationRecords {
+                  reputationTarget {
+                    id
+                    username
+                  }
+                  initiator {
+                    id
+                    username
+                  }
                   entityId
                   reputationRule {
                     entityType
@@ -361,7 +507,11 @@ internal static class GraphQlHelper
               }
 
               reputationRecord: reputationRecord(id: $REPUTATION_RECORD_ID) {
-                user {
+                reputationTarget {
+                  id
+                  username
+                }
+                initiator {
                   id
                   username
                 }
@@ -383,7 +533,11 @@ internal static class GraphQlHelper
                 reputationChange
                 reputationRecords {
                   id
-                  user {
+                  reputationTarget {
+                    id
+                    username
+                  }
+                  initiator {
                     id
                     username
                   }

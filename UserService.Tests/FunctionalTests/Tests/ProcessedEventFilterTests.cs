@@ -35,15 +35,17 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
     public async Task Send_ShouldBe_Ok()
     {
         //Arrange
-        const long userId = 1;
+        const long authorId = 1;
         const long entityId = 2;
+        const long initiatorId = 1;
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = authorId,
             EntityId = entityId,
+            InitiatorId = initiatorId,
             EventId = Guid.NewGuid()
         };
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -66,15 +68,17 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
     public async Task Send_ShouldBe_EventAlreadyProcessed()
     {
         //Arrange
-        const long userId = 1;
+        const long authorId = 1;
         const long entityId = 2;
+        const long initiatorId = 1;
         var id = Guid.NewGuid();
 
         var message = new BaseEvent
         {
-            EventType = nameof(BaseEventType.AnswerAccepted),
+            EventType = nameof(BaseEventType.EntityAccepted),
             EntityType = nameof(EntityType.Answer),
-            UserId = userId,
+            AuthorId = authorId,
+            InitiatorId = initiatorId,
             EntityId = entityId,
             EventId = id
         };
