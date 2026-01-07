@@ -19,11 +19,15 @@ public class UserType : ObjectType<User>
         descriptor.Field(x => x.LastLoginAt).Description("The last login time of the user.");
         descriptor.Field(x => x.Roles).Description("The roles of the user.");
         descriptor.Field(x => x.CreatedAt).Description("User creation time.");
-        descriptor.Field(x => x.OwnedReputationRecords).Description("The reputation records of the user.");
+        descriptor.Field(x => x.OwnedReputationRecords).Description("The reputation records of the user he owns.");
+        descriptor.Field(x => x.InitiatedReputationRecords)
+            .Description("The reputation records of the user he initiated.");
 
         descriptor.Field(x => x.Roles).ResolveWith<Resolvers>(x => x.GetRolesAsync(default!, default!, default!));
         descriptor.Field(x => x.OwnedReputationRecords)
-            .ResolveWith<Resolvers>(x => x.GetReputationRecordsAsync(default!, default!, default!));
+            .ResolveWith<Resolvers>(x => x.GetOwnedReputationRecordsAsync(default!, default!, default!));
+        descriptor.Field(x => x.InitiatedReputationRecords)
+            .ResolveWith<Resolvers>(x => x.GetInitiatedReputationRecordsAsync(default!, default!, default!));
 
         descriptor.Key(nameof(User.Id).LowercaseFirstLetter())
             .ResolveReferenceWith(_ => Resolvers.GetUserByIdAsync(default!, default!, default!));
@@ -77,8 +81,15 @@ public class UserType : ObjectType<User>
             return reputation;
         }
 
-        public async Task<IEnumerable<ReputationRecord>> GetReputationRecordsAsync([Parent] User user,
-            GroupReputationRecordDataLoader recordLoader, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ReputationRecord>> GetOwnedReputationRecordsAsync([Parent] User user,
+            GroupOwnedReputationRecordDataLoader recordLoader, CancellationToken cancellationToken)
+        {
+            var records = await recordLoader.LoadRequiredAsync(user.Id, cancellationToken);
+            return records;
+        }
+
+        public async Task<IEnumerable<ReputationRecord>> GetInitiatedReputationRecordsAsync([Parent] User user,
+            GroupInitiatedReputationRecordDataLoader recordLoader, CancellationToken cancellationToken)
         {
             var records = await recordLoader.LoadRequiredAsync(user.Id, cancellationToken);
             return records;

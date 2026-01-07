@@ -39,14 +39,29 @@ public class ReputationRecordCacheRepository : IReputationRecordCacheRepository
             cancellationToken);
     }
 
-    public Task<IEnumerable<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersRecordsOrFetchAndCacheAsync(
-        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
+        GetUsersOwnedRecordsOrFetchAndCacheAsync(
+            IEnumerable<long> userIds, CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(userIds,
             CacheKeyHelper.GetUserKey,
-            CacheKeyHelper.GetUserReputationRecordsKey,
+            CacheKeyHelper.GetUserOwnedReputationRecordsKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _reputationRecordInner.GetUsersRecordsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) =>
+                (await _reputationRecordInner.GetUsersOwnedRecordsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken);
+    }
+
+    public Task<IEnumerable<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
+        GetUsersInitiatedRecordsOrFetchAndCacheAsync(IEnumerable<long> userIds,
+            CancellationToken cancellationToken = default)
+    {
+        return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(userIds,
+            CacheKeyHelper.GetUserKey,
+            CacheKeyHelper.GetUserInitiatedReputationRecordsKey,
+            CacheKeyHelper.GetIdFromKey,
+            async (idsToFetch, ct) =>
+                (await _reputationRecordInner.GetUsersInitiatedRecordsAsync(idsToFetch, ct)).Data ?? [],
             cancellationToken);
     }
 

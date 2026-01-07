@@ -34,11 +34,26 @@ public class CacheGetReputationRecordService(
         return CollectionResult<ReputationRecord>.Success(records);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersRecordsAsync(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersOwnedRecordsAsync(
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
-        var groupedRecords = (await cacheRepository.GetUsersRecordsOrFetchAndCacheAsync(userIds, cancellationToken))
+        var groupedRecords =
+            (await cacheRepository.GetUsersOwnedRecordsOrFetchAndCacheAsync(userIds, cancellationToken))
+            .ToArray();
+
+        if (groupedRecords.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>.Failure(
+                ErrorMessage.ReputationRecordsNotFound, (int)ErrorCodes.ReputationRecordsNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>.Success(groupedRecords);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
+        GetUsersInitiatedRecordsAsync(IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+    {
+        var groupedRecords =
+            (await cacheRepository.GetUsersInitiatedRecordsOrFetchAndCacheAsync(userIds, cancellationToken))
             .ToArray();
 
         if (groupedRecords.Length == 0)

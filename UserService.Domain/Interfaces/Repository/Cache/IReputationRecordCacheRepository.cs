@@ -15,7 +15,7 @@ public interface IReputationRecordCacheRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Retrieves user reputation records by their user IDs. If the records are not found in the cache,
+    ///     Retrieves user owned reputation records by their user IDs. If the records are not found in the cache,
     ///     they are fetched from the source, cached, and then returned.
     /// </summary>
     /// <param name="userIds">The collection of user IDs for which the reputation records need to be retrieved.</param>
@@ -24,7 +24,20 @@ public interface IReputationRecordCacheRepository
     ///     A task representing the asynchronous operation. The task result contains a collection of key-value pairs, where
     ///     the key is the user ID and the value is the list of corresponding reputation records.
     /// </return>
-    Task<IEnumerable<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersRecordsOrFetchAndCacheAsync(
+    Task<IEnumerable<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersOwnedRecordsOrFetchAndCacheAsync(
+        IEnumerable<long> userIds, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Retrieves user initiated reputation records by their user IDs. If the records are not found in the cache,
+    ///     they are fetched from the source, cached, and then returned.
+    /// </summary>
+    /// <param name="userIds">The collection of user IDs for which the reputation records need to be retrieved.</param>
+    /// <param name="cancellationToken">An optional token to cancel the operation.</param>
+    /// <return>
+    ///     A task representing the asynchronous operation. The task result contains a collection of key-value pairs, where
+    ///     the key is the user ID and the value is the list of corresponding reputation records.
+    /// </return>
+    Task<IEnumerable<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersInitiatedRecordsOrFetchAndCacheAsync(
         IEnumerable<long> userIds, CancellationToken cancellationToken = default);
 
     /// <summary>

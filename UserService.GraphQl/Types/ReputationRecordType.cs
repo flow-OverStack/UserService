@@ -11,14 +11,18 @@ public class ReputationRecordType : ObjectType<ReputationRecord>
 
         descriptor.Field(x => x.Id).Description("The ID of the reputation record.");
         descriptor.Field(x => x.ReputationTargetId).Description("The ID of the user this record belongs to.");
+        descriptor.Field(X => X.InitiatorId).Description("The ID of the user this record was initiated by.");
         descriptor.Field(x => x.ReputationRuleId).Description("The ID of the reputation rule applied.");
         descriptor.Field(x => x.EntityId).Description("The ID of the related entity that triggered the rule.");
         descriptor.Field(x => x.Enabled).Ignore();
         descriptor.Field(x => x.CreatedAt).Description("The creation time of the record.");
         descriptor.Field(x => x.ReputationTarget).Description("The user associated with this reputation record.");
+        descriptor.Field(x => x.Initiator).Description("The user who initiated this reputation record.");
         descriptor.Field(x => x.ReputationRule).Description("The reputation rule that was applied for this record.");
 
         descriptor.Field(x => x.ReputationTarget)
+            .ResolveWith<Resolvers>(x => x.GetUserAsync(default!, default!, default!));
+        descriptor.Field(x => x.Initiator)
             .ResolveWith<Resolvers>(x => x.GetUserAsync(default!, default!, default!));
         descriptor.Field(x => x.ReputationRule)
             .ResolveWith<Resolvers>(x => x.GetReputationRuleAsync(default!, default!, default!));

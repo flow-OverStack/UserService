@@ -38,13 +38,31 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         return CollectionResult<ReputationRecord>.Success(records);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersRecordsAsync(
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersOwnedRecordsAsync(
         IEnumerable<long> userIds,
         CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
                 .Where(x => userIds.Contains(x.ReputationTargetId))
                 .GroupBy(x => x.ReputationTargetId)
+                .ToArrayAsync(cancellationToken))
+            .Select(x => new KeyValuePair<long, IEnumerable<ReputationRecord>>(x.Key, x))
+            .ToArray();
+
+        if (records.Length == 0)
+            return CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>.Failure(
+                ErrorMessage.ReputationRecordsNotFound, (int)ErrorCodes.ReputationRecordsNotFound);
+
+        return CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>.Success(records);
+    }
+
+    public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
+        GetUsersInitiatedRecordsAsync(
+            IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+    {
+        var records = (await recordsRepository.GetAll()
+                .Where(x => userIds.Contains(x.InitiatorId))
+                .GroupBy(x => x.InitiatorId)
                 .ToArrayAsync(cancellationToken))
             .Select(x => new KeyValuePair<long, IEnumerable<ReputationRecord>>(x.Key, x))
             .ToArray();

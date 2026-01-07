@@ -4,7 +4,7 @@ using UserService.Domain.Interfaces.Service;
 
 namespace UserService.GraphQl.DataLoaders;
 
-public class GroupReputationRuleReputationRecordDataLoader(
+public class GroupInitiatedReputationRecordDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
@@ -16,7 +16,7 @@ public class GroupReputationRuleReputationRecordDataLoader(
         await using var scope = scopeFactory.CreateAsyncScope();
         var recordService = scope.ServiceProvider.GetRequiredService<IGetReputationRecordService>();
 
-        var result = await recordService.GetRecordsWithReputationRules(keys, cancellationToken);
+        var result = await recordService.GetUsersInitiatedRecordsAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<IGrouping<long, ReputationRecord>>()

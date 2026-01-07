@@ -40,7 +40,7 @@ public static class DependencyInjection
             .AddDataLoader<RemainingReputationDataLoader>()
             .AddDataLoader<GroupRoleUserDataLoader>()
             .AddDataLoader<GroupRoleDataLoader>()
-            .AddDataLoader<GroupReputationRecordDataLoader>()
+            .AddDataLoader<GroupOwnedReputationRecordDataLoader>()
             .AddDataLoader<GroupReputationRuleReputationRecordDataLoader>()
             .AddApolloFederation(FederationVersion.Federation23)
             .ModifyPagingOptions(opt =>
