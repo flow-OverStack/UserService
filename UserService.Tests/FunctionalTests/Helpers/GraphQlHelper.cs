@@ -28,6 +28,7 @@ internal static class GraphQlHelper
                                                   reputationRule {
                                                     entityType
                                                     eventType
+                                                    reputationTarget
                                                     reputationChange
                                                     reputationRecords {
                                                       id
@@ -47,6 +48,7 @@ internal static class GraphQlHelper
                                                   reputationRule {
                                                     entityType
                                                     eventType
+                                                    reputationTarget
                                                     reputationChange
                                                     reputationRecords {
                                                       id
@@ -104,6 +106,7 @@ internal static class GraphQlHelper
                                                   reputationRule {
                                                     entityType
                                                     eventType
+                                                    reputationTarget
                                                     reputationChange
                                                     reputationRecords {
                                                       id
@@ -124,6 +127,7 @@ internal static class GraphQlHelper
                                                 id
                                                 entityType
                                                 eventType
+                                                reputationTarget
                                                 reputationChange
                                                 reputationRecords {
                                                   id
@@ -170,6 +174,7 @@ internal static class GraphQlHelper
                                                     reputationRule {
                                                       entityType
                                                       eventType
+                                                      reputationTarget
                                                       reputationChange
                                                       reputationRecords {
                                                         id
@@ -189,6 +194,7 @@ internal static class GraphQlHelper
                                                     reputationRule {
                                                       entityType
                                                       eventType
+                                                      reputationTarget
                                                       reputationChange
                                                       reputationRecords {
                                                         id
@@ -230,6 +236,7 @@ internal static class GraphQlHelper
                                                                           reputationRule {
                                                                             entityType
                                                                             eventType
+                                                                            reputationTarget
                                                                             reputationChange
                                                                             reputationRecords {
                                                                               id
@@ -249,6 +256,7 @@ internal static class GraphQlHelper
                                                                           reputationRule {
                                                                             entityType
                                                                             eventType
+                                                                            reputationTarget
                                                                             reputationChange
                                                                             reputationRecords {
                                                                               id
@@ -306,6 +314,7 @@ internal static class GraphQlHelper
                                                                          reputationRule {
                                                                            entityType
                                                                            eventType
+                                                                           reputationTarget
                                                                            reputationChange
                                                                            reputationRecords {
                                                                              id
@@ -326,6 +335,7 @@ internal static class GraphQlHelper
                                                                        id
                                                                        entityType
                                                                        eventType
+                                                                       reputationTarget
                                                                        reputationChange
                                                                        reputationRecords {
                                                                          id
@@ -371,6 +381,7 @@ internal static class GraphQlHelper
                                                           reputationRule {
                                                             entityType
                                                             eventType
+                                                            reputationTarget
                                                             reputationChange
                                                             reputationRecords {
                                                               id
@@ -390,6 +401,7 @@ internal static class GraphQlHelper
                                                           reputationRule {
                                                             entityType
                                                             eventType
+                                                            reputationTarget
                                                             reputationChange
                                                             reputationRecords {
                                                               id
@@ -465,6 +477,7 @@ internal static class GraphQlHelper
                   reputationRule {
                     entityType
                     eventType
+                    reputationTarget
                     reputationChange
                     reputationRecords {
                       id
@@ -484,6 +497,7 @@ internal static class GraphQlHelper
                   reputationRule {
                     entityType
                     eventType
+                    reputationTarget
                     reputationChange
                     reputationRecords {
                       id
@@ -519,6 +533,7 @@ internal static class GraphQlHelper
                 reputationRule {
                   entityType
                   eventType
+                  reputationTarget
                   reputationChange
                   reputationRecords {
                     id
@@ -530,6 +545,7 @@ internal static class GraphQlHelper
                 id
                 entityType
                 eventType
+                reputationTarget
                 reputationChange
                 reputationRecords {
                   id
