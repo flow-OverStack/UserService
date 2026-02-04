@@ -10,11 +10,11 @@ service UserService{
 }
 
 message GetUserByIdRequest{
-  int64 UserId = 1;
+  int64 id = 1;
 }
 
 message GetUsersByIdsRequest{
-  repeated int64 UserIds = 1;
+  repeated int64 ids = 1;
 }
 
 message GetUsersByIdsResponse {

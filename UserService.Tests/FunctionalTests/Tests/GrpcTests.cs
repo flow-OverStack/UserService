@@ -19,7 +19,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         var client = new UserService.UserServiceClient(channel);
 
         //Act
-        var user = await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { UserId = userId });
+        var user = await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { Id = userId });
 
         //Assert
         Assert.NotNull(user);
@@ -38,7 +38,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
         //Act
         var userRequest = async () =>
-            await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { UserId = userId });
+            await client.GetUserWithRolesByIdAsync(new GetUserByIdRequest { Id = userId });
 
         //Assert
         var exception = await Assert.ThrowsAsync<RpcException>(userRequest);
@@ -57,7 +57,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         var client = new UserService.UserServiceClient(channel);
 
         var request = new GetUsersByIdsRequest();
-        request.UserIds.AddRange(userIds);
+        request.Ids.AddRange(userIds);
 
         //Act
         var response = await client.GetUsersByIdsAsync(request);
@@ -78,7 +78,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         var client = new UserService.UserServiceClient(channel);
 
         var request = new GetUsersByIdsRequest();
-        request.UserIds.AddRange(userIds);
+        request.Ids.AddRange(userIds);
 
         //Act
         var usersRequest = async () => await client.GetUsersByIdsAsync(request);
@@ -100,7 +100,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         var client = new UserService.UserServiceClient(channel);
 
         var request = new GetUsersByIdsRequest();
-        request.UserIds.AddRange(userIds);
+        request.Ids.AddRange(userIds);
 
         //Act
         var usersRequest = async () => await client.GetUsersByIdsAsync(request);
