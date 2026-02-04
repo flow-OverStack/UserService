@@ -1,7 +1,7 @@
 using AutoMapper;
 using UserService.Domain.Entities;
 
-namespace UserService.Grpc.Mappings;
+namespace UserService.GrpcServer.Mappings;
 
 public class RoleMapping : Profile
 {

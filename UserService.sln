@@ -40,7 +40,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Messaging", "Us
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.BackgroundJobs", "UserService.BackgroundJobs\UserService.BackgroundJobs.csproj", "{ACA7FC3E-B58A-481D-91D3-1FC423A7175E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Grpc", "UserService.Grpc\UserService.Grpc.csproj", "{5539A244-DC4F-4639-A488-2FAECA271EA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.GrpcServer", "UserService.GrpcServer\UserService.GrpcServer.csproj", "{5539A244-DC4F-4639-A488-2FAECA271EA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.Cache", "UserService.Cache\UserService.Cache.csproj", "{D1F51DCC-D609-47F3-9D96-8F785BF6153D}"
 EndProject

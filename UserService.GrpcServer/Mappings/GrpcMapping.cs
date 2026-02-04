@@ -1,7 +1,7 @@
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 
-namespace UserService.Grpc.Mappings;
+namespace UserService.GrpcServer.Mappings;
 
 public class GrpcMapping : Profile
 {

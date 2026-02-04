@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using UserService.Grpc.Mappings;
-using UserService.Grpc.Services;
+using UserService.GrpcServer.Mappings;
+using UserService.GrpcServer.Services;
 
-namespace UserService.Grpc.DependencyInjection;
+namespace UserService.GrpcServer.DependencyInjection;
 
 public static class DependencyInjection
 {

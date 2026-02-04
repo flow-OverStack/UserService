@@ -10,7 +10,7 @@ using UserService.Cache.Settings;
 using UserService.DAL.DependencyInjection;
 using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
-using UserService.Grpc.DependencyInjection;
+using UserService.GrpcServer.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
 using UserService.Keycloak.Settings;
 using UserService.Messaging.DependencyInjection;

@@ -4,7 +4,7 @@ using UserService.Application.Enums;
 using UserService.Application.Resources;
 using UserService.Domain.Interfaces.Service;
 
-namespace UserService.Grpc.Services;
+namespace UserService.GrpcServer.Services;
 
 public class GrpcUserService(IGetUserService userService, IGetRoleService roleService, IMapper mapper)
     : UserService.UserServiceBase
