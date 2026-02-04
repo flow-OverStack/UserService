@@ -1,4 +1,4 @@
-namespace UserService.Tests.FunctionalTests.Configurations.GraphQl;
+namespace UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 
 internal class GraphQlOffsetPaginatedResponse<T>
 {

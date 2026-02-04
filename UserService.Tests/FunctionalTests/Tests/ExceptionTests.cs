@@ -20,7 +20,7 @@ using UserService.Messaging.Filters;
 using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base.Exception;
-using UserService.Tests.FunctionalTests.Configurations.GraphQl;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 

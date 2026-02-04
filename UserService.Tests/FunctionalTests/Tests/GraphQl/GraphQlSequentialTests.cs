@@ -8,7 +8,7 @@ using UserService.DAL;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.FunctionalTests.Base;
-using UserService.Tests.FunctionalTests.Configurations.GraphQl;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 

@@ -1,6 +1,7 @@
 using UserService.Domain.Entities;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl.Entities;
 
-namespace UserService.Tests.FunctionalTests.Configurations.GraphQl;
+namespace UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 
 internal class GetAllByIdsResponse
 {
@@ -9,7 +10,7 @@ internal class GetAllByIdsResponse
 
 internal class GetAllByIdsData
 {
-    public User? User { get; set; }
+    public GraphQlUser? User { get; set; }
     public Role? Role { get; set; }
     public ReputationRecord? ReputationRecord { get; set; }
     public ReputationRule? ReputationRule { get; set; }

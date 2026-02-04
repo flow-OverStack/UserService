@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Tests.FunctionalTests.Base;
-using UserService.Tests.FunctionalTests.Configurations.GraphQl;
+using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
 
