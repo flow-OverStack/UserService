@@ -4,15 +4,13 @@ using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Settings;
 using UserService.Messaging.Events;
 
 namespace UserService.Tests.Configurations;
 
 internal static class MockRepositoriesGetters
 {
-    public const int MinReputation = 1;
-    public const int MaxDailyReputation = 200;
-
     private static Role GetRoleUser()
     {
         return new Role
@@ -308,7 +306,8 @@ internal static class MockRepositoriesGetters
             new ReputationRule
             {
                 Id = 8, EventType = "TestSuperEvent", EntityType = nameof(EntityType.Question),
-                Group = null, ReputationChange = MaxDailyReputation, ReputationTarget = ReputationTarget.Author
+                Group = null, ReputationChange = BusinessRules.MaxDailyReputation,
+                ReputationTarget = ReputationTarget.Author
             }
         }.AsQueryable();
     }

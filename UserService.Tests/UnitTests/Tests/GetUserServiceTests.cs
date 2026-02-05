@@ -1,5 +1,5 @@
 using UserService.Application.Resources;
-using UserService.Tests.Configurations;
+using UserService.Domain.Settings;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
 
@@ -119,7 +119,7 @@ public class GetUserServiceTests
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.All(result.Data, kvp => Assert.True(kvp.Value >= MockRepositoriesGetters.MinReputation));
+        Assert.All(result.Data, kvp => Assert.True(kvp.Value >= BusinessRules.MinReputation));
     }
 
     [Trait("Category", "Unit")]
@@ -170,7 +170,7 @@ public class GetUserServiceTests
         //Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Data);
-        Assert.All(result.Data, kvp => Assert.InRange(kvp.Value, 0, MockRepositoriesGetters.MaxDailyReputation));
+        Assert.All(result.Data, kvp => Assert.InRange(kvp.Value, 0, BusinessRules.MaxDailyReputation));
     }
 
     [Trait("Category", "Unit")]

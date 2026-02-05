@@ -5,8 +5,8 @@ using Moq;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Repository;
+using UserService.Domain.Settings;
 using UserService.Messaging.Events;
-using UserService.Tests.Configurations;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
@@ -436,23 +436,23 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         var updatedReputation = await GetCurrentReputation(repository, authorId);
         var updatedRemainingReputation = await GetRemainingReputation(repository, authorId);
 
-        Assert.Equal(MockRepositoriesGetters.MinReputation, updatedReputation);
+        Assert.Equal(BusinessRules.MinReputation, updatedReputation);
         Assert.Equal(initialRemainingReputation, updatedRemainingReputation);
     }
 
     private async Task<int> GetCurrentReputation(IBaseRepository<ReputationRecord> repository, long userId)
     {
         if (!await repository.GetAll().AnyAsync(x => x.ReputationTargetId == userId))
-            return MockRepositoriesGetters.MinReputation;
+            return BusinessRules.MinReputation;
 
         return await repository.GetAll()
             .AsNoTracking()
             .Where(x => x.ReputationTargetId == userId)
             .Include(x => x.ReputationRule)
             .GroupBy(x => new { UserId = x.ReputationTargetId, x.CreatedAt.Date })
-            .Select(x => Math.Max(MockRepositoriesGetters.MinReputation,
+            .Select(x => Math.Max(BusinessRules.MinReputation,
                 Math.Min(x.Sum(y => y.ReputationRule.ReputationChange),
-                    MockRepositoriesGetters.MaxDailyReputation)))
+                    BusinessRules.MaxDailyReputation)))
             .FirstOrDefaultAsync();
     }
 
@@ -461,7 +461,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         if (!await repository.GetAll().AnyAsync(x =>
                 x.ReputationTargetId == userId && x.CreatedAt.Date == DateTime.UtcNow.Date &&
                 x.ReputationRule.ReputationChange > 0))
-            return MockRepositoriesGetters.MaxDailyReputation;
+            return BusinessRules.MaxDailyReputation;
 
         return await repository
             .GetAll().AsNoTracking()
@@ -470,7 +470,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
                         x.ReputationRule.ReputationChange > 0)
             .GroupBy(x => x.ReputationTargetId)
             .Select(x => Math.Max(0,
-                MockRepositoriesGetters.MaxDailyReputation - x.Sum(y => y.ReputationRule.ReputationChange)))
+                BusinessRules.MaxDailyReputation - x.Sum(y => y.ReputationRule.ReputationChange)))
             .FirstOrDefaultAsync();
     }
 

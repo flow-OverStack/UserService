@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using UserService.Domain.Settings;
 using UserService.GraphQl.DataLoaders;
-using UserService.Tests.Configurations;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 
@@ -21,7 +21,7 @@ public class RemainingReputationDataLoaderTests(FunctionalTestWebAppFactory fact
         var result = await dataLoader.LoadAsync(userId);
 
         //Assert
-        Assert.InRange(result, 0, MockRepositoriesGetters.MaxDailyReputation);
+        Assert.InRange(result, 0, BusinessRules.MaxDailyReputation);
     }
 
     [Trait("Category", "Functional")]

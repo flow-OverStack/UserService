@@ -8,7 +8,6 @@ using UserService.BackgroundJobs.DependencyInjection;
 using UserService.Cache.DependencyInjection;
 using UserService.Cache.Settings;
 using UserService.DAL.DependencyInjection;
-using UserService.Domain.Settings;
 using UserService.GraphQl.DependencyInjection;
 using UserService.GrpcServer.DependencyInjection;
 using UserService.Keycloak.DependencyInjection;
@@ -22,7 +21,6 @@ builder.Services.Configure<KeycloakSettings>(builder.Configuration.GetSection(na
 builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection(nameof(RedisSettings)));
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 builder.Services.Configure<PaginationRules>(builder.Configuration.GetSection(nameof(PaginationRules)));
-builder.Services.Configure<ReputationRules>(builder.Configuration.GetSection(nameof(ReputationRules)));
 
 builder.Services.ConfigureHttpClientDefaults(clientBuilder => clientBuilder.AddStandardResilienceHandler());
 builder.Services.AddLocalization(options => options.ResourcesPath = nameof(UserService.Application.Resources));

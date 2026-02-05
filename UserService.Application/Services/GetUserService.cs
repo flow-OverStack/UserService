@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using UserService.Application.Enums;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
@@ -13,12 +12,9 @@ namespace UserService.Application.Services;
 public class GetUserService(
     IBaseRepository<User> userRepository,
     IBaseRepository<Role> roleRepository,
-    IBaseRepository<ReputationRecord> reputationRecordRepository,
-    IOptions<ReputationRules> reputationRules)
+    IBaseRepository<ReputationRecord> reputationRecordRepository)
     : IGetUserService
 {
-    private readonly ReputationRules _reputationRules = reputationRules.Value;
-
     public Task<QueryableResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -69,9 +65,9 @@ public class GetUserService(
             .Include(x => x.ReputationRule)
             .GroupBy(x => new { UserId = x.ReputationTargetId, x.CreatedAt.Date })
             .Select(x => new KeyValuePair<long, int>(x.Key.UserId,
-                Math.Max(_reputationRules.MinReputation,
+                Math.Max(BusinessRules.MinReputation,
                     Math.Min(x.Sum(y => y.ReputationRule.ReputationChange),
-                        _reputationRules.MaxDailyReputation))))
+                        BusinessRules.MaxDailyReputation))))
             .ToArrayAsync(cancellationToken);
 
         var missingIds = idsArray.Except(reputations.Select(x => x.Key)).ToArray();
@@ -79,7 +75,7 @@ public class GetUserService(
         if (missingIds.Length > 0)
             missingReputations = await userRepository.GetAll()
                 .Where(x => missingIds.Contains(x.Id))
-                .Select(x => new KeyValuePair<long, int>(x.Id, _reputationRules.MinReputation))
+                .Select(x => new KeyValuePair<long, int>(x.Id, BusinessRules.MinReputation))
                 .ToArrayAsync(cancellationToken);
 
 
@@ -107,7 +103,7 @@ public class GetUserService(
                         x.ReputationRule.ReputationChange > 0)
             .GroupBy(x => x.ReputationTargetId)
             .Select(x => new KeyValuePair<long, int>(x.Key,
-                Math.Max(0, _reputationRules.MaxDailyReputation - x.Sum(y => y.ReputationRule.ReputationChange))))
+                Math.Max(0, BusinessRules.MaxDailyReputation - x.Sum(y => y.ReputationRule.ReputationChange))))
             .ToArrayAsync(cancellationToken);
 
         var missingIds = idsArray.Except(reputations.Select(x => x.Key)).ToArray();
@@ -115,7 +111,7 @@ public class GetUserService(
         if (missingIds.Length > 0)
             missingReputations = await userRepository.GetAll()
                 .Where(x => missingIds.Contains(x.Id))
-                .Select(x => new KeyValuePair<long, int>(x.Id, _reputationRules.MaxDailyReputation))
+                .Select(x => new KeyValuePair<long, int>(x.Id, BusinessRules.MaxDailyReputation))
                 .ToArrayAsync(cancellationToken);
 
         var allReputations = reputations.Concat(missingReputations).ToArray();
