@@ -8,14 +8,14 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["UserService.Api/UserService.Api.csproj", "UserService.Api/"]
-COPY ["UserService.Cache/UserService.Cache.csproj", "UserService.Cache/"]
-COPY ["UserService.Domain/UserService.Domain.csproj", "UserService.Domain/"]
 COPY ["UserService.Application/UserService.Application.csproj", "UserService.Application/"]
-COPY ["UserService.BackgroundJobs/UserService.BackgroundJobs.csproj", "UserService.BackgroundJobs/"]
-COPY ["UserService.DAL/UserService.DAL.csproj", "UserService.DAL/"]
+COPY ["UserService.Domain/UserService.Domain.csproj", "UserService.Domain/"]
 COPY ["UserService.Messaging/UserService.Messaging.csproj", "UserService.Messaging/"]
+COPY ["UserService.BackgroundJobs/UserService.BackgroundJobs.csproj", "UserService.BackgroundJobs/"]
+COPY ["UserService.Cache/UserService.Cache.csproj", "UserService.Cache/"]
+COPY ["UserService.DAL/UserService.DAL.csproj", "UserService.DAL/"]
 COPY ["UserService.GraphQl/UserService.GraphQl.csproj", "UserService.GraphQl/"]
-COPY ["UserService.Grpc/UserService.Grpc.csproj", "UserService.Grpc/"]
+COPY ["UserService.GrpcServer/UserService.GrpcServer.csproj", "UserService.GrpcServer/"]
 COPY ["UserService.Keycloak/UserService.Keycloak.csproj", "UserService.Keycloak/"]
 RUN dotnet restore "UserService.Api/UserService.Api.csproj"
 COPY . .
