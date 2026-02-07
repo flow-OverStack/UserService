@@ -79,6 +79,7 @@ public static class Startup
                 NameClaimType = JwtRegisteredClaimNames.PreferredUsername
             };
         });
+        services.AddAuthorization();
     }
 
     /// <summary>
