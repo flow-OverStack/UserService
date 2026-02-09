@@ -47,7 +47,7 @@ UserService is a microservice responsible for all user-related operations within
 * **Entity Framework Core with PostgreSQL** — Data access (Repository & Unit of Work patterns) to PostgreSQL database
 * **Kafka** — Message queue that listens to main events
 * **gRPC** — High-performance RPC interface
-* **Redis** — Caching layer
+* **Redis** — Caching layer with short-lived entity caching and negative caching (null values caching)
 * **Hot Chocolate** — GraphQL endpoint with built-in support for pagination, filtering, and sorting
 * **Clean Architecture** — Layered separation (Domain, Application, Infrastructure, Presentation)
 * **Decorator Pattern** — allows behavior to be added to individual objects dynamically without affecting others. In this project, it is used to implement caching.
