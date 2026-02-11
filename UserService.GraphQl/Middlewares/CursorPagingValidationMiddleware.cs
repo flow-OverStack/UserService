@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using FluentValidation;
 using HotChocolate.Language;
 using HotChocolate.Resolvers;
 using HotChocolate.Types.Descriptors;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Options;
 using UserService.Application.Resources;
 using UserService.Application.Settings;
 using UserService.Domain.Dtos.Page;
-using UserService.Domain.Interfaces.Validation;
 using UserService.GraphQl.Extensions;
 using UserService.GraphQl.Helpers;
 
@@ -22,7 +22,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
     private const string OrderArgName = "order";
 
     public async Task InvokeAsync(IMiddlewareContext context,
-        INullSafeValidator<CursorPageDto> cursorPageValidator,
+        IValidator<CursorPageDto> cursorPageValidator,
         IOptions<PaginationRules> paginationRules)
     {
         var first = context.ArgumentValue<int?>(FirstArgName);
@@ -42,9 +42,10 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
         var pagination =
             new CursorPageDto(first, after, before, last, order.ToOrderDto());
 
-        if (!cursorPageValidator.IsValid(pagination, out var errors))
+        var validation = await cursorPageValidator.ValidateAsync(pagination, context.RequestAborted);
+        if (!validation.IsValid)
             throw GraphQlExceptionHelper.GetException(
-                $"{ErrorMessage.InvalidPagination}: {string.Join(' ', errors)}");
+                $"{ErrorMessage.InvalidPagination}: {string.Join(' ', validation.Errors)}");
 
         await next(context);
     }

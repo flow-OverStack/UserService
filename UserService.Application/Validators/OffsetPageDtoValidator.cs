@@ -2,30 +2,22 @@ using FluentValidation;
 using Microsoft.Extensions.Options;
 using UserService.Application.Settings;
 using UserService.Domain.Dtos.Page;
-using UserService.Domain.Interfaces.Validation;
 
 namespace UserService.Application.Validators;
 
-public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>, INullSafeValidator<OffsetPageDto>
+public class OffsetPageDtoValidator : AbstractValidator<OffsetPageDto>
 {
-    public OffsetPageDtoValidator(IOptions<PaginationRules> paginationRules)
+    public OffsetPageDtoValidator(IOptions<PaginationRules> pagination)
     {
-        var maxPageSize = paginationRules.Value.MaxPageSize;
+        var maxPageSize = pagination.Value.MaxPageSize;
 
-        RuleFor(x => x.Skip).NotNull().GreaterThanOrEqualTo(0);
-        RuleFor(x => x.Take).NotNull().InclusiveBetween(0, maxPageSize);
-    }
+        RuleFor(x => x.Skip)
+            .NotNull().WithMessage($"'{nameof(OffsetPageDto.Skip)}' must be provided.")
+            .GreaterThanOrEqualTo(0).WithMessage($"'{nameof(OffsetPageDto.Skip)}' must be greater than or equal to 0.");
 
-    public bool IsValid(OffsetPageDto? instance, out IEnumerable<string> errorMessages)
-    {
-        errorMessages = [];
-
-        if (instance == null) return false;
-
-        var result = Validate(instance);
-
-        errorMessages = result.Errors.Select(x => x.ErrorMessage);
-
-        return result.IsValid;
+        RuleFor(x => x.Take)
+            .NotNull().WithMessage($"'{nameof(OffsetPageDto.Take)}' must be provided.")
+            .InclusiveBetween(0, maxPageSize)
+            .WithMessage($"'{nameof(OffsetPageDto.Take)}' must be between 0 and {maxPageSize}.");
     }
 }
