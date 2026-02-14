@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using UserService.Application.Services;
 using UserService.Application.Services.Cache;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
@@ -13,14 +12,13 @@ public class CacheGetReputationRuleServiceFactory
 {
     private readonly IGetReputationRuleService _cacheGetReputationRuleService;
 
-    public readonly GetReputationRuleService InnerGetReputationRuleService =
-        (GetReputationRuleService)new GetReputationRuleServiceFactory().GetService();
+    public readonly IGetReputationRuleService InnerGetReputationRuleService =
+        new GetReputationRuleServiceFactory().GetService();
 
     public readonly IReputationRuleCacheRepository ReputationRuleCacheRepository =
         new ReputationRuleCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetReputationRuleService)new GetReputationRuleServiceFactory().GetService());
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
 
     public CacheGetReputationRuleServiceFactory()
     {

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using UserService.Application.Services;
 using UserService.Application.Services.Cache;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
@@ -13,14 +12,13 @@ public class CacheGetReputationRecordServiceFactory
 {
     private readonly IGetReputationRecordService _cacheGetReputationRecordService;
 
-    public readonly GetReputationRecordService InnerGetReputationRecordService =
-        (GetReputationRecordService)new GetReputationRecordServiceFactory().GetService();
+    public readonly IGetReputationRecordService InnerGetReputationRecordService =
+        new GetReputationRecordServiceFactory().GetService();
 
     public readonly IReputationRecordCacheRepository ReputationRecordCacheRepository =
         new ReputationRecordCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetReputationRecordService)new GetReputationRecordServiceFactory().GetService());
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
 
     public CacheGetReputationRecordServiceFactory()
     {

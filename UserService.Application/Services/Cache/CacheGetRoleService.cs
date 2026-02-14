@@ -7,8 +7,7 @@ using UserService.Domain.Results;
 
 namespace UserService.Application.Services.Cache;
 
-public class CacheGetRoleService(IRoleCacheRepository cacheRepository, GetRoleService inner)
-    : IGetRoleService
+public class CacheGetRoleService(IRoleCacheRepository cacheRepository, IGetRoleService inner) : IGetRoleService
 {
     public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -19,7 +18,9 @@ public class CacheGetRoleService(IRoleCacheRepository cacheRepository, GetRoleSe
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray, cancellationToken)).ToArray();
+        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (roles.Length == 0)
             return idsArray.Length switch
@@ -36,7 +37,9 @@ public class CacheGetRoleService(IRoleCacheRepository cacheRepository, GetRoleSe
         CancellationToken cancellationToken = default)
     {
         var groupedRoles =
-            (await cacheRepository.GetUsersRolesOrFetchAndCacheAsync(userIds, cancellationToken)).ToArray();
+            (await cacheRepository.GetUsersRolesOrFetchAndCacheAsync(userIds,
+                async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
+                cancellationToken)).ToArray();
 
         if (groupedRoles.Length == 0)
             return CollectionResult<KeyValuePair<long, IEnumerable<Role>>>.Failure(ErrorMessage.RolesNotFound,

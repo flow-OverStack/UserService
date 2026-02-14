@@ -16,7 +16,7 @@ public class GroupReputationRuleReputationRecordDataLoader(
         await using var scope = scopeFactory.CreateAsyncScope();
         var recordService = scope.ServiceProvider.GetRequiredService<IGetReputationRecordService>();
 
-        var result = await recordService.GetRecordsWithReputationRules(keys, cancellationToken);
+        var result = await recordService.GetRecordsWithReputationRulesAsync(keys, cancellationToken);
 
         if (!result.IsSuccess)
             return Enumerable.Empty<IGrouping<long, ReputationRecord>>()

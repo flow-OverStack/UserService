@@ -146,7 +146,7 @@ public class GetReputationRecordServiceTests
         var ruleIds = new List<long> { 1, 2, 0 };
 
         //Act
-        var result = await getReputationRecordService.GetRecordsWithReputationRules(ruleIds);
+        var result = await getReputationRecordService.GetRecordsWithReputationRulesAsync(ruleIds);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -162,7 +162,7 @@ public class GetReputationRecordServiceTests
         var ruleIds = new List<long> { 0, 0 };
 
         //Act
-        var result = await getReputationRecordService.GetRecordsWithReputationRules(ruleIds);
+        var result = await getReputationRecordService.GetRecordsWithReputationRulesAsync(ruleIds);
 
         //Assert
         Assert.False(result.IsSuccess);

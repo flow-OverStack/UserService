@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using UserService.Application.Services;
 using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
@@ -92,12 +93,16 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
         const long userId = 0;
         await using var scope = ServiceProvider.CreateAsyncScope();
         var repository = scope.ServiceProvider.GetRequiredService<IRoleCacheRepository>();
+        // Inner service is not in the DI
+        var inner = ActivatorUtilities.CreateInstance<GetRoleService>(scope.ServiceProvider);
+        var fetch = async (IEnumerable<long> idsToFetch, CancellationToken ct) =>
+            (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [];
 
         //Act
         // The first call marks the user as null in the cache
-        await repository.GetUsersRolesOrFetchAndCacheAsync([userId]);
+        await repository.GetUsersRolesOrFetchAndCacheAsync([userId], fetch);
         // The second call fetches the null entry from the cache
-        var result = await repository.GetUsersRolesOrFetchAndCacheAsync([userId]);
+        var result = await repository.GetUsersRolesOrFetchAndCacheAsync([userId], fetch);
 
         //Assert
         Assert.Empty(result);

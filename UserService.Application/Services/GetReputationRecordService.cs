@@ -75,7 +75,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
-        GetRecordsWithReputationRules(IEnumerable<long> ruleIds, CancellationToken cancellationToken = default)
+        GetRecordsWithReputationRulesAsync(IEnumerable<long> ruleIds, CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
                 .Where(x => ruleIds.Contains(x.ReputationRuleId))

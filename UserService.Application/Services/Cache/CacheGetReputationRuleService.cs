@@ -9,7 +9,7 @@ namespace UserService.Application.Services.Cache;
 
 public class CacheGetReputationRuleService(
     IReputationRuleCacheRepository cacheRepository,
-    GetReputationRuleService inner) : IGetReputationRuleService
+    IGetReputationRuleService inner) : IGetReputationRuleService
 {
     public Task<QueryableResult<ReputationRule>> GetAllAsync(CancellationToken cancellationToken = default)
     {
@@ -20,7 +20,9 @@ public class CacheGetReputationRuleService(
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
-        var rules = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray, cancellationToken)).ToArray();
+        var rules = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            cancellationToken)).ToArray();
 
         if (rules.Length == 0)
             return idsArray.Length switch

@@ -31,6 +31,6 @@ public interface IGetReputationRecordService : IGetService<ReputationRecord>
     /// <param name="ruleIds"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetRecordsWithReputationRules(
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetRecordsWithReputationRulesAsync(
         IEnumerable<long> ruleIds, CancellationToken cancellationToken = default);
 }

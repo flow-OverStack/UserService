@@ -5,7 +5,6 @@ using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
 using UserService.Cache.Settings;
 using UserService.Domain.Interfaces.Provider;
-using UserService.Domain.Interfaces.Repository.Cache;
 
 namespace UserService.Cache.DependencyInjection;
 
@@ -42,10 +41,10 @@ public static class DependencyInjection
 
     private static void InitRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IUserCacheRepository, UserCacheRepository>();
-        services.AddScoped<IRoleCacheRepository, RoleCacheRepository>();
-        services.AddScoped<IUserActivityCacheRepository, UserActivityCacheRepository>();
-        services.AddScoped<IReputationRecordCacheRepository, ReputationRecordCacheRepository>();
-        services.AddScoped<IReputationRuleCacheRepository, ReputationRuleCacheRepository>();
+        services.Scan(scan => scan
+            .FromAssemblyOf<UserCacheRepository>()
+            .AddClasses(c => c.InExactNamespaceOf<UserCacheRepository>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
     }
 }

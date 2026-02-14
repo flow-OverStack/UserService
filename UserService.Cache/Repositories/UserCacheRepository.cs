@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using UserService.Application.Services;
 using UserService.Cache.Helpers;
 using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
@@ -7,7 +6,6 @@ using UserService.Cache.Settings;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository.Cache;
-using UserService.Domain.Interfaces.Service;
 
 namespace UserService.Cache.Repositories;
 
@@ -16,10 +14,8 @@ public class UserCacheRepository : IUserCacheRepository
     private readonly ICacheProvider _cacheProvider;
     private readonly RedisSettings _redisSettings;
     private readonly IBaseCacheRepository<User, long> _repository;
-    private readonly IGetUserService _userInner;
 
-    public UserCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
-        GetUserService userInner)
+    public UserCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
     {
         var settings = redisSettings.Value;
 
@@ -31,31 +27,33 @@ public class UserCacheRepository : IUserCacheRepository
         );
         _cacheProvider = cacheProvider;
         _redisSettings = settings;
-        _userInner = userInner;
     }
 
     public Task<IEnumerable<User>> GetByIdsOrFetchAndCacheAsync(IEnumerable<long> ids,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<User>>> fetch,
         CancellationToken cancellationToken = default)
     {
         return _repository.GetByIdsOrFetchAndCacheAsync(ids,
-            async (idsToFetch, ct) => (await _userInner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 
     public Task<IEnumerable<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesOrFetchAndCacheAsync(
         IEnumerable<long> roleIds,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<User>>>>> fetch,
         CancellationToken cancellationToken = default)
     {
         return _repository.GetGroupedByOuterIdOrFetchAndCacheAsync(roleIds,
             CacheKeyHelper.GetRoleKey,
             CacheKeyHelper.GetRoleUsersKey,
             CacheKeyHelper.GetIdFromKey,
-            async (idsToFetch, ct) => (await _userInner.GetUsersWithRolesAsync(idsToFetch, ct)).Data ?? [],
+            fetch,
             cancellationToken);
     }
 
     public async Task<IEnumerable<KeyValuePair<long, int>>> GetCurrentReputationsOrFetchAndCacheAsync(
         IEnumerable<long> ids,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, int>>>> fetch,
         CancellationToken cancellationToken = default)
     {
         var idsList = ids.ToArray();
@@ -85,8 +83,7 @@ public class UserCacheRepository : IUserCacheRepository
         {
             var cachedData = cached.ToArray();
 
-            var result = await _userInner.GetCurrentReputationsAsync(missingIds, cancellationToken);
-            var fetchedData = result.IsSuccess ? result.Data.ToArray() : [];
+            var fetchedData = (await fetch(missingIds, cancellationToken))?.ToArray() ?? [];
 
             if (fetchedData.Length == 0)
                 return cachedData.Length > 0
@@ -113,6 +110,7 @@ public class UserCacheRepository : IUserCacheRepository
 
     public async Task<IEnumerable<KeyValuePair<long, int>>> GetRemainingReputationsOrFetchAndCacheAsync(
         IEnumerable<long> ids,
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, int>>>> fetch,
         CancellationToken cancellationToken = default)
     {
         var idsList = ids.ToArray();
@@ -142,8 +140,7 @@ public class UserCacheRepository : IUserCacheRepository
         {
             var cachedData = cached.ToArray();
 
-            var result = await _userInner.GetRemainingReputationsAsync(missingIds, cancellationToken);
-            var fetchedData = result.IsSuccess ? result.Data.ToArray() : [];
+            var fetchedData = (await fetch(missingIds, cancellationToken))?.ToArray() ?? [];
 
             if (fetchedData.Length == 0)
                 return cachedData.Length > 0

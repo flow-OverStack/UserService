@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using UserService.Application.Services;
 using UserService.Application.Services.Cache;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
@@ -13,14 +12,12 @@ internal class CacheGetUserServiceFactory
 {
     private readonly IGetUserService _cacheGetUserService;
 
-    public readonly GetUserService InnerGetUserService =
-        (GetUserService)new GetUserServiceFactory().GetService();
+    public readonly IGetUserService InnerGetUserService = new GetUserServiceFactory().GetService();
 
     public readonly IUserCacheRepository UserCacheRepository =
         new UserCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
-            (GetUserService)new GetUserServiceFactory().GetService());
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
 
     public CacheGetUserServiceFactory()
     {
