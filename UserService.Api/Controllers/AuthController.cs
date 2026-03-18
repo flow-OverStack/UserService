@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using UserService.Api.Controllers.Base;
+using UserService.Application.Enums;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Interfaces.Service;
@@ -118,6 +119,9 @@ public class AuthController(IAuthService authService) : BaseController
         var dto = new InitUserDto(username, email, identityId);
 
         var result = await authService.InitAsync(dto, cancellationToken);
+
+        if (result is { IsSuccess: false, ErrorCode: (int)ErrorCodes.UserAlreadyExists })
+            return Ok(result); // User already exists, so we can consider initialization successful
 
         return HandleBaseResult(result, HttpStatusCode.Created);
     }
