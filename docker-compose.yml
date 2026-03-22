@@ -16,6 +16,7 @@
       Serilog__WriteTo__2__Args__requestUri: http://logstash:8080
       KeycloakSettings__Host: http://keycloak:8080
       KeycloakSettings__AdminToken: ${KC_ADMIN_TOKEN}
+      AppStartupSettings__CorsAllowedOrigins__0: http://127.0.0.1:5500
       AppStartupSettings__Ports__GrpcPort: 8081
       AppStartupSettings__Ports__RestApiPort: 8080
       AppStartupSettings__Ports__UseHttpsForRestApi: false
