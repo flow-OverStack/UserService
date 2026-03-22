@@ -26,10 +26,26 @@ UserService is a microservice responsible for all user-related operations within
    GF_SECURITY_ADMIN_PASSWORD=gf_password
    REDIS_PASSWORD=redis_password
    ```
-5. On the first run (or after updating migrations), you can apply EF Core migrations in two ways:
-   1. Start the development version — migrations will be applied automatically to the configured database.
-   2. Generate a SQL script with `dotnet ef migrations script` and apply it to the database
+5. On the first run (or after updating migrations), apply EF Core migrations to the database:
+
+   **Option A — Automatic ✅ Recommended for Quick Start**
+
+   In `docker-compose.yml`, temporarily add `ASPNETCORE_ENVIRONMENT: Development` to the `user-service` environment:
+   ```yaml
+   user-service:
+      # ... other variables
+      environment:
+        # ... other variables
+        ASPNETCORE_ENVIRONMENT: Development
+   ```
+   Start the services — migrations will be applied automatically on startup.
+   > ⚠️ After the first run, **remove** `ASPNETCORE_ENVIRONMENT: Development` from `docker-compose.yml` and restart the container.
+
+   **Option B — Manual SQL script (Production)**
+
+   Generate a SQL script with `dotnet ef migrations script` and apply it to the database
       manually ([Production approach](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#sql-scripts))
+
 6. Start services
     ```bash
    docker-compose -p flowoverstack -f docker-compose.common.yml up -d
@@ -59,6 +75,7 @@ UserService is a microservice responsible for all user-related operations within
 * **Health Checks** — Status endpoints to monitor service availability and dependencies
 * **xUnit & Coverlet** — Automated unit and integration testing with code coverage
 * **SonarQube & Qodana** — Code quality and coverage analysis
+
 ## Architecture and Design
 This service follows the principles of Clean Architecture. The solution is split into multiple projects that correspond to each architectural layer.
 
@@ -86,7 +103,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 2. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) without running the `user-service` container or run your own services)
 3. Reconfigure if needed `appsettings.json` and `.NET User Secrets` in `UserService.Api` with your database, Redis, and
    Keycloak settings.
-   `.NET User Secrets` example: 
+   `.NET User Secrets` example:
    ```json
     {
        "ConnectionStrings": {
@@ -107,6 +124,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
    dotnet run
    ```
    or use your IDE.
+
 ## API Documentation
 
 The following endpoints are available by default:
@@ -135,11 +153,11 @@ dotnet test --filter Category=Unit
 1. Fork the repository
 2. Create a feature branch
 3. Commit your changes
-4. Push to your branch 
+4. Push to your branch
 5. Open a Pull Request
 
 Please follow the existing code conventions and include tests for new functionality.
-You are also welcome to open issues for bug reports, feature requests, or to discuss improvements. 
+You are also welcome to open issues for bug reports, feature requests, or to discuss improvements.
 
 ## License
 
