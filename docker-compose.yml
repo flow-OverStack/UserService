@@ -34,7 +34,7 @@
   
   
   postgres-db:
-    image: postgres:latest
+    image: postgres:17
     container_name: postgres-user-db
     ports:
       - "5433:5432"

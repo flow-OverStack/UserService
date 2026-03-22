@@ -24,7 +24,7 @@ services:
       - keycloak_data:/opt/keycloak/data
   
   keycloak-db:
-    image: postgres:latest
+    image: postgres:17
     container_name: keycloak-db
     ports:
       - "5434:5432"
