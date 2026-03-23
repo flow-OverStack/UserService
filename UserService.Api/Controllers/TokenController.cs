@@ -9,9 +9,6 @@ namespace UserService.Api.Controllers;
 /// <summary>
 ///     Token controller
 /// </summary>
-/// <response code="200">If new access token was received</response>
-/// <response code="400">If new access token was not received</response>
-/// <response code="500">If internal server error occured</response>
 public class TokenController(ITokenService tokenService) : BaseController
 {
     /// <summary>
@@ -22,14 +19,18 @@ public class TokenController(ITokenService tokenService) : BaseController
     /// <returns></returns>
     /// <remarks>
     /// Request for token refresh:
-    /// 
+    ///
     ///     POST refresh
     ///     {
     ///         "refreshToken":"string"
     ///     }
     /// </remarks>
+    /// <response code="200">If the token was refreshed successfully</response>
+    /// <response code="400">If the token is invalid</response>
     [HttpPost("refresh")]
     [Obsolete("Use the identity server instead.")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto,
         CancellationToken cancellationToken)
     {

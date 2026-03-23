@@ -14,9 +14,6 @@ namespace UserService.Api.Controllers;
 /// <summary>
 ///     Authentication controller
 /// </summary>
-/// <response code="200">If a user was registered/logged in</response>
-/// <response code="400">If a user was not registered/logged in</response>
-/// <response code="500">If internal server error occurred</response>
 public class AuthController(IAuthService authService) : BaseController
 {
     /// <summary>
@@ -27,7 +24,7 @@ public class AuthController(IAuthService authService) : BaseController
     /// <returns></returns>
     /// <remarks>
     /// Request for user registration:
-    /// 
+    ///
     ///     POST register
     ///     {
     ///         "username":"string",
@@ -35,8 +32,16 @@ public class AuthController(IAuthService authService) : BaseController
     ///         "password":"string"
     ///     }
     /// </remarks>
+    /// <response code="201">If a user was registered successfully</response>
+    /// <response code="400">If the request is invalid</response>
+    /// <response code="404">If a resource was not found</response>
+    /// <response code="409">If a user with this email or username already exists</response>
     [HttpPost("register")]
     [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<UserDto>>> Register([FromBody] RegisterUserDto dto,
         CancellationToken cancellationToken)
     {
@@ -53,15 +58,23 @@ public class AuthController(IAuthService authService) : BaseController
     /// <returns></returns>
     ///<remarks>
     /// Request for user login with email:
-    /// 
+    ///
     ///     POST login-email
     ///     {
     ///         "email":"string",
     ///         "password":"string"
     ///     }
     /// </remarks>
+    /// <response code="200">If a user was logged in successfully</response>
+    /// <response code="400">If the request is invalid</response>
+    /// <response code="401">If the password is incorrect</response>
+    /// <response code="404">If a user with this email was not found</response>
     [HttpPost("login-email")]
     [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginEmailUserDto dto,
         CancellationToken cancellationToken)
     {
@@ -78,15 +91,21 @@ public class AuthController(IAuthService authService) : BaseController
     /// <returns></returns>
     /// <remarks>
     /// Request for user login with username:
-    /// 
+    ///
     ///     POST login-username
     ///     {
     ///         "username":"string",
     ///         "password":"string"
     ///     }
     /// </remarks>
+    /// <response code="200">If a user was logged in successfully</response>
+    /// <response code="401">If the password is incorrect</response>
+    /// <response code="404">If a user with this username was not found</response>
     [HttpPost("login-username")]
     [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUsernameUserDto dto,
         CancellationToken cancellationToken)
     {
@@ -106,8 +125,16 @@ public class AuthController(IAuthService authService) : BaseController
     ///     Request for user initialization:
     ///     POST init
     /// </remarks>
+    /// <response code="200">If a user was initialized successfully</response>
+    /// <response code="400">If the request is invalid</response>
+    /// <response code="401">If required claims are missing</response>
+    /// <response code="404">If a role was not found</response>
     [Authorize]
     [HttpPost("init")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<UserDto>>> Init(CancellationToken cancellationToken)
     {
         var (username, email, identityId) = GetIdentityClaims();

@@ -9,15 +9,6 @@ namespace UserService.Api.Controllers.Base;
 /// <inheritdoc />
 [Consumes(MediaTypeNames.Application.Json)]
 [Route("api/v{version:apiVersion}/[controller]")]
-[ProducesResponseType(StatusCodes.Status200OK)]
-[ProducesResponseType(StatusCodes.Status201Created)]
-[ProducesResponseType(StatusCodes.Status204NoContent)]
-[ProducesResponseType(StatusCodes.Status400BadRequest)]
-[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-[ProducesResponseType(StatusCodes.Status403Forbidden)]
-[ProducesResponseType(StatusCodes.Status404NotFound)]
-[ProducesResponseType(StatusCodes.Status409Conflict)]
-[ProducesResponseType(StatusCodes.Status429TooManyRequests)]
 [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 [ApiController]
 public class BaseController : ControllerBase

@@ -26,7 +26,11 @@ public class UserActivityController(IUserActivityService activityService) : Base
     /// <remarks>
     ///     POST heartbeat
     /// </remarks>
+    /// <response code="204">If the heartbeat was registered successfully</response>
+    /// <response code="401">If the user identifier in JWT is invalid</response>
     [HttpPost("heartbeat")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<BaseResult>> RegisterHeartbeat(
         CancellationToken cancellationToken)
     {
