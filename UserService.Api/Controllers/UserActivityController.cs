@@ -27,7 +27,6 @@ public class UserActivityController(IUserActivityService activityService) : Base
     ///     POST heartbeat
     /// </remarks>
     [HttpPost("heartbeat")]
-    [Obsolete("Use the identity server instead.")]
     public async Task<ActionResult<BaseResult>> RegisterHeartbeat(
         CancellationToken cancellationToken)
     {

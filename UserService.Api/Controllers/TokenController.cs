@@ -29,6 +29,7 @@ public class TokenController(ITokenService tokenService) : BaseController
     ///     }
     /// </remarks>
     [HttpPost("refresh")]
+    [Obsolete("Use the identity server instead.")]
     public async Task<ActionResult<BaseResult<TokenDto>>> RefreshToken([FromBody] RefreshTokenDto dto,
         CancellationToken cancellationToken)
     {
