@@ -19,7 +19,6 @@ public enum ErrorCodes
     UsersNotFound = 24,
 
     PasswordIsWrong = 31,
-    EmailNotValid = 32,
     InvalidToken = 33,
 
     RoleAlreadyExists = 41,
@@ -27,5 +26,6 @@ public enum ErrorCodes
     RolesNotFound = 43,
     CannotDeleteDefaultRole = 44,
 
-    InvalidPagination = 51
+    InvalidPagination = 51,
+    InvalidProperty = 52
 }

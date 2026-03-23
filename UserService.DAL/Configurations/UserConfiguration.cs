@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using UserService.Domain.Entities;
+using UserService.Domain.Settings;
 
 namespace UserService.DAL.Configurations;
 
@@ -10,8 +11,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
         builder.Property(x => x.IdentityId).IsRequired();
-        builder.Property(x => x.Username).IsRequired().HasMaxLength(100);
-        builder.Property(x => x.Email).IsRequired().HasMaxLength(255);
+        builder.Property(x => x.Username).IsRequired().HasMaxLength(EntityConstraints.UsernameMaxLength);
+        builder.Property(x => x.Email).IsRequired().HasMaxLength(EntityConstraints.EmailMaxLength);
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastLoginAt);
 
@@ -23,9 +24,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
                                                    """));
 
         //Username constraint
-        builder.ToTable(t => t.HasCheckConstraint("CK_User_Username_LowerCase", $"""
-             "{nameof(User.Username)}" = LOWER("{nameof(User.Username)}")
-             """));
+        builder.ToTable(t => t.HasCheckConstraint("CK_User_Username_Format", $"""
+                                                                              "{nameof(User.Username)}" ~ '^[a-z0-9_.\\-]+$'
+                                                                              """));
         //Unique username and email
         builder.HasIndex(x => x.Username).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();

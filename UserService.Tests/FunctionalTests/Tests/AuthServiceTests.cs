@@ -49,7 +49,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -89,7 +89,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -163,7 +163,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         //Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 

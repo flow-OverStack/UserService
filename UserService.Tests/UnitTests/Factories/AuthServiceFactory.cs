@@ -1,6 +1,9 @@
 using AutoMapper;
+using FluentValidation;
 using Hangfire;
 using UserService.Application.Services;
+using UserService.Application.Validators;
+using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
@@ -19,7 +22,15 @@ internal class AuthServiceFactory
         BackgroundJobClientConfiguration.GetBackgroundJobClientConfiguration();
 
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
+
+    public readonly IValidator<InitUserDto> InitValidator =
+        ValidatorConfiguration<InitUserDto>.GetValidator(new InitUserDtoValidator());
+
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
+
+    public readonly IValidator<RegisterUserDto> RegisterValidator =
+        ValidatorConfiguration<RegisterUserDto>.GetValidator(new RegisterUserDtoValidator());
+
     public readonly IUnitOfWork UnitOfWork;
 
 
@@ -28,7 +39,8 @@ internal class AuthServiceFactory
     {
         UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork(userRepository, roleRepository).Object;
 
-        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, BackgroundJob);
+        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, BackgroundJob,
+            RegisterValidator, InitValidator);
     }
 
     public IAuthService GetService()

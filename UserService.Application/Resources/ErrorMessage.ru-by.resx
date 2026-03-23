@@ -48,7 +48,7 @@
     <data name="IdentityServerError" xml:space="preserve">
         <value>Внутренняя ошибка сервера идентификации</value>
     </data>
-    <data name="EmailNotValid" xml:space="preserve">
+    <data name="InvalidEmail" xml:space="preserve">
         <value>Невалидный email</value>
     </data>
     <data name="UsersNotFound" xml:space="preserve">
@@ -77,5 +77,11 @@
     </data>
     <data name="ReputationRecordsNotFound" xml:space="preserve">
         <value>Записи репутации не найдены</value>
+    </data>
+    <data name="InvalidUsername" xml:space="preserve">
+        <value>Неверное имя пользователя</value>
+    </data>
+    <data name="InvalidPassword" xml:space="preserve">
+        <value>Невалидный пароль</value>
     </data>
 </root>

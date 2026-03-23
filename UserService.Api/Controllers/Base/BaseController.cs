@@ -35,7 +35,6 @@ public class BaseController : ControllerBase
 
         // Authorization
         { (int)ErrorCodes.PasswordIsWrong, StatusCodes.Status401Unauthorized },
-        { (int)ErrorCodes.EmailNotValid, StatusCodes.Status400BadRequest },
         { (int)ErrorCodes.InvalidToken, StatusCodes.Status400BadRequest },
 
         // Roles
@@ -45,7 +44,8 @@ public class BaseController : ControllerBase
         { (int)ErrorCodes.CannotDeleteDefaultRole, StatusCodes.Status403Forbidden },
 
         // Validity
-        { (int)ErrorCodes.InvalidPagination, StatusCodes.Status400BadRequest }
+        { (int)ErrorCodes.InvalidPagination, StatusCodes.Status400BadRequest },
+        { (int)ErrorCodes.InvalidProperty, StatusCodes.Status400BadRequest }
     };
 
     /// <summary>

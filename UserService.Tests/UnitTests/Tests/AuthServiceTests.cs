@@ -29,12 +29,28 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task RegisterUser_ShouldBe_UsernameNotValid()
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new RegisterUserDto("invalid!user", "test@test.com", TestConstants.TestPassword);
+
+        //Act
+        var result = await authService.RegisterAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.InvalidUsername, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task RegisterUser_ShouldBe_EmailNotValid()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
-        var dto = new RegisterUserDto("TestUser4", "NotEmail",
-            TestConstants.TestPassword + "4");
+        var dto = new RegisterUserDto("TestUser4", "NotEmail", TestConstants.TestPassword + "4");
 
         //Act
         var result =
@@ -42,7 +58,24 @@ public class AuthServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task RegisterUser_ShouldBe_PasswordNotValid()
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new RegisterUserDto("testuser4", "test@test.com", "123");
+
+        //Act
+        var result = await authService.RegisterAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.InvalidPassword, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -102,6 +135,23 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
+    public async Task InitUser_ShouldBe_UsernameNotValid()
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new InitUserDto("invalid!user", "test@test.com", "test-identity-id-4");
+
+        //Act
+        var result = await authService.InitAsync(dto);
+
+        //Assert
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ErrorMessage.InvalidUsername, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
     public async Task InitUser_ShouldBe_EmailNotValid()
     {
         //Arrange
@@ -113,7 +163,7 @@ public class AuthServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -203,7 +253,7 @@ public class AuthServiceTests
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.EmailNotValid, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 

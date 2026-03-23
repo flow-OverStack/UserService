@@ -69,15 +69,6 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Not valid email.
-        /// </summary>
-        public static string EmailNotValid {
-            get {
-                return ResourceManager.GetString("EmailNotValid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Identity server error.
         /// </summary>
         public static string IdentityServerError {
@@ -105,6 +96,15 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email is invalid.
+        /// </summary>
+        public static string InvalidEmail {
+            get {
+                return ResourceManager.GetString("InvalidEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pagination parametrs are invalid.
         /// </summary>
         public static string InvalidPagination {
@@ -119,6 +119,24 @@ namespace UserService.Application.Resources {
         public static string InvalidToken {
             get {
                 return ResourceManager.GetString("InvalidToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username is invalid.
+        /// </summary>
+        public static string InvalidUsername {
+            get {
+                return ResourceManager.GetString("InvalidUsername", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Password is invalid.
+        /// </summary>
+        public static string InvalidPassword {
+            get {
+                return ResourceManager.GetString("InvalidPassword", resourceCulture);
             }
         }
         

@@ -1,5 +1,6 @@
 using System.Net.Mail;
 using AutoMapper;
+using FluentValidation;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
@@ -21,14 +22,19 @@ public class AuthService(
     IMapper mapper,
     IIdentityServer identityServer,
     IUnitOfWork unitOfWork,
-    IBackgroundJobClient backgroundJob)
+    IBackgroundJobClient backgroundJob,
+    IValidator<RegisterUserDto> registerValidator,
+    IValidator<InitUserDto> initValidator)
     : IAuthService
 {
     public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto,
         CancellationToken cancellationToken = default)
     {
-        if (!IsEmail(dto.Email))
-            return BaseResult<UserDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
+        dto = dto with { Username = dto.Username.ToLowerInvariant() };
+
+        var validation = await ValidateDto(registerValidator, dto, cancellationToken);
+        if (!validation.isValid)
+            return BaseResult<UserDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
 
         var lowerUsername = dto.Username.ToLowerInvariant();
 
@@ -96,7 +102,7 @@ public class AuthService(
         CancellationToken cancellationToken = default)
     {
         if (!IsEmail(dto.Email))
-            return BaseResult<TokenDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
+            return BaseResult<TokenDto>.Failure(ErrorMessage.InvalidEmail, (int)ErrorCodes.InvalidProperty);
 
         var user = await unitOfWork.Users.GetAll()
             .FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
@@ -106,8 +112,11 @@ public class AuthService(
 
     public async Task<BaseResult<UserDto>> InitAsync(InitUserDto dto, CancellationToken cancellationToken = default)
     {
-        if (!IsEmail(dto.Email))
-            return BaseResult<UserDto>.Failure(ErrorMessage.EmailNotValid, (int)ErrorCodes.EmailNotValid);
+        dto = dto with { Username = dto.Username.ToLowerInvariant() };
+
+        var validation = await ValidateDto(initValidator, dto, cancellationToken);
+        if (!validation.isValid)
+            return BaseResult<UserDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
 
         var lowerUsername = dto.Username.ToLowerInvariant();
 
@@ -167,6 +176,15 @@ public class AuthService(
         await unitOfWork.Users.SaveChangesAsync(cancellationToken);
 
         return BaseResult<TokenDto>.Success(identitySafeResponse.Data);
+    }
+
+    private static async Task<(bool isValid, string errorMessage)> ValidateDto<T>(IValidator<T> validator, T dto,
+        CancellationToken cancellationToken = default)
+    {
+        var validation = await validator.ValidateAsync(dto, cancellationToken);
+        if (validation.IsValid) return (true, string.Empty);
+
+        return (false, string.Join(", ", validation.Errors));
     }
 
     private static bool IsEmail(string email)
