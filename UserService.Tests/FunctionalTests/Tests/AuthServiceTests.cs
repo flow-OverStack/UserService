@@ -55,7 +55,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_Created()
+    public async Task InitUser_ShouldBe_Ok()
     {
         //Arrange
         var accessToken =
@@ -68,7 +68,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
 
         //Assert
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
     }

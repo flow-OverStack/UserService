@@ -43,8 +43,12 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
                 .ToArrayAsync(cancellationToken);
 
             if (rules.Length == 0)
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
                 return BaseResult.Failure(ErrorMessage.ReputationRulesNotFound,
                     (int)ErrorCodes.ReputationRulesNotFound);
+            }
+
 
             // Domain rule: for a given EventType + EntityType, Group is either NULL or identical across all ReputationRule records.
             var group = rules.Select(x => x.Group).Distinct().Single();

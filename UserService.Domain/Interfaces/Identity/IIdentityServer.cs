@@ -1,5 +1,4 @@
-using UserService.Domain.Dtos.Identity.Role;
-using UserService.Domain.Dtos.Identity.User;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Token;
 
 namespace UserService.Domain.Interfaces.Identity;
@@ -39,7 +38,7 @@ public interface IIdentityServer
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task UpdateRolesAsync(IdentityUpdateRolesDto dto, CancellationToken cancellationToken = default);
+    Task UpdateUserAsync(IdentityUpdateUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Rolls back the registration of a user; does not catch errors
@@ -53,5 +52,5 @@ public interface IIdentityServer
     /// </summary>
     /// <param name="dto"></param>
     /// <returns></returns>
-    Task RollbackUpdateRolesAsync(IdentityUpdateRolesDto dto);
+    Task RollbackUpdateUserAsync(IdentityUpdateUserDto dto);
 }

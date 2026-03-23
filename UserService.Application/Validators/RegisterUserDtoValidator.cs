@@ -9,7 +9,15 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
 {
     public RegisterUserDtoValidator()
     {
-        Include(new UserCredentialsValidator());
+        RuleFor(x => x.Username)
+            .NotEmpty().WithMessage(ErrorMessage.InvalidUsername)
+            .MaximumLength(EntityConstraints.UsernameMaxLength).WithMessage(ErrorMessage.InvalidUsername)
+            .Matches("^[a-z0-9_.\\-]+$").WithMessage(ErrorMessage.InvalidUsername);
+
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage(ErrorMessage.InvalidEmail)
+            .MaximumLength(EntityConstraints.EmailMaxLength).WithMessage(ErrorMessage.InvalidEmail)
+            .EmailAddress().WithMessage(ErrorMessage.InvalidEmail);
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage(ErrorMessage.InvalidPassword)

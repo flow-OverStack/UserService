@@ -1,4 +1,5 @@
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using AutoMapper;
 using FluentValidation;
 using Hangfire;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Exceptions.IdentityServer.Base;
 using UserService.Application.Resources;
-using UserService.Domain.Dtos.Identity.User;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
@@ -15,16 +16,16 @@ using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
+using UserService.Domain.Settings;
 
 namespace UserService.Application.Services;
 
-public class AuthService(
+public partial class AuthService(
     IMapper mapper,
     IIdentityServer identityServer,
     IUnitOfWork unitOfWork,
     IBackgroundJobClient backgroundJob,
-    IValidator<RegisterUserDto> registerValidator,
-    IValidator<InitUserDto> initValidator)
+    IValidator<RegisterUserDto> registerValidator)
     : IAuthService
 {
     public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto,
@@ -36,10 +37,8 @@ public class AuthService(
         if (!validation.isValid)
             return BaseResult<UserDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
 
-        var lowerUsername = dto.Username.ToLowerInvariant();
-
         var user = await unitOfWork.Users.GetAll()
-                       .FirstOrDefaultAsync(x => x.Username == lowerUsername, cancellationToken) ??
+                       .FirstOrDefaultAsync(x => x.Username == dto.Username, cancellationToken) ??
                    await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
         if (user != null)
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
@@ -48,23 +47,25 @@ public class AuthService(
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            user = new User
-            {
-                Username = lowerUsername,
-                Email = dto.Email,
-                LastLoginAt = DateTime.UtcNow,
-                IdentityId = "PENDING"
-            };
-
-            await unitOfWork.Users.CreateAsync(user, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
-
             var role = await unitOfWork.Roles.GetAll()
                 .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
             if (role == null)
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
                 return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+            }
 
-            user.Roles = [role];
+            user = new User
+            {
+                Username = dto.Username,
+                Email = dto.Email,
+                LastLoginAt = DateTime.UtcNow,
+                Roles = [role],
+                // Temporary IdentityId, will be updated after successful registration in IdentityServer
+                IdentityId = Guid.NewGuid().ToString()
+            };
+
+            await unitOfWork.Users.CreateAsync(user, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             var identityDto = mapper.Map<IdentityRegisterUserDto>(user);
@@ -112,52 +113,71 @@ public class AuthService(
 
     public async Task<BaseResult<UserDto>> InitAsync(InitUserDto dto, CancellationToken cancellationToken = default)
     {
-        dto = dto with { Username = dto.Username.ToLowerInvariant() };
+        // 1. Validate Email
+        if (!IsEmail(dto.Email))
+            return BaseResult<UserDto>.Failure(ErrorMessage.InvalidEmail, (int)ErrorCodes.InvalidProperty);
 
-        var validation = await ValidateDto(initValidator, dto, cancellationToken);
-        if (!validation.isValid)
-            return BaseResult<UserDto>.Failure(validation.errorMessage, (int)ErrorCodes.InvalidProperty);
-
-        var lowerUsername = dto.Username.ToLowerInvariant();
-
+        // 2. Idempotency check
         var user = await unitOfWork.Users.GetAll()
-                       .FirstOrDefaultAsync(x => x.Username == lowerUsername, cancellationToken) ??
-                   await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
+            .FirstOrDefaultAsync(x => x.IdentityId == dto.IdentityId, cancellationToken);
         if (user != null)
-            return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
+            return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
 
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+            var role = await unitOfWork.Roles.GetAll()
+                .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
+
+            if (role == null)
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
+                return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+            }
+
+            var (usernameBase, isTemporary) = await ResolveUniqueUsernameAsync(dto.Username, cancellationToken);
+            var username = isTemporary
+                ? Guid.NewGuid().ToString("N")[..EntityConstraints.UsernameMaxLength]
+                : usernameBase;
+
             user = new User
             {
-                Username = lowerUsername,
+                Username = username,
                 Email = dto.Email,
                 LastLoginAt = DateTime.UtcNow,
-                IdentityId = dto.IdentityId
+                IdentityId = dto.IdentityId,
+                Roles = [role]
             };
 
             await unitOfWork.Users.CreateAsync(user, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken); // user.Id populated
 
-            var role = await unitOfWork.Roles.GetAll()
-                .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
-            if (role == null)
-                return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+            if (isTemporary)
+            {
+                var suffix = $"_{user.Id}";
+                var baseLength = Math.Min(usernameBase.Length, EntityConstraints.UsernameMaxLength - suffix.Length);
+                user.Username = usernameBase[..baseLength] + suffix;
 
-            user.Roles = [role];
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                var identityDto = mapper.Map<IdentityUpdateUserDto>(user);
+                await identityServer.UpdateUserAsync(identityDto, cancellationToken);
+            }
 
             await transaction.CommitAsync(cancellationToken);
         }
         catch (Exception)
         {
             await transaction.RollbackAsync(CancellationToken.None);
+            // UpdateUsernameAsync is idempotent, so we may not roll back it
             throw;
         }
 
         return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
     }
+
+    [GeneratedRegex(@"[_\-\.]{2,}")]
+    private static partial Regex UsernameRegex();
 
     private async Task<BaseResult<TokenDto>> LoginAsync(User? user, string password,
         CancellationToken cancellationToken = default)
@@ -190,6 +210,44 @@ public class AuthService(
     private static bool IsEmail(string email)
     {
         return MailAddress.TryCreate(email, out _);
+    }
+
+    private async Task<(string Username, bool IsTemporary)> ResolveUniqueUsernameAsync(
+        string rawUsername,
+        CancellationToken cancellationToken)
+    {
+        var sanitized = SanitizeUsername(rawUsername);
+
+        // Case: invalid/empty (e.g. Chinese, special chars only)
+        if (string.IsNullOrWhiteSpace(sanitized))
+            return ("user", true);
+
+        // Case: taken (short or long)
+        if (await unitOfWork.Users.GetAll().AnyAsync(x => x.Username == sanitized, cancellationToken))
+            return (sanitized, true);
+
+        // Case: free
+        return (sanitized, false);
+    }
+
+    private static string SanitizeUsername(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return string.Empty;
+
+        var lower = raw.ToLowerInvariant();
+        var mapped = new string(lower.Select(c => IsAllowedChar(c) ? c : '_').ToArray());
+        var collapsed = UsernameRegex().Replace(mapped, "_");
+        var trimmed = collapsed.Trim('_', '-', '.');
+
+        return trimmed.Length > EntityConstraints.UsernameMaxLength
+            ? trimmed[..EntityConstraints.UsernameMaxLength]
+            : trimmed;
+    }
+
+    private static bool IsAllowedChar(char c)
+    {
+        return c is >= 'a' and <= 'z' or >= '0' and <= '9' or '_' or '-' or '.';
     }
 
     private static async Task<BaseResult<TokenDto>> SafeLoginUserAsync(IIdentityServer identityServer,

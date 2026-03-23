@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -6,8 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using UserService.Application.Exceptions.IdentityServer;
 using UserService.Application.Exceptions.IdentityServer.Base;
-using UserService.Domain.Dtos.Identity.Role;
-using UserService.Domain.Dtos.Identity.User;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Keycloak.Extensions;
@@ -55,7 +55,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             await SetAuthHeaderAsync(cancellationToken);
             var createResponse =
@@ -175,26 +175,11 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         }
     }
 
-    public async Task UpdateRolesAsync(IdentityUpdateRolesDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateUserAsync(IdentityUpdateUserDto dto, CancellationToken cancellationToken = default)
     {
         try
         {
-            var userPayload = new UpdateUserPayload
-            {
-                Email = dto.Email,
-                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.UserId)
-                    .AddRoles(_keycloakSettings.RolesClaim, dto.NewRoles)
-            };
-
-            var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            await SetAuthHeaderAsync(cancellationToken);
-            var response = await httpClient.PutAsync(
-                $"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
+            var response = await SendUpdateUserAsync(dto, cancellationToken);
 
             response.EnsureSuccessStatusCode();
         }
@@ -210,23 +195,31 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         await httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}");
     }
 
-    public async Task RollbackUpdateRolesAsync(IdentityUpdateRolesDto dto)
+    public Task RollbackUpdateUserAsync(IdentityUpdateUserDto dto)
+    {
+        return SendUpdateUserAsync(dto, CancellationToken.None);
+    }
+
+    private async Task<HttpResponseMessage> SendUpdateUserAsync(IdentityUpdateUserDto dto,
+        CancellationToken cancellationToken = default)
     {
         var userPayload = new UpdateUserPayload
         {
+            Username = dto.Username,
             Email = dto.Email,
             Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.UserId)
-                .AddRoles(_keycloakSettings.RolesClaim, dto.NewRoles)
+                .AddRoles(_keycloakSettings.RolesClaim, dto.Roles)
         };
 
         var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         });
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        await SetAuthHeaderAsync();
-        await httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content);
+        await SetAuthHeaderAsync(cancellationToken);
+        return await httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content,
+            cancellationToken);
     }
 
 

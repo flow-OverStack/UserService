@@ -1,6 +1,5 @@
 using UserService.Application.Exceptions.IdentityServer;
-using UserService.Domain.Dtos.Identity.Role;
-using UserService.Domain.Dtos.Identity.User;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Entities;
 using UserService.Tests.Constants;
@@ -59,15 +58,15 @@ public class ExceptionIdentityServerTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoles_ShouldBe_Exception()
+    public async Task UpdateUser_ShouldBe_Exception()
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new IdentityUpdateRolesDto(Guid.NewGuid().ToString(), 1, "TestUser1",
+        var dto = new IdentityUpdateUserDto(Guid.NewGuid().ToString(), "TestUser1", 1, "NotAEmail",
             [new Role { Id = 1, Name = "User" }, new Role { Id = 2, Name = "Admin" }]);
 
         //Act
-        var action = async () => await identityServer.UpdateRolesAsync(dto);
+        var action = async () => await identityServer.UpdateUserAsync(dto);
 
         //Assert
         await Assert.ThrowsAsync<IdentityServerInternalException>(action);

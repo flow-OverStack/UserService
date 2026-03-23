@@ -1,4 +1,4 @@
-namespace UserService.Domain.Dtos.Identity.User;
+namespace UserService.Domain.Dtos.Identity;
 
 public record IdentityRegisterUserDto(long Id, string Username, string Email, List<Entities.Role> Roles)
 {

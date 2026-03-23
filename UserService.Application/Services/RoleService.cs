@@ -3,7 +3,7 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Resources;
-using UserService.Domain.Dtos.Identity.Role;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
@@ -299,8 +299,8 @@ public class RoleService(
     {
         var updateTasks = users.Select(user =>
         {
-            var dto = mapper.Map<IdentityUpdateRolesDto>(user);
-            return identityServer.UpdateRolesAsync(dto, cancellationToken);
+            var dto = mapper.Map<IdentityUpdateUserDto>(user);
+            return identityServer.UpdateUserAsync(dto, cancellationToken);
         });
 
         await Task.WhenAll(updateTasks);
@@ -315,9 +315,9 @@ public class RoleService(
     {
         foreach (var user in users)
         {
-            var dto = mapper.Map<IdentityUpdateRolesDto>(user);
-            dto.NewRoles.ForEach(x => x.Users = null!); //Removing loop dependencies
-            backgroundJob.Enqueue<IIdentityServer>(server => server.RollbackUpdateRolesAsync(dto));
+            var dto = mapper.Map<IdentityUpdateUserDto>(user);
+            dto.Roles.ForEach(x => x.Users = null!); //Removing loop dependencies
+            backgroundJob.Enqueue<IIdentityServer>(server => server.RollbackUpdateUserAsync(dto));
         }
     }
 }

@@ -156,7 +156,7 @@ internal static class MockRepositoriesGetters
             new()
             {
                 Id = 1,
-                IdentityId = Guid.NewGuid().ToString(),
+                IdentityId = "test-identity-id-1",
                 Username = "testuser1",
                 Email = "TestUser1@test.com",
                 LastLoginAt = DateTime.UtcNow,
@@ -200,6 +200,18 @@ internal static class MockRepositoriesGetters
                 OwnedReputationRecords = GetReputationRecords().Where(x => x.ReputationTargetId == 5).ToList(),
                 InitiatedReputationRecords = GetReputationRecords().Where(x => x.InitiatorId == 5).ToList(),
                 Roles = []
+            },
+            new()
+            {
+                Id = 6,
+                IdentityId = "test-identity-id-6",
+                Username = "testuser_longnametoo", // 20 chars = UsernameMaxLength, for testing truncation path
+                Email = "TestUser6@test.com",
+                LastLoginAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                OwnedReputationRecords = [],
+                InitiatedReputationRecords = [],
+                Roles = [GetRoleUser()]
             }
         }.AsQueryable();
     }

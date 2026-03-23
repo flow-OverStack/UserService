@@ -27,9 +27,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.ToTable(t => t.HasCheckConstraint("CK_User_Username_Format", $"""
                                                                               "{nameof(User.Username)}" ~ '^[a-z0-9_.\\-]+$'
                                                                               """));
-        //Unique username and email
+        //Unique fields
         builder.HasIndex(x => x.Username).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
+        builder.HasIndex(x => x.IdentityId).IsUnique();
 
         builder.HasIndex(x => x.CreatedAt);
         builder.HasIndex(x => x.LastLoginAt);

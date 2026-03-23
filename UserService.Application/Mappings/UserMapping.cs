@@ -1,6 +1,5 @@
 using AutoMapper;
-using UserService.Domain.Dtos.Identity.Role;
-using UserService.Domain.Dtos.Identity.User;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 
@@ -13,9 +12,9 @@ public class UserMapping : Profile
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<User, IdentityRegisterUserDto>().ReverseMap();
         CreateMap<User, IdentityLoginUserDto>().ReverseMap();
-        CreateMap<IdentityUpdateRolesDto, User>().ReverseMap()
-            .ForCtorParam(nameof(IdentityUpdateRolesDto.UserId), x => x.MapFrom(y => y.Id))
-            .ForCtorParam(nameof(IdentityUpdateRolesDto.NewRoles), x => x.MapFrom(y => y.Roles));
+        CreateMap<IdentityUpdateUserDto, User>().ReverseMap()
+            .ForCtorParam(nameof(IdentityUpdateUserDto.UserId), x => x.MapFrom(y => y.Id))
+            .ForCtorParam(nameof(IdentityUpdateUserDto.Roles), x => x.MapFrom(y => y.Roles));
         CreateMap<User, UserActivityDto>()
             .ForMember(x => x.UserId, x => x.MapFrom(y => y.Id))
             .ReverseMap();

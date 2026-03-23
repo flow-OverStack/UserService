@@ -135,23 +135,6 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_UsernameNotValid()
-    {
-        //Arrange
-        var authService = new AuthServiceFactory().GetService();
-        var dto = new InitUserDto("invalid!user", "test@test.com", "test-identity-id-4");
-
-        //Act
-        var result = await authService.InitAsync(dto);
-
-        //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.InvalidUsername, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
     public async Task InitUser_ShouldBe_EmailNotValid()
     {
         //Arrange
@@ -169,7 +152,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_UserAlreadyExists()
+    public async Task InitUser_ShouldBe_Success_With_UserAlreadyExists()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -179,9 +162,8 @@ public class AuthServiceTests
         var result = await authService.InitAsync(dto);
 
         //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UserAlreadyExists, result.ErrorMessage);
-        Assert.Null(result.Data);
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
     }
 
     [Trait("Category", "Unit")]
@@ -201,6 +183,26 @@ public class AuthServiceTests
         Assert.False(result.IsSuccess);
         Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
         Assert.Null(result.Data);
+    }
+
+    [Theory]
+    [Trait("Category", "Unit")]
+    [InlineData("!@#$%^", "TestsUser4@test.com", "test-identity-id-4")]
+    [InlineData("TestUser_LongNameToo", "TestsUser4@test.com", "test-identity-id-4")]
+    [InlineData("TestUser1", "TestsUser4@test.com", "test-identity-id-4")]
+    [InlineData("TestUser4", "TestsUser4@test.com", "test-identity-id-4")]
+    public async Task InitUser_ShouldBe_Success_Username_Variations(string username, string email, string identityId)
+    {
+        //Arrange
+        var authService = new AuthServiceFactory().GetService();
+        var dto = new InitUserDto(username, email, identityId);
+
+        //Act
+        var result = await authService.InitAsync(dto);
+
+        //Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
     }
 
     [Trait("Category", "Unit")]

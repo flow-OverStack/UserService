@@ -23,9 +23,6 @@ internal class AuthServiceFactory
 
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
 
-    public readonly IValidator<InitUserDto> InitValidator =
-        ValidatorConfiguration<InitUserDto>.GetValidator(new InitUserDtoValidator());
-
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
 
     public readonly IValidator<RegisterUserDto> RegisterValidator =
@@ -39,8 +36,7 @@ internal class AuthServiceFactory
     {
         UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork(userRepository, roleRepository).Object;
 
-        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, BackgroundJob,
-            RegisterValidator, InitValidator);
+        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, BackgroundJob, RegisterValidator);
     }
 
     public IAuthService GetService()

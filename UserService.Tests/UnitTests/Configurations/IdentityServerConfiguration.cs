@@ -1,6 +1,6 @@
 using Moq;
 using UserService.Application.Exceptions.IdentityServer;
-using UserService.Domain.Dtos.Identity.User;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Tests.Constants;
@@ -34,6 +34,9 @@ internal static class IdentityServerConfiguration
             .ReturnsAsync(new IdentityUserDto(Guid.NewGuid().ToString()));
         mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<RefreshTokenDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(randomKeycloakUserTokenDto);
+        mockIdentityServer
+            .Setup(x => x.UpdateUserAsync(It.IsAny<IdentityUpdateUserDto>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
         return mockIdentityServer.Object;
     }
