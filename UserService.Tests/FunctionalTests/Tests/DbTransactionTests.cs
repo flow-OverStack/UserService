@@ -32,7 +32,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(4, count);
+        Assert.Equal(5, count);
     }
 
     [Trait("Category", "Functional")]
@@ -57,7 +57,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(3, count);
+        Assert.Equal(4, count);
     }
 
     [Trait("Category", "Functional")]
@@ -82,7 +82,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(3, count);
+        Assert.Equal(4, count);
     }
 
     [Trait("Category", "Functional")]
@@ -119,7 +119,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(5, count);
+        Assert.Equal(6, count);
     }
 
     [Trait("Category", "Functional")]
@@ -156,7 +156,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(4, count);
+        Assert.Equal(5, count);
     }
 
     [Trait("Category", "Functional")]
@@ -193,7 +193,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(4, count);
+        Assert.Equal(5, count);
     }
 
     [Trait("Category", "Functional")]
@@ -230,7 +230,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(3, count);
+        Assert.Equal(4, count);
     }
 
     [Trait("Category", "Functional")]
@@ -267,6 +267,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
         //Assert
         var count = await unitOfWork.Users.GetAll().AsNoTracking().CountAsync();
-        Assert.Equal(3, count);
+        Assert.Equal(4, count);
     }
 }
