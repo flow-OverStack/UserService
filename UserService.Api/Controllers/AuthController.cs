@@ -37,7 +37,6 @@ public class AuthController(IAuthService authService) : BaseController
     /// <response code="404">If a resource was not found</response>
     /// <response code="409">If a user with this email or username already exists</response>
     [HttpPost("register")]
-    [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
