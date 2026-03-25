@@ -23,6 +23,7 @@ public class BaseController : ControllerBase
         { (int)ErrorCodes.UserAlreadyExists, StatusCodes.Status409Conflict },
         { (int)ErrorCodes.UserAlreadyHasThisRole, StatusCodes.Status409Conflict },
         { (int)ErrorCodes.UsersNotFound, StatusCodes.Status404NotFound },
+        { (int)ErrorCodes.UsernameAlreadyTaken, StatusCodes.Status409Conflict },
 
         // Authorization
         { (int)ErrorCodes.PasswordIsWrong, StatusCodes.Status401Unauthorized },

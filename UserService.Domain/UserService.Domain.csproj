@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Interfaces\Entity\Validation\"/>
         <Folder Include="Interfaces\Validation\"/>
     </ItemGroup>
 

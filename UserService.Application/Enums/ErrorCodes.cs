@@ -17,6 +17,7 @@ public enum ErrorCodes
     UserAlreadyExists = 22,
     UserAlreadyHasThisRole = 23,
     UsersNotFound = 24,
+    UsernameAlreadyTaken = 25,
 
     PasswordIsWrong = 31,
     InvalidToken = 33,

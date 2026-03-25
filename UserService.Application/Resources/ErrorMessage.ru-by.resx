@@ -84,4 +84,7 @@
     <data name="InvalidPassword" xml:space="preserve">
         <value>Невалидный пароль</value>
     </data>
+    <data name="UsernameAlreadyTaken" xml:space="preserve">
+        <value>Имя пользователя уже занаято</value>
+    </data>
 </root>

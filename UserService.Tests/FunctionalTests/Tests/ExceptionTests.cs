@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Newtonsoft.Json;
 using UserService.Api.Dtos.Role;
+using UserService.Api.Dtos.User;
 using UserService.Api.Dtos.UserRole;
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.Role;
@@ -219,6 +220,29 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task UpdateMyUsername_ShouldBe_InternalServerError()
+    {
+        //Arrange
+        const long userId = 1;
+        var accessToken = TokenHelper.GetRsaTokenWithUserId(userId);
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var dto = new RequestUpdateUsernameDto("newusername");
+
+        //Act
+        var response = await HttpClient.PatchAsJsonAsync("/api/v1/user/me/username", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.StartsWith(ErrorMessage.InternalServerError, result.ErrorMessage);
+        Assert.Null(result.Data);
     }
 
     [Trait("Category", "Functional")]
