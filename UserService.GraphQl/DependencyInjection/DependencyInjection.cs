@@ -1,4 +1,5 @@
 using GraphQL.Server.Ui.Voyager;
+using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -67,6 +68,17 @@ public static class DependencyInjection
         if (app.Environment.IsDevelopment())
             app.UseGraphQLVoyager(GraphQlVoyagerEndpoint, new VoyagerOptions { GraphQLEndPoint = GraphQlEndpoint });
 
-        app.MapGraphQL();
+
+        if (app.Environment.IsDevelopment())
+            app.MapGraphQL();
+        else
+            app.MapGraphQL().WithOptions(
+                new GraphQLServerOptions
+                {
+                    Tool =
+                    {
+                        Enable = false
+                    }
+                });
     }
 }
