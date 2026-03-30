@@ -39,8 +39,7 @@ public partial class AuthService(
             return BaseResult<UserDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
         var user = await unitOfWork.Users.GetAll()
-                       .FirstOrDefaultAsync(x => x.Username == dto.Username, cancellationToken) ??
-                   await unitOfWork.Users.GetAll().FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Username == dto.Username || x.Email == dto.Email, cancellationToken);
         if (user != null)
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
 
