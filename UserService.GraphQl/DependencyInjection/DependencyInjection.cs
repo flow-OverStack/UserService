@@ -24,6 +24,7 @@ public static class DependencyInjection
     public static void AddGraphQl(this IServiceCollection services)
     {
         services.AddGraphQLServer()
+            .AddAuthorization()
             .AddQueryType<Queries>()
             .AddType<UserType>()
             .AddType<RoleType>()

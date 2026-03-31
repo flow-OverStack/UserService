@@ -12,6 +12,24 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
 {
     [Trait("Category", "Functional")]
     [Fact]
+    public async Task RequestForbiddenResource_ShouldBe_Forbidden_When_ClaimsNotValid()
+    {
+        //Arrange
+        const string forbiddenUrl = "/api/v1.0/Role";
+        var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser2", []);
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        //Act
+        var response = await HttpClient.PutAsync(forbiddenUrl, null);
+        var body = await response.Content.ReadAsStringAsync();
+
+        //Assert
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal("Invalid claims", body);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
     public async Task RequestForbiddenResource_ShouldBe_Unauthorized()
     {
         //Arrange

@@ -1,3 +1,6 @@
+using System.Security.Claims;
+using HotChocolate.Authorization;
+using Microsoft.AspNetCore.Http;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Service;
 using UserService.GraphQl.DataLoaders;
@@ -8,6 +11,21 @@ namespace UserService.GraphQl;
 
 public class Queries
 {
+    [GraphQLDescription("Returns the currently authenticated user.")]
+    [Authorize]
+    public async Task<User?> GetMe([Service] IHttpContextAccessor httpContextAccessor, UserDataLoader userLoader,
+        CancellationToken cancellationToken)
+    {
+        var user = httpContextAccessor.HttpContext?.User;
+
+        if (user == null)
+            throw GraphQlExceptionHelper.GetException("User is not authenticated.");
+
+        var userId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        return await userLoader.LoadAsync(userId, cancellationToken);
+    }
+
     [GraphQLDescription("Returns a list of paginated users.")]
     [UseOffsetPagingValidationMiddleware]
     [UseOffsetPaging]

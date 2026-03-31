@@ -27,6 +27,7 @@ builder.Services.AddLocalization(options => options.ResourcesPath = nameof(UserS
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthenticationAndAuthorization();
@@ -68,14 +69,15 @@ app.MapControllers();
 app.UseLocalization();
 app.UseGraphQl();
 app.UseGrpcServices();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHangfire();
 app.SetupHangfireJobs();
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
 app.MapHealthChecks("health", new HealthCheckOptions { ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
 app.UseCors("DefaultCorsPolicy");
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseMiddleware<ClaimsValidationMiddleware>();
 
 app.LogListeningUrls();
 
