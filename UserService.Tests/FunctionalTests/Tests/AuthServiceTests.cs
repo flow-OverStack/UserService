@@ -59,7 +59,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     {
         //Arrange
         var accessToken =
-            TokenHelper.GetRsaTokenWithIdentityData("TestUser4", "TestsUser4@test.com", "test-identity-id-4");
+            TokenHelper.GetRsaToken(username: "TestUser4", email: "TestsUser4@test.com",
+                identityId: "test-identity-id-4");
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act
@@ -78,7 +79,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task InitUser_ShouldBe_BadRequest()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithIdentityData("testuser1", "NotEmail", "test-identity-id-1");
+        var accessToken =
+            TokenHelper.GetRsaToken(username: "testuser1", email: "NotEmail", identityId: "test-identity-id-1");
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act
@@ -98,7 +100,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task InitUser_ShouldBe_Unauthorized()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithIdentityData("testuser1", null!, "test-identity-id-1");
+        var accessToken = TokenHelper.GetRsaToken(username: "testuser1", email: "", identityId: "test-identity-id-1");
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act
@@ -106,8 +108,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         var body = await response.Content.ReadAsStringAsync();
 
         //Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.Equal("Required claims are missing", body);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal("Invalid claims", body);
     }
 
     [Trait("Category", "Functional")]

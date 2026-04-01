@@ -12,13 +12,23 @@ internal class RequiredClaims
     [JsonProperty(JwtRegisteredClaimNames.PreferredUsername)]
     public string? Username { get; set; }
 
+    [JsonProperty(JwtRegisteredClaimNames.Email)]
+    public string? Email { get; set; }
+
+    [JsonProperty(JwtRegisteredClaimNames.Sub)]
+    public string? IdentityId { get; set; }
+
     [JsonProperty(ClaimTypes.Role)]
     [JsonConverter(typeof(SingleOrArrayConverter<string>))]
     public string[]? Roles { get; set; }
 
     public bool IsValid()
     {
-        return UserId != null && Username != null && Roles is { Length: > 0 };
+        return UserId != null &&
+               !string.IsNullOrWhiteSpace(Username) &&
+               !string.IsNullOrWhiteSpace(Email) &&
+               !string.IsNullOrWhiteSpace(IdentityId) &&
+               Roles is { Length: > 0 };
     }
 
     private sealed class SingleOrArrayConverter<T> : JsonConverter

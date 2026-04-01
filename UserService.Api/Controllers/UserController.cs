@@ -43,9 +43,7 @@ public class UserController(IUserService userService) : BaseController
     public async Task<ActionResult<BaseResult<UserDto>>> UpdateMyUsername(
         [FromBody] RequestUpdateUsernameDto dto, CancellationToken cancellationToken)
     {
-        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !long.TryParse(userIdClaim, out var userId))
-            return Unauthorized("Required claims are missing");
+        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var serviceDto = new UpdateUsernameDto(userId, dto.Username);
         var result = await userService.UpdateUsernameAsync(serviceDto, cancellationToken);

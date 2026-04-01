@@ -426,6 +426,23 @@ internal static class GraphQlHelper
                                                    }
                                                    """;
 
+    public const string RequestMeQuery = """
+                                         {
+                                           me {
+                                             id
+                                             identityId
+                                             username
+                                             email
+                                             lastLoginAt
+                                             createdAt
+                                             roles {
+                                               id
+                                               name
+                                             }
+                                           }
+                                         }
+                                         """;
+
     public static string RequestUserByIdQuery(long id)
     {
         return """

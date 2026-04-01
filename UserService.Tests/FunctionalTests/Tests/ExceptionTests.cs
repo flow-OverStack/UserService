@@ -31,10 +31,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 {
     public ExceptionTests(ExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {
-        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "User" },
-            new Role { Name = "Admin" }
-        ]);
+        var accessToken = TokenHelper.GetRsaToken(1, "testuser1",
+            roles: [new Role { Name = "User" }, new Role { Name = "Admin" }]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
@@ -64,7 +62,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
     {
         //Arrange
         var accessToken =
-            TokenHelper.GetRsaTokenWithIdentityData("testuser4", "TestUser4@test.com", "test-identity-id-4");
+            TokenHelper.GetRsaToken(username: "testuser4", email: "TestUser4@test.com",
+                identityId: "test-identity-id-4");
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act
@@ -228,7 +227,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
     {
         //Arrange
         const long userId = 1;
-        var accessToken = TokenHelper.GetRsaTokenWithUserId(userId);
+        var accessToken = TokenHelper.GetRsaToken(userId);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var dto = new RequestUpdateUsernameDto("newusername");

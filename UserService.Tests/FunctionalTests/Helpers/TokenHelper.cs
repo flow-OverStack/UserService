@@ -64,43 +64,25 @@ internal static class TokenHelper
         return Issuer;
     }
 
-    public static string GetRsaTokenWithRoleClaims(string username, IEnumerable<Role> roles)
+    public static string GetRsaToken(
+        long userId = 1,
+        string username = "testuser1",
+        string email = "TestUser1@test.com",
+        string identityId = "test-identity-id-1",
+        IEnumerable<Role>? roles = null)
     {
-        var claims = roles
-            .Select(r => new Claim(ClaimTypes.Role, r.Name))
-            .Prepend(new Claim(JwtRegisteredClaimNames.PreferredUsername, username));
+        var resolvedRoles = roles ?? [new Role { Name = "User" }];
 
-        var token = claims.GetRsaTokenFromClaims();
-        return token;
-    }
+        Claim[] claims =
+        [
+            ..resolvedRoles.Select(x => new Claim(ClaimTypes.Role, x.Name)).ToArray(),
+            new(ClaimTypes.NameIdentifier, userId.ToString(), ClaimValueTypes.Integer64),
+            new(JwtRegisteredClaimNames.PreferredUsername, username),
+            new(JwtRegisteredClaimNames.Email, email),
+            new(JwtRegisteredClaimNames.Sub, identityId)
+        ];
 
-    public static string GetRsaTokenWithIdentityData(string? username = null, string? email = null,
-        string? identityId = null)
-    {
-        var claims = new List<Claim>();
-
-        if (username != null)
-            claims.Add(new Claim(JwtRegisteredClaimNames.PreferredUsername, username));
-
-        if (email != null)
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, email));
-
-        if (identityId != null)
-            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, identityId));
-
-        var token = claims.GetRsaTokenFromClaims();
-        return token;
-    }
-
-    public static string GetRsaTokenWithUserId(long userId)
-    {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, userId.ToString()),
-        };
-
-        var token = claims.GetRsaTokenFromClaims();
-        return token;
+        return claims.GetRsaTokenFromClaims();
     }
 
     private static string GetRsaTokenFromClaims(this IEnumerable<Claim> claims)

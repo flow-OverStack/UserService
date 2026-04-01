@@ -34,8 +34,7 @@ public class UserActivityController(IUserActivityService activityService) : Base
     public async Task<ActionResult<BaseResult>> RegisterHeartbeat(
         CancellationToken cancellationToken)
     {
-        if (!long.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId))
-            return Unauthorized("Invalid user identifier.");
+        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
         var result = await activityService.RegisterHeartbeatAsync(userId, cancellationToken);
 

@@ -136,24 +136,14 @@ public class AuthController(IAuthService authService) : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<UserDto>>> Init(CancellationToken cancellationToken)
     {
-        var (username, email, identityId) = GetIdentityClaims();
-
-        if (username == null || email == null || identityId == null)
-            return Unauthorized("Required claims are missing");
+        var username = User.Identity!.Name!;
+        var email = User.FindFirstValue(JwtRegisteredClaimNames.Email)!;
+        var identityId = User.FindFirstValue(JwtRegisteredClaimNames.Sub)!;
 
         var dto = new InitUserDto(username, email, identityId);
 
         var result = await authService.InitAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
-    }
-
-    private (string? username, string? email, string? identityId) GetIdentityClaims()
-    {
-        var username = User.Identity?.Name;
-        var email = User.FindFirstValue(JwtRegisteredClaimNames.Email);
-        var identityId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-
-        return (username, email, identityId);
     }
 }

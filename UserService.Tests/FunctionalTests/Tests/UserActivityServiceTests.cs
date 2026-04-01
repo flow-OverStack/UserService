@@ -14,7 +14,7 @@ public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task RegisterHeartbeat_ShouldBe_Ok()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithUserId(1);
+        var accessToken = TokenHelper.GetRsaToken(1);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act
@@ -31,7 +31,7 @@ public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : Bas
     public async Task RegisterHeartbeat_ShouldBe_Unauthorized()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithIdentityData("testuser1"); // Token without userId claim
+        var accessToken = TokenHelper.GetRsaToken(roles: []); // Token with invalid claims (no roles)
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act
@@ -39,8 +39,8 @@ public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : Bas
         var body = await response.Content.ReadAsStringAsync();
 
         //Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         Assert.Equal(MediaTypeNames.Text.Plain, response.Content.Headers.ContentType?.MediaType);
-        Assert.NotNull(body);
+        Assert.Equal("Invalid claims", body);
     }
 }

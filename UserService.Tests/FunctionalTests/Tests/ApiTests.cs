@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
-using UserService.Domain.Entities;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
@@ -16,7 +15,7 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
     {
         //Arrange
         const string forbiddenUrl = "/api/v1.0/Role";
-        var token = TokenHelper.GetRsaTokenWithRoleClaims("testuser2", []);
+        var token = TokenHelper.GetRsaToken(2, "testuser2", roles: []);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         //Act
@@ -51,9 +50,7 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
     {
         //Arrange
         const string forbiddenUrl = "/api/v1.0/Role";
-        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "User" }
-        ]);
+        var accessToken = TokenHelper.GetRsaToken();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         //Act

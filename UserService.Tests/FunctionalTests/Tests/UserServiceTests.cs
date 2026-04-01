@@ -20,7 +20,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateMyUsername_ShouldBe_Ok()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithUserId(1);
+        var accessToken = TokenHelper.GetRsaToken(1);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var dto = new RequestUpdateUsernameDto("newusername");
@@ -42,7 +42,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateMyUsername_ShouldBe_BadRequest()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithUserId(1);
+        var accessToken = TokenHelper.GetRsaToken(1);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var dto = new RequestUpdateUsernameDto("invalid!name");
@@ -61,33 +61,11 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateMyUsername_ShouldBe_Unauthorized()
-    {
-        //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "User" }
-        ]);
-        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        var dto = new RequestUpdateUsernameDto("newusername");
-
-        //Act
-        var response = await HttpClient.PatchAsJsonAsync("/api/v1/user/me/username", dto);
-        var body = await response.Content.ReadAsStringAsync();
-
-        //Assert
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.Equal("Required claims are missing", body);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
     public async Task UpdateUsernameById_ShouldBe_Ok()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "Admin" }
-        ]);
+        var accessToken = TokenHelper.GetRsaToken(1, "testuser1",
+            roles: [new Role { Name = "Admin" }]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         const long targetUserId = 3;
@@ -110,9 +88,8 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateUsernameById_ShouldBe_BadRequest()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "Admin" }
-        ]);
+        var accessToken = TokenHelper.GetRsaToken(1, "testuser1",
+            roles: [new Role { Name = "Admin" }]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         const long targetUserId = 3;
@@ -150,9 +127,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateUsernameById_ShouldBe_Forbidden()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaTokenWithRoleClaims("testuser1", [
-            new Role { Name = "User" }
-        ]);
+        var accessToken = TokenHelper.GetRsaToken(1, "testuser1");
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         const long targetUserId = 3;
