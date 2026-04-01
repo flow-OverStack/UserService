@@ -5,7 +5,7 @@ using UserService.Domain.Results;
 
 namespace UserService.Application.Exceptions.IdentityServer;
 
-public class IdentityServerPasswordIsWrongException(string identityServerName, string message)
+public sealed class IdentityServerPasswordIsWrongException(string identityServerName, string message)
     : IdentityServerBusinessException(identityServerName, message)
 {
     public override BaseResult GetBaseResult()

@@ -5,11 +5,11 @@ using UserService.Domain.Results;
 
 namespace UserService.Application.Exceptions.IdentityServer;
 
-public sealed class IdentityServerInvalidTokenException(string identityServerName, string message)
+public sealed class IdentityServerConflictException(string identityServerName, string message)
     : IdentityServerBusinessException(identityServerName, message)
 {
     public override BaseResult GetBaseResult()
     {
-        return BaseResult.Failure(ErrorMessage.InvalidToken, (int)ErrorCodes.InvalidToken);
+        return BaseResult.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
     }
 }

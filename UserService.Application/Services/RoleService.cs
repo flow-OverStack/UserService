@@ -29,10 +29,7 @@ public class RoleService(
         if (role != null)
             return BaseResult<RoleDto>.Failure(ErrorMessage.RoleAlreadyExists, (int)ErrorCodes.RoleAlreadyExists);
 
-        role = new Role
-        {
-            Name = dto.Name
-        };
+        role = new Role { Name = dto.Name };
         await unitOfWork.Roles.CreateAsync(role, cancellationToken);
         await unitOfWork.Roles.SaveChangesAsync(cancellationToken);
 
@@ -75,8 +72,7 @@ public class RoleService(
 
             if (!areRolesSynced) throw;
 
-            RollbackRoles(usersWithRoleToDelete);
-
+            EnqueueRollbackRoles(usersWithRoleToDelete);
             throw;
         }
 
@@ -110,8 +106,7 @@ public class RoleService(
             if (!areRolesSynced) throw;
 
             var usersWithOldRole = await GetUsersWithRoleAsync(role.Id, CancellationToken.None);
-            RollbackRoles(usersWithOldRole);
-
+            EnqueueRollbackRoles(usersWithOldRole);
             throw;
         }
 
@@ -154,9 +149,8 @@ public class RoleService(
 
             if (!areRolesSynced) throw;
 
-            var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-            RollbackRoles(userWithOldRole!);
-
+            var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
+            EnqueueRollbackRoles(userWithOldRoles!);
             throw;
         }
 
@@ -178,7 +172,6 @@ public class RoleService(
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         var role = user.Roles.FirstOrDefault(x => x.Id == dto.RoleId);
-
         if (role == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
 
@@ -204,9 +197,8 @@ public class RoleService(
 
             if (!areRolesSynced) throw;
 
-            var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-            RollbackRoles(userWithOldRole!);
-
+            var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
+            EnqueueRollbackRoles(userWithOldRoles!);
             throw;
         }
 
@@ -228,13 +220,12 @@ public class RoleService(
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
 
         var role = user.Roles.FirstOrDefault(x => x.Id == dto.FromRoleId);
-
         if (role == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToBeUpdatedIsNotFound,
                 (int)ErrorCodes.RoleNotFound);
 
-        var newRole = await unitOfWork.Roles.GetAll().FirstOrDefaultAsync(x => x.Id == dto.ToRoleId, cancellationToken);
-
+        var newRole = await unitOfWork.Roles.GetAll()
+            .FirstOrDefaultAsync(x => x.Id == dto.ToRoleId, cancellationToken);
         if (newRole == null)
             return BaseResult<UserRoleDto>.Failure(ErrorMessage.RoleToUpdateIsNotFound, (int)ErrorCodes.RoleNotFound);
 
@@ -261,9 +252,8 @@ public class RoleService(
 
             if (!areRolesSynced) throw;
 
-            var userWithOldRole = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-            RollbackRoles(userWithOldRole!);
-
+            var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
+            EnqueueRollbackRoles(userWithOldRoles!);
             throw;
         }
 
@@ -306,18 +296,18 @@ public class RoleService(
         await Task.WhenAll(updateTasks);
     }
 
-    private void RollbackRoles(User user)
+    private void EnqueueRollbackRoles(User user)
     {
-        RollbackRoles([user]);
+        EnqueueRollbackRoles([user]);
     }
 
-    private void RollbackRoles(IEnumerable<User> users)
+    private void EnqueueRollbackRoles(IEnumerable<User> users)
     {
         foreach (var user in users)
         {
             var dto = mapper.Map<IdentityUpdateUserDto>(user);
-            dto.Roles.ForEach(x => x.Users = null!); //Removing loop dependencies
-            backgroundJob.Enqueue<IIdentityServer>(server => server.RollbackUpdateUserAsync(dto));
+            dto.Roles.ForEach(x => x.Users = null!); // Remove circular references for serialization.
+            backgroundJob.Enqueue<IIdentityServer>(server => server.UpdateUserAsync(dto, CancellationToken.None));
         }
     }
 }

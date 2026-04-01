@@ -31,7 +31,7 @@ internal static class IdentityServerConfiguration
             });
         mockIdentityServer
             .Setup(x => x.RegisterUserAsync(It.IsAny<IdentityRegisterUserDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new IdentityUserDto(Guid.NewGuid().ToString()));
+            .ReturnsAsync(new IdentityUserDto(Guid.NewGuid().ToString(), "testuser", "testEmail@test.com"));
         mockIdentityServer.Setup(x => x.RefreshTokenAsync(It.IsAny<RefreshTokenDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(randomKeycloakUserTokenDto);
         mockIdentityServer

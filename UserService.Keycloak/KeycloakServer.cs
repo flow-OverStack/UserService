@@ -1,6 +1,8 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -17,7 +19,7 @@ using UserService.Keycloak.Settings;
 
 namespace UserService.Keycloak;
 
-public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpClient httpClient)
+public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpClient httpClient, IMapper mapper)
     : IIdentityServer
 {
     private const string IdentityServerName = "Keycloak";
@@ -31,25 +33,20 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
     private static KeycloakServiceToken? Token { get; set; }
 
-
     public async Task<IdentityUserDto> RegisterUserAsync(IdentityRegisterUserDto dto,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            // Create register request
-
             var userPayload = new RegisterUserPayload
             {
                 Username = dto.Username,
                 Email = dto.Email,
-
                 Credentials = new List<KeycloakCredential>().AddPassword(dto.Password),
-                Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.Id)
+                Attributes = new KeycloakAttributes()
+                    .AddUserId(_keycloakSettings.UserIdClaim, dto.Id)
                     .AddRoles(_keycloakSettings.RolesClaim, dto.Roles)
             };
-
-            // Create user
 
             var json = JsonConvert.SerializeObject(userPayload, new JsonSerializerSettings
             {
@@ -58,15 +55,26 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             await SetAuthHeaderAsync(cancellationToken);
+
+            // CancellationToken.None: once the request is sent we must know the outcome.
+            // Cancelling here would leave Keycloak in an unknown state (user may or may not be created).
             var createResponse =
-                await httpClient.PostAsync(_keycloakSettings.UsersEndpoint, content, cancellationToken);
+                await httpClient.PostAsync(_keycloakSettings.UsersEndpoint, content, CancellationToken.None);
+
+            if (createResponse.StatusCode == HttpStatusCode.Conflict)
+            {
+                var errorBody = await createResponse.Content.ReadAsStringAsync(CancellationToken.None);
+                var errorResponse = JsonConvert.DeserializeObject<KeycloakErrorResponse>(errorBody);
+
+                throw new IdentityServerInvalidTokenException(IdentityServerName,
+                    $"User with the same username or email already exists. {errorResponse?.ErrorDescription}");
+            }
 
             createResponse.EnsureSuccessStatusCode();
 
-            // Get created user
-
             await SetAuthHeaderAsync(cancellationToken);
-            var getResponse = await httpClient.GetAsync($"{_keycloakSettings.UsersEndpoint}?username={dto.Username}",
+            var getResponse = await httpClient.GetAsync(
+                $"{_keycloakSettings.UsersEndpoint}?username={Uri.EscapeDataString(dto.Username)}",
                 cancellationToken);
 
             getResponse.EnsureSuccessStatusCode();
@@ -75,9 +83,52 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
             var exactUser = responseUsers!.FirstOrDefault(x => x.Username == dto.Username);
 
-            // Return KeycloakUserId
+            return mapper.Map<IdentityUserDto>(exactUser);
+        }
+        catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
+        {
+            throw new IdentityServerInternalException(IdentityServerName, e.Message, e);
+        }
+    }
 
-            return new IdentityUserDto(exactUser!.Id);
+    public async Task<IdentityUserDto?> FindUserAsync(string? username, string? email,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (username != null)
+            {
+                await SetAuthHeaderAsync(cancellationToken);
+                var getResponse = await httpClient.GetAsync(
+                    $"{_keycloakSettings.UsersEndpoint}?username={Uri.EscapeDataString(username)}",
+                    cancellationToken);
+
+                getResponse.EnsureSuccessStatusCode();
+
+                var body = await getResponse.Content.ReadAsStringAsync(cancellationToken);
+                var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
+                var exactUser = responseUsers!.FirstOrDefault(x => x.Username == username);
+
+                return mapper.Map<IdentityUserDto>(exactUser);
+            }
+
+            if (email != null)
+            {
+                await SetAuthHeaderAsync(cancellationToken);
+                var getResponse = await httpClient.GetAsync(
+                    $"{_keycloakSettings.UsersEndpoint}?email={Uri.EscapeDataString(email)}",
+                    cancellationToken);
+
+                getResponse.EnsureSuccessStatusCode();
+
+                var body = await getResponse.Content.ReadAsStringAsync(cancellationToken);
+                var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
+                var exactUser = responseUsers!.FirstOrDefault(x => x.Email == email);
+
+                return mapper.Map<IdentityUserDto>(exactUser);
+            }
+
+            return null;
         }
         catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
         {
@@ -99,7 +150,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             };
 
             var content = new FormUrlEncodedContent(parameters);
-
             var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
 
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -143,7 +193,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             };
 
             var content = new FormUrlEncodedContent(parameters);
-
             var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
 
             var body = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -159,7 +208,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             }
 
             response.EnsureSuccessStatusCode();
-
 
             return new TokenDto
             {
@@ -180,7 +228,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         try
         {
             var response = await SendUpdateUserAsync(dto, cancellationToken);
-
             response.EnsureSuccessStatusCode();
         }
         catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
@@ -189,15 +236,16 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         }
     }
 
-    public async Task RollbackRegistrationAsync(IdentityUserDto dto)
+    public async Task DeleteUserAsync(IdentityUserIdDto dto)
     {
         await SetAuthHeaderAsync();
-        await httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}");
-    }
+        var response = await httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}",
+            CancellationToken.None);
 
-    public Task RollbackUpdateUserAsync(IdentityUpdateUserDto dto)
-    {
-        return SendUpdateUserAsync(dto, CancellationToken.None);
+        // 404 means the user is already gone — that is the desired end state.
+        // Any other non-success code is a real error: throw so Hangfire retries the job.
+        if (response.StatusCode != HttpStatusCode.NotFound)
+            response.EnsureSuccessStatusCode();
     }
 
     private async Task<HttpResponseMessage> SendUpdateUserAsync(IdentityUpdateUserDto dto,
@@ -207,7 +255,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         {
             Username = dto.Username,
             Email = dto.Email,
-            Attributes = new KeycloakAttributes().AddUserId(_keycloakSettings.UserIdClaim, dto.UserId)
+            Attributes = new KeycloakAttributes()
+                .AddUserId(_keycloakSettings.UserIdClaim, dto.UserId)
                 .AddRoles(_keycloakSettings.RolesClaim, dto.Roles)
         };
 
@@ -218,10 +267,9 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
         await SetAuthHeaderAsync(cancellationToken);
-        return await httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content,
-            cancellationToken);
+        return await httpClient.PutAsync(
+            $"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
     }
-
 
     private async Task UpdateServiceTokenAsync(CancellationToken cancellationToken = default)
     {
@@ -236,7 +284,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         };
 
         var content = new FormUrlEncodedContent(parameters);
-
         var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -267,8 +314,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
 
     private static bool IsTokenExpired()
     {
-        return Token == null ||
-               Token.Expires <= DateTime.UtcNow.AddSeconds(TokenExpirationThresholdInSeconds);
+        return Token == null || Token.Expires <= DateTime.UtcNow.AddSeconds(TokenExpirationThresholdInSeconds);
     }
 
     private async Task SetAuthHeaderAsync(CancellationToken cancellationToken = default)

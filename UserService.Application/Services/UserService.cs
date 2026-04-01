@@ -59,7 +59,7 @@ public class UserService(
             await transaction.RollbackAsync(CancellationToken.None);
             if (identityDto != null)
                 backgroundJob.Enqueue<IIdentityServer>(server =>
-                    server.RollbackUpdateUserAsync(identityDto));
+                    server.UpdateUserAsync(identityDto, CancellationToken.None));
 
             throw;
         }

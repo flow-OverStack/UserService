@@ -1,3 +1,3 @@
 namespace UserService.Domain.Dtos.Identity;
 
-public record IdentityUserDto(string IdentityId);
+public record IdentityUserDto(string IdentityId, string Username, string Email);

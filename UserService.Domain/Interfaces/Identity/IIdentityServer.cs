@@ -4,53 +4,42 @@ using UserService.Domain.Dtos.Token;
 namespace UserService.Domain.Interfaces.Identity;
 
 /// <summary>
-///     Service for user authentication in an identity server
+///     Service for user authentication in an identity server.
 /// </summary>
 public interface IIdentityServer
 {
     /// <summary>
-    ///     Register user in identity server
+    ///     Registers a user in the identity server.
     /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<IdentityUserDto> RegisterUserAsync(IdentityRegisterUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Logs user in identity server
+    ///     Searches for an existing user by username, then by email as a fallback.
+    ///     Pass null to skip searching by that field.
+    ///     Returns null if no matching user is found.
     /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    Task<IdentityUserDto?> FindUserAsync(string? username, string? email,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    ///     Logs a user in via the identity server.
+    /// </summary>
     Task<TokenDto> LoginUserAsync(IdentityLoginUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Refresh user's token in identity server
+    ///     Refreshes a user's token via the identity server.
     /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<TokenDto> RefreshTokenAsync(RefreshTokenDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Update user's roles in identity server
+    ///     Updates a user's data in the identity server.
     /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task UpdateUserAsync(IdentityUpdateUserDto dto, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Rolls back the registration of a user; does not catch errors
+    ///     Deletes a user from the identity server.
+    ///     Idempotent: 404 is treated as success.
+    ///     Throws on any other error so that Hangfire can retry the job.
     /// </summary>
-    /// <param name="dto"></param>
-    /// <returns></returns>
-    Task RollbackRegistrationAsync(IdentityUserDto dto);
-
-    /// <summary>
-    ///     Rolls back user's roles update; does not catch errors
-    /// </summary>
-    /// <param name="dto"></param>
-    /// <returns></returns>
-    Task RollbackUpdateUserAsync(IdentityUpdateUserDto dto);
+    Task DeleteUserAsync(IdentityUserIdDto dto);
 }
