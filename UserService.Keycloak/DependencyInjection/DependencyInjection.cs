@@ -11,11 +11,20 @@ public static class DependencyInjection
     public static void AddIdentityServer(this IServiceCollection services)
     {
         services.AddAutoMapper(typeof(KeycloakUserMapping));
-        services.AddHttpClient<IIdentityServer, KeycloakServer>((provider, client) =>
+
+        services.AddHttpClient(KeycloakAuthHandler.TokenClientName, (provider, client) =>
         {
-            var keycloakSettings = provider.GetRequiredService<IOptions<KeycloakSettings>>().Value;
-            client.BaseAddress = new Uri(keycloakSettings.Host);
+            var settings = provider.GetRequiredService<IOptions<KeycloakSettings>>().Value;
+            client.BaseAddress = new Uri(settings.Host);
         });
-        // AddHttpClient also registers KeycloakServer
+
+        services.AddSingleton<KeycloakAuthHandler>();
+
+        services.AddHttpClient<IIdentityServer, KeycloakServer>((provider, client) =>
+            {
+                var keycloakSettings = provider.GetRequiredService<IOptions<KeycloakSettings>>().Value;
+                client.BaseAddress = new Uri(keycloakSettings.Host);
+            })
+            .AddHttpMessageHandler<KeycloakAuthHandler>();
     }
 }

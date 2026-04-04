@@ -1,9 +1,7 @@
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -26,12 +24,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
     private const string WrongGrantErrorMessage = "invalid_grant";
     private const string PasswordGrantType = "password";
     private const string RefreshTokenGrantType = "refresh_token";
-    private const string ClientCredentialsGrantType = "client_credentials";
-    private const int TokenExpirationThresholdInSeconds = 5;
 
-    private static readonly SemaphoreSlim TokenSemaphore = new(1, 1);
     private readonly KeycloakSettings _keycloakSettings = keycloakSettings.Value;
-    private static KeycloakServiceToken? Token { get; set; }
 
     public async Task<IdentityUserDto> RegisterUserAsync(IdentityRegisterUserDto dto,
         CancellationToken cancellationToken = default)
@@ -54,8 +48,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             });
             var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-            await SetAuthHeaderAsync(cancellationToken);
-
             // CancellationToken.None: once the request is sent we must know the outcome.
             // Cancelling here would leave Keycloak in an unknown state (user may or may not be created).
             var createResponse =
@@ -72,7 +64,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
 
             createResponse.EnsureSuccessStatusCode();
 
-            await SetAuthHeaderAsync(cancellationToken);
             var getResponse = await httpClient.GetAsync(
                 $"{_keycloakSettings.UsersEndpoint}?username={Uri.EscapeDataString(dto.Username)}",
                 cancellationToken);
@@ -98,7 +89,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         {
             if (username != null)
             {
-                await SetAuthHeaderAsync(cancellationToken);
                 var getResponse = await httpClient.GetAsync(
                     $"{_keycloakSettings.UsersEndpoint}?username={Uri.EscapeDataString(username)}",
                     cancellationToken);
@@ -114,7 +104,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
 
             if (email != null)
             {
-                await SetAuthHeaderAsync(cancellationToken);
                 var getResponse = await httpClient.GetAsync(
                     $"{_keycloakSettings.UsersEndpoint}?email={Uri.EscapeDataString(email)}",
                     cancellationToken);
@@ -238,7 +227,6 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
 
     public async Task DeleteUserAsync(IdentityUserIdDto dto)
     {
-        await SetAuthHeaderAsync();
         var response = await httpClient.DeleteAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}",
             CancellationToken.None);
 
@@ -266,61 +254,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         });
         var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        await SetAuthHeaderAsync(cancellationToken);
         return await httpClient.PutAsync(
             $"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
-    }
-
-    private async Task UpdateServiceTokenAsync(CancellationToken cancellationToken = default)
-    {
-        if (!IsTokenExpired())
-            return; //double check is here to check if 2 or more threads are updating the token at the same time after the first check
-
-        var parameters = new Dictionary<string, string>
-        {
-            { "client_id", _keycloakSettings.ClientId },
-            { "client_secret", _keycloakSettings.AdminToken },
-            { "grant_type", ClientCredentialsGrantType }
-        };
-
-        var content = new FormUrlEncodedContent(parameters);
-        var response = await httpClient.PostAsync(_keycloakSettings.LoginEndpoint, content, cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var body = await response.Content.ReadAsStringAsync(cancellationToken);
-        var responseToken = JsonConvert.DeserializeObject<KeycloakTokenResponse>(body);
-
-        Token = new KeycloakServiceToken
-        {
-            AccessToken = responseToken!.AccessToken,
-            Expires = DateTime.UtcNow.AddSeconds(responseToken.AccessExpiresIn)
-        };
-    }
-
-    private async Task UpdateServiceTokenIfNeededAsync(CancellationToken cancellationToken = default)
-    {
-        if (IsTokenExpired())
-            try
-            {
-                await TokenSemaphore.WaitAsync(cancellationToken);
-                await UpdateServiceTokenAsync(cancellationToken);
-            }
-            finally
-            {
-                TokenSemaphore.Release();
-            }
-    }
-
-    private static bool IsTokenExpired()
-    {
-        return Token == null || Token.Expires <= DateTime.UtcNow.AddSeconds(TokenExpirationThresholdInSeconds);
-    }
-
-    private async Task SetAuthHeaderAsync(CancellationToken cancellationToken = default)
-    {
-        await UpdateServiceTokenIfNeededAsync(cancellationToken);
-        httpClient.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, Token!.AccessToken);
     }
 }
