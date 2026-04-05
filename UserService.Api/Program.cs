@@ -22,7 +22,7 @@ builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection(nameo
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection(nameof(KafkaSettings)));
 builder.Services.Configure<PaginationRules>(builder.Configuration.GetSection(nameof(PaginationRules)));
 
-builder.Services.ConfigureHttpClientDefaults(clientBuilder => clientBuilder.AddStandardResilienceHandler());
+builder.Services.AddSafeResilienceHandler();
 builder.Services.AddLocalization(options => options.ResourcesPath = nameof(UserService.Application.Resources));
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);

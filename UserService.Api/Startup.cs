@@ -10,12 +10,14 @@ using MassTransit.Monitoring;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Polly;
 using Serilog;
 using UserService.Api.Filters;
 using UserService.Cache.Settings;
@@ -370,6 +372,37 @@ public static class Startup
             options.AddSupportedUICultures(supportedCultures);
             options.ApplyCurrentCultureToResponseHeaders = true;
         });
+    }
+
+    /// <summary>
+    ///     Configures HTTP client resilience with method-aware retry logic.
+    ///     Non-idempotent methods (POST, PATCH) are not retried on exceptions because
+    ///     it is impossible to know whether the request reached the server.
+    ///     Transient server responses (5xx, 408, 429) are retried for all methods.
+    /// </summary>
+    /// <param name="services">The service collection to which the resilience handler is added.</param>
+    public static void AddSafeResilienceHandler(this IServiceCollection services)
+    {
+        services.ConfigureHttpClientDefaults(clientBuilder =>
+            clientBuilder.AddStandardResilienceHandler(options =>
+            {
+                options.Retry.ShouldHandle = args =>
+                {
+                    var method = args.Outcome.Result?.RequestMessage?.Method;
+                    if (method == null && args.Outcome.Exception != null)
+                    {
+                        args.Context.Properties.TryGetValue(
+                            new ResiliencePropertyKey<HttpRequestMessage>("Resilience.Http.RequestMessage"),
+                            out var req);
+                        method = req?.Method;
+                    }
+
+                    if ((method == HttpMethod.Post || method == HttpMethod.Patch) && args.Outcome.Exception != null)
+                        return ValueTask.FromResult(false);
+
+                    return ValueTask.FromResult(HttpClientResiliencePredicates.IsTransient(args.Outcome));
+                };
+            }));
     }
 
     private static IEnumerable<string> GetHosts(this IApplicationBuilder app)
