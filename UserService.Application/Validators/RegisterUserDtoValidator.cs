@@ -17,7 +17,7 @@ public class RegisterUserDtoValidator : AbstractValidator<RegisterUserDto>
             .EmailAddress().WithMessage(ErrorMessage.InvalidEmail);
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage(ErrorMessage.InvalidPassword)
-            .MinimumLength(BusinessRules.PasswordMinLength).WithMessage(ErrorMessage.InvalidPassword);
+            .NotEmpty().WithMessage(ErrorMessage.InvalidCredentials)
+            .MinimumLength(BusinessRules.PasswordMinLength).WithMessage(ErrorMessage.InvalidCredentials);
     }
 }

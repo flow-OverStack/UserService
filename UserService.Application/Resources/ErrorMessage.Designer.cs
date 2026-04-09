@@ -96,6 +96,15 @@ namespace UserService.Application.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid credentials.
+        /// </summary>
+        public static string InvalidCredentials {
+            get {
+                return ResourceManager.GetString("InvalidCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email is invalid.
         /// </summary>
         public static string InvalidEmail {
@@ -110,15 +119,6 @@ namespace UserService.Application.Resources {
         public static string InvalidPagination {
             get {
                 return ResourceManager.GetString("InvalidPagination", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Password is invalid.
-        /// </summary>
-        public static string InvalidPassword {
-            get {
-                return ResourceManager.GetString("InvalidPassword", resourceCulture);
             }
         }
         

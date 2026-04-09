@@ -5,11 +5,11 @@ using UserService.Domain.Results;
 
 namespace UserService.Application.Exceptions.IdentityServer;
 
-public sealed class IdentityServerPasswordIsWrongException(string identityServerName, string message)
+public sealed class IdentityServerInvalidCredentialsException(string identityServerName, string message)
     : IdentityServerBusinessException(identityServerName, message)
 {
     public override BaseResult GetBaseResult()
     {
-        return BaseResult.Failure(ErrorMessage.PasswordIsWrong, (int)ErrorCodes.PasswordIsWrong);
+        return BaseResult.Failure(ErrorMessage.InvalidCredentials, (int)ErrorCodes.InvalidCredentials);
     }
 }

@@ -27,7 +27,7 @@ public partial class AuthService(
     IUnitOfWork unitOfWork,
     IBackgroundJobClient backgroundJob,
     IValidator<RegisterUserDto> registerValidator)
-    : IAuthService
+    : IAuthService, IUserSyncService
 {
     public async Task<BaseResult<UserDto>> RegisterAsync(RegisterUserDto dto,
         CancellationToken cancellationToken = default)
@@ -38,11 +38,84 @@ public partial class AuthService(
         if (!validation.IsValid)
             return BaseResult<UserDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
-        var user = await unitOfWork.Users.GetAll()
-            .FirstOrDefaultAsync(x => x.Username == dto.Username || x.Email == dto.Email, cancellationToken);
-        if (user != null)
-            return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists, (int)ErrorCodes.UserAlreadyExists);
+        var identityUser = await identityServer.FindUserAsync(dto.Username, cancellationToken);
 
+        if (identityUser != null)
+            return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists,
+                (int)ErrorCodes.UserAlreadyExists);
+
+        return await CreateUserAsync(dto, cancellationToken);
+    }
+
+    public Task<BaseResult<TokenDto>> LoginAsync(LoginUserDto dto, CancellationToken cancellationToken = default)
+    {
+        var identifier = IsEmail(dto.Identifier)
+            ? dto.Identifier
+            : dto.Identifier.ToLowerInvariant();
+
+        return LoginAsync(identifier, dto.Password, cancellationToken);
+    }
+
+    public async Task<BaseResult<UserDto>> InitAsync(InitUserDto dto,
+        CancellationToken cancellationToken = default)
+    {
+        if (!IsEmail(dto.Email))
+            return BaseResult<UserDto>.Failure(ErrorMessage.InvalidEmail, (int)ErrorCodes.InvalidProperty);
+
+        var user = await unitOfWork.Users.GetAll()
+            .FirstOrDefaultAsync(x => x.IdentityId == dto.IdentityId, cancellationToken);
+        if (user != null)
+            return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
+
+        var result = await InitUserAsync(dto, cancellationToken);
+        if (!result.IsSuccess)
+            return BaseResult<UserDto>.Failure(result.ErrorMessage!, result.ErrorCode);
+
+        return BaseResult<UserDto>.Success(mapper.Map<UserDto>(result.Data));
+    }
+
+    public async Task SyncUserOnLoginAsync(string identifier, CancellationToken cancellationToken)
+    {
+        var user = await unitOfWork.Users.GetAll()
+            .FirstOrDefaultAsync(x => x.Username == identifier || x.Email == identifier, cancellationToken);
+
+        if (user == null)
+        {
+            // Local record is missing — create it from the identity server data.
+            var identityUser = await identityServer.FindUserAsync(identifier, cancellationToken);
+            if (identityUser == null) return;
+
+            var initDto = mapper.Map<InitUserDto>(identityUser);
+            await InitUserAsync(initDto, cancellationToken);
+            return;
+        }
+
+        user.LastLoginAt = DateTime.UtcNow;
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+
+    private async Task<BaseResult<TokenDto>> LoginAsync(string identifier, string password,
+        CancellationToken cancellationToken = default)
+    {
+        var tokenResult = await SafeLoginUserAsync(identityServer, new IdentityLoginUserDto(identifier, password),
+            cancellationToken);
+
+        if (!tokenResult.IsSuccess)
+            return tokenResult;
+
+        // Fire-and-forget: sync local user record and update LastLoginAt.
+        // Zero latency impact on the login response.
+        backgroundJob.Enqueue<IUserSyncService>(svc =>
+            svc.SyncUserOnLoginAsync(identifier, CancellationToken.None));
+
+        return tokenResult;
+    }
+
+    private async Task<BaseResult<UserDto>> CreateUserAsync(RegisterUserDto dto,
+        CancellationToken cancellationToken)
+    {
+        User user;
         IdentityUserDto? identityResponse = null;
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
@@ -88,8 +161,6 @@ public partial class AuthService(
         {
             await transaction.RollbackAsync(CancellationToken.None);
 
-            // Schedule compensation only when we have a confirmed IdentityId to delete.
-            // If identityResponse is null we cannot safely identify which user to remove.
             if (identityResponse != null)
                 backgroundJob.Enqueue<IIdentityServer>(server =>
                     server.DeleteUserAsync(new IdentityUserIdDto(identityResponse.IdentityId)));
@@ -100,93 +171,9 @@ public partial class AuthService(
         return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
     }
 
-    public async Task<BaseResult<TokenDto>> LoginWithUsernameAsync(LoginUsernameUserDto dto,
-        CancellationToken cancellationToken = default)
-    {
-        var username = dto.Username.ToLowerInvariant();
-        var user = await unitOfWork.Users.GetAll()
-            .FirstOrDefaultAsync(x => x.Username == username, cancellationToken);
-
-        return user == null
-            ? await LoginGhostAsync(username, null, dto.Password, cancellationToken)
-            : await LoginAsync(user, dto.Password, cancellationToken);
-    }
-
-    public async Task<BaseResult<TokenDto>> LoginWithEmailAsync(LoginEmailUserDto dto,
-        CancellationToken cancellationToken = default)
-    {
-        if (!IsEmail(dto.Email))
-            return BaseResult<TokenDto>.Failure(ErrorMessage.InvalidEmail, (int)ErrorCodes.InvalidProperty);
-
-        var user = await unitOfWork.Users.GetAll()
-            .FirstOrDefaultAsync(x => x.Email == dto.Email, cancellationToken);
-
-        return user == null
-            ? await LoginGhostAsync(null, dto.Email, dto.Password, cancellationToken)
-            : await LoginAsync(user, dto.Password, cancellationToken);
-    }
-
-    public async Task<BaseResult<UserDto>> InitAsync(InitUserDto dto,
-        CancellationToken cancellationToken = default)
-    {
-        if (!IsEmail(dto.Email))
-            return BaseResult<UserDto>.Failure(ErrorMessage.InvalidEmail, (int)ErrorCodes.InvalidProperty);
-
-        var user = await unitOfWork.Users.GetAll()
-            .FirstOrDefaultAsync(x => x.IdentityId == dto.IdentityId, cancellationToken);
-        if (user != null)
-            return BaseResult<UserDto>.Success(mapper.Map<UserDto>(user));
-
-        var result = await InitUserAsync(dto, cancellationToken);
-        if (!result.IsSuccess)
-            return BaseResult<UserDto>.Failure(result.ErrorMessage!, result.ErrorCode);
-
-        return BaseResult<UserDto>.Success(mapper.Map<UserDto>(result.Data));
-    }
-
-    /// <summary>
-    ///     Handles login for a user who exists in Keycloak but has no record in the local DB (ghost user).
-    ///     Validates credentials first; only creates the DB record on successful authentication.
-    /// </summary>
-    private async Task<BaseResult<TokenDto>> LoginGhostAsync(string? username, string? email, string password,
-        CancellationToken cancellationToken = default)
-    {
-        var identityUser = await identityServer.FindUserAsync(username, email, cancellationToken);
-        if (identityUser == null)
-            return BaseResult<TokenDto>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound);
-
-        // Validate credentials before touching the DB.
-        var loginDto = new IdentityLoginUserDto(identityUser.Username, password);
-        var tokenResult = await SafeLoginUserAsync(identityServer, loginDto, cancellationToken);
-        if (!tokenResult.IsSuccess)
-            return tokenResult;
-
-        var dto = mapper.Map<InitUserDto>(identityUser);
-        var result = await InitUserAsync(dto, cancellationToken);
-        if (!result.IsSuccess)
-            return BaseResult<TokenDto>.Failure(result.ErrorMessage!, result.ErrorCode);
-
-        return tokenResult;
-    }
-
-    private async Task<BaseResult<TokenDto>> LoginAsync(User user, string password,
-        CancellationToken cancellationToken = default)
-    {
-        var identityDto = new IdentityLoginUserDto(user.Username, password);
-
-        var tokenResult = await SafeLoginUserAsync(identityServer, identityDto, cancellationToken);
-        if (!tokenResult.IsSuccess)
-            return tokenResult;
-
-        user.LastLoginAt = DateTime.UtcNow;
-        unitOfWork.Users.Update(user);
-        await unitOfWork.Users.SaveChangesAsync(cancellationToken);
-
-        return tokenResult;
-    }
-
     private async Task<BaseResult<User>> InitUserAsync(InitUserDto dto, CancellationToken cancellationToken)
     {
+        User user;
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -203,7 +190,7 @@ public partial class AuthService(
                 ? Guid.NewGuid().ToString("N")[..EntityConstraints.UsernameMaxLength]
                 : usernameBase;
 
-            var user = new User
+            user = new User
             {
                 Username = username,
                 Email = dto.Email,
@@ -228,13 +215,14 @@ public partial class AuthService(
             }
 
             await transaction.CommitAsync(cancellationToken);
-            return BaseResult<User>.Success(user);
         }
         catch (Exception)
         {
             await transaction.RollbackAsync(CancellationToken.None);
             throw;
         }
+
+        return BaseResult<User>.Success(user);
     }
 
     private async Task<(string Username, bool IsTemporary)> ResolveUniqueUsernameAsync(
@@ -297,14 +285,9 @@ public partial class AuthService(
     }
 
     private static bool IsAllowedChar(char c)
-    {
-        return c is >= 'a' and <= 'z' or >= '0' and <= '9' or '_' or '-' or '.';
-    }
+        => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '_' or '-' or '.';
 
-    private static bool IsEmail(string email)
-    {
-        return MailAddress.TryCreate(email, out _);
-    }
+    private static bool IsEmail(string email) => MailAddress.TryCreate(email, out _);
 
     [GeneratedRegex(@"[_\-\.]{2,}")]
     private static partial Regex UsernameRegex();

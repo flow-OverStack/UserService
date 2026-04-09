@@ -1,3 +1,3 @@
 namespace UserService.Domain.Dtos.Identity;
 
-public record IdentityLoginUserDto(string Username, string Password);
+public record IdentityLoginUserDto(string Identifier, string Password);

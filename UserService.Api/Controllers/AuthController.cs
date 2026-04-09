@@ -50,65 +50,30 @@ public class AuthController(IAuthService authService) : BaseController
     }
 
     /// <summary>
-    ///     Logs user in with email
-    /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    ///<remarks>
-    /// Request for user login with email:
-    ///
-    ///     POST login-email
-    ///     {
-    ///         "email":"string",
-    ///         "password":"string"
-    ///     }
-    /// </remarks>
-    /// <response code="200">If a user was logged in successfully</response>
-    /// <response code="400">If the request is invalid</response>
-    /// <response code="401">If the password is incorrect</response>
-    /// <response code="404">If a user with this email was not found</response>
-    [HttpPost("login-email")]
-    [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginEmailUserDto dto,
-        CancellationToken cancellationToken)
-    {
-        var result = await authService.LoginWithEmailAsync(dto, cancellationToken);
-
-        return HandleBaseResult(result);
-    }
-
-    /// <summary>
-    ///     Logs user in with username
+    ///     Logs user in (and initializes in the DB if needed) with email or username
     /// </summary>
     /// <param name="dto"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <remarks>
-    /// Request for user login with username:
+    /// Request for user login (and DB initialization if needed):
     ///
-    ///     POST login-username
+    ///     POST login
     ///     {
-    ///         "username":"string",
+    ///         "identifier":"string (email or username)",
     ///         "password":"string"
     ///     }
     /// </remarks>
     /// <response code="200">If a user was logged in successfully</response>
     /// <response code="401">If the password is incorrect</response>
-    /// <response code="404">If a user with this username was not found</response>
-    [HttpPost("login-username")]
+    [HttpPost("login")]
     [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUsernameUserDto dto,
+    public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUserDto dto,
         CancellationToken cancellationToken)
     {
-        var result = await authService.LoginWithUsernameAsync(dto, cancellationToken);
+        var result = await authService.LoginAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
     }

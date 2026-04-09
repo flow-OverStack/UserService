@@ -25,7 +25,7 @@ internal static class IdentityServerConfiguration
             .Returns((IdentityLoginUserDto dto, CancellationToken _) =>
             {
                 if (dto.Password == TestConstants.WrongPassword)
-                    throw new IdentityServerPasswordIsWrongException("TestsIdentityServer", "Wrong password");
+                    throw new IdentityServerInvalidCredentialsException("TestsIdentityServer", "Wrong password");
 
                 return Task.FromResult(randomKeycloakUserTokenDto);
             });

@@ -18,8 +18,8 @@ public enum ErrorCodes
     UserAlreadyHasThisRole = 23,
     UsersNotFound = 24,
     UsernameAlreadyTaken = 25,
-
-    PasswordIsWrong = 31,
+    
+    InvalidCredentials = 32,
     InvalidToken = 33,
 
     RoleAlreadyExists = 41,

@@ -18,8 +18,7 @@ public interface IIdentityServer
     ///     Pass null to skip searching by that field.
     ///     Returns null if no matching user is found.
     /// </summary>
-    Task<IdentityUserDto?> FindUserAsync(string? username, string? email,
-        CancellationToken cancellationToken = default);
+    Task<IdentityUserDto?> FindUserAsync(string identifier, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Logs a user in via the identity server.

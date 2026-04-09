@@ -117,11 +117,11 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task LoginUserWithUsername_ShouldBe_Ok()
     {
         //Arrange
-        var dto = new LoginUsernameUserDto("TestUser3",
+        var dto = new LoginUserDto("TestUser3",
             TestConstants.TestPassword + "3");
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
@@ -136,11 +136,11 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task LoginUserWithEmail_ShouldBe_Ok()
     {
         //Arrange
-        var dto = new LoginEmailUserDto("TestUser1@test.com",
+        var dto = new LoginUserDto("TestUser1@test.com",
             TestConstants.TestPassword + "1");
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-email", dto);
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
@@ -152,40 +152,21 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithEmail_ShouldBe_BadRequest()
-    {
-        //Arrange
-        var dto = new LoginEmailUserDto("NotEmail", TestConstants.TestPassword + "1");
-
-        //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-email", dto);
-        var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
-
-        //Assert
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.InvalidEmail, result.ErrorMessage);
-        Assert.Null(result.Data);
-    }
-
-    [Trait("Category", "Functional")]
-    [Fact]
     public async Task LoginUserWithUsername_ShouldBe_Unauthorized()
     {
         //Arrange
-        var dto = new LoginUsernameUserDto("TestUser1",
+        var dto = new LoginUserDto("TestUser1",
             TestConstants.WrongPassword);
 
         //Act
-        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login-username", dto);
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
         var body = await response.Content.ReadAsStringAsync();
         var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         Assert.False(result!.IsSuccess);
-        Assert.Equal(ErrorMessage.PasswordIsWrong, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidCredentials, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 }

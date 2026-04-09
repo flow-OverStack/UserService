@@ -26,7 +26,7 @@ public class BaseController : ControllerBase
         { (int)ErrorCodes.UsernameAlreadyTaken, StatusCodes.Status409Conflict },
 
         // Authorization
-        { (int)ErrorCodes.PasswordIsWrong, StatusCodes.Status401Unauthorized },
+        { (int)ErrorCodes.InvalidCredentials, StatusCodes.Status401Unauthorized },
         { (int)ErrorCodes.InvalidToken, StatusCodes.Status400BadRequest },
 
         // Roles

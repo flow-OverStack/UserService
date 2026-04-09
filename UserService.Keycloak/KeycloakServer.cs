@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using AutoMapper;
@@ -82,42 +83,14 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         }
     }
 
-    public async Task<IdentityUserDto?> FindUserAsync(string? username, string? email,
+    public async Task<IdentityUserDto?> FindUserAsync(string identifier,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            if (username != null)
-            {
-                var getResponse = await httpClient.GetAsync(
-                    $"{_keycloakSettings.UsersEndpoint}?username={Uri.EscapeDataString(username)}",
-                    cancellationToken);
-
-                getResponse.EnsureSuccessStatusCode();
-
-                var body = await getResponse.Content.ReadAsStringAsync(cancellationToken);
-                var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
-                var exactUser = responseUsers!.FirstOrDefault(x => x.Username == username);
-
-                return mapper.Map<IdentityUserDto>(exactUser);
-            }
-
-            if (email != null)
-            {
-                var getResponse = await httpClient.GetAsync(
-                    $"{_keycloakSettings.UsersEndpoint}?email={Uri.EscapeDataString(email)}",
-                    cancellationToken);
-
-                getResponse.EnsureSuccessStatusCode();
-
-                var body = await getResponse.Content.ReadAsStringAsync(cancellationToken);
-                var responseUsers = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
-                var exactUser = responseUsers!.FirstOrDefault(x => x.Email == email);
-
-                return mapper.Map<IdentityUserDto>(exactUser);
-            }
-
-            return null;
+            return IsEmail(identifier)
+                ? await FindByEmailAsync(identifier, cancellationToken)
+                : await FindByUsernameAsync(identifier, cancellationToken);
         }
         catch (Exception e) when (e is not IdentityServerBusinessException && e is not OperationCanceledException)
         {
@@ -134,7 +107,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
                 { "client_id", _keycloakSettings.ClientId },
                 { "client_secret", _keycloakSettings.AdminToken },
                 { "grant_type", PasswordGrantType },
-                { "username", dto.Username },
+                { "username", dto.Identifier },
                 { "password", dto.Password }
             };
 
@@ -149,7 +122,7 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
                 var errorResponse = JsonConvert.DeserializeObject<KeycloakErrorResponse>(body);
 
                 if (errorResponse!.Error == WrongGrantErrorMessage)
-                    throw new IdentityServerPasswordIsWrongException(IdentityServerName,
+                    throw new IdentityServerInvalidCredentialsException(IdentityServerName,
                         errorResponse.ErrorDescription);
             }
 
@@ -236,7 +209,40 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
             response.EnsureSuccessStatusCode();
     }
 
-    private async Task<HttpResponseMessage> SendUpdateUserAsync(IdentityUpdateUserDto dto,
+    private async Task<IdentityUserDto?> FindByUsernameAsync(string username,
+        CancellationToken cancellationToken)
+    {
+        var response = await httpClient.GetAsync(
+            $"{_keycloakSettings.UsersEndpoint}?username={Uri.EscapeDataString(username)}",
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        var users = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
+
+        // Keycloak search is prefix-based — filter for exact match.
+        var exactUser = users!.FirstOrDefault(x => x.Username == username);
+        return mapper.Map<IdentityUserDto>(exactUser);
+    }
+
+    private async Task<IdentityUserDto?> FindByEmailAsync(string email,
+        CancellationToken cancellationToken)
+    {
+        var response = await httpClient.GetAsync(
+            $"{_keycloakSettings.UsersEndpoint}?email={Uri.EscapeDataString(email)}",
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        var users = JsonConvert.DeserializeObject<KeycloakUser[]>(body);
+
+        var exactUser = users!.FirstOrDefault(x => x.Email == email);
+        return mapper.Map<IdentityUserDto>(exactUser);
+    }
+
+    private Task<HttpResponseMessage> SendUpdateUserAsync(IdentityUpdateUserDto dto,
         CancellationToken cancellationToken = default)
     {
         var userPayload = new UpdateUserPayload
@@ -254,7 +260,8 @@ public class KeycloakServer(IOptions<KeycloakSettings> keycloakSettings, HttpCli
         });
         var content = new StringContent(json, Encoding.UTF8, MediaTypeNames.Application.Json);
 
-        return await httpClient.PutAsync(
-            $"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
+        return httpClient.PutAsync($"{_keycloakSettings.UsersEndpoint}/{dto.IdentityId}", content, cancellationToken);
     }
+
+    private static bool IsEmail(string identifier) => MailAddress.TryCreate(identifier, out _);
 }
