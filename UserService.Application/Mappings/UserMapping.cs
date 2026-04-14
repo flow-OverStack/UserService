@@ -19,5 +19,6 @@ public class UserMapping : Profile
             .ForMember(x => x.UserId, x => x.MapFrom(y => y.Id))
             .ReverseMap();
         CreateMap<User, IdentityUserDto>().ReverseMap();
+        CreateMap<InitUserDto, IdentityUserDto>().ReverseMap();
     }
 }
