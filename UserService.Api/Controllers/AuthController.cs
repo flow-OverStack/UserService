@@ -67,7 +67,6 @@ public class AuthController(IAuthService authService) : BaseController
     /// <response code="200">If a user was logged in successfully</response>
     /// <response code="401">If the password is incorrect</response>
     [HttpPost("login")]
-    [Obsolete("Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) in the identity server instead.")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<BaseResult<TokenDto>>> Login([FromBody] LoginUserDto dto,
