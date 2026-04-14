@@ -38,9 +38,18 @@ public partial class AuthService(
         if (!validation.IsValid)
             return BaseResult<UserDto>.Failure(validation.ErrorMessage, (int)ErrorCodes.InvalidProperty);
 
-        var identityUser = await identityServer.FindUserAsync(dto.Username, cancellationToken);
+        var identityUsernameUserTask = identityServer.FindUserAsync(dto.Username, cancellationToken);
+        var identityEmailUserTask = identityServer.FindUserAsync(dto.Email, cancellationToken);
+        var dbUserTask = unitOfWork.Users.GetAll()
+            .FirstOrDefaultAsync(x => x.Username == dto.Username || x.Email == dto.Email, cancellationToken);
 
-        if (identityUser != null)
+        await Task.WhenAll(identityUsernameUserTask, identityEmailUserTask, dbUserTask);
+
+        var identityUsernameUser = await identityUsernameUserTask;
+        var identityEmailUser = await identityEmailUserTask;
+        var dbUser = await dbUserTask;
+
+        if (identityUsernameUser != null || identityEmailUser != null || dbUser != null)
             return BaseResult<UserDto>.Failure(ErrorMessage.UserAlreadyExists,
                 (int)ErrorCodes.UserAlreadyExists);
 
