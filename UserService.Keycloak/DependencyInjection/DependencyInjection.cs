@@ -18,7 +18,7 @@ public static class DependencyInjection
             client.BaseAddress = new Uri(settings.Host);
         });
 
-        services.AddSingleton<KeycloakAuthHandler>();
+        services.AddTransient<KeycloakAuthHandler>();
 
         services.AddHttpClient<IIdentityServer, KeycloakServer>((provider, client) =>
             {
