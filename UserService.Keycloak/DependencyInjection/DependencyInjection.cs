@@ -26,5 +26,7 @@ public static class DependencyInjection
                 client.BaseAddress = new Uri(keycloakSettings.Host);
             })
             .AddHttpMessageHandler<KeycloakAuthHandler>();
+
+        services.Decorate<IIdentityServer, KeycloakExceptionDecorator>();
     }
 }
