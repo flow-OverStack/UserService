@@ -115,9 +115,10 @@ internal static class WireMockIdentityServerExtensions
         using var scope = services.BuildServiceProvider().CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
-        return body.TryGetValue("username", out var username) &&
+        return body.TryGetValue("username", out var identifier) &&
                body.TryGetValue("password", out var reqPassword) &&
-               dbContext.Set<KeycloakUser>().Any(x => x.Username == username && x.Password == reqPassword);
+               dbContext.Set<KeycloakUser>().Any(x =>
+                   (x.Username == identifier || x.Email == identifier) && x.Password == reqPassword);
     }
 
     private static void ConfigureUserManagementEndpoints(this WireMockServer server, IServiceCollection services)
@@ -126,6 +127,11 @@ internal static class WireMockIdentityServerExtensions
             .RespondWith(Response.Create().WithCallback(message => HandleUserCreation(message, services)));
 
         server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam("username"))
+            .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
+                .WithCallback(message => HandleUserSearch(message, services))
+                .WithSuccess());
+
+        server.Given(Request.Create().WithPath($"/admin/realms/{RealmName}/users").UsingGet().WithParam("email"))
             .RespondWith(Response.Create().WithHeader("Content-Type", "application/json")
                 .WithCallback(message => HandleUserSearch(message, services))
                 .WithSuccess());
@@ -147,6 +153,7 @@ internal static class WireMockIdentityServerExtensions
         {
             Id = Guid.NewGuid(),
             Username = user.Username,
+            Email = user.Email,
             Password = user.Credentials.First(x => x.Type == "password").Value
         });
 
@@ -157,20 +164,26 @@ internal static class WireMockIdentityServerExtensions
         }
         catch (Exception)
         {
-            return BadRequest();
+            return Conflict();
         }
     }
 
     private static ResponseMessage HandleUserSearch(IRequestMessage message, IServiceCollection services)
     {
         var username = message.GetParameter("username")?.FirstOrDefault();
-        if (username == null)
+        var email = message.GetParameter("email")?.FirstOrDefault();
+        if (username == null && email == null)
             return BadRequest();
 
         using var scope = services.BuildServiceProvider().CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<KeycloakDbContext>();
 
-        var users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToList();
+        List<KeycloakUser> users = [];
+
+        if (username != null)
+            users = dbContext.Set<KeycloakUser>().Where(x => x.Username.StartsWith(username)).ToList();
+        if (email != null)
+            users = dbContext.Set<KeycloakUser>().Where(x => x.Email.StartsWith(email)).ToList();
 
         return JsonResponse(users);
     }
@@ -191,6 +204,11 @@ internal static class WireMockIdentityServerExtensions
     private static ResponseMessage BadRequest()
     {
         return new ResponseMessage { StatusCode = (int)HttpStatusCode.BadRequest };
+    }
+
+    private static ResponseMessage Conflict()
+    {
+        return new ResponseMessage { StatusCode = (int)HttpStatusCode.Conflict };
     }
 
     private static WireMockServer SafeStartServer(this WireMockServer server)

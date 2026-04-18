@@ -1,10 +1,14 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using UserService.Application.Resources;
+using UserService.DAL;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
+using UserService.Domain.Entities;
 using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
@@ -117,8 +121,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task LoginUserWithUsername_ShouldBe_Ok()
     {
         //Arrange
-        var dto = new LoginUserDto("TestUser3",
-            TestConstants.TestPassword + "3");
+        var dto = new LoginUserDto("TestUser3", TestConstants.TestPassword + "3");
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
@@ -136,8 +139,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task LoginUserWithEmail_ShouldBe_Ok()
     {
         //Arrange
-        var dto = new LoginUserDto("TestUser1@test.com",
-            TestConstants.TestPassword + "1");
+        var dto = new LoginUserDto("TestUser1@test.com", TestConstants.TestPassword + "1");
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
@@ -152,11 +154,53 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
+    public async Task LoginUser_ShouldBe_Ok_With_CreatedInDatabase()
+    {
+        //Arrange
+        var dto = new LoginUserDto(TestConstants.ExistingUsername,
+            TestConstants.TestPassword + TestConstants.ExistingUsername);
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var intialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
+
+        //Assert
+        var finalCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+        Assert.Equal(intialCount + 1, finalCount); //New user should be created
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(result!.IsSuccess);
+        Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
     public async Task LoginUserWithUsername_ShouldBe_Unauthorized()
     {
         //Arrange
-        var dto = new LoginUserDto("TestUser1",
-            TestConstants.WrongPassword);
+        var dto = new LoginUserDto("TestUser1", TestConstants.WrongPassword);
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<TokenDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(ErrorMessage.InvalidCredentials, result.ErrorMessage);
+        Assert.Null(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task LoginUser_ShouldBe_Unauthorized_When_UserNotFound()
+    {
+        //Arrange
+        var dto = new LoginUserDto("NonExistentUser", TestConstants.TestPassword);
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);

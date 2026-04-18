@@ -13,11 +13,11 @@ internal class ExceptionIdentityServerFactory
     private readonly IIdentityServer _identityServer;
 
     public readonly HttpClient HttpClient =
-        ExceptionHttpClientConfiguration.GetHttpClientConfiguration();
+        ExceptionHttpClientConfiguration.GetHttpClientConfiguration("http://testkeycloakserver:8080");
 
     public readonly KeycloakSettings KeycloakSettings = new()
     {
-        Host = "testUri:0",
+        Host = "http://testkeycloakserver:8080",
         Realm = "TestRealm",
         AdminToken = "TestAdminToken",
         ClientId = "TestClientId",
@@ -31,7 +31,7 @@ internal class ExceptionIdentityServerFactory
     public ExceptionIdentityServerFactory()
     {
         _identityServer =
-            new KeycloakServer(Options.Create(KeycloakSettings), HttpClient, Mapper);
+            new KeycloakExceptionDecorator(new KeycloakServer(Options.Create(KeycloakSettings), HttpClient, Mapper));
     }
 
     public IIdentityServer GetService()

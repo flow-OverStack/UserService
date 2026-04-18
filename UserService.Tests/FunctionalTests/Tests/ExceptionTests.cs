@@ -31,8 +31,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
 {
     public ExceptionTests(ExceptionFunctionalTestWebAppFactory factory) : base(factory)
     {
-        var accessToken = TokenHelper.GetRsaToken(1, "testuser1",
-            roles: [new Role { Name = "User" }, new Role { Name = "Admin" }]);
+        var accessToken = TokenHelper.GetRsaToken(roles: [new Role { Name = "User" }, new Role { Name = "Admin" }]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
@@ -226,8 +225,7 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
     public async Task UpdateMyUsername_ShouldBe_InternalServerError()
     {
         //Arrange
-        const long userId = 1;
-        var accessToken = TokenHelper.GetRsaToken(userId);
+        var accessToken = TokenHelper.GetRsaToken();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var dto = new RequestUpdateUsernameDto("newusername");

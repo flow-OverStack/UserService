@@ -8,6 +8,7 @@ internal class KeycloakDbContext(DbContextOptions<KeycloakDbContext> options) : 
     {
         modelBuilder.Entity<KeycloakUser>().Property(x => x.Id).IsRequired();
         modelBuilder.Entity<KeycloakUser>().Property(x => x.Username).IsRequired();
+        modelBuilder.Entity<KeycloakUser>().Property(x => x.Email).IsRequired();
         modelBuilder.Entity<KeycloakUser>().Property(x => x.Password).IsRequired();
     }
 }

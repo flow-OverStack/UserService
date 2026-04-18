@@ -19,7 +19,7 @@ public class GraphQlMeExceptionTests(NullHttpContextMeGraphQlTestWebAppFactory f
     public async Task GetMe_ShouldBe_NullContextError()
     {
         //Arrange
-        var token = TokenHelper.GetRsaToken(1, "testuser1");
+        var token = TokenHelper.GetRsaToken();
         var request = new HttpRequestMessage(HttpMethod.Post, GraphQlHelper.GraphQlEndpoint);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         request.Content = JsonContent.Create(new { query = GraphQlHelper.RequestMeQuery });

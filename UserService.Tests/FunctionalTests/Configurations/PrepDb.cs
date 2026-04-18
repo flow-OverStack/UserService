@@ -68,11 +68,19 @@ internal static class PrepDb
         dbContext.Database.EnsureCreated();
 
         var keycloakUsers = users.Select((x, index) => new KeycloakUser
-        {
-            Id = Guid.NewGuid(),
-            Username = x.Username,
-            Password = TestConstants.TestPassword + (index + 1) //e.g. TestPassword1
-        });
+            {
+                Id = Guid.NewGuid(),
+                Username = x.Username,
+                Email = x.Email,
+                Password = TestConstants.TestPassword + (index + 1) //e.g. TestPassword1
+            })
+            .Prepend(new KeycloakUser
+            {
+                Id = Guid.NewGuid(),
+                Username = TestConstants.ExistingUsername,
+                Email = TestConstants.ExistingUsername + "@test.com",
+                Password = TestConstants.TestPassword + TestConstants.ExistingUsername
+            });
 
         dbContext.Set<KeycloakUser>().AddRange(keycloakUsers);
 

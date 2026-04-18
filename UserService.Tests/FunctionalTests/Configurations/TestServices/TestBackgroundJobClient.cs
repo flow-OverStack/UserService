@@ -10,24 +10,32 @@ internal class TestBackgroundJobClient(IServiceProvider provider) : IBackgroundJ
     public string Create(Job job, IState state)
     {
         object? instance = null;
+        AsyncServiceScope? scope = null;
 
-        if (!job.Method.IsStatic)
+        try
         {
-            using var scope = provider.CreateAsyncScope();
-            instance = scope.ServiceProvider.GetService(job.Type) ??
-                       ActivatorUtilities.CreateInstance(provider, job.Type);
+            if (!job.Method.IsStatic)
+            {
+                scope = provider.CreateAsyncScope();
+                instance = scope.Value.ServiceProvider.GetService(job.Type) ??
+                           ActivatorUtilities.CreateInstance(provider, job.Type);
+            }
+
+            var result = job.Method.Invoke(instance, job.Args.ToArray());
+
+            switch (result)
+            {
+                case Task task:
+                    task.GetAwaiter().GetResult();
+                    break;
+                case ValueTask valueTask:
+                    valueTask.AsTask().GetAwaiter().GetResult();
+                    break;
+            }
         }
-
-        var result = job.Method.Invoke(instance, job.Args.ToArray());
-
-        switch (result)
+        finally
         {
-            case Task task:
-                task.GetAwaiter().GetResult();
-                break;
-            case ValueTask valueTask:
-                valueTask.AsTask().GetAwaiter().GetResult();
-                break;
+            scope?.DisposeAsync().AsTask().GetAwaiter().GetResult();
         }
 
         return "test-job-id";

@@ -80,13 +80,16 @@ public class AuthServiceTests
     }
 
     [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RegisterUser_ShouldBe_UserAlreadyExists()
+    [Theory]
+    [InlineData("TestUser1", "TestsUser1@test.com")]
+    [InlineData("identityUser", "usernameTest@test.com")]
+    [InlineData("emailTest", "identityUser@identity.com")]
+    [InlineData(TestConstants.ExistingUsername, "usernameTest@test.com")]
+    public async Task RegisterUser_ShouldBe_UserAlreadyExists(string username, string email)
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
-        var dto = new RegisterUserDto("TestUser1", "TestsUser1@test.com",
-            TestConstants.TestPassword + "1");
+        var dto = new RegisterUserDto(username, email, TestConstants.TestPassword + "1");
 
         //Act
         var result = await authService.RegisterAsync(dto);
@@ -211,12 +214,10 @@ public class AuthServiceTests
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
-        var dto = new LoginUserDto("TestUser3",
-            TestConstants.TestPassword + "3");
+        var dto = new LoginUserDto("TestUser1", TestConstants.TestPassword + "1");
 
         //Act
-        var result =
-            await authService.LoginAsync(dto);
+        var result = await authService.LoginAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -229,12 +230,10 @@ public class AuthServiceTests
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
-        var dto = new LoginUserDto("TestUser1@test.com",
-            TestConstants.TestPassword + "1");
+        var dto = new LoginUserDto("TestUser1@test.com", TestConstants.TestPassword + "1");
 
         //Act
-        var result =
-            await authService.LoginAsync(dto);
+        var result = await authService.LoginAsync(dto);
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -243,20 +242,18 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_UserNotFound()
+    public async Task LoginUser_ShouldBe_InvalidCredentials_When_UserNotFound()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
-        var dto = new LoginUserDto("NotExistingUser",
-            TestConstants.TestPassword + "1");
+        var dto = new LoginUserDto("NotExistingUser", TestConstants.TestPassword + "1");
 
         //Act
-        var result =
-            await authService.LoginAsync(dto);
+        var result = await authService.LoginAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.UserNotFound, result.ErrorMessage);
+        Assert.Equal(ErrorMessage.InvalidCredentials, result.ErrorMessage);
         Assert.Null(result.Data);
     }
 
@@ -269,8 +266,7 @@ public class AuthServiceTests
         var dto = new LoginUserDto("TestUser1", TestConstants.WrongPassword);
 
         //Act
-        var result =
-            await authService.LoginAsync(dto);
+        var result = await authService.LoginAsync(dto);
 
         //Assert
         Assert.False(result.IsSuccess);

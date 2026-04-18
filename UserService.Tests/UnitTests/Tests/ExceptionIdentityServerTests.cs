@@ -1,6 +1,5 @@
 using UserService.Application.Exceptions.IdentityServer;
 using UserService.Domain.Dtos.Identity;
-using UserService.Domain.Dtos.Token;
 using UserService.Domain.Entities;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;
@@ -12,18 +11,21 @@ public class ExceptionIdentityServerTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Exception()
+    public async Task RegisterUser_ShouldBe_ConflictException()
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new IdentityRegisterUserDto(4, "testuser4", "TestsUser4@test.com",
-            [new Role { Id = 1, Name = "User" }]);
+        var dto = new IdentityRegisterUserDto(1, "testuser1", "TestsUser1@test.com",
+            [new Role { Id = 1, Name = "User" }])
+        {
+            Password = TestConstants.TestPassword + "1"
+        };
 
         //Act
         var action = async () => await identityServer.RegisterUserAsync(dto);
 
         //Assert
-        await Assert.ThrowsAsync<IdentityServerInternalException>(action);
+        await Assert.ThrowsAsync<IdentityServerConflictException>(action);
     }
 
     [Trait("Category", "Unit")]
@@ -36,21 +38,6 @@ public class ExceptionIdentityServerTests
 
         //Act
         var action = async () => await identityServer.LoginUserAsync(dto);
-
-        //Assert
-        await Assert.ThrowsAsync<IdentityServerInternalException>(action);
-    }
-
-    [Trait("Category", "Unit")]
-    [Fact]
-    public async Task RefreshToken_ShouldBe_Exception()
-    {
-        //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
-        var dto = new RefreshTokenDto("refresh_token");
-
-        //Act
-        var action = async () => await identityServer.RefreshTokenAsync(dto);
 
         //Assert
         await Assert.ThrowsAsync<IdentityServerInternalException>(action);

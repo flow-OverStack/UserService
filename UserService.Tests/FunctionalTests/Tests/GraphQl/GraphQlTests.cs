@@ -30,7 +30,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.NotEmpty(result.Data.Roles.Items);
         Assert.NotEmpty(result.Data.ReputationRecords.Edges);
         Assert.NotEmpty(result.Data.ReputationRules.Items);
-        Assert.Equal(4, result.Data.Users.TotalCount);
+        Assert.Equal(3, result.Data.Users.TotalCount);
         Assert.Equal(3, result.Data.Roles.TotalCount);
         Assert.Equal(9, result.Data.ReputationRecords.TotalCount);
         Assert.Equal(8, result.Data.ReputationRules.TotalCount);

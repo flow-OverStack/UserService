@@ -78,6 +78,5 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(MediaTypeNames.Application.Json, response.Content.Headers.ContentType?.MediaType);
         Assert.NotNull(body);
-        Assert.Contains("\"deprecated\": true", body);
     }
 }

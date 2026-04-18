@@ -20,7 +20,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateMyUsername_ShouldBe_Ok()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaToken(1);
+        var accessToken = TokenHelper.GetRsaToken();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var dto = new RequestUpdateUsernameDto("newusername");
@@ -42,7 +42,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateMyUsername_ShouldBe_BadRequest()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaToken(1);
+        var accessToken = TokenHelper.GetRsaToken();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         var dto = new RequestUpdateUsernameDto("invalid!name");
@@ -64,8 +64,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateUsernameById_ShouldBe_Ok()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaToken(1, "testuser1",
-            roles: [new Role { Name = "Admin" }]);
+        var accessToken = TokenHelper.GetRsaToken(roles: [new Role { Name = "Admin" }]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         const long targetUserId = 3;
@@ -88,8 +87,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateUsernameById_ShouldBe_BadRequest()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaToken(1, "testuser1",
-            roles: [new Role { Name = "Admin" }]);
+        var accessToken = TokenHelper.GetRsaToken(roles: [new Role { Name = "Admin" }]);
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         const long targetUserId = 3;
@@ -127,7 +125,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
     public async Task UpdateUsernameById_ShouldBe_Forbidden()
     {
         //Arrange
-        var accessToken = TokenHelper.GetRsaToken(1, "testuser1");
+        var accessToken = TokenHelper.GetRsaToken();
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
         const long targetUserId = 3;
