@@ -32,18 +32,19 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
 
             swapStream.Seek(0, SeekOrigin.Begin);
 
-            if (httpContext.Response.StatusCode == StatusCodes.Status400BadRequest)
+            // Handle any 4xx status code
+            if (httpContext.Response.StatusCode is >= 400 and < 500)
             {
                 // Read the obtained body in swapStream
                 var responseBody = await new StreamReader(swapStream).ReadToEndAsync();
                 swapStream.Seek(0, SeekOrigin.Begin);
 
-                var data = JsonConvert.DeserializeObject<BaseResult>(responseBody);
-                var errorMessage = GetDefaultErrorMessage(data?.ErrorCode, data?.ErrorMessage);
+                // Try to deserialize as BaseResult; fall back to raw string message
+                var errorMessage = TryExtractErrorMessage(responseBody) ?? responseBody;
 
                 logger.Warning(
                     "Bad request: {ErrorMessage}. Path: {Path}. Method: {Method}. IP: {IP}",
-                    errorMessage ?? responseBody, httpContext.Request.Path, httpContext.Request.Method,
+                    errorMessage, httpContext.Request.Path, httpContext.Request.Method,
                     httpContext.Connection.RemoteIpAddress);
             }
 
@@ -56,13 +57,29 @@ public class WarningHandlingMiddleware(ILogger logger, RequestDelegate next)
         }
     }
 
+    private static string? TryExtractErrorMessage(string responseBody)
+    {
+        try
+        {
+            var data = JsonConvert.DeserializeObject<BaseResult>(responseBody);
+
+            if (data is not ({ ErrorCode: not null } or { ErrorMessage: not null }))
+                return null;
+
+            return GetDefaultErrorMessage(data.ErrorCode, data.ErrorMessage);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
     private static string? GetDefaultErrorMessage(int? errorCode, string? fallbackErrorMessage)
     {
         var errorMessage = errorCode is { } code && Enum.GetName(typeof(ErrorCodes), code) is { } name
-            ? ErrorMessage.ResourceManager.GetString(name, CultureInfo.DefaultThreadCurrentCulture) ??
-              fallbackErrorMessage
+            ? ErrorMessage.ResourceManager.GetString(name, CultureInfo.DefaultThreadCurrentCulture)
+              ?? fallbackErrorMessage
             : fallbackErrorMessage;
-
 
         return errorMessage?.TrimEnd('.');
     }
