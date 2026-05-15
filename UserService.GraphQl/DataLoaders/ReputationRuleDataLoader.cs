@@ -14,9 +14,9 @@ public class ReputationRuleDataLoader(
         CancellationToken cancellationToken)
     {
         await using var scope = scopeFactory.CreateAsyncScope();
-        var userService = scope.ServiceProvider.GetRequiredService<IGetReputationRuleService>();
+        var reputationRuleService = scope.ServiceProvider.GetRequiredService<IGetReputationRuleService>();
 
-        var result = await userService.GetByIdsAsync(keys, cancellationToken);
+        var result = await reputationRuleService.GetByIdsAsync(keys, cancellationToken);
 
         var dictionary = new Dictionary<long, ReputationRule>();
 
