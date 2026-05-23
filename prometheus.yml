@@ -15,3 +15,9 @@ scrape_configs:
     scheme: http
     static_configs:
       - targets: [ 'host.docker.internal:5170', 'question-service:8080' ]
+  - job_name: "answer-service"
+    honor_timestamps: true
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: [ 'host.docker.internal:5244', 'answer-service:8080' ]
