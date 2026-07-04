@@ -110,5 +110,6 @@ jobs:
   trigger-docker:
     name: Trigger Docker Build and Push
     needs: [ unit-tests, functional-tests ]
+    if: github.ref == 'refs/heads/master'
     uses: ./.github/workflows/docker.yml
     secrets: inherit
