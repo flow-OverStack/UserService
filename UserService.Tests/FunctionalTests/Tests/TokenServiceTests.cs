@@ -14,7 +14,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
 {
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RefreshToken_ShouldBe_Ok()
+    public async Task RefreshToken_ValidRefreshToken_ReturnsOk()
     {
         //Arrange
         var dto = new RefreshTokenDto("TestRefreshToken1");
@@ -32,7 +32,7 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
 
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RefreshToken_ShouldBe_BadRequest()
+    public async Task RefreshToken_InvalidRefreshToken_ReturnsBadRequest()
     {
         //Arrange
         var dto = new RefreshTokenDto(TestConstants.WrongRefreshToken);

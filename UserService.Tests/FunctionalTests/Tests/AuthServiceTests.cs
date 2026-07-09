@@ -21,7 +21,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Created()
+    public async Task RegisterUser_ValidData_ReturnsCreated()
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
@@ -40,7 +40,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_BadRequest()
+    public async Task RegisterUser_InvalidEmail_ReturnsBadRequest()
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser1", "NotEmail", TestConstants.TestPassword);
@@ -59,7 +59,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_Ok()
+    public async Task InitUser_ValidClaims_ReturnsOk()
     {
         //Arrange
         var accessToken =
@@ -80,7 +80,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_BadRequest()
+    public async Task InitUser_InvalidEmail_ReturnsBadRequest()
     {
         //Arrange
         var accessToken =
@@ -101,7 +101,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_Unauthorized()
+    public async Task InitUser_EmptyEmailClaim_ReturnsForbidden()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken(username: "testuser1", email: "", identityId: "test-identity-id-1");
@@ -118,7 +118,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithUsername_ShouldBe_Ok()
+    public async Task LoginUser_ValidUsername_ReturnsOk()
     {
         //Arrange
         var dto = new LoginUserDto("TestUser3", TestConstants.TestPassword + "3");
@@ -136,7 +136,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithEmail_ShouldBe_Ok()
+    public async Task LoginUser_ValidEmail_ReturnsOk()
     {
         //Arrange
         var dto = new LoginUserDto("TestUser1@test.com", TestConstants.TestPassword + "1");
@@ -154,7 +154,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUser_ShouldBe_Ok_With_CreatedInDatabase()
+    public async Task LoginUser_NewKeycloakUser_ReturnsOkAndCreatesUser()
     {
         //Arrange
         var dto = new LoginUserDto(TestConstants.ExistingUsername,
@@ -178,7 +178,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithUsername_ShouldBe_Unauthorized()
+    public async Task LoginUser_WrongPassword_ReturnsUnauthorized()
     {
         //Arrange
         var dto = new LoginUserDto("TestUser1", TestConstants.WrongPassword);
@@ -197,7 +197,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUser_ShouldBe_Unauthorized_When_UserNotFound()
+    public async Task LoginUser_NonExistentUser_ReturnsUnauthorized()
     {
         //Arrange
         var dto = new LoginUserDto("NonExistentUser", TestConstants.TestPassword);

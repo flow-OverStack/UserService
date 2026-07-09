@@ -8,7 +8,7 @@ public class UserActivityServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterHeartbeat_ShouldBe_Success()
+    public async Task RegisterHeartbeatAsync_ExistingUserId_ReturnsSuccess()
     {
         //Arrange
         const long id = 1;
@@ -23,7 +23,7 @@ public class UserActivityServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_Success()
+    public async Task SyncHeartbeatsToDatabaseAsync_PendingHeartbeats_ReturnsSuccess()
     {
         //Arrange
         var activityService = new UserActivityServiceFactory().GetDatabaseService();
@@ -38,7 +38,7 @@ public class UserActivityServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_NoSyncedHeartbeats()
+    public async Task SyncHeartbeatsToDatabaseAsync_EmptyHeartbeats_ReturnsNoSyncedHeartbeats()
     {
         //Arrange
         var activityService =
@@ -55,7 +55,7 @@ public class UserActivityServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_NoSyncedHeartbeats_With_KeysInvalid()
+    public async Task SyncHeartbeatsToDatabaseAsync_InvalidKeys_ReturnsNoSyncedHeartbeats()
     {
         //Arrange
         var activityService =
@@ -72,7 +72,7 @@ public class UserActivityServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_NoSyncedHeartbeats_With_ValuesInvalid()
+    public async Task SyncHeartbeatsToDatabaseAsync_InvalidValues_ReturnsNoSyncedHeartbeats()
     {
         //Arrange
         var activityService =

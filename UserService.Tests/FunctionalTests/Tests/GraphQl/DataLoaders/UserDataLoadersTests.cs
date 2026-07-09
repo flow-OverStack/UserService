@@ -9,7 +9,7 @@ public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFun
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Success()
+    public async Task LoadAsync_ExistingUserId_ReturnsSuccess()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -25,7 +25,7 @@ public class UserDataLoadersTests(FunctionalTestWebAppFactory factory) : BaseFun
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Null()
+    public async Task LoadAsync_NonExistentUserId_ReturnsNull()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

@@ -13,7 +13,7 @@ public class ReputationServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task ApplyReputationEvent_ShouldBe_ReputationRulesNotFound()
+    public async Task ApplyReputationEventAsync_UnknownEventType_ReturnsReputationRulesNotFound()
     {
         //Arrange
         var reputationService = new ReputationServiceFactory().GetService();

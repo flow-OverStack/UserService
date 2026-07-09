@@ -12,7 +12,7 @@ public class AuthServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Success()
+    public async Task RegisterAsync_ValidNewUser_ReturnsSuccess()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -29,7 +29,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_UsernameNotValid()
+    public async Task RegisterAsync_InvalidUsername_ReturnsInvalidUsername()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -46,7 +46,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_EmailNotValid()
+    public async Task RegisterAsync_InvalidEmail_ReturnsInvalidEmail()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -64,7 +64,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_PasswordNotValid()
+    public async Task RegisterAsync_InvalidPassword_ReturnsInvalidCredentials()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -85,7 +85,7 @@ public class AuthServiceTests
     [InlineData("identityUser", "usernameTest@test.com")]
     [InlineData("emailTest", "identityUser@identity.com")]
     [InlineData(TestConstants.ExistingUsername, "usernameTest@test.com")]
-    public async Task RegisterUser_ShouldBe_UserAlreadyExists(string username, string email)
+    public async Task RegisterAsync_ExistingUsernameOrEmail_ReturnsUserAlreadyExists(string username, string email)
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -102,7 +102,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_RoleNotFound()
+    public async Task RegisterAsync_NoRolesInRepository_ReturnsRoleNotFound()
     {
         //Arrange
         var authService =
@@ -122,7 +122,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_Success()
+    public async Task InitAsync_NewUser_ReturnsSuccess()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -138,7 +138,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_EmailNotValid()
+    public async Task InitAsync_InvalidEmail_ReturnsInvalidEmail()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -155,7 +155,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_Success_With_UserAlreadyExists()
+    public async Task InitAsync_ExistingUser_ReturnsSuccess()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -171,7 +171,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_RoleNotFound()
+    public async Task InitAsync_NoRolesInRepository_ReturnsRoleNotFound()
     {
         //Arrange
         var authService =
@@ -194,7 +194,7 @@ public class AuthServiceTests
     [InlineData("TestUser_LongNameToo", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser1", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser4", "TestsUser4@test.com", "test-identity-id-4")]
-    public async Task InitUser_ShouldBe_Success_Username_Variations(string username, string email, string identityId)
+    public async Task InitAsync_UsernameVariations_ReturnsSuccess(string username, string email, string identityId)
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -210,7 +210,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUserWithUsername_ShouldBe_Success()
+    public async Task LoginAsync_ValidUsernameCredentials_ReturnsSuccess()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -226,7 +226,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUserWithEmail_ShouldBe_Success()
+    public async Task LoginAsync_ValidEmailCredentials_ReturnsSuccess()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -242,7 +242,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_InvalidCredentials_When_UserNotFound()
+    public async Task LoginAsync_NonExistentUser_ReturnsInvalidCredentials()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();
@@ -259,7 +259,7 @@ public class AuthServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_InvalidCredentials()
+    public async Task LoginAsync_WrongPassword_ReturnsInvalidCredentials()
     {
         //Arrange
         var authService = new AuthServiceFactory().GetService();

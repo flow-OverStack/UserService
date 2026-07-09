@@ -16,7 +16,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Probe_ShouldBe_Ok()
+    public async Task Probe_ValidProbeContext_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -34,7 +34,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Ok()
+    public async Task Send_SuccessfulPipe_ReturnsOk()
     {
         //Arrange
         const long userId = 1;
@@ -70,7 +70,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Exception()
+    public async Task Send_PipeThrowsRepeatedly_ThrowsTestException()
     {
         //Arrange
         const long userId = 1;
@@ -108,7 +108,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Exception_With_SuccessfulRetry()
+    public async Task Send_PipeThrowsOnceThenSucceeds_ReturnsOk()
     {
         //Arrange
         const long userId = 1;
@@ -154,7 +154,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_MovedToDLQ()
+    public async Task Send_MaxRedeliveryCountExceeded_ThrowsTestException()
     {
         //Arrange
         const long userId = 1;

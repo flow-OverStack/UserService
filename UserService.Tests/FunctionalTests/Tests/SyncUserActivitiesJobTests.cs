@@ -14,7 +14,7 @@ public class SyncUserActivitiesJobTests(FunctionalTestWebAppFactory factory) : S
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunSyncUserActivitiesJob_ShouldBe_Ok()
+    public async Task RunAsync_ValidCachedActivities_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -35,7 +35,7 @@ public class SyncUserActivitiesJobTests(FunctionalTestWebAppFactory factory) : S
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunSyncUserActivitiesJob_ShouldBe_NoSyncedActivities()
+    public async Task RunAsync_InvalidCachedActivities_ReturnsNoSyncedActivities()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

@@ -8,7 +8,7 @@ public class GetReputationRuleServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllReputationRules_ShouldBe_Success()
+    public async Task GetAllReputationRules_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
@@ -23,7 +23,7 @@ public class GetReputationRuleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRulesByIds_ShouldBe_Success()
+    public async Task GetReputationRulesByIds_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
         var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
@@ -39,7 +39,7 @@ public class GetReputationRuleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRulesByIds_ShouldBe_ReputationRuleNotFound()
+    public async Task GetReputationRulesByIds_SingleNonExistentId_ReturnsReputationRuleNotFound()
     {
         //Arrange
         var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
@@ -56,7 +56,7 @@ public class GetReputationRuleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRulesByIds_ShouldBe_ReputationRulesNotFound()
+    public async Task GetReputationRulesByIds_MultipleNonExistentIds_ReturnsReputationRulesNotFound()
     {
         //Arrange
         var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();

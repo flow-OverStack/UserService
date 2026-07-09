@@ -14,7 +14,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_Success()
+    public async Task GetAll_ValidRequest_ReturnsSuccess()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllQuery };
@@ -38,7 +38,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_InvalidPaginationError()
+    public async Task GetAll_InvalidPagination_ReturnsInvalidPaginationError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUsersWithInvalidPaginationQuery };
@@ -56,7 +56,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RequestWithWrongArgument_ShouldBe_Error()
+    public async Task Request_WrongArgument_ReturnsBadRequest()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestWithWrongArgument };
@@ -74,7 +74,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllByIds_ShouldBe_Success()
+    public async Task GetAllByIds_ExistingIds_ReturnsSuccess()
     {
         //Arrange
         const long userId = 1, roleId = 1, reputationRuleId = 1, reputationRecordId = 1;
@@ -96,7 +96,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_Success()
+    public async Task GetMe_AuthenticatedUser_ReturnsSuccess()
     {
         //Arrange
         var token = TokenHelper.GetRsaToken(1, "testuser1");
@@ -118,7 +118,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_Unauthorized()
+    public async Task GetMe_NoAuthToken_ReturnsUnauthorizedError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestMeQuery };
@@ -136,7 +136,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_Null()
+    public async Task GetMe_NonExistentUserId_ReturnsNull()
     {
         //Arrange
         var token = TokenHelper.GetRsaToken(0, "testuser1");
@@ -156,7 +156,7 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllByIds_ShouldBe_Null()
+    public async Task GetAllByIds_NonExistentIds_ReturnsNull()
     {
         //Arrange
         const long userId = 0, roleId = 0, reputationRuleId = 0, reputationRecordId = 0;

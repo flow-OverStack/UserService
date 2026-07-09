@@ -10,7 +10,7 @@ public class GetRoleServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllRoles_ShouldBe_Success()
+    public async Task GetAllRoles_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getRoleService = new GetRoleServiceFactory().GetService();
@@ -25,7 +25,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllRoles_ShouldBe_RolesNotFound()
+    public async Task GetAllRoles_EmptyRepository_ReturnsRolesNotFound()
     {
         //Arrange
         var getRoleService =
@@ -43,7 +43,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersRoles_ShouldBe_Success()
+    public async Task GetUsersRoles_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
         //Arrange
         var getRoleService = new GetRoleServiceFactory().GetService();
@@ -60,7 +60,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersRoles_ShouldBe_RolesNotFound()
+    public async Task GetUsersRoles_NonExistentUserIds_ReturnsRolesNotFound()
     {
         //Arrange
         var getRoleService = new CacheGetRoleServiceFactory().GetService();
@@ -77,7 +77,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByIds_ShouldBe_Success()
+    public async Task GetByIds_ExistingIds_ReturnsSuccess()
     {
         //Arrange
         var getRoleService = new GetRoleServiceFactory().GetService();
@@ -93,7 +93,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByIds_ShouldBe_RoleNotFound()
+    public async Task GetByIds_SingleNonExistentId_ReturnsRoleNotFound()
     {
         //Arrange
         var getRoleService = new CacheGetRoleServiceFactory().GetService();
@@ -110,7 +110,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetByIds_ShouldBe_RolesNotFound()
+    public async Task GetByIds_MultipleNonExistentIds_ReturnsRolesNotFound()
     {
         //Arrange
         var getRoleService = new CacheGetRoleServiceFactory().GetService();

@@ -8,7 +8,7 @@ public class GetReputationRecordServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllReputationRecords_ShouldBe_Success()
+    public async Task GetAllAsync_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -23,7 +23,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsByIds_ShouldBe_Success()
+    public async Task GetByIdsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -39,7 +39,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsByIds_ShouldBe_ReputationRecordNotFound()
+    public async Task GetByIdsAsync_SingleNonExistentId_ReturnsReputationRecordNotFound()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -56,7 +56,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsByIds_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetByIdsAsync_MultipleNonExistentIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -73,7 +73,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersOwnedReputationRecords_ShouldBe_Success()
+    public async Task GetUsersOwnedRecordsAsync_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -89,7 +89,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersOwnedReputationRecords_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetUsersOwnedRecordsAsync_NonExistentUserIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -106,7 +106,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersInitiatedReputationRecords_ShouldBe_Success()
+    public async Task GetUsersInitiatedRecordsAsync_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -122,7 +122,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersInitiatedReputationRecords_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetUsersInitiatedRecordsAsync_NonExistentUserIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -139,7 +139,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsWithRules_ShouldBe_Success()
+    public async Task GetRecordsWithReputationRulesAsync_MixOfExistingAndNonExistentRuleIds_ReturnsSuccess()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
@@ -155,7 +155,7 @@ public class GetReputationRecordServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsWithRules_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetRecordsWithReputationRulesAsync_NonExistentRuleIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();

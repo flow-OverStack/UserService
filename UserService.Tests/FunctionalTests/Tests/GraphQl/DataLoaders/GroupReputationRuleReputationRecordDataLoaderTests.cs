@@ -11,7 +11,7 @@ public class GroupReputationRuleReputationRecordDataLoaderTests(FunctionalTestWe
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadGrouped_ShouldBe_Success()
+    public async Task LoadRequiredAsync_ExistingReputationRuleId_ReturnsRecords()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -27,7 +27,7 @@ public class GroupReputationRuleReputationRecordDataLoaderTests(FunctionalTestWe
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_NoRecords()
+    public async Task LoadRequiredAsync_NonExistentReputationRuleId_ReturnsEmptyCollection()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

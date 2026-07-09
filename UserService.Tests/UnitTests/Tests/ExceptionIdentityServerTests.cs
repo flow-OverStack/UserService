@@ -11,7 +11,7 @@ public class ExceptionIdentityServerTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_ConflictException()
+    public async Task RegisterUserAsync_ConflictingUser_ThrowsIdentityServerConflictException()
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
@@ -30,7 +30,7 @@ public class ExceptionIdentityServerTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_Exception()
+    public async Task LoginUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();
@@ -45,7 +45,7 @@ public class ExceptionIdentityServerTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUser_ShouldBe_Exception()
+    public async Task UpdateUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
         //Arrange
         var identityServer = new ExceptionIdentityServerFactory().GetService();

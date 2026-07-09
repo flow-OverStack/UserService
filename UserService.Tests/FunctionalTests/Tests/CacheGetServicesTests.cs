@@ -20,7 +20,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_Ok()
+    public async Task GetUserById_CacheHit_ReturnsUserWithRoles()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };
@@ -41,7 +41,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_Null()
+    public async Task GetUserById_NonExistentUserCached_ReturnsNull()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(0) };
@@ -62,7 +62,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_Ok_With_WrongEntryInCache()
+    public async Task GetUserById_WrongCacheEntry_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -87,7 +87,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetGroupedById_ShouldBe_Null()
+    public async Task GetGroupedById_NonExistentUserCached_ReturnsNull()
     {
         //Arrange
         const long userId = 0;

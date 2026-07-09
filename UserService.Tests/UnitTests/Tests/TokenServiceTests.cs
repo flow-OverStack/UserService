@@ -8,7 +8,7 @@ public class TokenServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task RefreshToken_ShouldBe_NewToken()
+    public async Task RefreshTokenAsync_ValidRefreshToken_ReturnsNewToken()
     {
         //Arrange
         var tokenService = new TokenServiceFactory().GetService();

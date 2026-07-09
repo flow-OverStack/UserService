@@ -9,7 +9,7 @@ public class ReputationRuleDataLoaderTests(FunctionalTestWebAppFactory factory) 
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Success()
+    public async Task LoadAsync_ExistingRuleId_ReturnsSuccess()
     {
         //Arrange        
         const long ruleId = 1;
@@ -26,7 +26,7 @@ public class ReputationRuleDataLoaderTests(FunctionalTestWebAppFactory factory) 
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Null()
+    public async Task LoadAsync_NonExistentRuleId_ReturnsNull()
     {
         //Arrange        
         const long ruleId = 0;

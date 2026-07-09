@@ -10,7 +10,7 @@ public class GroupRoleUserDataLoaderTests(FunctionalTestWebAppFactory factory) :
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoadGrouped_ShouldBe_Success()
+    public async Task LoadRequiredAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -26,7 +26,7 @@ public class GroupRoleUserDataLoaderTests(FunctionalTestWebAppFactory factory) :
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_NoUsers()
+    public async Task LoadRequiredAsync_NonExistentRoleId_ReturnsNoUsers()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

@@ -17,7 +17,7 @@ public class ReputationServiceTests(FunctionalTestWebAppFactory factory) : Seque
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ApplyReputationEvent_ShouldBe_ReputationRuleNotFound()
+    public async Task ApplyReputationEventAsync_MissingReputationRule_ReturnsReputationRuleNotFound()
     {
         //Arrange
         var dto = new ReputationEventDto(1, 1, 1, EntityType.Answer, BaseEventType.EntityDownvoted);
@@ -39,7 +39,7 @@ public class ReputationServiceTests(FunctionalTestWebAppFactory factory) : Seque
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ApplyReputationEvent_ShouldBe_UserNotFound()
+    public async Task ApplyReputationEventAsync_NonExistentUser_ReturnsUserNotFound()
     {
         //Arrange
         var dto = new ReputationEventDto(1, 0, 1, EntityType.Answer, BaseEventType.EntityDownvoted);

@@ -14,7 +14,7 @@ public class GraphQlExceptionTests(ExceptionGraphQlFunctionalTestWebAppFactory f
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_ServerError()
+    public async Task GetAll_RepositoryThrows_ReturnsServerError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllQuery };

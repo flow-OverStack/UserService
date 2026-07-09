@@ -28,7 +28,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CreateRole_ShouldBe_Created()
+    public async Task CreateRole_NewRoleName_ReturnsCreated()
     {
         //Arrange
         var dto = new CreateRoleDto("NewTestRole");
@@ -46,7 +46,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CreateRole_ShouldBe_Conflict()
+    public async Task CreateRole_DuplicateRoleName_ReturnsConflict()
     {
         //Arrange
         var dto = new CreateRoleDto("User");
@@ -65,7 +65,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_Ok()
+    public async Task DeleteRole_ExistingRoleId_ReturnsOk()
     {
         //Arrange
         const long roleId = 3;
@@ -83,7 +83,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_NotFound()
+    public async Task DeleteRole_NonExistentRoleId_ReturnsNotFound()
     {
         //Arrange
         const long roleId = 0;
@@ -102,7 +102,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_Ok()
+    public async Task UpdateRole_ExistingRoleId_ReturnsOk()
     {
         //Arrange
         const long roleId = 3;
@@ -121,7 +121,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_NotFound()
+    public async Task UpdateRole_NonExistentRoleId_ReturnsNotFound()
     {
         //Arrange
         const long roleId = 0;
@@ -141,7 +141,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_Ok()
+    public async Task AddRoleForUser_ExistingUsername_ReturnsOk()
     {
         //Arrange
         const string username = "TestUser1";
@@ -160,7 +160,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_NotFound()
+    public async Task AddRoleForUser_NonExistentUsername_ReturnsNotFound()
     {
         //Arrange
         const string username = "NotExistingUser";
@@ -180,7 +180,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_Ok()
+    public async Task DeleteRoleForUser_ExistingUsername_ReturnsOk()
     {
         //Arrange
         const string username = "TestUser2";
@@ -201,7 +201,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_NotFound()
+    public async Task DeleteRoleForUser_NonExistentUser_ReturnsNotFound()
     {
         //Arrange
         const string username = "NotExistingUser";
@@ -222,7 +222,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_Ok()
+    public async Task UpdateRoleForUser_ExistingUsername_ReturnsOk()
     {
         //Arrange
         const string username = "TestUser2";
@@ -245,7 +245,7 @@ public class RoleServiceTests : SequentialFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_NotFound()
+    public async Task UpdateRoleForUser_NonExistentUser_ReturnsNotFound()
     {
         //Arrange
         const string username = "NotExistingUser";

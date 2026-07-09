@@ -17,7 +17,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeQuestionUpvoted_ShouldBe_Ok()
+    public async Task ConsumeQuestionUpvoted_QuestionUpvoted_ReturnsOk()
     {
         //Arrange
         const long authorId = 2;
@@ -62,7 +62,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeAnswerUpvoted_ShouldBe_Ok()
+    public async Task ConsumeAnswerUpvoted_AnswerUpvoted_ReturnsOk()
     {
         //Arrange
         const long authorId = 2;
@@ -107,7 +107,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeAnswerAccepted_ShouldBe_Ok()
+    public async Task ConsumeAnswerAccepted_AnswerAccepted_ReturnsOk()
     {
         //Arrange
         const long authorId = 2;
@@ -152,7 +152,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeQuestionDownvoted_ShouldBe_Ok()
+    public async Task ConsumeQuestionDownvoted_QuestionDownvoted_ReturnsOk()
     {
         //Arrange
         const long authorId = 1;
@@ -197,7 +197,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeAnswerDownvoted_ShouldBe_Ok()
+    public async Task ConsumeAnswerDownvoted_AnswerDownvoted_ReturnsOk()
     {
         //Arrange
         const long authorId = 1;
@@ -242,7 +242,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeEntityAcceptanceRevoked_ShouldBe_Ok()
+    public async Task ConsumeEntityAcceptanceRevoked_AnswerAcceptanceRevoked_ReturnsOk()
     {
         //Arrange
         const long authorId = 1;
@@ -287,7 +287,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeEntityDeletedEvent_ShouldBe_Ok()
+    public async Task ConsumeEntityDeletedEvent_QuestionDeleted_ReturnsOk()
     {
         //Arrange
         const long authorId = 1;
@@ -325,7 +325,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeEntityVoteRemoved_ShouldBe_Ok()
+    public async Task ConsumeEntityVoteRemoved_QuestionVoteRemoved_ReturnsOk()
     {
         // Arrange
         const long authorId = 2;
@@ -366,7 +366,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumePositiveEvent_ShouldBe_DailyReputationLimitExceeded()
+    public async Task ConsumePositiveEvent_DailyLimitExceeded_ReturnsDailyReputationLimitExceeded()
     {
         //Arrange
         const long authorId = 3;
@@ -404,7 +404,7 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task ConsumeNegativeEvent_ShouldBe_ReputationMinimumReached()
+    public async Task ConsumeNegativeEvent_MinimumReached_ReturnsReputationMinimumReached()
     {
         //Arrange
         const long authorId = 1;

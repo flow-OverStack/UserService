@@ -13,7 +13,7 @@ public class ResetJobTests(FunctionalTestWebAppFactory factory) : BaseFunctional
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunProcessedEvent_ShouldBe_Ok()
+    public async Task RunAsync_ExistingProcessedEvents_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

@@ -16,7 +16,7 @@ public class GraphQlMeExceptionTests(NullHttpContextMeGraphQlTestWebAppFactory f
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_NullContextError()
+    public async Task GetMe_NullHttpContext_ReturnsNotAuthenticatedError()
     {
         //Arrange
         var token = TokenHelper.GetRsaToken();

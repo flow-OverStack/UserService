@@ -10,7 +10,7 @@ public class CurrentReputationDataLoaderTests(FunctionalTestWebAppFactory factor
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Success()
+    public async Task LoadAsync_ExistingUserId_ReturnsReputation()
     {
         //Arrange
         const long userId = 1;
@@ -26,7 +26,7 @@ public class CurrentReputationDataLoaderTests(FunctionalTestWebAppFactory factor
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Zero()
+    public async Task LoadAsync_NonExistentUserId_ReturnsZero()
     {
         //Arrange
         const long userId = 0;

@@ -10,7 +10,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserWithRolesById_ShouldBe_Ok()
+    public async Task GetUserWithRolesById_ExistingUserId_ReturnsOk()
     {
         //Arrange
         const long userId = 1;
@@ -28,7 +28,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserWithRolesById_ShouldBe_UserNotFound()
+    public async Task GetUserWithRolesById_NonExistentUserId_ThrowsRpcException()
     {
         //Arrange
         const long userId = 0;
@@ -48,7 +48,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_Ok()
+    public async Task GetUsersByIds_MixedExistingAndNonExistentIds_ReturnsOk()
     {
         //Arrange
         var userIds = new List<long> { 1, 2, 0 };
@@ -69,7 +69,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_UserNotFound()
+    public async Task GetUsersByIds_SingleNonExistentId_ThrowsRpcException()
     {
         //Arrange
         var userIds = new List<long> { 0 };
@@ -91,7 +91,7 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_UsersNotFound()
+    public async Task GetUsersByIds_MultipleNonExistentIds_ThrowsRpcException()
     {
         //Arrange
         var userIds = new List<long> { 0, -1 };

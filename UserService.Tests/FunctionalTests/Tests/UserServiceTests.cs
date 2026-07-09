@@ -17,7 +17,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateMyUsername_ShouldBe_Ok()
+    public async Task UpdateMyUsername_ValidUsername_ReturnsSuccess()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken();
@@ -39,7 +39,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateMyUsername_ShouldBe_BadRequest()
+    public async Task UpdateMyUsername_InvalidUsername_ReturnsBadRequest()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken();
@@ -61,7 +61,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateUsernameById_ShouldBe_Ok()
+    public async Task UpdateUsernameById_ValidUsernameAsAdmin_ReturnsSuccess()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken(roles: [new Role { Name = "Admin" }]);
@@ -84,7 +84,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateUsernameById_ShouldBe_BadRequest()
+    public async Task UpdateUsernameById_InvalidUsernameAsAdmin_ReturnsBadRequest()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken(roles: [new Role { Name = "Admin" }]);
@@ -107,7 +107,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateUsernameById_ShouldBe_Unauthorized()
+    public async Task UpdateUsernameById_NoAuthToken_ReturnsUnauthorized()
     {
         //Arrange
         const long targetUserId = 3;
@@ -122,7 +122,7 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateUsernameById_ShouldBe_Forbidden()
+    public async Task UpdateUsernameById_NonAdminRole_ReturnsForbidden()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken();

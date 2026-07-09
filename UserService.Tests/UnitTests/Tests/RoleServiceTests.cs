@@ -10,7 +10,7 @@ public class RoleServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task CreateRole_ShouldBe_Success()
+    public async Task CreateRoleAsync_NewRoleName_ReturnsSuccess()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -26,7 +26,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task CreateRole_ShouldBe_RoleAlreadyExists()
+    public async Task CreateRoleAsync_ExistingRoleName_ReturnsRoleAlreadyExists()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -43,7 +43,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_Success()
+    public async Task DeleteRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -59,7 +59,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_RoleNotFound()
+    public async Task DeleteRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -76,7 +76,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_CannotDeleteDefaultRole()
+    public async Task DeleteRoleAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -93,7 +93,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_Success()
+    public async Task UpdateRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -109,7 +109,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_RoleNotFound()
+    public async Task UpdateRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -126,7 +126,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_Success()
+    public async Task AddRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -146,7 +146,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_UserNotFound()
+    public async Task AddRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -167,7 +167,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_UserAlreadyHasThisRole()
+    public async Task AddRoleForUserAsync_UserAlreadyInRole_ReturnsUserAlreadyHasThisRole()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -188,7 +188,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_RoleNotFound()
+    public async Task AddRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -209,7 +209,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_Success()
+    public async Task DeleteRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -229,7 +229,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_UserNotFound()
+    public async Task DeleteRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -250,7 +250,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_RoleNotFound()
+    public async Task DeleteRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -271,7 +271,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_CannotDeleteDefaultRole()
+    public async Task DeleteRoleForUserAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -292,7 +292,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_Success()
+    public async Task UpdateRoleForUserAsync_ExistingUserAndRoles_ReturnsSuccess()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -312,7 +312,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_UserNotFound()
+    public async Task UpdateRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -334,7 +334,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_RoleToBeUpdatedIsNotFound()
+    public async Task UpdateRoleForUserAsync_NonExistentFromRoleId_ReturnsRoleToBeUpdatedIsNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -356,7 +356,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_UserAlreadyHasThisRole()
+    public async Task UpdateRoleForUserAsync_UserAlreadyInToRole_ReturnsUserAlreadyHasThisRole()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();
@@ -378,7 +378,7 @@ public class RoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_RoleToUpdateIsNotFound()
+    public async Task UpdateRoleForUserAsync_NonExistentToRoleId_ReturnsRoleToUpdateIsNotFound()
     {
         //Arrange
         var roleService = new RoleServiceFactory().GetService();

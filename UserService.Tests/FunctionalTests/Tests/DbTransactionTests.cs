@@ -12,7 +12,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CommitTransaction_ShouldBe_Ok()
+    public async Task CommitTransaction_SingleTransaction_ReturnsCommitted()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -37,7 +37,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RollbackTransaction_ShouldBe_Ok()
+    public async Task RollbackTransaction_SingleTransaction_ReturnsRolledBack()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -62,7 +62,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DisposeTransaction_ShouldBe_Ok()
+    public async Task DisposeTransaction_SingleTransaction_ReturnsRolledBack()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -87,7 +87,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task CommitNestedTransaction_ShouldBe_Ok()
+    public async Task CommitNestedTransaction_NestedTransaction_ReturnsCommitted()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -124,7 +124,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RollbackNestedTransaction_ShouldBe_Ok()
+    public async Task RollbackNestedTransaction_NestedTransaction_ReturnsRolledBack()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -161,7 +161,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DisposeNestedTransaction_ShouldBe_Ok()
+    public async Task DisposeNestedTransaction_NestedTransaction_ReturnsRolledBack()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -198,7 +198,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task RollbackTransaction_ShouldBe_Ok_With_NestedTransaction()
+    public async Task RollbackTransaction_NestedTransaction_ReturnsRolledBack()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -235,7 +235,7 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task DisposeTransaction_ShouldBe_Ok_With_NestedTransaction()
+    public async Task DisposeTransaction_NestedTransaction_ReturnsRolledBack()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

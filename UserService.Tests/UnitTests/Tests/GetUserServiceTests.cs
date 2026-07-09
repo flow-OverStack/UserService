@@ -9,7 +9,7 @@ public class GetUserServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllUsers_ShouldBe_Success()
+    public async Task GetAllUsers_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();
@@ -24,7 +24,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUserByIds_ShouldBe_Success()
+    public async Task GetUserByIds_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
         var getRoleService = new CacheGetUserServiceFactory().GetService();
@@ -40,7 +40,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUserByIds_ShouldBe_UserNotFound()
+    public async Task GetUserByIds_SingleNonExistentId_ReturnsUserNotFound()
     {
         //Arrange
         var getRoleService = new CacheGetUserServiceFactory().GetService();
@@ -57,7 +57,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUserByIds_ShouldBe_UsersNotFound()
+    public async Task GetUserByIds_MultipleNonExistentIds_ReturnsUsersNotFound()
     {
         //Arrange
         var getRoleService = new CacheGetUserServiceFactory().GetService();
@@ -74,7 +74,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersWithRoles_ShouldBe_Success()
+    public async Task GetUsersWithRoles_MixOfExistingAndNonExistentRoleIds_ReturnsSuccess()
     {
         //Arrange
         var getRoleService = new CacheGetUserServiceFactory().GetService();
@@ -90,7 +90,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersWithRoles_ShouldBe_UsersNotFound()
+    public async Task GetUsersWithRoles_NonExistentRoleIds_ReturnsUsersNotFound()
     {
         //Arrange
         var getRoleService = new CacheGetUserServiceFactory().GetService();
@@ -107,7 +107,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetCurrentReputationsAsync_ShouldBe_Success()
+    public async Task GetCurrentReputationsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();
@@ -124,7 +124,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetCurrentReputationsAsync_ShouldBe_UserNotFound()
+    public async Task GetCurrentReputationsAsync_SingleNonExistentId_ReturnsUserNotFound()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();
@@ -141,7 +141,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetCurrentReputationsAsync_ShouldBe_UsersNotFound()
+    public async Task GetCurrentReputationsAsync_MultipleNonExistentIds_ReturnsUsersNotFound()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();
@@ -158,7 +158,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetRemainingReputationsAsync_ShouldBe_Success()
+    public async Task GetRemainingReputationsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();
@@ -175,7 +175,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetRemainingReputationsAsync_ShouldBe_UserNotFound()
+    public async Task GetRemainingReputationsAsync_SingleNonExistentId_ReturnsUserNotFound()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();
@@ -192,7 +192,7 @@ public class GetUserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetRemainingReputationsAsync_ShouldBe_UsersNotFound()
+    public async Task GetRemainingReputationsAsync_MultipleNonExistentIds_ReturnsUsersNotFound()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceFactory().GetService();

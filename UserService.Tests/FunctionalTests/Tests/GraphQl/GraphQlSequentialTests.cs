@@ -19,7 +19,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllRoles_ShouldBe_NotFoundError()
+    public async Task GetAllRoles_NoRoles_ReturnsNotFoundError()
     {
         //Arrange
         await DeleteRolesAsync();
@@ -39,7 +39,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllRoles_ShouldBe_NoUsers()
+    public async Task GetUsers_NoUsers_ReturnsEmptyCollection()
     {
         //Arrange
         await DeleteUsersAsync();
@@ -58,7 +58,7 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetById_ShouldBe_RolesNotfound()
+    public async Task GetUserById_UserWithNoRoles_ReturnsRolesNotFoundError()
     {
         //Arrange
         await AddUserWithNoRolesAsync();

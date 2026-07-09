@@ -9,7 +9,7 @@ public class ReputationRecordDataLoaderTests(FunctionalTestWebAppFactory factory
 {
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Success()
+    public async Task LoadAsync_ExistingReputationRecordId_ReturnsSuccess()
     {
         //Arrange
         const long reputationRecordId = 1;
@@ -25,7 +25,7 @@ public class ReputationRecordDataLoaderTests(FunctionalTestWebAppFactory factory
 
     [Trait("Category", "Functional")]
     [Fact]
-    public async Task Load_ShouldBe_Null()
+    public async Task LoadAsync_NonExistentReputationRecordId_ReturnsNull()
     {
         //Arrange
         const long reputationRecordId = 0;

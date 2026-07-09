@@ -11,7 +11,7 @@ public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : Bas
 {
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RegisterHeartbeat_ShouldBe_Ok()
+    public async Task RegisterHeartbeat_ValidToken_ReturnsNoContent()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken(1);
@@ -28,7 +28,7 @@ public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : Bas
 
     [Fact]
     [Trait("Category", "Functional")]
-    public async Task RegisterHeartbeat_ShouldBe_Unauthorized()
+    public async Task RegisterHeartbeat_InvalidClaims_ReturnsForbidden()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken(roles: []); // Token with invalid claims (no roles)

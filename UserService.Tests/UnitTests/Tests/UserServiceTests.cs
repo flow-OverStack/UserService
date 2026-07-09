@@ -9,7 +9,7 @@ public class UserServiceTests
 {
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_Success()
+    public async Task UpdateUsernameAsync_NewUsername_ReturnsSuccess()
     {
         //Arrange
         var userService = new UserServiceFactory().GetService();
@@ -26,7 +26,7 @@ public class UserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_Success_With_UsernameNotChanged()
+    public async Task UpdateUsernameAsync_UsernameUnchanged_ReturnsSuccess()
     {
         //Arrange
         var userService = new UserServiceFactory().GetService();
@@ -43,7 +43,7 @@ public class UserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_InvalidUsername()
+    public async Task UpdateUsernameAsync_InvalidUsernameFormat_ReturnsInvalidUsername()
     {
         //Arrange
         var userService = new UserServiceFactory().GetService();
@@ -60,7 +60,7 @@ public class UserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_UserNotFound()
+    public async Task UpdateUsernameAsync_NonExistentUserId_ReturnsUserNotFound()
     {
         //Arrange
         var userService = new UserServiceFactory().GetService();
@@ -77,7 +77,7 @@ public class UserServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_UsernameAlreadyTaken()
+    public async Task UpdateUsernameAsync_DuplicateUsername_ReturnsUsernameAlreadyTaken()
     {
         //Arrange
         var userService = new UserServiceFactory().GetService();
