@@ -1,0 +1,42 @@
+name: Test Failure Analysis
+
+on:
+  workflow_run:
+    workflows: ["Tests"]
+    types: [completed]
+
+jobs:
+  analyze:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code for Test Failure Analysis
+        uses: anthropics/claude-code-action@e90deca47693f9457b72f2b53c17d7c445a87342 # v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+          prompt: |
+            The "Tests" workflow run failed.
+
+            Repo: ${{ github.repository }}
+            Run: ${{ github.event.workflow_run.id }}
+            Commit: ${{ github.event.workflow_run.head_sha }}
+
+            Steps:
+            1. Run `gh run view ${{ github.event.workflow_run.id }} --log-failed` to fetch the failing job logs.
+            2. Identify which job(s) and test(s) failed and the root cause.
+            3. Find any PR associated with this commit: `gh pr list --state open --search "${{ github.event.workflow_run.head_sha }}"`, or use `gh run view ${{ github.event.workflow_run.id }} --json headBranch` to get the branch and `gh pr view --json number` against it.
+            4. If a PR is found, post your analysis as a comment on it with `gh pr comment <number> --body "..."`. Otherwise, open an issue with `gh issue create --title "Test failure on <branch from step 3>" --body "..."`.
+            5. Keep the analysis concise: failing test names, likely cause, suggested fix.
+          claude_args: '--allowed-tools "Bash(gh run view:*),Bash(gh pr list:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh issue create:*)"'
