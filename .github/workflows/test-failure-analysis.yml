@@ -33,12 +33,11 @@ jobs:
             Repo: ${{ github.repository }}
             Run: ${{ github.event.workflow_run.id }}
             Commit: ${{ github.event.workflow_run.head_sha }}
-            Branch: ${{ github.event.workflow_run.head_branch }}
 
             Steps:
             1. Run `gh run view ${{ github.event.workflow_run.id }} --log-failed` to fetch the failing job logs.
             2. Identify which job(s) and test(s) failed and the root cause.
-            3. Find any PR associated with this commit: `gh pr list --state open --search "${{ github.event.workflow_run.head_sha }}"` or `gh pr view --json number` against the head branch.
-            4. If a PR is found, post your analysis as a comment on it with `gh pr comment <number> --body "..."`. Otherwise, open an issue with `gh issue create --title "Test failure on ${{ github.event.workflow_run.head_branch }}" --body "..."`.
+            3. Find any PR associated with this commit: `gh pr list --state open --search "${{ github.event.workflow_run.head_sha }}"`, or use `gh run view ${{ github.event.workflow_run.id }} --json headBranch` to get the branch and `gh pr view --json number` against it.
+            4. If a PR is found, post your analysis as a comment on it with `gh pr comment <number> --body "..."`. Otherwise, open an issue with `gh issue create --title "Test failure on <branch from step 3>" --body "..."`.
             5. Keep the analysis concise: failing test names, likely cause, suggested fix.
           claude_args: '--allowed-tools "Bash(gh run view:*),Bash(gh pr list:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh issue create:*)"'

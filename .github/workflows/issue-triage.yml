@@ -24,7 +24,7 @@ jobs:
             You are triaging a newly opened GitHub issue.
 
             Repo: ${{ github.repository }}
-            Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}"
+            Issue #${{ github.event.issue.number }}
 
             Steps:
             1. Run `gh issue view ${{ github.event.issue.number }} --json title,body,author` to read the issue.
