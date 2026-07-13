@@ -1,0 +1,37 @@
+name: Issue Triage
+
+on:
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code for Issue Triage
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            You are triaging a newly opened GitHub issue.
+
+            Repo: ${{ github.repository }}
+            Issue #${{ github.event.issue.number }}: "${{ github.event.issue.title }}"
+
+            Steps:
+            1. Run `gh issue view ${{ github.event.issue.number }} --json title,body,author` to read the issue.
+            2. Run `gh label list` to see the labels available in this repository.
+            3. Pick the labels that best match the issue (e.g. bug, enhancement, question, documentation) from the existing label list only - do not create new labels.
+            4. Apply the labels with `gh issue edit ${{ github.event.issue.number }} --add-label "<label>"`.
+            5. If the issue is missing information needed to act on it (repro steps, expected/actual behavior, environment), post one clarifying comment with `gh issue comment ${{ github.event.issue.number }} --body "..."`.
+
+            Do not close the issue or assign anyone.
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh label list:*),Bash(gh issue edit:*),Bash(gh issue comment:*)"'
