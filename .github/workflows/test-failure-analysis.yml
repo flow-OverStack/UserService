@@ -39,4 +39,9 @@ jobs:
             3. Find any PR associated with this commit: `gh pr list --state open --search "${{ github.event.workflow_run.head_sha }}"`, or use `gh run view ${{ github.event.workflow_run.id }} --json headBranch` to get the branch and `gh pr view --json number` against it.
             4. If a PR is found, post your analysis as a comment on it with `gh pr comment <number> --body "..."`. Otherwise, open an issue with `gh issue create --title "Test failure on <branch from step 3>" --body "..."`.
             5. Keep the analysis concise: failing test names, likely cause, suggested fix.
+            6. Include a "Fix in Claude Code" link in your comment/issue:
+               https://claude.ai/code?q=<QUERY>&repo=${{ github.repository }} where <QUERY>
+               is a URL-encoded instruction describing the failing test(s), the likely fix,
+               the affected files, and the branch (headBranch from step 3). Do not push or
+               commit changes yourself.
           claude_args: '--allowed-tools "Bash(gh run view:*),Bash(gh pr list:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh issue create:*)"'

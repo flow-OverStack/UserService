@@ -36,11 +36,6 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-          # Fine-grained PAT (Contents/Workflows/Issues/Pull requests: read-write, scoped to
-          # this repo) so Claude can push fixes to files under .github/workflows/, which the
-          # default GitHub App token is not permitted to touch.
-          github_token: ${{ secrets.CLAUDE_ACTIONS_TOKEN }}
-
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
@@ -48,8 +43,17 @@ jobs:
           # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
           # prompt: 'Update the pull request description to include a summary of changes.'
 
-          # Optional: Add claude_args to customize behavior and configuration
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+          # Claude has no write access to this repo and must not push commits or edit
+          # files. When a request needs code changes, it should instead point at where
+          # the issue is, explain how to fix it, and hand back a "Fix in Claude Code" link.
+          claude_args: >-
+            --append-system-prompt "You have no write access to this repo and must not
+            push commits or edit files. When a request needs code changes, instead:
+            (1) name where the issue is (file paths, line numbers if relevant),
+            (2) explain how to fix it, and
+            (3) give a 'Fix in Claude Code' link
+            https://claude.ai/code?q=<QUERY>&repo=${{ github.repository }}
+            where <QUERY> is a URL-encoded instruction stating what to change, in which
+            files, and on which branch - get the branch from the PR/issue context via gh,
+            do not guess. Post this as your reply."
 
