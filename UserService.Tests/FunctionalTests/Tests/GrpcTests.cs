@@ -3,12 +3,13 @@ using Grpc.Net.Client;
 using UserService.Application.Resources;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUserWithRolesById_ExistingUserId_ReturnsOk()
     {
@@ -26,7 +27,6 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.NotNull(user.Roles);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUserWithRolesById_NonExistentUserId_ThrowsRpcException()
     {
@@ -46,7 +46,6 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(ErrorMessage.UserNotFound, exception.Status.Detail);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUsersByIds_MixedExistingAndNonExistentIds_ReturnsOk()
     {
@@ -67,7 +66,6 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(2, response.Users.Count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUsersByIds_SingleNonExistentId_ThrowsRpcException()
     {
@@ -89,7 +87,6 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(ErrorMessage.UserNotFound, exception.Status.Detail);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUsersByIds_MultipleNonExistentIds_ThrowsRpcException()
     {

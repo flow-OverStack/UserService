@@ -2,12 +2,13 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
+[FunctionalTest]
 public class RoleDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadAsync_ExistingRoleId_ReturnsSuccess()
     {
@@ -23,7 +24,6 @@ public class RoleDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunc
         Assert.NotNull(result);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadAsync_NonExistentRoleId_ReturnsNull()
     {

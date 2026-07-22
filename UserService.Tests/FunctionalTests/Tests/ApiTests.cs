@@ -4,12 +4,13 @@ using System.Net.Mime;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task PutRole_InvalidClaims_ReturnsForbidden()
     {
@@ -27,7 +28,6 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
         Assert.Equal("Invalid claims", body);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task PostRole_MissingAuthToken_ReturnsUnauthorized()
     {
@@ -44,7 +44,6 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
         Assert.NotNull(body);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task PostRole_InsufficientPermissions_ReturnsForbidden()
     {
@@ -63,7 +62,6 @@ public class ApiTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(
         Assert.NotNull(body);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetSwaggerJson_Default_ReturnsOk()
     {

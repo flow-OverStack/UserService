@@ -7,13 +7,14 @@ using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Fact]
-    [Trait("Category", "Functional")]
     public async Task RefreshToken_ValidRefreshToken_ReturnsOk()
     {
         //Arrange
@@ -31,7 +32,6 @@ public class TokenServiceTests(FunctionalTestWebAppFactory factory) : BaseFuncti
     }
 
     [Fact]
-    [Trait("Category", "Functional")]
     public async Task RefreshToken_InvalidRefreshToken_ReturnsBadRequest()
     {
         //Arrange

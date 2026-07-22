@@ -6,15 +6,16 @@ using UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
+[FunctionalTest]
 public class GraphQlMeExceptionTests(NullHttpContextMeGraphQlTestWebAppFactory factory)
     : IClassFixture<NullHttpContextMeGraphQlTestWebAppFactory>
 {
     private readonly HttpClient _httpClient = factory.CreateClient();
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetMe_NullHttpContext_ReturnsNotAuthenticatedError()
     {

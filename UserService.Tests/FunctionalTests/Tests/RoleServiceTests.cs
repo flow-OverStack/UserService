@@ -12,10 +12,12 @@ using UserService.Domain.Results;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
 [Collection(nameof(RoleServiceTests))]
+[FunctionalTest]
 public class RoleServiceTests : SequentialFunctionalTest
 {
     public RoleServiceTests(FunctionalTestWebAppFactory factory) : base(factory)
@@ -26,7 +28,6 @@ public class RoleServiceTests : SequentialFunctionalTest
     }
 
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task CreateRole_NewRoleName_ReturnsCreated()
     {
@@ -44,7 +45,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task CreateRole_DuplicateRoleName_ReturnsConflict()
     {
@@ -63,7 +63,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DeleteRole_ExistingRoleId_ReturnsOk()
     {
@@ -81,7 +80,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DeleteRole_NonExistentRoleId_ReturnsNotFound()
     {
@@ -100,7 +98,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateRole_ExistingRoleId_ReturnsOk()
     {
@@ -119,7 +116,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateRole_NonExistentRoleId_ReturnsNotFound()
     {
@@ -139,7 +135,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task AddRoleForUser_ExistingUsername_ReturnsOk()
     {
@@ -158,7 +153,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task AddRoleForUser_NonExistentUsername_ReturnsNotFound()
     {
@@ -178,7 +172,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DeleteRoleForUser_ExistingUsername_ReturnsOk()
     {
@@ -199,7 +192,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DeleteRoleForUser_NonExistentUser_ReturnsNotFound()
     {
@@ -220,7 +212,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateRoleForUser_ExistingUsername_ReturnsOk()
     {
@@ -243,7 +234,6 @@ public class RoleServiceTests : SequentialFunctionalTest
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateRoleForUser_NonExistentUser_ReturnsNotFound()
     {

@@ -7,12 +7,13 @@ using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
+[FunctionalTest]
 public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetAll_ValidRequest_ReturnsSuccess()
     {
@@ -36,7 +37,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal(8, result.Data.ReputationRules.TotalCount);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetAll_InvalidPagination_ReturnsInvalidPaginationError()
     {
@@ -54,7 +54,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.All(result.Errors, x => Assert.StartsWith(ErrorMessage.InvalidPagination, x.Message));
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task Request_WrongArgument_ReturnsBadRequest()
     {
@@ -72,7 +71,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.NotNull(result.Errors[0].Extensions?.Code);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetAllByIds_ExistingIds_ReturnsSuccess()
     {
@@ -94,7 +92,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.NotNull(result.Data.ReputationRecord);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetMe_AuthenticatedUser_ReturnsSuccess()
     {
@@ -116,7 +113,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal("testuser1", result.Data.Me.Username);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetMe_NoAuthToken_ReturnsUnauthorizedError()
     {
@@ -134,7 +130,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Contains(result.Errors, x => x.Extensions?.Code == "AUTH_NOT_AUTHENTICATED");
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetMe_NonExistentUserId_ReturnsNull()
     {
@@ -154,7 +149,6 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Null(result!.Data.Me);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetAllByIds_NonExistentIds_ReturnsNull()
     {

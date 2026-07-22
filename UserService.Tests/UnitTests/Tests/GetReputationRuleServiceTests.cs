@@ -1,12 +1,13 @@
 using UserService.Application.Resources;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetReputationRuleServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetAllReputationRules_NoFilter_ReturnsSuccess()
     {
@@ -21,7 +22,6 @@ public class GetReputationRuleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetReputationRulesByIds_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
@@ -37,7 +37,6 @@ public class GetReputationRuleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetReputationRulesByIds_SingleNonExistentId_ReturnsReputationRuleNotFound()
     {
@@ -54,7 +53,6 @@ public class GetReputationRuleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetReputationRulesByIds_MultipleNonExistentIds_ReturnsReputationRulesNotFound()
     {

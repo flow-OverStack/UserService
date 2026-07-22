@@ -10,12 +10,13 @@ using UserService.Domain.Results;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateMyUsername_ValidUsername_ReturnsSuccess()
     {
@@ -37,7 +38,6 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Equal("newusername", result.Data.Username);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateMyUsername_InvalidUsername_ReturnsBadRequest()
     {
@@ -59,7 +59,6 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateUsernameById_ValidUsernameAsAdmin_ReturnsSuccess()
     {
@@ -82,7 +81,6 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Equal("updatedusername", result.Data.Username);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateUsernameById_InvalidUsernameAsAdmin_ReturnsBadRequest()
     {
@@ -105,7 +103,6 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateUsernameById_NoAuthToken_ReturnsUnauthorized()
     {
@@ -120,7 +117,6 @@ public class UserServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task UpdateUsernameById_NonAdminRole_ReturnsForbidden()
     {

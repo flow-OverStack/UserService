@@ -3,12 +3,13 @@ using UserService.Domain.Settings;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
+[FunctionalTest]
 public class CurrentReputationDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadAsync_ExistingUserId_ReturnsReputation()
     {
@@ -24,7 +25,6 @@ public class CurrentReputationDataLoaderTests(FunctionalTestWebAppFactory factor
         Assert.True(result >= BusinessRules.MinReputation);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadAsync_NonExistentUserId_ReturnsZero()
     {

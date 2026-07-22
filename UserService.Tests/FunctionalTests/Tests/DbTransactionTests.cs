@@ -4,13 +4,14 @@ using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
 [Collection(nameof(DbTransactionTests))]
+[FunctionalTest]
 public class DbTransactionTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task CommitTransaction_SingleTransaction_ReturnsCommitted()
     {
@@ -35,7 +36,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(4, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task RollbackTransaction_SingleTransaction_ReturnsRolledBack()
     {
@@ -60,7 +60,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(3, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DisposeTransaction_SingleTransaction_ReturnsRolledBack()
     {
@@ -85,7 +84,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(3, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task CommitNestedTransaction_NestedTransaction_ReturnsCommitted()
     {
@@ -122,7 +120,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(5, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task RollbackNestedTransaction_NestedTransaction_ReturnsRolledBack()
     {
@@ -159,7 +156,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(4, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DisposeNestedTransaction_NestedTransaction_ReturnsRolledBack()
     {
@@ -196,7 +192,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(4, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task RollbackTransaction_NestedTransaction_ReturnsRolledBack()
     {
@@ -233,7 +228,6 @@ public class DbTransactionTests(FunctionalTestWebAppFactory factory) : Sequentia
         Assert.Equal(3, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task DisposeTransaction_NestedTransaction_ReturnsRolledBack()
     {

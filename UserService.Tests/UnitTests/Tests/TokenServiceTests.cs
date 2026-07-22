@@ -1,12 +1,13 @@
 using UserService.Domain.Dtos.Token;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class TokenServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RefreshTokenAsync_ValidRefreshToken_ReturnsNewToken()
     {

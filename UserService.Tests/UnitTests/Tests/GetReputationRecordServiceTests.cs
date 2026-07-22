@@ -1,12 +1,13 @@
 using UserService.Application.Resources;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetReputationRecordServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetAllAsync_NoFilter_ReturnsSuccess()
     {
@@ -21,7 +22,6 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetByIdsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
@@ -37,7 +37,6 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetByIdsAsync_SingleNonExistentId_ReturnsReputationRecordNotFound()
     {
@@ -54,7 +53,6 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetByIdsAsync_MultipleNonExistentIds_ReturnsReputationRecordsNotFound()
     {
@@ -71,7 +69,6 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersOwnedRecordsAsync_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
@@ -87,7 +84,6 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersOwnedRecordsAsync_NonExistentUserIds_ReturnsReputationRecordsNotFound()
     {
@@ -104,7 +100,6 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersInitiatedRecordsAsync_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
@@ -120,7 +115,6 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersInitiatedRecordsAsync_NonExistentUserIds_ReturnsReputationRecordsNotFound()
     {
@@ -137,7 +131,6 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetRecordsWithReputationRulesAsync_MixOfExistingAndNonExistentRuleIds_ReturnsSuccess()
     {
@@ -153,7 +146,6 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetRecordsWithReputationRulesAsync_NonExistentRuleIds_ReturnsReputationRecordsNotFound()
     {

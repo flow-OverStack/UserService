@@ -4,13 +4,14 @@ using System.Net.Mime;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     [Fact]
-    [Trait("Category", "Functional")]
     public async Task RegisterHeartbeat_ValidToken_ReturnsNoContent()
     {
         //Arrange
@@ -27,7 +28,6 @@ public class UserActivityServiceTests(FunctionalTestWebAppFactory factory) : Bas
     }
 
     [Fact]
-    [Trait("Category", "Functional")]
     public async Task RegisterHeartbeat_InvalidClaims_ReturnsForbidden()
     {
         //Arrange

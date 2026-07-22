@@ -2,12 +2,13 @@ using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UserServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateUsernameAsync_NewUsername_ReturnsSuccess()
     {
@@ -24,7 +25,6 @@ public class UserServiceTests
         Assert.Equal("newusername", result.Data.Username);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateUsernameAsync_UsernameUnchanged_ReturnsSuccess()
     {
@@ -41,7 +41,6 @@ public class UserServiceTests
         Assert.Equal("testuser1", result.Data.Username);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateUsernameAsync_InvalidUsernameFormat_ReturnsInvalidUsername()
     {
@@ -58,7 +57,6 @@ public class UserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateUsernameAsync_NonExistentUserId_ReturnsUserNotFound()
     {
@@ -75,7 +73,6 @@ public class UserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateUsernameAsync_DuplicateUsername_ReturnsUsernameAlreadyTaken()
     {

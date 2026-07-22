@@ -7,15 +7,16 @@ using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class ReputationServiceTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     // Most of the methods are tested here because
     // ExecuteUpdateAsync requires a real database
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ApplyReputationEventAsync_MissingReputationRule_ReturnsReputationRuleNotFound()
     {
@@ -37,7 +38,6 @@ public class ReputationServiceTests(FunctionalTestWebAppFactory factory) : Seque
         Assert.Equal(ErrorMessage.ReputationRuleNotFound, result.ErrorMessage);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ApplyReputationEventAsync_NonExistentUser_ReturnsUserNotFound()
     {

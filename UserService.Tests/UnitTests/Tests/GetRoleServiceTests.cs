@@ -3,12 +3,13 @@ using UserService.Domain.Entities;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetRoleServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetAllRoles_NoFilter_ReturnsSuccess()
     {
@@ -23,7 +24,6 @@ public class GetRoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetAllRoles_EmptyRepository_ReturnsRolesNotFound()
     {
@@ -41,7 +41,6 @@ public class GetRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersRoles_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
@@ -58,7 +57,6 @@ public class GetRoleServiceTests
         Assert.Equal(result.Count, result.Data.Count());
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersRoles_NonExistentUserIds_ReturnsRolesNotFound()
     {
@@ -75,7 +73,6 @@ public class GetRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetByIds_ExistingIds_ReturnsSuccess()
     {
@@ -91,7 +88,6 @@ public class GetRoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetByIds_SingleNonExistentId_ReturnsRoleNotFound()
     {
@@ -108,7 +104,6 @@ public class GetRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetByIds_MultipleNonExistentIds_ReturnsRolesNotFound()
     {

@@ -3,12 +3,13 @@ using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class RoleServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task CreateRoleAsync_NewRoleName_ReturnsSuccess()
     {
@@ -24,7 +25,6 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task CreateRoleAsync_ExistingRoleName_ReturnsRoleAlreadyExists()
     {
@@ -41,7 +41,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
@@ -57,7 +56,6 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
@@ -74,7 +72,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
@@ -91,7 +88,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
@@ -107,7 +103,6 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
@@ -124,7 +119,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task AddRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
@@ -144,7 +138,6 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task AddRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
@@ -165,7 +158,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task AddRoleForUserAsync_UserAlreadyInRole_ReturnsUserAlreadyHasThisRole()
     {
@@ -186,7 +178,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task AddRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
@@ -207,7 +198,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
@@ -227,7 +217,6 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
@@ -248,7 +237,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
@@ -269,7 +257,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task DeleteRoleForUserAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
@@ -290,7 +277,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleForUserAsync_ExistingUserAndRoles_ReturnsSuccess()
     {
@@ -310,7 +296,6 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
@@ -332,7 +317,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleForUserAsync_NonExistentFromRoleId_ReturnsRoleToBeUpdatedIsNotFound()
     {
@@ -354,7 +338,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleForUserAsync_UserAlreadyInToRole_ReturnsUserAlreadyHasThisRole()
     {
@@ -376,7 +359,6 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateRoleForUserAsync_NonExistentToRoleId_ReturnsRoleToUpdateIsNotFound()
     {

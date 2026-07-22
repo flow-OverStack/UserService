@@ -3,13 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
+[FunctionalTest]
 public class GroupInitiatedReputationRecordDataLoaderTests(FunctionalTestWebAppFactory factory)
     : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadRequiredAsync_ExistingUserId_ReturnsRecords()
     {
@@ -25,7 +26,6 @@ public class GroupInitiatedReputationRecordDataLoaderTests(FunctionalTestWebAppF
         Assert.Equal(3, records.Length); // User with id 1 has 3 initiated reputation records
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadRequiredAsync_NonExistentUserId_ReturnsEmptyCollection()
     {

@@ -9,13 +9,14 @@ using UserService.Domain.Settings;
 using UserService.Messaging.Events;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
 [Collection(nameof(ReputationConsumerTests))]
+[FunctionalTest]
 public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeQuestionUpvoted_QuestionUpvoted_ReturnsOk()
     {
@@ -60,7 +61,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(9, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeAnswerUpvoted_AnswerUpvoted_ReturnsOk()
     {
@@ -105,7 +105,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(8, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeAnswerAccepted_AnswerAccepted_ReturnsOk()
     {
@@ -150,7 +149,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(11, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeQuestionDownvoted_QuestionDownvoted_ReturnsOk()
     {
@@ -195,7 +193,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(9, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeAnswerDownvoted_AnswerDownvoted_ReturnsOk()
     {
@@ -240,7 +237,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(10, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeEntityAcceptanceRevoked_AnswerAcceptanceRevoked_ReturnsOk()
     {
@@ -285,7 +281,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(7, count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeEntityDeletedEvent_QuestionDeleted_ReturnsOk()
     {
@@ -323,7 +318,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.False(hasEnabledRecords);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeEntityVoteRemoved_QuestionVoteRemoved_ReturnsOk()
     {
@@ -364,7 +358,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.False(hasVotes);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumePositiveEvent_DailyLimitExceeded_ReturnsDailyReputationLimitExceeded()
     {
@@ -402,7 +395,6 @@ public class ReputationConsumerTests(FunctionalTestWebAppFactory factory) : Sequ
         Assert.Equal(initialReputation, updatedReputation);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task ConsumeNegativeEvent_MinimumReached_ReturnsReputationMinimumReached()
     {

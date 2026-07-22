@@ -4,12 +4,13 @@ using UserService.Domain.Entities;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class ExceptionIdentityServerTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterUserAsync_ConflictingUser_ThrowsIdentityServerConflictException()
     {
@@ -28,7 +29,6 @@ public class ExceptionIdentityServerTests
         await Assert.ThrowsAsync<IdentityServerConflictException>(action);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task LoginUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
@@ -43,7 +43,6 @@ public class ExceptionIdentityServerTests
         await Assert.ThrowsAsync<IdentityServerInternalException>(action);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task UpdateUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {

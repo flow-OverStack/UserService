@@ -3,12 +3,13 @@ using UserService.Domain.Settings;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
+[FunctionalTest]
 public class RemainingReputationDataLoaderTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadAsync_ExistingUserId_ReturnsSuccess()
     {
@@ -24,7 +25,6 @@ public class RemainingReputationDataLoaderTests(FunctionalTestWebAppFactory fact
         Assert.InRange(result, 0, BusinessRules.MaxDailyReputation);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadAsync_NonExistentUserId_ReturnsZero()
     {

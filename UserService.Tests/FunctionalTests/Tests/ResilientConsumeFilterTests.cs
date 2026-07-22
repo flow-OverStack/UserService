@@ -9,12 +9,13 @@ using UserService.Messaging.Filters;
 using UserService.Tests.Configurations;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task Probe_ValidProbeContext_ReturnsOk()
     {
@@ -32,7 +33,6 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task Send_SuccessfulPipe_ReturnsOk()
     {
@@ -68,7 +68,6 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task Send_PipeThrowsRepeatedly_ThrowsTestException()
     {
@@ -106,7 +105,6 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         await Assert.ThrowsAsync<TestException>(action);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task Send_PipeThrowsOnceThenSucceeds_ReturnsOk()
     {
@@ -152,7 +150,6 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task Send_MaxRedeliveryCountExceeded_ThrowsTestException()
     {

@@ -2,12 +2,13 @@ using UserService.Application.Resources;
 using UserService.Domain.Settings;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetUserServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetAllUsers_NoFilter_ReturnsSuccess()
     {
@@ -22,7 +23,6 @@ public class GetUserServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUserByIds_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
@@ -38,7 +38,6 @@ public class GetUserServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUserByIds_SingleNonExistentId_ReturnsUserNotFound()
     {
@@ -55,7 +54,6 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUserByIds_MultipleNonExistentIds_ReturnsUsersNotFound()
     {
@@ -72,7 +70,6 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersWithRoles_MixOfExistingAndNonExistentRoleIds_ReturnsSuccess()
     {
@@ -88,7 +85,6 @@ public class GetUserServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetUsersWithRoles_NonExistentRoleIds_ReturnsUsersNotFound()
     {
@@ -105,7 +101,6 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetCurrentReputationsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
@@ -122,7 +117,6 @@ public class GetUserServiceTests
         Assert.All(result.Data, kvp => Assert.True(kvp.Value >= BusinessRules.MinReputation));
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetCurrentReputationsAsync_SingleNonExistentId_ReturnsUserNotFound()
     {
@@ -139,7 +133,6 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetCurrentReputationsAsync_MultipleNonExistentIds_ReturnsUsersNotFound()
     {
@@ -156,7 +149,6 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetRemainingReputationsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
@@ -173,7 +165,6 @@ public class GetUserServiceTests
         Assert.All(result.Data, kvp => Assert.InRange(kvp.Value, 0, BusinessRules.MaxDailyReputation));
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetRemainingReputationsAsync_SingleNonExistentId_ReturnsUserNotFound()
     {
@@ -190,7 +181,6 @@ public class GetUserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetRemainingReputationsAsync_MultipleNonExistentIds_ReturnsUsersNotFound()
     {

@@ -1,12 +1,13 @@
 using UserService.Tests.UnitTests.Configurations;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UserActivityServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterHeartbeatAsync_ExistingUserId_ReturnsSuccess()
     {
@@ -21,7 +22,6 @@ public class UserActivityServiceTests
         Assert.True(result.IsSuccess);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task SyncHeartbeatsToDatabaseAsync_PendingHeartbeats_ReturnsSuccess()
     {
@@ -36,7 +36,6 @@ public class UserActivityServiceTests
         Assert.Equal(2, result.Data.SyncedHeartbeatsCount); // There are 2 new heartbeats in total
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task SyncHeartbeatsToDatabaseAsync_EmptyHeartbeats_ReturnsNoSyncedHeartbeats()
     {
@@ -53,7 +52,6 @@ public class UserActivityServiceTests
         Assert.Equal(0, result.Data.SyncedHeartbeatsCount);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task SyncHeartbeatsToDatabaseAsync_InvalidKeys_ReturnsNoSyncedHeartbeats()
     {
@@ -70,7 +68,6 @@ public class UserActivityServiceTests
         Assert.Equal(0, result.Data.SyncedHeartbeatsCount);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task SyncHeartbeatsToDatabaseAsync_InvalidValues_ReturnsNoSyncedHeartbeats()
     {

@@ -3,13 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.GraphQl.DataLoaders;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl.DataLoaders;
 
+[FunctionalTest]
 public class GroupReputationRuleReputationRecordDataLoaderTests(FunctionalTestWebAppFactory factory)
     : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadRequiredAsync_ExistingReputationRuleId_ReturnsRecords()
     {
@@ -25,7 +26,6 @@ public class GroupReputationRuleReputationRecordDataLoaderTests(FunctionalTestWe
         Assert.Single(records); // Reputation rule with id 1 has 1 record
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task LoadRequiredAsync_NonExistentReputationRuleId_ReturnsEmptyCollection()
     {

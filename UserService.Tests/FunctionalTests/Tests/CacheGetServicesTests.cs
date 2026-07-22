@@ -9,16 +9,17 @@ using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
     // Only functional tests are provided for cache services' success scenarios.
     // This is because cache data mirrors the database, and manually copying test DB data into multiple cache keys/values is impractical and confusing.
     // In functional tests, data is automatically copied from the DB to the cache as needed, following all key/value rules.
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUserById_CacheHit_ReturnsUserWithRoles()
     {
@@ -39,7 +40,6 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
         Assert.NotNull(result.Data.User.Roles);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUserById_NonExistentUserCached_ReturnsNull()
     {
@@ -60,7 +60,6 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
     }
 
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetUserById_WrongCacheEntry_ReturnsOk()
     {
@@ -85,7 +84,6 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
         Assert.NotNull(result.Data.User.Roles);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
     public async Task GetGroupedById_NonExistentUserCached_ReturnsNull()
     {

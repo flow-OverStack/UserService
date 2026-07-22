@@ -5,12 +5,13 @@ using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class AuthServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterAsync_ValidNewUser_ReturnsSuccess()
     {
@@ -27,7 +28,6 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterAsync_InvalidUsername_ReturnsInvalidUsername()
     {
@@ -44,7 +44,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterAsync_InvalidEmail_ReturnsInvalidEmail()
     {
@@ -62,7 +61,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterAsync_InvalidPassword_ReturnsInvalidCredentials()
     {
@@ -79,7 +77,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Theory]
     [InlineData("TestUser1", "TestsUser1@test.com")]
     [InlineData("identityUser", "usernameTest@test.com")]
@@ -100,7 +97,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task RegisterAsync_NoRolesInRepository_ReturnsRoleNotFound()
     {
@@ -120,7 +116,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task InitAsync_NewUser_ReturnsSuccess()
     {
@@ -136,7 +131,6 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task InitAsync_InvalidEmail_ReturnsInvalidEmail()
     {
@@ -153,7 +147,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task InitAsync_ExistingUser_ReturnsSuccess()
     {
@@ -169,7 +162,6 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task InitAsync_NoRolesInRepository_ReturnsRoleNotFound()
     {
@@ -189,7 +181,6 @@ public class AuthServiceTests
     }
 
     [Theory]
-    [Trait("Category", "Unit")]
     [InlineData("!@#$%^", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser_LongNameToo", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser1", "TestsUser4@test.com", "test-identity-id-4")]
@@ -208,7 +199,6 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task LoginAsync_ValidUsernameCredentials_ReturnsSuccess()
     {
@@ -224,7 +214,6 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task LoginAsync_ValidEmailCredentials_ReturnsSuccess()
     {
@@ -240,7 +229,6 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task LoginAsync_NonExistentUser_ReturnsInvalidCredentials()
     {
@@ -257,7 +245,6 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
     public async Task LoginAsync_WrongPassword_ReturnsInvalidCredentials()
     {
