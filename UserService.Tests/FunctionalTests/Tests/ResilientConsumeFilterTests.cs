@@ -6,7 +6,7 @@ using Moq;
 using UserService.Domain.Enums;
 using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
-using UserService.Tests.Configurations;
+using UserService.Tests.Support;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
 using UserService.Tests.Traits;

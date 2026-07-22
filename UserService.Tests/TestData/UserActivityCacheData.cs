@@ -2,9 +2,9 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using UserService.Domain.Dtos.User;
 
-namespace UserService.Tests.Configurations;
+namespace UserService.Tests.TestData;
 
-internal static class UserActivityConfiguration
+internal static class UserActivityCacheData
 {
     public static (RedisValue[] Keys, RedisValue[] Values) GetUserActivities()
     {

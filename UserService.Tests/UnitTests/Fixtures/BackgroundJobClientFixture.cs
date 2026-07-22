@@ -1,9 +1,9 @@
 using Hangfire;
 using Moq;
 
-namespace UserService.Tests.UnitTests.Configurations;
+namespace UserService.Tests.UnitTests.Fixtures;
 
-internal static class BackgroundJobClientConfiguration
+internal static class BackgroundJobClientFixture
 {
     public static IBackgroundJobClient GetBackgroundJobClientConfiguration()
     {

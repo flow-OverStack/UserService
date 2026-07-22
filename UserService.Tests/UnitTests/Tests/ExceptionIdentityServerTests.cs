@@ -2,7 +2,7 @@ using UserService.Application.Exceptions.IdentityServer;
 using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Entities;
 using UserService.Tests.Constants;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -15,7 +15,7 @@ public class ExceptionIdentityServerTests
     public async Task RegisterUserAsync_ConflictingUser_ThrowsIdentityServerConflictException()
     {
         //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityRegisterUserDto(1, "testuser1", "TestsUser1@test.com",
             [new Role { Id = 1, Name = "User" }])
         {
@@ -33,7 +33,7 @@ public class ExceptionIdentityServerTests
     public async Task LoginUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
         //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityLoginUserDto("testuser1", TestConstants.TestPassword + "1");
 
         //Act
@@ -47,7 +47,7 @@ public class ExceptionIdentityServerTests
     public async Task UpdateUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
         //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityUpdateUserDto(Guid.NewGuid().ToString(), "TestUser1", 1, "NotAEmail",
             [new Role { Id = 1, Name = "User" }, new Role { Id = 2, Name = "Admin" }]);
 

@@ -7,7 +7,7 @@ using UserService.DAL.Repositories;
 using UserService.Domain.Interfaces.Database;
 using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
-using UserService.Tests.Configurations;
+using UserService.Tests.Support;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception;
 

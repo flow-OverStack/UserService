@@ -1,7 +1,7 @@
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
-using UserService.Tests.Configurations;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.Mocks;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -14,7 +14,7 @@ public class GetRoleServiceTests
     public async Task GetAllRoles_NoFilter_ReturnsSuccess()
     {
         //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
+        var getRoleService = new GetRoleServiceSut().GetService();
 
         //Act
         var result = await getRoleService.GetAllAsync();
@@ -29,7 +29,7 @@ public class GetRoleServiceTests
     {
         //Arrange
         var getRoleService =
-            new GetRoleServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
+            new GetRoleServiceSut(roleRepository: RepositoryMocks.GetEmptyMockRepository<Role>().Object)
                 .GetService();
 
         //Act
@@ -45,7 +45,7 @@ public class GetRoleServiceTests
     public async Task GetUsersRoles_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
         //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
+        var getRoleService = new GetRoleServiceSut().GetService();
         var userIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -61,7 +61,7 @@ public class GetRoleServiceTests
     public async Task GetUsersRoles_NonExistentUserIds_ReturnsRolesNotFound()
     {
         //Arrange
-        var getRoleService = new CacheGetRoleServiceFactory().GetService();
+        var getRoleService = new CacheGetRoleServiceSut().GetService();
         var roleIds = new List<long> { 0 };
 
         //Act
@@ -77,7 +77,7 @@ public class GetRoleServiceTests
     public async Task GetByIds_ExistingIds_ReturnsSuccess()
     {
         //Arrange
-        var getRoleService = new GetRoleServiceFactory().GetService();
+        var getRoleService = new GetRoleServiceSut().GetService();
         var roleIds = new List<long> { 1, 2 };
 
         //Act
@@ -92,7 +92,7 @@ public class GetRoleServiceTests
     public async Task GetByIds_SingleNonExistentId_ReturnsRoleNotFound()
     {
         //Arrange
-        var getRoleService = new CacheGetRoleServiceFactory().GetService();
+        var getRoleService = new CacheGetRoleServiceSut().GetService();
         var roleIds = new List<long> { 0 };
 
         //Act
@@ -108,7 +108,7 @@ public class GetRoleServiceTests
     public async Task GetByIds_MultipleNonExistentIds_ReturnsRolesNotFound()
     {
         //Arrange
-        var getRoleService = new CacheGetRoleServiceFactory().GetService();
+        var getRoleService = new CacheGetRoleServiceSut().GetService();
         var roleIds = new List<long> { 0, 0 };
 
         //Act

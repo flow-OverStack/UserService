@@ -1,7 +1,7 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -14,7 +14,7 @@ public class RoleServiceTests
     public async Task CreateRoleAsync_NewRoleName_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new CreateRoleDto("NewTestRole");
 
         //Act
@@ -29,7 +29,7 @@ public class RoleServiceTests
     public async Task CreateRoleAsync_ExistingRoleName_ReturnsRoleAlreadyExists()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new CreateRoleDto("User");
 
         //Act
@@ -45,7 +45,7 @@ public class RoleServiceTests
     public async Task DeleteRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         const long roleId = 3;
 
         //Act
@@ -60,7 +60,7 @@ public class RoleServiceTests
     public async Task DeleteRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         const long wrongRoleId = 0;
 
         //Act
@@ -76,7 +76,7 @@ public class RoleServiceTests
     public async Task DeleteRoleAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         const long roleId = 1;
 
         //Act
@@ -92,7 +92,7 @@ public class RoleServiceTests
     public async Task UpdateRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new RoleDto(3, "UpdatedTestRole");
 
         //Act
@@ -107,7 +107,7 @@ public class RoleServiceTests
     public async Task UpdateRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new RoleDto(0, "UpdatedTestRole");
 
         //Act
@@ -123,7 +123,7 @@ public class RoleServiceTests
     public async Task AddRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser1",
@@ -142,7 +142,7 @@ public class RoleServiceTests
     public async Task AddRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "NotExistingUser",
@@ -162,7 +162,7 @@ public class RoleServiceTests
     public async Task AddRoleForUserAsync_UserAlreadyInRole_ReturnsUserAlreadyHasThisRole()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser1",
@@ -182,7 +182,7 @@ public class RoleServiceTests
     public async Task AddRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser1",
@@ -202,7 +202,7 @@ public class RoleServiceTests
     public async Task DeleteRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser2",
@@ -221,7 +221,7 @@ public class RoleServiceTests
     public async Task DeleteRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "NotExistingUser",
@@ -241,7 +241,7 @@ public class RoleServiceTests
     public async Task DeleteRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser2",
@@ -261,7 +261,7 @@ public class RoleServiceTests
     public async Task DeleteRoleForUserAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser2",
@@ -281,7 +281,7 @@ public class RoleServiceTests
     public async Task UpdateRoleForUserAsync_ExistingUserAndRoles_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
 
         //Act
         var result = await roleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
@@ -300,7 +300,7 @@ public class RoleServiceTests
     public async Task UpdateRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "NotExistingUser",
@@ -321,7 +321,7 @@ public class RoleServiceTests
     public async Task UpdateRoleForUserAsync_NonExistentFromRoleId_ReturnsRoleToBeUpdatedIsNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",
@@ -342,7 +342,7 @@ public class RoleServiceTests
     public async Task UpdateRoleForUserAsync_UserAlreadyInToRole_ReturnsUserAlreadyHasThisRole()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "TestUser1",
@@ -363,7 +363,7 @@ public class RoleServiceTests
     public async Task UpdateRoleForUserAsync_NonExistentToRoleId_ReturnsRoleToUpdateIsNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",

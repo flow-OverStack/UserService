@@ -4,23 +4,23 @@ using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
 using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.UnitTests.Configurations;
+using UserService.Tests.UnitTests.Fixtures;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-public class CacheGetReputationRuleServiceFactory
+public class CacheGetReputationRuleServiceSut
 {
     private readonly IGetReputationRuleService _cacheGetReputationRuleService;
 
     public readonly IGetReputationRuleService InnerGetReputationRuleService =
-        new GetReputationRuleServiceFactory().GetService();
+        new GetReputationRuleServiceSut().GetService();
 
     public readonly IReputationRuleCacheRepository ReputationRuleCacheRepository =
         new ReputationRuleCacheRepository(
-            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
+            new RedisCacheProvider(RedisDatabaseFixture.GetRedisDatabaseConfiguration()),
+            Options.Create(RedisSettingsFixture.GetRedisSettingsConfiguration()));
 
-    public CacheGetReputationRuleServiceFactory()
+    public CacheGetReputationRuleServiceSut()
     {
         _cacheGetReputationRuleService =
             new CacheGetReputationRuleService(ReputationRuleCacheRepository, InnerGetReputationRuleService);

@@ -2,9 +2,9 @@ using AutoMapper;
 using UserService.Application.Mappings;
 using UserService.Keycloak.Mappings;
 
-namespace UserService.Tests.UnitTests.Configurations;
+namespace UserService.Tests.UnitTests.Fixtures;
 
-internal static class MapperConfiguration
+internal static class MapperFixture
 {
     public static IMapper GetMapperConfiguration()
     {

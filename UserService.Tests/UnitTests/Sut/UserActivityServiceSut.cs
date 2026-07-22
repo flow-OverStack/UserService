@@ -7,26 +7,25 @@ using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.Configurations;
-using UserService.Tests.UnitTests.Configurations;
-using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;
+using UserService.Tests.Mocks;
+using UserService.Tests.UnitTests.Fixtures;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class UserActivityServiceFactory
+internal class UserActivityServiceSut
 {
     private readonly IUserActivityDatabaseService _userActivityDatabaseService;
     private readonly IUserActivityService _userActivityService;
 
     public readonly IUserActivityCacheRepository CacheRepository =
         new UserActivityCacheRepository(
-            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()));
+            new RedisCacheProvider(RedisDatabaseFixture.GetRedisDatabaseConfiguration()));
 
-    public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
+    public readonly IMapper Mapper = MapperFixture.GetMapperConfiguration();
 
-    public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
+    public readonly IBaseRepository<User> UserRepository = RepositoryMocks.GetMockUserRepository().Object;
 
-    public UserActivityServiceFactory(IDatabase? redisDatabase = null)
+    public UserActivityServiceSut(IDatabase? redisDatabase = null)
     {
         if (redisDatabase != null)
             CacheRepository = new UserActivityCacheRepository(new RedisCacheProvider(redisDatabase));

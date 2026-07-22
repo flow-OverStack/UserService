@@ -1,4 +1,4 @@
-namespace UserService.Tests.Configurations;
+namespace UserService.Tests.Support;
 
 internal class TestException() : Exception(ErrorMessage)
 {

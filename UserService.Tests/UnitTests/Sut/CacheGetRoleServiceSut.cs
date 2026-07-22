@@ -4,22 +4,22 @@ using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
 using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.UnitTests.Configurations;
+using UserService.Tests.UnitTests.Fixtures;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class CacheGetRoleServiceFactory
+internal class CacheGetRoleServiceSut
 {
     private readonly IGetRoleService _cacheGetRoleService;
 
-    public readonly IGetRoleService InnerGetRoleService = new GetRoleServiceFactory().GetService();
+    public readonly IGetRoleService InnerGetRoleService = new GetRoleServiceSut().GetService();
 
     public readonly IRoleCacheRepository RoleCacheRepository =
         new RoleCacheRepository(
-            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
+            new RedisCacheProvider(RedisDatabaseFixture.GetRedisDatabaseConfiguration()),
+            Options.Create(RedisSettingsFixture.GetRedisSettingsConfiguration()));
 
-    public CacheGetRoleServiceFactory()
+    public CacheGetRoleServiceSut()
     {
         _cacheGetRoleService = new CacheGetRoleService(RoleCacheRepository, InnerGetRoleService);
     }

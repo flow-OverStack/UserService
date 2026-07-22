@@ -1,6 +1,6 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -13,7 +13,7 @@ public class UserServiceTests
     public async Task UpdateUsernameAsync_NewUsername_ReturnsSuccess()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "newusername");
 
         //Act
@@ -29,7 +29,7 @@ public class UserServiceTests
     public async Task UpdateUsernameAsync_UsernameUnchanged_ReturnsSuccess()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "testuser1");
 
         //Act
@@ -45,7 +45,7 @@ public class UserServiceTests
     public async Task UpdateUsernameAsync_InvalidUsernameFormat_ReturnsInvalidUsername()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "invalid!user");
 
         //Act
@@ -61,7 +61,7 @@ public class UserServiceTests
     public async Task UpdateUsernameAsync_NonExistentUserId_ReturnsUserNotFound()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(0, "newusername");
 
         //Act
@@ -77,7 +77,7 @@ public class UserServiceTests
     public async Task UpdateUsernameAsync_DuplicateUsername_ReturnsUsernameAlreadyTaken()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "testuser2");
 
         //Act

@@ -1,9 +1,9 @@
 using System.Net;
-using UserService.Tests.Configurations;
+using UserService.Tests.Support;
 
-namespace UserService.Tests.UnitTests.Configurations;
+namespace UserService.Tests.UnitTests.Fixtures;
 
-internal static class ExceptionHttpClientConfiguration
+internal static class ExceptionHttpClientFixture
 {
     public static HttpClient GetHttpClientConfiguration(string baseAddress)
     {

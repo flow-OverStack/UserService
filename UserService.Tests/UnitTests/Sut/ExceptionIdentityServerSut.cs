@@ -3,17 +3,16 @@ using Microsoft.Extensions.Options;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Keycloak;
 using UserService.Keycloak.Settings;
-using UserService.Tests.UnitTests.Configurations;
-using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;
+using UserService.Tests.UnitTests.Fixtures;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class ExceptionIdentityServerFactory
+internal class ExceptionIdentityServerSut
 {
     private readonly IIdentityServer _identityServer;
 
     public readonly HttpClient HttpClient =
-        ExceptionHttpClientConfiguration.GetHttpClientConfiguration("http://testkeycloakserver:8080");
+        ExceptionHttpClientFixture.GetHttpClientConfiguration("http://testkeycloakserver:8080");
 
     public readonly KeycloakSettings KeycloakSettings = new()
     {
@@ -26,9 +25,9 @@ internal class ExceptionIdentityServerFactory
         RolesClaim = "TestRoleIdAttributeName"
     };
 
-    public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
+    public readonly IMapper Mapper = MapperFixture.GetMapperConfiguration();
 
-    public ExceptionIdentityServerFactory()
+    public ExceptionIdentityServerSut()
     {
         _identityServer =
             new KeycloakExceptionDecorator(new KeycloakServer(Options.Create(KeycloakSettings), HttpClient, Mapper));

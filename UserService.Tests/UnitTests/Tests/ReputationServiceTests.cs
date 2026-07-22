@@ -1,7 +1,7 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Enums;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -17,7 +17,7 @@ public class ReputationServiceTests
     public async Task ApplyReputationEventAsync_UnknownEventType_ReturnsReputationRulesNotFound()
     {
         //Arrange
-        var reputationService = new ReputationServiceFactory().GetService();
+        var reputationService = new ReputationServiceSut().GetService();
         var dto = new ReputationEventDto(1, 2, 1, EntityType.Answer, (BaseEventType)int.MaxValue); // Unknown event type
 
         //Act

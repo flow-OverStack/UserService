@@ -18,7 +18,7 @@ using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
-using UserService.Tests.Configurations;
+using UserService.Tests.Support;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base.Exception;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;

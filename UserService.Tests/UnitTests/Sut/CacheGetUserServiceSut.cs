@@ -4,22 +4,22 @@ using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
 using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.UnitTests.Configurations;
+using UserService.Tests.UnitTests.Fixtures;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class CacheGetUserServiceFactory
+internal class CacheGetUserServiceSut
 {
     private readonly IGetUserService _cacheGetUserService;
 
-    public readonly IGetUserService InnerGetUserService = new GetUserServiceFactory().GetService();
+    public readonly IGetUserService InnerGetUserService = new GetUserServiceSut().GetService();
 
     public readonly IUserCacheRepository UserCacheRepository =
         new UserCacheRepository(
-            new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
+            new RedisCacheProvider(RedisDatabaseFixture.GetRedisDatabaseConfiguration()),
+            Options.Create(RedisSettingsFixture.GetRedisSettingsConfiguration()));
 
-    public CacheGetUserServiceFactory()
+    public CacheGetUserServiceSut()
     {
         _cacheGetUserService = new CacheGetUserService(UserCacheRepository, InnerGetUserService);
     }

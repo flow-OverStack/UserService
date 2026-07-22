@@ -1,5 +1,5 @@
-using UserService.Tests.UnitTests.Configurations;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Fixtures;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -13,7 +13,7 @@ public class UserActivityServiceTests
     {
         //Arrange
         const long id = 1;
-        var activityService = new UserActivityServiceFactory().GetService();
+        var activityService = new UserActivityServiceSut().GetService();
 
         //Act
         var result = await activityService.RegisterHeartbeatAsync(id);
@@ -26,7 +26,7 @@ public class UserActivityServiceTests
     public async Task SyncHeartbeatsToDatabaseAsync_PendingHeartbeats_ReturnsSuccess()
     {
         //Arrange
-        var activityService = new UserActivityServiceFactory().GetDatabaseService();
+        var activityService = new UserActivityServiceSut().GetDatabaseService();
 
         //Act
         var result = await activityService.SyncHeartbeatsToDatabaseAsync();
@@ -41,7 +41,7 @@ public class UserActivityServiceTests
     {
         //Arrange
         var activityService =
-            new UserActivityServiceFactory(RedisDatabaseConfiguration.GetEmptyRedisDatabaseConfiguration())
+            new UserActivityServiceSut(RedisDatabaseFixture.GetEmptyRedisDatabaseConfiguration())
                 .GetDatabaseService();
 
         //Act
@@ -57,7 +57,7 @@ public class UserActivityServiceTests
     {
         //Arrange
         var activityService =
-            new UserActivityServiceFactory(RedisDatabaseConfiguration.GetRedisDatabaseConfigurationWithInvalidKeys())
+            new UserActivityServiceSut(RedisDatabaseFixture.GetRedisDatabaseConfigurationWithInvalidKeys())
                 .GetDatabaseService();
 
         //Act
@@ -73,7 +73,7 @@ public class UserActivityServiceTests
     {
         //Arrange
         var activityService =
-            new UserActivityServiceFactory(RedisDatabaseConfiguration.GetRedisDatabaseConfigurationWithInvalidValues())
+            new UserActivityServiceSut(RedisDatabaseFixture.GetRedisDatabaseConfigurationWithInvalidValues())
                 .GetDatabaseService();
 
         //Act

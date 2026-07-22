@@ -5,9 +5,9 @@ using UserService.Domain.Dtos.Token;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Tests.Constants;
 
-namespace UserService.Tests.UnitTests.Configurations;
+namespace UserService.Tests.UnitTests.Fixtures;
 
-internal static class IdentityServerConfiguration
+internal static class IdentityServerFixture
 {
     private static readonly HashSet<string> KnownIdentifiers = new(StringComparer.OrdinalIgnoreCase)
     {

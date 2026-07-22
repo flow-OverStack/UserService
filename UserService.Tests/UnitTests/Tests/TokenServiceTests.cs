@@ -1,5 +1,5 @@
 using UserService.Domain.Dtos.Token;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -12,7 +12,7 @@ public class TokenServiceTests
     public async Task RefreshTokenAsync_ValidRefreshToken_ReturnsNewToken()
     {
         //Arrange
-        var tokenService = new TokenServiceFactory().GetService();
+        var tokenService = new TokenServiceSut().GetService();
         var dto = new RefreshTokenDto("TestRefreshToken1");
 
         //Act

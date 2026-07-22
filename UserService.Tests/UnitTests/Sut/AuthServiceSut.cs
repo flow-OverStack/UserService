@@ -8,33 +8,32 @@ using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.Configurations;
-using UserService.Tests.UnitTests.Configurations;
-using MapperConfiguration = UserService.Tests.UnitTests.Configurations.MapperConfiguration;
+using UserService.Tests.Mocks;
+using UserService.Tests.UnitTests.Fixtures;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class AuthServiceFactory
+internal class AuthServiceSut
 {
     private readonly IAuthService _authService;
 
     public readonly IBackgroundJobClient BackgroundJob =
-        BackgroundJobClientConfiguration.GetBackgroundJobClientConfiguration();
+        BackgroundJobClientFixture.GetBackgroundJobClientConfiguration();
 
-    public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
+    public readonly IIdentityServer IdentityServer = IdentityServerFixture.GetIdentityServerConfiguration();
 
-    public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
+    public readonly IMapper Mapper = MapperFixture.GetMapperConfiguration();
 
     public readonly IValidator<RegisterUserDto> RegisterValidator =
-        ValidatorConfiguration<RegisterUserDto>.GetValidator(new RegisterUserDtoValidator());
+        ValidatorFixture<RegisterUserDto>.GetValidator(new RegisterUserDtoValidator());
 
     public readonly IUnitOfWork UnitOfWork;
 
 
-    public AuthServiceFactory(IBaseRepository<User>? userRepository = null,
+    public AuthServiceSut(IBaseRepository<User>? userRepository = null,
         IBaseRepository<Role>? roleRepository = null)
     {
-        UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork(userRepository, roleRepository).Object;
+        UnitOfWork = RepositoryMocks.GetMockUnitOfWork(userRepository, roleRepository).Object;
 
         _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, BackgroundJob, RegisterValidator);
     }

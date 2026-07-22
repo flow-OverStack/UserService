@@ -1,7 +1,7 @@
 using StackExchange.Redis;
 using UserService.Cache.Helpers;
 using UserService.Domain.Interfaces.Provider;
-using UserService.Tests.Configurations;
+using UserService.Tests.TestData;
 
 namespace UserService.Tests.FunctionalTests.Helpers;
 
@@ -9,14 +9,14 @@ internal static class UserActivityHelper
 {
     public static Task InsertActivities(this ICacheProvider redisDatabase)
     {
-        var activities = UserActivityConfiguration.GetUserActivities();
+        var activities = UserActivityCacheData.GetUserActivities();
 
         return redisDatabase.InsertActivitiesFromKeysAndValues(activities);
     }
 
     public static Task InsertInvalidActivities(this ICacheProvider redisDatabase)
     {
-        var activities = UserActivityConfiguration.GetUserActivitiesWithInvalidValues();
+        var activities = UserActivityCacheData.GetUserActivitiesWithInvalidValues();
 
         return redisDatabase.InsertActivitiesFromKeysAndValues(activities);
     }

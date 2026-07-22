@@ -2,17 +2,17 @@ using UserService.Application.Services;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.Configurations;
+using UserService.Tests.Mocks;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class GetRoleServiceFactory
+internal class GetRoleServiceSut
 {
     private readonly IGetRoleService _getRoleService;
-    public readonly IBaseRepository<Role> RoleRepository = MockRepositoriesGetters.GetMockRoleRepository().Object;
-    public readonly IBaseRepository<User> UserRepository = MockRepositoriesGetters.GetMockUserRepository().Object;
+    public readonly IBaseRepository<Role> RoleRepository = RepositoryMocks.GetMockRoleRepository().Object;
+    public readonly IBaseRepository<User> UserRepository = RepositoryMocks.GetMockUserRepository().Object;
 
-    public GetRoleServiceFactory(IBaseRepository<Role>? roleRepository = null)
+    public GetRoleServiceSut(IBaseRepository<Role>? roleRepository = null)
     {
         if (roleRepository != null)
             RoleRepository = roleRepository;

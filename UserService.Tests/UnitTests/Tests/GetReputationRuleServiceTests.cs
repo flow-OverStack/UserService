@@ -1,5 +1,5 @@
 using UserService.Application.Resources;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
 using UserService.Tests.Traits;
 
@@ -12,7 +12,7 @@ public class GetReputationRuleServiceTests
     public async Task GetAllReputationRules_NoFilter_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
 
         //Act
         var result = await getReputationRuleService.GetAllAsync();
@@ -26,7 +26,7 @@ public class GetReputationRuleServiceTests
     public async Task GetReputationRulesByIds_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
         var ruleIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -41,7 +41,7 @@ public class GetReputationRuleServiceTests
     public async Task GetReputationRulesByIds_SingleNonExistentId_ReturnsReputationRuleNotFound()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
         var ruleIds = new List<long> { 0 };
 
         //Act
@@ -57,7 +57,7 @@ public class GetReputationRuleServiceTests
     public async Task GetReputationRulesByIds_MultipleNonExistentIds_ReturnsReputationRulesNotFound()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
         var ruleIds = new List<long> { 0, 0 };
 
         //Act

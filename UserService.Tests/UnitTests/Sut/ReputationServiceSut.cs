@@ -1,16 +1,16 @@
 using UserService.Application.Services;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
-using UserService.Tests.Configurations;
+using UserService.Tests.Mocks;
 
-namespace UserService.Tests.UnitTests.Factories;
+namespace UserService.Tests.UnitTests.Sut;
 
-internal class ReputationServiceFactory
+internal class ReputationServiceSut
 {
     private readonly IReputationService _reputationService;
-    public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
+    public readonly IUnitOfWork UnitOfWork = RepositoryMocks.GetMockUnitOfWork().Object;
 
-    public ReputationServiceFactory()
+    public ReputationServiceSut()
     {
         _reputationService = new ReputationService(UnitOfWork);
     }

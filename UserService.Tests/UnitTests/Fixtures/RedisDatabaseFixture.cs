@@ -1,11 +1,11 @@
 using Moq;
 using StackExchange.Redis;
 using UserService.Cache.Helpers;
-using UserService.Tests.Configurations;
+using UserService.Tests.TestData;
 
-namespace UserService.Tests.UnitTests.Configurations;
+namespace UserService.Tests.UnitTests.Fixtures;
 
-internal static class RedisDatabaseConfiguration
+internal static class RedisDatabaseFixture
 {
     public static IDatabase GetRedisDatabaseConfiguration()
     {
@@ -17,7 +17,7 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(),
             It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>())).ReturnsAsync(true);
 
-        var activities = UserActivityConfiguration.GetUserActivities();
+        var activities = UserActivityCacheData.GetUserActivities();
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
                 key == CacheKeyHelper.GetUserActivitiesKey() ? activities.Keys : []);
@@ -40,7 +40,7 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(),
             It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>())).ReturnsAsync(true);
 
-        var activities = UserActivityConfiguration.GetEmptyUserActivities();
+        var activities = UserActivityCacheData.GetEmptyUserActivities();
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
                 key == CacheKeyHelper.GetUserActivitiesKey() ? activities.Keys : []);
@@ -63,7 +63,7 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(),
             It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>())).ReturnsAsync(true);
 
-        var activities = UserActivityConfiguration.GetUserActivitiesWithInvalidKeys();
+        var activities = UserActivityCacheData.GetUserActivitiesWithInvalidKeys();
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
                 key == CacheKeyHelper.GetUserActivitiesKey() ? activities.Keys : []);
@@ -86,7 +86,7 @@ internal static class RedisDatabaseConfiguration
         mockDatabase.Setup(x => x.StringSetAsync(It.IsAny<RedisKey>(), It.IsAny<RedisValue>(), It.IsAny<TimeSpan?>(),
             It.IsAny<bool>(), It.IsAny<When>(), It.IsAny<CommandFlags>())).ReturnsAsync(true);
 
-        var activities = UserActivityConfiguration.GetUserActivitiesWithInvalidValues();
+        var activities = UserActivityCacheData.GetUserActivitiesWithInvalidValues();
         mockDatabase.Setup(x => x.SetMembersAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
             .ReturnsAsync((RedisKey key, CommandFlags _) =>
                 key == CacheKeyHelper.GetUserActivitiesKey() ? activities.Keys : []);
