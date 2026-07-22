@@ -31,18 +31,18 @@ namespace UserService.Tests.FunctionalTests.Base;
 public class FunctionalTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _keycloakPostgreSql = new PostgreSqlBuilder()
-        .WithImage("postgres:latest")
+        .WithImage("postgres:17")
         .WithDatabase("keycloak-db")
         .WithUsername("postgres")
         .WithPassword("root")
         .Build();
 
     private readonly RedisContainer _redisContainer = new RedisBuilder()
-        .WithImage("redis:latest")
+        .WithImage("redis:7")
         .Build();
 
     private readonly PostgreSqlContainer _userServicePostgreSql = new PostgreSqlBuilder()
-        .WithImage("postgres:latest")
+        .WithImage("postgres:17")
         .WithDatabase("user-service-db")
         .WithUsername("postgres")
         .WithPassword("root")
