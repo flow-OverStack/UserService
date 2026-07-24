@@ -7,7 +7,7 @@ using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
 using UserService.Application.Resources;
 using UserService.Application.Settings;
-using UserService.Domain.Dtos.Page;
+using UserService.Domain.Dtos.Pagination;
 using UserService.GraphQl.Extensions;
 using UserService.GraphQl.Helpers;
 
@@ -22,7 +22,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
     private const string OrderArgName = "order";
 
     public async Task InvokeAsync(IMiddlewareContext context,
-        IValidator<CursorPageDto> cursorPageValidator,
+        IValidator<CursorPaginationParams> cursorPageValidator,
         IOptions<PaginationRules> paginationRules)
     {
         var first = context.ArgumentValue<int?>(FirstArgName);
@@ -40,7 +40,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
             last = paginationRules.Value.DefaultPageSize;
 
         var pagination =
-            new CursorPageDto(first, after, before, last, order.ToOrderDto());
+            new CursorPaginationParams(first, after, before, last, order.ToSortOrder());
 
         var validation = await cursorPageValidator.ValidateAsync(pagination, context.RequestAborted);
         if (!validation.IsValid)
