@@ -6,7 +6,7 @@ using HotChocolate.Types.Descriptors;
 using Microsoft.Extensions.Options;
 using UserService.Application.Resources;
 using UserService.Application.Settings;
-using UserService.Domain.Dtos.Page;
+using UserService.Domain.Dtos.Pagination;
 using UserService.GraphQl.Helpers;
 
 namespace UserService.GraphQl.Middlewares;
@@ -17,14 +17,14 @@ public class OffsetPagingValidationMiddleware(FieldDelegate next)
     private const string TakeArgName = "take";
 
     public async Task InvokeAsync(IMiddlewareContext context,
-        IValidator<OffsetPageDto> offsetPageValidator,
+        IValidator<OffsetPaginationParams> offsetPageValidator,
         IOptions<PaginationRules> paginationRules)
     {
         var skip = context.ArgumentValue<int?>(SkipArgName) ?? 0; // Value by default
         var take = context.ArgumentValue<int?>(TakeArgName) ??
                    paginationRules.Value.DefaultPageSize; // Value by default
 
-        var pagination = new OffsetPageDto(skip, take);
+        var pagination = new OffsetPaginationParams(skip, take);
 
         var validation = await offsetPageValidator.ValidateAsync(pagination, context.RequestAborted);
         if (!validation.IsValid)
