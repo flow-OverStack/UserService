@@ -96,6 +96,14 @@ OpenTelemetry, CORS, Kestrel ports, resilience).
   adds retry/circuit-breaker; failures route to a dead-letter topic. Inbound events drive
   reputation changes (`ReputationService.ApplyReputationEventAsync`).
 
+- **GraphQL paging limits live in `PaginationRules`.** `PagingOptions.MaxPageSize` in
+  `UserService.GraphQl/DependencyInjection` must be kept in sync with it - unset, Hot Chocolate
+  falls back to 50 and rejects pages the FluentValidation pagination validators
+  (`OffsetPaginationParamsValidator` / `CursorPaginationParamsValidator`) allow. The
+  `*PagingValidationMiddleware` classes run before Hot Chocolate's paging handler, so the
+  localized `ErrorMessage.InvalidPagination` is what clients see; Hot Chocolate's own limit is
+  an unreachable backstop.
+
 - **Auth:** JWT Bearer validated against Keycloak (`MetadataAddress`). `MapInboundClaims`
   is **false** on purpose — original OAuth2 claim names are preserved for inter-service
   use. `ClaimsValidationMiddleware` enforces required claims. Role-gated endpoints use
