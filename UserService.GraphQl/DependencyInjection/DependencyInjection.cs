@@ -50,10 +50,11 @@ public static class DependencyInjection
             {
                 using var provider = services.BuildServiceProvider();
                 using var scope = provider.CreateAsyncScope();
-                var defaultSize = scope.ServiceProvider.GetRequiredService<IOptions<PaginationRules>>().Value
-                    .DefaultPageSize;
+                var rules = scope.ServiceProvider.GetRequiredService<IOptions<PaginationRules>>().Value;
 
-                opt.DefaultPageSize = defaultSize;
+                opt.DefaultPageSize = rules.DefaultPageSize;
+                opt.MaxPageSize = rules.MaxPageSize;
+
                 opt.IncludeTotalCount = true;
             })
             .AddDbContextCursorPagingProvider()

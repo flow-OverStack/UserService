@@ -8,14 +8,15 @@ public static class HotChocolateExtension
 {
     public static IEnumerable<SortOrder> ToSortOrder(this ListValueNode? listValueNode)
     {
-        if (listValueNode == null || listValueNode.Items.Count != 1) return [];
+        if (listValueNode == null) return [];
 
-        var item = listValueNode.Items[0];
-
-        if (item is not ObjectValueNode objectValueNode)
-            throw new ArgumentException($"Item must be of type {nameof(ObjectValueNode)}.");
-
-        return objectValueNode.Fields.Select(ParseOrderFromField).ToArray();
+        return
+        [
+            .. listValueNode.Items
+                .Select(item => item as ObjectValueNode
+                                ?? throw new ArgumentException($"Item must be of type {nameof(ObjectValueNode)}."))
+                .SelectMany(objectValueNode => objectValueNode.Fields.Select(ParseOrderFromField))
+        ];
     }
 
     private static SortOrder ParseOrderFromField(ObjectFieldNode field)
