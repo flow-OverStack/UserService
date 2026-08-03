@@ -1,27 +1,33 @@
+using Serilog;
+using StackExchange.Redis;
 using UserService.Cache.Interfaces;
 using UserService.Domain.Interfaces.Repository.Cache;
 
 namespace UserService.Cache.Repositories.Base;
 
 public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEntity, TEntityId>
+    where TEntity : class
 {
     private readonly ICacheProvider _cache;
+    private readonly ILogger _logger;
     private readonly ICacheEntityMapping<TEntity, TEntityId> _mapping;
     private readonly int _nullTimeToLiveInSeconds;
     private readonly int _timeToLiveInSeconds;
 
     public BaseCacheRepository(ICacheProvider cache,
         ICacheEntityMapping<TEntity, TEntityId> mapping,
-        int timeToLiveInSeconds, int nullTimeToLiveInSeconds)
+        int timeToLiveInSeconds, int nullTimeToLiveInSeconds, ILogger logger)
     {
         // We do null checks here because functions are not injected by DI and can be null.
         ArgumentNullException.ThrowIfNull(cache);
         ArgumentNullException.ThrowIfNull(mapping);
+        ArgumentNullException.ThrowIfNull(logger);
 
         _cache = cache;
         _mapping = mapping;
         _timeToLiveInSeconds = timeToLiveInSeconds;
         _nullTimeToLiveInSeconds = nullTimeToLiveInSeconds;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<TEntity>> GetByIdsOrFetchAndCacheAsync(IEnumerable<TEntityId> ids,
@@ -50,8 +56,9 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             return cached;
         }
-        catch (Exception)
+        catch (RedisException e)
         {
+            _logger.Warning(e, "Cache unavailable, falling back to source");
             return await GetFromInnerAndCacheAsync(idsList, []);
         }
 
@@ -73,9 +80,10 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
                     new KeyValuePair<string, TEntity>(_mapping.GetKey(_mapping.GetId(x)), x));
                 await _cache.StringSetAsync(keyValues, _timeToLiveInSeconds, true, CancellationToken.None);
             }
-            catch (Exception)
+            catch (RedisException e)
             {
                 // If caching fails, we still return the fetched data without caching it.
+                _logger.Warning(e, "Cache unavailable, could not write back fetched data");
             }
 
             var allEntities = fetchedData.UnionBy(cachedData, _mapping.GetId).ToArray();
@@ -118,14 +126,14 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             var entityKeys = outerToEntityIds.SelectMany(x => x.Value.Select(_mapping.GetKey)).Distinct();
             var allEntities = (await _cache.GetJsonParsedAsync<TEntity>(entityKeys, cancellationToken)).ToArray();
+            var entitiesById = allEntities.DistinctBy(_mapping.GetId).ToDictionary(_mapping.GetId);
 
             var grouped = outerToEntityIds.Select(kvp =>
                 new KeyValuePair<TOuterId, IEnumerable<TEntity>>(
                     kvp.Key,
                     kvp.Value
-                        .Select(id => allEntities.FirstOrDefault(e =>
-                            EqualityComparer<TEntityId>.Default.Equals(_mapping.GetId(e), id)))
-                        .Where(e => !Equals(e, default(TEntity)))!)).ToArray();
+                        .Select(id => entitiesById.GetValueOrDefault(id))
+                        .Where(e => e is not null)!)).ToArray();
 
             var missingOuterIds = aliveIds.Except(outerToEntityIds.Select(x => x.Key)).ToList();
             var cached = new List<KeyValuePair<TOuterId, IEnumerable<TEntity>>>();
@@ -146,8 +154,9 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             return grouped;
         }
-        catch (Exception)
+        catch (RedisException e)
         {
+            _logger.Warning(e, "Cache unavailable, falling back to source");
             return await GetFromInnerAndCacheAsync(idsList, []);
         }
 
@@ -177,9 +186,10 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
                 await _cache.StringSetAsync(entityToCache, _timeToLiveInSeconds, true, CancellationToken.None);
                 await _cache.SetsAddAsync(outerSetToCache, _timeToLiveInSeconds, true, CancellationToken.None);
             }
-            catch (Exception)
+            catch (RedisException e)
             {
                 // If caching fails, we still return the fetched data without caching it.
+                _logger.Warning(e, "Cache unavailable, could not write back fetched data");
             }
 
             var allData = fetchedData.UnionBy(cachedData, x => x.Key).ToArray();

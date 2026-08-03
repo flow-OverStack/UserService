@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Serilog;
 using UserService.Cache.Helpers;
 using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
@@ -12,7 +13,8 @@ public class ReputationRuleCacheRepository : IReputationRuleCacheRepository
 {
     private readonly IBaseCacheRepository<ReputationRule, long> _repository;
 
-    public ReputationRuleCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
+    public ReputationRuleCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings,
+        ILogger logger)
     {
         var settings = redisSettings.Value;
 
@@ -20,7 +22,8 @@ public class ReputationRuleCacheRepository : IReputationRuleCacheRepository
             cacheProvider,
             new CacheReputationRuleMapping(),
             settings.TimeToLiveInSeconds,
-            settings.NullTimeToLiveInSeconds
+            settings.NullTimeToLiveInSeconds,
+            logger
         );
     }
 

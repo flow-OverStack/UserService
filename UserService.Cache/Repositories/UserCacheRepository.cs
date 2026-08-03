@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Serilog;
 using UserService.Cache.Helpers;
 using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
@@ -14,7 +15,7 @@ public class UserCacheRepository : IUserCacheRepository
     private readonly RedisSettings _redisSettings;
     private readonly IBaseCacheRepository<User, long> _repository;
 
-    public UserCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings)
+    public UserCacheRepository(ICacheProvider cacheProvider, IOptions<RedisSettings> redisSettings, ILogger logger)
     {
         var settings = redisSettings.Value;
 
@@ -22,7 +23,8 @@ public class UserCacheRepository : IUserCacheRepository
             cacheProvider,
             new CacheUserMapping(),
             settings.TimeToLiveInSeconds,
-            settings.NullTimeToLiveInSeconds
+            settings.NullTimeToLiveInSeconds,
+            logger
         );
         _cacheProvider = cacheProvider;
         _redisSettings = settings;

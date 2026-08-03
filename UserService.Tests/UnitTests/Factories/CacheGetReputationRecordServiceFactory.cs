@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Options;
+using Moq;
+using Serilog;
 using UserService.Application.Services.Cache;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
@@ -18,7 +20,8 @@ public class CacheGetReputationRecordServiceFactory
     public readonly IReputationRecordCacheRepository ReputationRecordCacheRepository =
         new ReputationRecordCacheRepository(
             new RedisCacheProvider(RedisDatabaseConfiguration.GetRedisDatabaseConfiguration()),
-            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()));
+            Options.Create(RedisSettingsConfiguration.GetRedisSettingsConfiguration()),
+            new Mock<ILogger>().Object);
 
     public CacheGetReputationRecordServiceFactory()
     {
