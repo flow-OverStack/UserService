@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Resources;
 using UserService.Application.Services.Identity;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
@@ -51,11 +52,8 @@ public class RoleService(
             unitOfWork.Roles.Remove(role);
             await unitOfWork.Roles.SaveChangesAsync(cancellationToken);
 
-            await synchronizer.SyncAsync(usersWithRoleToDelete.Select(x => new User
+            await synchronizer.SyncAsync(usersWithRoleToDelete.Select(x => x with
             {
-                Id = x.Id,
-                IdentityId = x.IdentityId,
-                Email = x.Email,
                 Roles = x.Roles.Where(y => y.Id != role.Id).ToList()
             }), cancellationToken);
             areRolesSynced = true;
@@ -101,12 +99,12 @@ public class RoleService(
         return BaseResult<RoleDto>.Success(mapper.Map<RoleDto>(role));
     }
 
-    private async Task<IEnumerable<User>> GetUsersWithRoleAsync(long roleId,
+    private async Task<IEnumerable<IdentitySyncSourceDto>> GetUsersWithRoleAsync(long roleId,
         CancellationToken cancellationToken = default)
     {
         return await unitOfWork.Users.GetAll()
-            .Include(x => x.Roles)
             .Where(x => x.Roles.Any(y => y.Id == roleId))
+            .Select(x => new IdentitySyncSourceDto(x.Id, x.IdentityId, x.Username, x.Email, x.Roles.ToList()))
             .ToArrayAsync(cancellationToken);
     }
 }

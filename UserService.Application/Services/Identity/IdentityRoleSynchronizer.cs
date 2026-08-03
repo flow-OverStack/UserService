@@ -1,6 +1,5 @@
 using AutoMapper;
 using UserService.Domain.Dtos.Identity;
-using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Identity;
 using UserService.Domain.Interfaces.Provider;
 
@@ -12,10 +11,10 @@ public class IdentityRoleSynchronizer(
     IIdentityCompensationQueue compensationQueue)
     : IIdentityRoleSynchronizer
 {
-    public Task SyncAsync(User user, CancellationToken cancellationToken = default) =>
+    public Task SyncAsync(IdentitySyncSourceDto user, CancellationToken cancellationToken = default) =>
         SyncAsync([user], cancellationToken);
 
-    public Task SyncAsync(IEnumerable<User> users, CancellationToken cancellationToken = default)
+    public Task SyncAsync(IEnumerable<IdentitySyncSourceDto> users, CancellationToken cancellationToken = default)
     {
         var updateTasks = users.Select(user =>
         {
@@ -29,9 +28,9 @@ public class IdentityRoleSynchronizer(
         return Task.WhenAll(updateTasks);
     }
 
-    public void ScheduleCompensation(User user) => ScheduleCompensation([user]);
+    public void ScheduleCompensation(IdentitySyncSourceDto user) => ScheduleCompensation([user]);
 
-    public void ScheduleCompensation(IEnumerable<User> users)
+    public void ScheduleCompensation(IEnumerable<IdentitySyncSourceDto> users)
     {
         foreach (var user in users)
         {

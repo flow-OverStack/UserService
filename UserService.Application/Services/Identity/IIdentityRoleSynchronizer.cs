@@ -1,4 +1,4 @@
-using UserService.Domain.Entities;
+using UserService.Domain.Dtos.Identity;
 
 namespace UserService.Application.Services.Identity;
 
@@ -8,8 +8,8 @@ namespace UserService.Application.Services.Identity;
 /// </summary>
 public interface IIdentityRoleSynchronizer
 {
-    Task SyncAsync(User user, CancellationToken cancellationToken = default);
-    Task SyncAsync(IEnumerable<User> users, CancellationToken cancellationToken = default);
-    void ScheduleCompensation(User user);
-    void ScheduleCompensation(IEnumerable<User> users);
+    Task SyncAsync(IdentitySyncSourceDto user, CancellationToken cancellationToken = default);
+    Task SyncAsync(IEnumerable<IdentitySyncSourceDto> users, CancellationToken cancellationToken = default);
+    void ScheduleCompensation(IdentitySyncSourceDto user);
+    void ScheduleCompensation(IEnumerable<IdentitySyncSourceDto> users);
 }

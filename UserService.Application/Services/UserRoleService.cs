@@ -1,7 +1,9 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Resources;
 using UserService.Application.Services.Identity;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
@@ -12,6 +14,7 @@ using UserService.Domain.Results;
 namespace UserService.Application.Services;
 
 public class UserRoleService(
+    IMapper mapper,
     IUnitOfWork unitOfWork,
     IIdentityRoleSynchronizer synchronizer)
     : IUserRoleService
@@ -41,7 +44,7 @@ public class UserRoleService(
             user.Roles.Add(role);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await synchronizer.SyncAsync(user, cancellationToken);
+            await synchronizer.SyncAsync(mapper.Map<IdentitySyncSourceDto>(user), cancellationToken);
             areRolesSynced = true;
 
             await transaction.CommitAsync(cancellationToken);
@@ -49,7 +52,7 @@ public class UserRoleService(
         catch (Exception) when (areRolesSynced)
         {
             var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-            synchronizer.ScheduleCompensation(userWithOldRoles!);
+            synchronizer.ScheduleCompensation(mapper.Map<IdentitySyncSourceDto>(userWithOldRoles!));
             throw;
         }
 
@@ -85,7 +88,7 @@ public class UserRoleService(
             user.Roles.Remove(role);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await synchronizer.SyncAsync(user, cancellationToken);
+            await synchronizer.SyncAsync(mapper.Map<IdentitySyncSourceDto>(user), cancellationToken);
             areRolesSynced = true;
 
             await transaction.CommitAsync(cancellationToken);
@@ -93,7 +96,7 @@ public class UserRoleService(
         catch (Exception) when (areRolesSynced)
         {
             var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-            synchronizer.ScheduleCompensation(userWithOldRoles!);
+            synchronizer.ScheduleCompensation(mapper.Map<IdentitySyncSourceDto>(userWithOldRoles!));
             throw;
         }
 
@@ -136,7 +139,7 @@ public class UserRoleService(
             user.Roles.Add(newRole);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await synchronizer.SyncAsync(user, cancellationToken);
+            await synchronizer.SyncAsync(mapper.Map<IdentitySyncSourceDto>(user), cancellationToken);
             areRolesSynced = true;
 
             await transaction.CommitAsync(cancellationToken);
@@ -144,7 +147,7 @@ public class UserRoleService(
         catch (Exception) when (areRolesSynced)
         {
             var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
-            synchronizer.ScheduleCompensation(userWithOldRoles!);
+            synchronizer.ScheduleCompensation(mapper.Map<IdentitySyncSourceDto>(userWithOldRoles!));
             throw;
         }
 

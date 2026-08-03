@@ -1,4 +1,6 @@
+using Moq;
 using UserService.Application.Resources;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Role;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
