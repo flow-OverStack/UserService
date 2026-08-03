@@ -1,6 +1,5 @@
 using AutoMapper;
 using FluentValidation;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Helpers;
@@ -8,6 +7,7 @@ using UserService.Application.Resources;
 using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Interfaces.Identity;
+using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -18,7 +18,7 @@ public class UserService(
     IMapper mapper,
     IIdentityServer identityServer,
     IUnitOfWork unitOfWork,
-    IBackgroundJobClient backgroundJob,
+    IIdentityCompensationQueue compensationQueue,
     IValidator<UpdateUsernameDto> updateUsernameValidator)
     : IUserService
 {
@@ -56,8 +56,7 @@ public class UserService(
         }
         catch (Exception) when (identityDto != null)
         {
-            backgroundJob.Enqueue<IIdentityServer>(server =>
-                server.UpdateUserAsync(identityDto, CancellationToken.None));
+            compensationQueue.EnqueueIdentityUserUpdate(identityDto);
 
             throw;
         }

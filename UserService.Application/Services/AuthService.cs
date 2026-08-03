@@ -2,7 +2,6 @@ using System.Net.Mail;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using FluentValidation;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Exceptions.IdentityServer.Base;
@@ -14,6 +13,7 @@ using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Identity;
+using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -25,7 +25,8 @@ public partial class AuthService(
     IMapper mapper,
     IIdentityServer identityServer,
     IUnitOfWork unitOfWork,
-    IBackgroundJobClient backgroundJob,
+    IIdentityCompensationQueue compensationQueue,
+    IUserSyncQueue userSyncQueue,
     IValidator<RegisterUserDto> registerValidator)
     : IAuthService, IUserSyncService
 {
@@ -115,8 +116,7 @@ public partial class AuthService(
 
         // Fire-and-forget: sync local user record and update LastLoginAt.
         // Zero latency impact on the login response.
-        backgroundJob.Enqueue<IUserSyncService>(svc =>
-            svc.SyncUserOnLoginAsync(identifier, CancellationToken.None));
+        userSyncQueue.EnqueueLoginSync(identifier);
 
         return tokenResult;
     }
@@ -162,8 +162,7 @@ public partial class AuthService(
         }
         catch (Exception) when (identityResponse != null)
         {
-            backgroundJob.Enqueue<IIdentityServer>(server =>
-                server.DeleteUserAsync(new IdentityUserIdDto(identityResponse.IdentityId)));
+            compensationQueue.EnqueueIdentityUserDeletion(identityResponse.IdentityId);
 
             throw;
         }

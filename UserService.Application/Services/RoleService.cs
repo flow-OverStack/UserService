@@ -1,5 +1,4 @@
 using AutoMapper;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Resources;
@@ -9,6 +8,7 @@ using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.Interfaces.Identity;
+using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -19,7 +19,7 @@ public class RoleService(
     IMapper mapper,
     IUnitOfWork unitOfWork,
     IIdentityServer identityServer,
-    IBackgroundJobClient backgroundJob)
+    IIdentityCompensationQueue compensationQueue)
     : IRoleService
 {
     public async Task<BaseResult<RoleDto>> CreateRoleAsync(CreateRoleDto dto,
@@ -286,7 +286,7 @@ public class RoleService(
         foreach (var user in users)
         {
             var dto = mapper.Map<IdentityUpdateUserDto>(user);
-            backgroundJob.Enqueue<IIdentityServer>(server => server.UpdateUserAsync(dto, CancellationToken.None));
+            compensationQueue.EnqueueIdentityUserUpdate(dto);
         }
     }
 }

@@ -37,6 +37,7 @@ builder.Services.AddGraphQl();
 builder.Services.AddGrpcServices();
 builder.Services.AddMassTransitServices();
 builder.Services.AddHangfire(builder.Configuration);
+builder.Services.AddBackgroundQueues();
 
 builder.Host.AddLogging(builder.Configuration);
 
