@@ -52,16 +52,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
 
     private static ListValueNode? GetOrderArg(IMiddlewareContext context)
     {
-        try
-        {
-            // If no exception, order argument is null
-            context.ArgumentLiteral<NullValueNode>(OrderArgName);
-            return null;
-        }
-        catch (GraphQLException)
-        {
-            return context.ArgumentLiteral<ListValueNode>(OrderArgName);
-        }
+        return context.ArgumentLiteral<IValueNode>(OrderArgName) as ListValueNode;
     }
 }
 
