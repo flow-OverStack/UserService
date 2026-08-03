@@ -306,7 +306,6 @@ public class RoleService(
         foreach (var user in users)
         {
             var dto = mapper.Map<IdentityUpdateUserDto>(user);
-            dto.Roles.ForEach(x => x.Users = null!); // Remove circular references for serialization.
             backgroundJob.Enqueue<IIdentityServer>(server => server.UpdateUserAsync(dto, CancellationToken.None));
         }
     }
