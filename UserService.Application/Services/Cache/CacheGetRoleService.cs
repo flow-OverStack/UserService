@@ -14,12 +14,12 @@ public class CacheGetRoleService(IRoleCacheRepository cacheRepository, IGetRoleS
         return inner.GetAllAsync(cancellationToken);
     }
 
-    public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
         var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (roles.Length == 0)
@@ -33,12 +33,12 @@ public class CacheGetRoleService(IRoleCacheRepository cacheRepository, IGetRoleS
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default)
     {
         var groupedRoles =
             (await cacheRepository.GetUsersRolesOrFetchAndCacheAsync(userIds,
-                async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [],
+                async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch.ToArray(), ct)).Data ?? [],
                 cancellationToken)).ToArray();
 
         if (groupedRoles.Length == 0)

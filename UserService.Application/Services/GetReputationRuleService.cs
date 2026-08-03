@@ -19,13 +19,13 @@ public class GetReputationRuleService(IBaseRepository<ReputationRule> ruleReposi
         return Task.FromResult(QueryableResult<ReputationRule>.Success(rules));
     }
 
-    public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var rules = await ruleRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
         if (rules.Length == 0)
-            return ids.Count() switch
+            return ids.Count switch
             {
                 <= 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRuleNotFound,
                     (int)ErrorCodes.ReputationRuleNotFound),

@@ -20,7 +20,7 @@ public class GetRoleService(
         return Task.FromResult(QueryableResult<Role>.Success(roleRepository.GetAll()));
     }
 
-    public async Task<CollectionResult<Role>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var roles = await roleRepository.GetAll()
@@ -28,7 +28,7 @@ public class GetRoleService(
             .ToArrayAsync(cancellationToken);
 
         if (roles.Length == 0)
-            return ids.Count() switch
+            return ids.Count switch
             {
                 <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
                 > 1 => CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound)
@@ -39,7 +39,7 @@ public class GetRoleService(
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<Role>>>> GetUsersRolesAsync(
-        IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var groupedRoles = await userRepository.GetAll()
             .Where(x => userIds.Contains(x.Id))
