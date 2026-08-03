@@ -4,7 +4,6 @@ using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
 using UserService.Cache.Settings;
 using UserService.Domain.Entities;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository.Cache;
 
 namespace UserService.Cache.Repositories;

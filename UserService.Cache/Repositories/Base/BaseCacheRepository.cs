@@ -1,5 +1,4 @@
 using UserService.Cache.Interfaces;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository.Cache;
 
 namespace UserService.Cache.Repositories.Base;

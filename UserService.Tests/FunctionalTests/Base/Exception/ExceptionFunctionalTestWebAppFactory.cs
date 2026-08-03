@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using UserService.Cache.Interfaces;
 using UserService.DAL.Repositories;
 using UserService.Domain.Interfaces.Database;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.Configurations;
 
