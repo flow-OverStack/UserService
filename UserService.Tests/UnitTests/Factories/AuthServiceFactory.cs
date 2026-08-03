@@ -2,6 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using Moq;
 using UserService.Application.Services;
+using UserService.Application.Services.Provisioning;
 using UserService.Application.Validators;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
@@ -26,6 +27,8 @@ internal class AuthServiceFactory
 
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
 
+    public readonly Mock<IUserProvisioningService> ProvisioningService = new();
+
     public readonly IValidator<RegisterUserDto> RegisterValidator =
         ValidatorConfiguration<RegisterUserDto>.GetValidator(new RegisterUserDtoValidator());
 
@@ -39,7 +42,7 @@ internal class AuthServiceFactory
         UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork(userRepository, roleRepository).Object;
 
         _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, CompensationQueue.Object,
-            UserSyncQueue.Object, RegisterValidator);
+            UserSyncQueue.Object, ProvisioningService.Object, RegisterValidator);
     }
 
     public IAuthService GetService()
