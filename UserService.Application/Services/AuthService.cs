@@ -132,10 +132,7 @@ public partial class AuthService(
             var role = await unitOfWork.Roles.GetAll()
                 .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
             if (role == null)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
                 return BaseResult<UserDto>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
-            }
 
             user = new User
             {
@@ -155,10 +152,7 @@ public partial class AuthService(
 
             var registerResult = await SafeRegisterUserAsync(identityServer, identityDto, cancellationToken);
             if (!registerResult.IsSuccess)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
                 return BaseResult<UserDto>.Failure(registerResult.ErrorMessage!, registerResult.ErrorCode);
-            }
 
             identityResponse = registerResult.Data;
             user.IdentityId = identityResponse!.IdentityId;
@@ -166,13 +160,10 @@ public partial class AuthService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (identityResponse != null)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-
-            if (identityResponse != null)
-                backgroundJob.Enqueue<IIdentityServer>(server =>
-                    server.DeleteUserAsync(new IdentityUserIdDto(identityResponse.IdentityId)));
+            backgroundJob.Enqueue<IIdentityServer>(server =>
+                server.DeleteUserAsync(new IdentityUserIdDto(identityResponse.IdentityId)));
 
             throw;
         }
@@ -182,54 +173,43 @@ public partial class AuthService(
 
     private async Task<BaseResult<User>> InitUserAsync(InitUserDto dto, CancellationToken cancellationToken)
     {
-        User user;
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
+
+        var role = await unitOfWork.Roles.GetAll()
+            .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
+        if (role == null)
+            return BaseResult<User>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
+
+        var (usernameBase, isTemporary) = await ResolveUniqueUsernameAsync(dto.Username, cancellationToken);
+        var username = isTemporary
+            ? Guid.NewGuid().ToString("N")[..EntityConstraints.UsernameMaxLength]
+            : usernameBase;
+
+        var user = new User
         {
-            var role = await unitOfWork.Roles.GetAll()
-                .FirstOrDefaultAsync(x => x.Name == nameof(Roles.User), cancellationToken);
-            if (role == null)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
-                return BaseResult<User>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound);
-            }
+            Username = username,
+            Email = dto.Email,
+            LastLoginAt = DateTime.UtcNow,
+            IdentityId = dto.IdentityId,
+            Roles = [role]
+        };
 
-            var (usernameBase, isTemporary) = await ResolveUniqueUsernameAsync(dto.Username, cancellationToken);
-            var username = isTemporary
-                ? Guid.NewGuid().ToString("N")[..EntityConstraints.UsernameMaxLength]
-                : usernameBase;
+        await unitOfWork.Users.CreateAsync(user, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            user = new User
-            {
-                Username = username,
-                Email = dto.Email,
-                LastLoginAt = DateTime.UtcNow,
-                IdentityId = dto.IdentityId,
-                Roles = [role]
-            };
+        if (isTemporary)
+        {
+            var suffix = $"_{user.Id}";
+            var baseLength = Math.Min(usernameBase.Length, EntityConstraints.UsernameMaxLength - suffix.Length);
+            user.Username = usernameBase[..baseLength] + suffix;
 
-            await unitOfWork.Users.CreateAsync(user, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            if (isTemporary)
-            {
-                var suffix = $"_{user.Id}";
-                var baseLength = Math.Min(usernameBase.Length, EntityConstraints.UsernameMaxLength - suffix.Length);
-                user.Username = usernameBase[..baseLength] + suffix;
-
-                await unitOfWork.SaveChangesAsync(cancellationToken);
-
-                var identityDto = mapper.Map<IdentityUpdateUserDto>(user);
-                await identityServer.UpdateUserAsync(identityDto, cancellationToken);
-            }
-
-            await transaction.CommitAsync(cancellationToken);
+            var identityDto = mapper.Map<IdentityUpdateUserDto>(user);
+            await identityServer.UpdateUserAsync(identityDto, cancellationToken);
         }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(CancellationToken.None);
-            throw;
-        }
+
+        await transaction.CommitAsync(cancellationToken);
 
         return BaseResult<User>.Success(user);
     }

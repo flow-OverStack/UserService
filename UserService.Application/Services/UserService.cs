@@ -54,12 +54,10 @@ public class UserService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (identityDto != null)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-            if (identityDto != null)
-                backgroundJob.Enqueue<IIdentityServer>(server =>
-                    server.UpdateUserAsync(identityDto, CancellationToken.None));
+            backgroundJob.Enqueue<IIdentityServer>(server =>
+                server.UpdateUserAsync(identityDto, CancellationToken.None));
 
             throw;
         }

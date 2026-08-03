@@ -66,12 +66,8 @@ public class RoleService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (areRolesSynced)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-
-            if (!areRolesSynced) throw;
-
             EnqueueRollbackRoles(usersWithRoleToDelete);
             throw;
         }
@@ -99,12 +95,8 @@ public class RoleService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (areRolesSynced)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-
-            if (!areRolesSynced) throw;
-
             var usersWithOldRole = await GetUsersWithRoleAsync(role.Id, CancellationToken.None);
             EnqueueRollbackRoles(usersWithOldRole);
             throw;
@@ -143,12 +135,8 @@ public class RoleService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (areRolesSynced)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-
-            if (!areRolesSynced) throw;
-
             var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
             EnqueueRollbackRoles(userWithOldRoles!);
             throw;
@@ -191,12 +179,8 @@ public class RoleService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (areRolesSynced)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-
-            if (!areRolesSynced) throw;
-
             var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
             EnqueueRollbackRoles(userWithOldRoles!);
             throw;
@@ -246,12 +230,8 @@ public class RoleService(
 
             await transaction.CommitAsync(cancellationToken);
         }
-        catch (Exception)
+        catch (Exception) when (areRolesSynced)
         {
-            await transaction.RollbackAsync(CancellationToken.None);
-
-            if (!areRolesSynced) throw;
-
             var userWithOldRoles = await GetUserWithRolesByIdAsync(user.Id, CancellationToken.None);
             EnqueueRollbackRoles(userWithOldRoles!);
             throw;
