@@ -16,16 +16,13 @@ public class PublicErrorFilter(ILogger logger) : IErrorFilter
             && value is true)
             return error.RemoveExtension(GraphQlExceptionHelper.IsBusinessErrorExtension).WithMessage(error.Message);
 
-        if (error.Message.StartsWith(UnexpectedErrorMessage))
-        {
-            var traceId = Activity.Current?.TraceId.ToHexString();
-            logger.Error(error.Exception, "Unhandled GraphQL error {Message}", error.Message);
+        if (!error.Message.StartsWith(UnexpectedErrorMessage)) return error;
 
-            return error.WithMessage(traceId is null
-                ? ErrorMessage.InternalServerError
-                : $"{ErrorMessage.InternalServerError} (ref: {traceId})");
-        }
+        var traceId = Activity.Current?.TraceId.ToHexString();
+        logger.Error(error.Exception, "Unhandled GraphQL error {Message}", error.Message);
 
-        return error;
+        return error.WithMessage(traceId is null
+            ? ErrorMessage.InternalServerError
+            : $"{ErrorMessage.InternalServerError} (ref: {traceId})");
     }
 }
