@@ -182,7 +182,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
             TestConstants.TestPassword + TestConstants.ExistingUsername);
         await using var scope = ServiceProvider.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var intialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+        var initialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
@@ -191,7 +191,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
         //Assert
         var finalCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
-        Assert.Equal(intialCount + 1, finalCount); //New user should be created
+        Assert.Equal(initialCount + 1, finalCount); //New user should be created
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
