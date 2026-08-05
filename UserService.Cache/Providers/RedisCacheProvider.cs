@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using UserService.Domain.Interfaces.Provider;
+using UserService.Cache.Interfaces;
 
 namespace UserService.Cache.Providers;
 

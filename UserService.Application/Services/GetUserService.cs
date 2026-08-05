@@ -24,13 +24,13 @@ public class GetUserService(
         return Task.FromResult(QueryableResult<User>.Success(users));
     }
 
-    public async Task<CollectionResult<User>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<User>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
         if (users.Length == 0)
-            return ids.Count() switch
+            return ids.Count switch
             {
                 <= 1 => CollectionResult<User>.Failure(ErrorMessage.UserNotFound, (int)ErrorCodes.UserNotFound),
                 > 1 => CollectionResult<User>.Failure(ErrorMessage.UsersNotFound, (int)ErrorCodes.UsersNotFound)
@@ -40,7 +40,7 @@ public class GetUserService(
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
-        IEnumerable<long> roleIds, CancellationToken cancellationToken = default)
+        IReadOnlyCollection<long> roleIds, CancellationToken cancellationToken = default)
     {
         var groupedUsers = await roleRepository.GetAll()
             .Where(x => roleIds.Contains(x.Id))
@@ -55,8 +55,8 @@ public class GetUserService(
         return CollectionResult<KeyValuePair<long, IEnumerable<User>>>.Success(groupedUsers);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(IEnumerable<long> ids,
-        CancellationToken cancellationToken = default)
+    public async Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(
+        IReadOnlyCollection<long> ids, CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
 
@@ -93,8 +93,8 @@ public class GetUserService(
         return CollectionResult<KeyValuePair<long, int>>.Success(allReputations);
     }
 
-    public async Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(IEnumerable<long> ids,
-        CancellationToken cancellationToken = default)
+    public async Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(
+        IReadOnlyCollection<long> ids, CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
         var reputations = await reputationRecordRepository.GetAll()

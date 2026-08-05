@@ -16,12 +16,12 @@ public class CacheGetReputationRuleService(
         return inner.GetAllAsync(cancellationToken);
     }
 
-    public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
         var rules = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (rules.Length == 0)

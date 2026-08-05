@@ -16,12 +16,12 @@ public class CacheGetReputationRecordService(
         return inner.GetAllAsync(cancellationToken);
     }
 
-    public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var idsArray = ids.ToArray();
         var records = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
-            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch, ct)).Data ?? [],
+            async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
         if (records.Length == 0)
@@ -37,12 +37,12 @@ public class CacheGetReputationRecordService(
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersOwnedRecordsAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default)
     {
         var groupedRecords =
             (await cacheRepository.GetUsersOwnedRecordsOrFetchAndCacheAsync(userIds,
-                async (idsToFetch, ct) => (await inner.GetUsersOwnedRecordsAsync(idsToFetch, ct)).Data ?? [],
+                async (idsToFetch, ct) => (await inner.GetUsersOwnedRecordsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
                 cancellationToken))
             .ToArray();
 
@@ -54,11 +54,12 @@ public class CacheGetReputationRecordService(
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
-        GetUsersInitiatedRecordsAsync(IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+        GetUsersInitiatedRecordsAsync(IReadOnlyCollection<long> userIds,
+            CancellationToken cancellationToken = default)
     {
         var groupedRecords =
             (await cacheRepository.GetUsersInitiatedRecordsOrFetchAndCacheAsync(userIds,
-                async (idsToFetch, ct) => (await inner.GetUsersInitiatedRecordsAsync(idsToFetch, ct)).Data ?? [],
+                async (idsToFetch, ct) => (await inner.GetUsersInitiatedRecordsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
                 cancellationToken))
             .ToArray();
 
@@ -71,11 +72,11 @@ public class CacheGetReputationRecordService(
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
         GetRecordsWithReputationRulesAsync(
-            IEnumerable<long> ruleIds, CancellationToken cancellationToken = default)
+            IReadOnlyCollection<long> ruleIds, CancellationToken cancellationToken = default)
     {
         var groupedRecords =
             (await cacheRepository.GetRecordsWithReputationRulesOrFetchAndCacheAsync(ruleIds,
-                async (idsToFetch, ct) => (await inner.GetRecordsWithReputationRulesAsync(idsToFetch, ct)).Data ?? [],
+                async (idsToFetch, ct) => (await inner.GetRecordsWithReputationRulesAsync(idsToFetch.ToArray(), ct)).Data ?? [],
                 cancellationToken))
             .ToArray();
 

@@ -1,7 +1,7 @@
-using System.Security.Claims;
 using HotChocolate.Authorization;
 using Microsoft.AspNetCore.Http;
 using UserService.Domain.Entities;
+using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Service;
 using UserService.GraphQl.DataLoaders;
 using UserService.GraphQl.Helpers;
@@ -21,7 +21,7 @@ public class Queries
         if (user == null)
             throw GraphQlExceptionHelper.GetException("User is not authenticated.");
 
-        var userId = long.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = user.GetUserId();
 
         return await userLoader.LoadAsync(userId, cancellationToken);
     }

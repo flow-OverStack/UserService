@@ -20,14 +20,14 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         return Task.FromResult(QueryableResult<ReputationRecord>.Success(records));
     }
 
-    public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IEnumerable<long> ids,
+    public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var records = await recordsRepository.GetAll().Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
         if (records.Length == 0)
-            return ids.Count() switch
+            return ids.Count switch
             {
                 <= 1 => CollectionResult<ReputationRecord>.Failure(ErrorMessage.ReputationRecordNotFound,
                     (int)ErrorCodes.ReputationRecordNotFound),
@@ -39,7 +39,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersOwnedRecordsAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
@@ -58,7 +58,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
         GetUsersInitiatedRecordsAsync(
-            IEnumerable<long> userIds, CancellationToken cancellationToken = default)
+            IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
                 .Where(x => userIds.Contains(x.InitiatorId))
@@ -75,7 +75,8 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
     }
 
     public async Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>>
-        GetRecordsWithReputationRulesAsync(IEnumerable<long> ruleIds, CancellationToken cancellationToken = default)
+        GetRecordsWithReputationRulesAsync(IReadOnlyCollection<long> ruleIds,
+            CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
                 .Where(x => ruleIds.Contains(x.ReputationRuleId))

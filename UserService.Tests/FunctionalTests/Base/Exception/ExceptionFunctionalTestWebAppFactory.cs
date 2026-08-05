@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using UserService.Cache.Interfaces;
 using UserService.DAL.Repositories;
 using UserService.Domain.Interfaces.Database;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.Configurations;
+using RedisException = StackExchange.Redis.RedisException;
 
 namespace UserService.Tests.FunctionalTests.Base.Exception;
 
@@ -45,13 +46,16 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
     {
         var mockDatabase = new Mock<ICacheProvider>();
 
+        mockDatabase.Setup(x => x.GetNullKeysAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new RedisException(TestException.ErrorMessage));
+
         mockDatabase.Setup(x => x.StringSetAsync(It.IsAny<IEnumerable<KeyValuePair<string, It.IsAnyType>>>(),
                 It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new TestException());
+            .ThrowsAsync(new RedisException(TestException.ErrorMessage));
 
         mockDatabase.Setup(x =>
                 x.GetJsonParsedAsync<It.IsAnyType>(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new TestException());
+            .ThrowsAsync(new RedisException(TestException.ErrorMessage));
 
         return mockDatabase;
     }

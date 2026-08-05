@@ -9,6 +9,7 @@ using UserService.DAL;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
@@ -36,6 +37,33 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
+    }
+
+    [Trait("Category", "Functional")]
+    [Fact]
+    public async Task RegisterUser_ShouldBe_RoleNotFound_AndNoUserCreated()
+    {
+        //Arrange
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Set<Role>().Where(x => x.Name == nameof(Roles.User)).ExecuteDeleteAsync();
+        var initialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+
+        var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com", TestConstants.TestPassword + "4");
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+
+        var finalCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+        Assert.Equal(initialCount, finalCount);
     }
 
     [Trait("Category", "Functional")]

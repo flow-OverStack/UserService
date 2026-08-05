@@ -1,4 +1,5 @@
 using AutoMapper;
+using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Entities;
 
@@ -9,5 +10,6 @@ public class RoleMapping : Profile
     public RoleMapping()
     {
         CreateMap<Role, RoleDto>().ReverseMap();
+        CreateMap<Role, IdentityRoleDto>();
     }
 }

@@ -29,7 +29,7 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
         var after = context.ArgumentValue<string?>(AfterArgName);
         var before = context.ArgumentValue<string?>(BeforeArgName);
         var last = context.ArgumentValue<int?>(LastArgName);
-        var order = GetOrderArg(context);
+        var order = context.ArgumentLiteral<IValueNode>(OrderArgName) as ListValueNode;
 
         // Specifying default values if need
         if (after == null && first == null && before == null && last == null)
@@ -48,20 +48,6 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
                 $"{ErrorMessage.InvalidPagination}: {string.Join(' ', validation.Errors)}");
 
         await next(context);
-    }
-
-    private static ListValueNode? GetOrderArg(IMiddlewareContext context)
-    {
-        try
-        {
-            // If no exception, order argument is null
-            context.ArgumentLiteral<NullValueNode>(OrderArgName);
-            return null;
-        }
-        catch (GraphQLException)
-        {
-            return context.ArgumentLiteral<ListValueNode>(OrderArgName);
-        }
     }
 }
 

@@ -1,10 +1,11 @@
 using AutoMapper;
 using FluentValidation;
-using Hangfire;
+using Moq;
 using UserService.Application.Validators;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Identity;
+using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Tests.Configurations;
@@ -17,8 +18,8 @@ internal class UserServiceFactory
 {
     private readonly IUserService _userService;
 
-    public readonly IBackgroundJobClient BackgroundJob =
-        BackgroundJobClientConfiguration.GetBackgroundJobClientConfiguration();
+    public readonly Mock<IIdentityCompensationQueue> CompensationQueue =
+        IdentityCompensationQueueConfiguration.GetMockIdentityCompensationQueue();
 
     public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
 
@@ -33,8 +34,8 @@ internal class UserServiceFactory
     {
         UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork(userRepository).Object;
 
-        _userService = new Application.Services.UserService(Mapper, IdentityServer, UnitOfWork, BackgroundJob,
-            UpdateUsernameValidator);
+        _userService = new Application.Services.UserService(Mapper, IdentityServer, UnitOfWork,
+            CompensationQueue.Object, UpdateUsernameValidator);
     }
 
     public IUserService GetService()

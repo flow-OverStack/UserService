@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Results;
+using UserService.GraphQl.DataLoaders.Base;
 
 namespace UserService.GraphQl.DataLoaders;
 
@@ -8,23 +10,11 @@ public class ReputationRuleDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<long, ReputationRule>(batchScheduler, options)
+    : EntityBatchDataLoader<ReputationRule, long>(batchScheduler, options, scopeFactory)
 {
-    protected override async Task<IReadOnlyDictionary<long, ReputationRule>> LoadBatchAsync(IReadOnlyList<long> keys,
-        CancellationToken cancellationToken)
-    {
-        await using var scope = scopeFactory.CreateAsyncScope();
-        var reputationRuleService = scope.ServiceProvider.GetRequiredService<IGetReputationRuleService>();
+    protected override Task<CollectionResult<ReputationRule>> FetchAsync(IServiceProvider scopedProvider,
+        IReadOnlyList<long> keys, CancellationToken cancellationToken) =>
+        scopedProvider.GetRequiredService<IGetReputationRuleService>().GetByIdsAsync(keys, cancellationToken);
 
-        var result = await reputationRuleService.GetByIdsAsync(keys, cancellationToken);
-
-        var dictionary = new Dictionary<long, ReputationRule>();
-
-        if (!result.IsSuccess)
-            return dictionary.AsReadOnly();
-
-        dictionary = result.Data.ToDictionary(x => x.Id, x => x);
-
-        return dictionary.AsReadOnly();
-    }
+    protected override long GetId(ReputationRule entity) => entity.Id;
 }

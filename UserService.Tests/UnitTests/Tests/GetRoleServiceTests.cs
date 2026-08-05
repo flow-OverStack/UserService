@@ -1,5 +1,7 @@
+using Moq;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
+using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.Configurations;
 using UserService.Tests.UnitTests.Factories;
 using Xunit;
@@ -25,7 +27,7 @@ public class GetRoleServiceTests
 
     [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllRoles_ShouldBe_RolesNotFound()
+    public async Task GetAllRoles_EmptyTable_ShouldBe_SuccessWithNoItems()
     {
         //Arrange
         var getRoleService =
@@ -36,9 +38,9 @@ public class GetRoleServiceTests
         var result = await getRoleService.GetAllAsync();
 
         //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.RolesNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+        Assert.Empty(result.Data);
     }
 
     [Trait("Category", "Unit")]

@@ -1,4 +1,4 @@
-namespace UserService.Domain.Interfaces.Provider;
+namespace UserService.Cache.Interfaces;
 
 public interface ICacheProvider
 {

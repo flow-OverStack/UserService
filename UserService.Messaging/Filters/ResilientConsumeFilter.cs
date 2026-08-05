@@ -1,16 +1,17 @@
 using Hangfire;
 using MassTransit;
 using Newtonsoft.Json;
+using Serilog;
 using UserService.Messaging.Messages;
 
 namespace UserService.Messaging.Filters;
 
-public class ResilientConsumeFilter<TEvent>(IBackgroundJobClient backgroundJob)
+public class ResilientConsumeFilter<TEvent>(IBackgroundJobClient backgroundJob, ILogger logger)
     : IFilter<ConsumeContext<TEvent>> where TEvent : class
 {
     private const string RedeliveryCountHeader = "RedeliveryCount";
 
-    private static TimeSpan[] ScheduledRedeliveryIntervals =>
+    private static readonly TimeSpan[] ScheduledRedeliveryIntervals =
     [
         TimeSpan.FromMinutes(1),
         TimeSpan.FromMinutes(5),
@@ -20,7 +21,7 @@ public class ResilientConsumeFilter<TEvent>(IBackgroundJobClient backgroundJob)
         TimeSpan.FromHours(24)
     ];
 
-    private static TimeSpan[] ImmediateRetryIntervals =>
+    private static readonly TimeSpan[] ImmediateRetryIntervals =
     [
         TimeSpan.FromSeconds(5),
         TimeSpan.FromSeconds(10),
@@ -43,13 +44,15 @@ public class ResilientConsumeFilter<TEvent>(IBackgroundJobClient backgroundJob)
                 foreach (var retry in ImmediateRetryIntervals)
                     try
                     {
-                        await Task.Delay(retry);
+                        await Task.Delay(retry, context.CancellationToken);
                         await next.Send(context);
                         return;
                     }
-                    catch (Exception)
+                    catch (Exception retryException)
                     {
-                        // Just waiting for the next retry
+                        logger.Warning(retryException,
+                            "Immediate retry failed for message {MessageId}, retrying in {Retry}",
+                            context.MessageId, retry);
                     }
 
 
@@ -88,10 +91,9 @@ public class ResilientConsumeFilter<TEvent>(IBackgroundJobClient backgroundJob)
             StackTrace = e.StackTrace!,
             Source = context.DestinationAddress!.AbsoluteUri
         };
-        var ct = context.CancellationToken;
 
         backgroundJob.Enqueue<ITopicProducer<FaultedMessage>>(producer =>
-            producer.Produce(message, ct));
+            producer.Produce(message, CancellationToken.None));
     }
 
     private sealed class RedeliveryJob(ITopicProducer<TEvent> producer)

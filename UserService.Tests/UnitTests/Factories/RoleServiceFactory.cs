@@ -1,7 +1,7 @@
 using AutoMapper;
-using Hangfire;
+using Moq;
 using UserService.Application.Services;
-using UserService.Domain.Interfaces.Identity;
+using UserService.Application.Services.Identity;
 using UserService.Domain.Interfaces.Repository;
 using UserService.Domain.Interfaces.Service;
 using UserService.Tests.Configurations;
@@ -14,17 +14,15 @@ internal class RoleServiceFactory
 {
     private readonly IRoleService _roleService;
 
-    public readonly IBackgroundJobClient BackgroundJob =
-        BackgroundJobClientConfiguration.GetBackgroundJobClientConfiguration();
-
-    public readonly IIdentityServer IdentityServer = IdentityServerConfiguration.GetIdentityServerConfiguration();
     public readonly IMapper Mapper = MapperConfiguration.GetMapperConfiguration();
+
+    public readonly Mock<IIdentityRoleSynchronizer> Synchronizer = new();
 
     public readonly IUnitOfWork UnitOfWork = MockRepositoriesGetters.GetMockUnitOfWork().Object;
 
     public RoleServiceFactory()
     {
-        _roleService = new RoleService(Mapper, UnitOfWork, IdentityServer, BackgroundJob);
+        _roleService = new RoleService(Mapper, UnitOfWork, Synchronizer.Object);
     }
 
     public IRoleService GetService()
