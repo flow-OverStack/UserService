@@ -25,8 +25,6 @@ public class CursorPagingValidationMiddleware(FieldDelegate next)
         IValidator<CursorPaginationParams> cursorPageValidator,
         IOptions<PaginationRules> paginationRules)
     {
-        throw new Exception();
-
         var first = context.ArgumentValue<int?>(FirstArgName);
         var after = context.ArgumentValue<string?>(AfterArgName);
         var before = context.ArgumentValue<string?>(BeforeArgName);
