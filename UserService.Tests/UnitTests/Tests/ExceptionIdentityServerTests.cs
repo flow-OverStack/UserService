@@ -1,19 +1,20 @@
 using UserService.Application.Exceptions.IdentityServer;
 using UserService.Domain.Dtos.Identity;
 using UserService.Tests.Constants;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class ExceptionIdentityServerTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_ConflictException()
+    public async Task RegisterUserAsync_ConflictingUser_ThrowsIdentityServerConflictException()
     {
         //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityRegisterUserDto(1, "testuser1", "TestsUser1@test.com",
             [new IdentityRoleDto("User")])
         {
@@ -27,12 +28,11 @@ public class ExceptionIdentityServerTests
         await Assert.ThrowsAsync<IdentityServerConflictException>(action);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_Exception()
+    public async Task LoginUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
         //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityLoginUserDto("testuser1", TestConstants.TestPassword + "1");
 
         //Act
@@ -42,12 +42,11 @@ public class ExceptionIdentityServerTests
         await Assert.ThrowsAsync<IdentityServerInternalException>(action);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUser_ShouldBe_Exception()
+    public async Task UpdateUserAsync_ServerError_ThrowsIdentityServerInternalException()
     {
         //Arrange
-        var identityServer = new ExceptionIdentityServerFactory().GetService();
+        var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityUpdateUserDto(Guid.NewGuid().ToString(), "TestUser1", 1, "NotAEmail",
             [new IdentityRoleDto("User"), new IdentityRoleDto("Admin")]);
 

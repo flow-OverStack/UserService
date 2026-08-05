@@ -1,17 +1,18 @@
 using UserService.Application.Resources;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetReputationRecordServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllReputationRecords_ShouldBe_Success()
+    public async Task GetAllAsync_NoFilter_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
 
         //Act
         var result = await getReputationRecordService.GetAllAsync();
@@ -21,12 +22,11 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsByIds_ShouldBe_Success()
+    public async Task GetByIdsAsync_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var recordIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -37,12 +37,11 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsByIds_ShouldBe_ReputationRecordNotFound()
+    public async Task GetByIdsAsync_SingleNonExistentId_ReturnsReputationRecordNotFound()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var recordIds = new List<long> { 0 };
 
         //Act
@@ -54,12 +53,11 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsByIds_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetByIdsAsync_MultipleNonExistentIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var recordIds = new List<long> { 0, 0 };
 
         //Act
@@ -71,12 +69,11 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersOwnedReputationRecords_ShouldBe_Success()
+    public async Task GetUsersOwnedRecordsAsync_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var userIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -87,12 +84,11 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersOwnedReputationRecords_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetUsersOwnedRecordsAsync_NonExistentUserIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var userIds = new List<long> { 0, 0 };
 
         //Act
@@ -104,12 +100,11 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersInitiatedReputationRecords_ShouldBe_Success()
+    public async Task GetUsersInitiatedRecordsAsync_MixOfExistingAndNonExistentUserIds_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var userIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -120,12 +115,11 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetUsersInitiatedReputationRecords_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetUsersInitiatedRecordsAsync_NonExistentUserIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var userIds = new List<long> { 0, 0 };
 
         //Act
@@ -137,12 +131,11 @@ public class GetReputationRecordServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsWithRules_ShouldBe_Success()
+    public async Task GetRecordsWithReputationRulesAsync_MixOfExistingAndNonExistentRuleIds_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var ruleIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -153,12 +146,11 @@ public class GetReputationRecordServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRecordsWithRules_ShouldBe_ReputationRecordsNotFound()
+    public async Task GetRecordsWithReputationRulesAsync_NonExistentRuleIds_ReturnsReputationRecordsNotFound()
     {
         //Arrange
-        var getReputationRecordService = new CacheGetReputationRecordServiceFactory().GetService();
+        var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
         var ruleIds = new List<long> { 0, 0 };
 
         //Act

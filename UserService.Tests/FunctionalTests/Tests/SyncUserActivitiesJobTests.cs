@@ -7,14 +7,15 @@ using UserService.Domain.Interfaces.Repository;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class SyncUserActivitiesJobTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunSyncUserActivitiesJob_ShouldBe_Ok()
+    public async Task RunAsync_ValidCachedActivities_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -33,9 +34,8 @@ public class SyncUserActivitiesJobTests(FunctionalTestWebAppFactory factory) : S
         Assert.Equal(2, finalLastLoginAt.Except(initialLastLoginAt).Count()); // There are 2 new heartbeats in total
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task RunSyncUserActivitiesJob_ShouldBe_NoSyncedActivities()
+    public async Task RunAsync_InvalidCachedActivities_ReturnsNoSyncedActivities()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();

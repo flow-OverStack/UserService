@@ -11,15 +11,16 @@ using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
 [Collection(nameof(GraphQlSequentialTests))]
+[FunctionalTest]
 public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllRoles_EmptyTable_ShouldBe_SuccessWithNoItems()
+    public async Task GetAllRoles_EmptyTable_ReturnsEmptyCollection()
     {
         //Arrange
         await DeleteRolesAsync();
@@ -36,9 +37,8 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
         Assert.Equal(0, result.Data.Roles.TotalCount);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllRoles_ShouldBe_NoUsers()
+    public async Task GetUsers_NoUsers_ReturnsEmptyCollection()
     {
         //Arrange
         await DeleteUsersAsync();
@@ -55,9 +55,8 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
         Assert.Equal(0, result.Data.Users.TotalCount);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetById_ShouldBe_RolesNotfound()
+    public async Task GetUserById_UserWithNoRoles_ReturnsRolesNotFoundError()
     {
         //Arrange
         await AddUserWithNoRolesAsync();

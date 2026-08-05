@@ -1,18 +1,19 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UserServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_Success()
+    public async Task UpdateUsernameAsync_NewUsername_ReturnsSuccess()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "newusername");
 
         //Act
@@ -24,12 +25,11 @@ public class UserServiceTests
         Assert.Equal("newusername", result.Data.Username);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_Success_With_UsernameNotChanged()
+    public async Task UpdateUsernameAsync_UsernameUnchanged_ReturnsSuccess()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "testuser1");
 
         //Act
@@ -41,12 +41,11 @@ public class UserServiceTests
         Assert.Equal("testuser1", result.Data.Username);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_InvalidUsername()
+    public async Task UpdateUsernameAsync_InvalidUsernameFormat_ReturnsInvalidUsername()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "invalid!user");
 
         //Act
@@ -58,12 +57,11 @@ public class UserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_UserNotFound()
+    public async Task UpdateUsernameAsync_NonExistentUserId_ReturnsUserNotFound()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(0, "newusername");
 
         //Act
@@ -75,12 +73,11 @@ public class UserServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateUsername_ShouldBe_UsernameAlreadyTaken()
+    public async Task UpdateUsernameAsync_DuplicateUsername_ReturnsUsernameAlreadyTaken()
     {
         //Arrange
-        var userService = new UserServiceFactory().GetService();
+        var userService = new UserServiceSut().GetService();
         var dto = new UpdateUsernameDto(1, "testuser2");
 
         //Act

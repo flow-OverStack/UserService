@@ -2,19 +2,20 @@ using Moq;
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.Role;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class RoleServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task CreateRole_ShouldBe_Success()
+    public async Task CreateRoleAsync_NewRoleName_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new CreateRoleDto("NewTestRole");
 
         //Act
@@ -25,12 +26,11 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task CreateRole_ShouldBe_RoleAlreadyExists()
+    public async Task CreateRoleAsync_ExistingRoleName_ReturnsRoleAlreadyExists()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new CreateRoleDto("User");
 
         //Act
@@ -42,12 +42,11 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_Success()
+    public async Task DeleteRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         const long roleId = 3;
 
         //Act
@@ -58,12 +57,11 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_RoleNotFound()
+    public async Task DeleteRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         const long wrongRoleId = 0;
 
         //Act
@@ -75,12 +73,11 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_CannotDeleteDefaultRole()
+    public async Task DeleteRoleAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         const long roleId = 1;
 
         //Act
@@ -92,12 +89,11 @@ public class RoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_Success()
+    public async Task UpdateRoleAsync_ExistingRoleId_ReturnsSuccess()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new RoleDto(3, "UpdatedTestRole");
 
         //Act
@@ -108,12 +104,11 @@ public class RoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_RoleNotFound()
+    public async Task UpdateRoleAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var roleService = new RoleServiceFactory().GetService();
+        var roleService = new RoleServiceSut().GetService();
         var dto = new RoleDto(0, "UpdatedTestRole");
 
         //Act

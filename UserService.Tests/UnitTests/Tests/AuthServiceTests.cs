@@ -1,21 +1,22 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
-using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.Mocks;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class AuthServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Success()
+    public async Task RegisterAsync_ValidNewUser_ReturnsSuccess()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
             TestConstants.TestPassword + "4");
 
@@ -27,12 +28,11 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_UsernameNotValid()
+    public async Task RegisterAsync_InvalidUsername_ReturnsInvalidUsername()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new RegisterUserDto("invalid!user", "test@test.com", TestConstants.TestPassword);
 
         //Act
@@ -44,12 +44,11 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_EmailNotValid()
+    public async Task RegisterAsync_InvalidEmail_ReturnsInvalidEmail()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new RegisterUserDto("TestUser4", "NotEmail", TestConstants.TestPassword + "4");
 
         //Act
@@ -62,12 +61,11 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_PasswordNotValid()
+    public async Task RegisterAsync_InvalidPassword_ReturnsInvalidCredentials()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new RegisterUserDto("testuser4", "test@test.com", "123");
 
         //Act
@@ -79,16 +77,15 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Theory]
     [InlineData("TestUser1", "TestsUser1@test.com")]
     [InlineData("identityUser", "usernameTest@test.com")]
     [InlineData("emailTest", "identityUser@identity.com")]
     [InlineData(TestConstants.ExistingUsername, "usernameTest@test.com")]
-    public async Task RegisterUser_ShouldBe_UserAlreadyExists(string username, string email)
+    public async Task RegisterAsync_ExistingUsernameOrEmail_ReturnsUserAlreadyExists(string username, string email)
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new RegisterUserDto(username, email, TestConstants.TestPassword + "1");
 
         //Act
@@ -100,13 +97,12 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_RoleNotFound()
+    public async Task RegisterAsync_NoRolesInRepository_ReturnsRoleNotFound()
     {
         //Arrange
         var authService =
-            new AuthServiceFactory(roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
+            new AuthServiceSut(roleRepository: RepositoryMocks.GetEmptyMockRepository<Role>().Object)
                 .GetService();
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
             TestConstants.TestPassword + "4");
@@ -120,12 +116,11 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUserWithUsername_ShouldBe_Success()
+    public async Task LoginAsync_ValidUsernameCredentials_ReturnsSuccess()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new LoginUserDto("TestUser1", TestConstants.TestPassword + "1");
 
         //Act
@@ -136,12 +131,11 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUserWithEmail_ShouldBe_Success()
+    public async Task LoginAsync_ValidEmailCredentials_ReturnsSuccess()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new LoginUserDto("TestUser1@test.com", TestConstants.TestPassword + "1");
 
         //Act
@@ -152,12 +146,11 @@ public class AuthServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_InvalidCredentials_When_UserNotFound()
+    public async Task LoginAsync_NonExistentUser_ReturnsInvalidCredentials()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new LoginUserDto("NotExistingUser", TestConstants.TestPassword + "1");
 
         //Act
@@ -169,12 +162,11 @@ public class AuthServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task LoginUser_ShouldBe_InvalidCredentials()
+    public async Task LoginAsync_WrongPassword_ReturnsInvalidCredentials()
     {
         //Arrange
-        var authService = new AuthServiceFactory().GetService();
+        var authService = new AuthServiceSut().GetService();
         var dto = new LoginUserDto("TestUser1", TestConstants.WrongPassword);
 
         //Act

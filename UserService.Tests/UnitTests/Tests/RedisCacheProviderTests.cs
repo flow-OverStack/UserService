@@ -1,19 +1,20 @@
 using StackExchange.Redis;
 using UserService.Cache.Providers;
-using UserService.Tests.UnitTests.Configurations;
+using UserService.Tests.UnitTests.Fixtures;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class RedisCacheProviderTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task SetsAdd_ShouldBe_Exception()
+    public async Task SetsAddAsync_KeyExpireReturnsFalse_ThrowsRedisException()
     {
         //Arrange
         var cache = new RedisCacheProvider(
-            RedisDatabaseConfiguration.GetRedisDatabaseConfiguration());
+            RedisDatabaseFixture.GetRedisDatabaseConfiguration());
         var keysWithValues = new KeyValuePair<string, IEnumerable<string>>[]
         {
             new("key1", ["value11", "value12"]),
@@ -28,13 +29,12 @@ public class RedisCacheProviderTests
         await Assert.ThrowsAsync<RedisException>(action);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task StringSet_ShouldBe_Exception()
+    public async Task StringSetAsync_StringSetReturnsFalse_ThrowsRedisException()
     {
         //Arrange
         var cache = new RedisCacheProvider(
-            RedisDatabaseConfiguration.GetFalseResponseRedisDatabaseConfiguration());
+            RedisDatabaseFixture.GetFalseResponseRedisDatabaseConfiguration());
         var keysWithValues = new KeyValuePair<string, object>[]
         {
             new("key1", "value1"),

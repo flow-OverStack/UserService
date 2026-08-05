@@ -1,17 +1,18 @@
 using UserService.Application.Resources;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class GetReputationRuleServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetAllReputationRules_ShouldBe_Success()
+    public async Task GetAllReputationRules_NoFilter_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
 
         //Act
         var result = await getReputationRuleService.GetAllAsync();
@@ -21,12 +22,11 @@ public class GetReputationRuleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRulesByIds_ShouldBe_Success()
+    public async Task GetReputationRulesByIds_MixOfExistingAndNonExistentIds_ReturnsSuccess()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
         var ruleIds = new List<long> { 1, 2, 0 };
 
         //Act
@@ -37,12 +37,11 @@ public class GetReputationRuleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRulesByIds_ShouldBe_ReputationRuleNotFound()
+    public async Task GetReputationRulesByIds_SingleNonExistentId_ReturnsReputationRuleNotFound()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
         var ruleIds = new List<long> { 0 };
 
         //Act
@@ -54,12 +53,11 @@ public class GetReputationRuleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task GetReputationRulesByIds_ShouldBe_ReputationRulesNotFound()
+    public async Task GetReputationRulesByIds_MultipleNonExistentIds_ReturnsReputationRulesNotFound()
     {
         //Arrange
-        var getReputationRuleService = new CacheGetReputationRuleServiceFactory().GetService();
+        var getReputationRuleService = new CacheGetReputationRuleServiceSut().GetService();
         var ruleIds = new List<long> { 0, 0 };
 
         //Act

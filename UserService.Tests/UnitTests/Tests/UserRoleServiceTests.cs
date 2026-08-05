@@ -1,18 +1,19 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.UserRole;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UserRoleServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_Success()
+    public async Task AddRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser1",
@@ -27,12 +28,11 @@ public class UserRoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_UserNotFound()
+    public async Task AddRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "NotExistingUser",
@@ -48,12 +48,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_UserAlreadyHasThisRole()
+    public async Task AddRoleForUserAsync_UserAlreadyInRole_ReturnsUserAlreadyHasThisRole()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser1",
@@ -69,12 +68,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_RoleNotFound()
+    public async Task AddRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser1",
@@ -90,12 +88,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_Success()
+    public async Task DeleteRoleForUserAsync_ExistingUserAndRole_ReturnsSuccess()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser2",
@@ -110,12 +107,11 @@ public class UserRoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_UserNotFound()
+    public async Task DeleteRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "NotExistingUser",
@@ -131,12 +127,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_RoleNotFound()
+    public async Task DeleteRoleForUserAsync_NonExistentRoleId_ReturnsRoleNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser2",
@@ -152,12 +147,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_CannotDeleteDefaultRole()
+    public async Task DeleteRoleForUserAsync_DefaultRoleId_ReturnsCannotDeleteDefaultRole()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UserRoleDto
         {
             Username = "TestUser2",
@@ -173,12 +167,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_Success()
+    public async Task UpdateRoleForUserAsync_ExistingUserAndRoles_ReturnsSuccess()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
 
         //Act
         var result = await userRoleService.UpdateRoleForUserAsync(new UpdateUserRoleDto
@@ -193,12 +186,11 @@ public class UserRoleServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_UserNotFound()
+    public async Task UpdateRoleForUserAsync_NonExistentUsername_ReturnsUserNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "NotExistingUser",
@@ -215,12 +207,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_RoleToBeUpdatedIsNotFound()
+    public async Task UpdateRoleForUserAsync_NonExistentFromRoleId_ReturnsRoleToBeUpdatedIsNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",
@@ -237,12 +228,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_UserAlreadyHasThisRole()
+    public async Task UpdateRoleForUserAsync_UserAlreadyInToRole_ReturnsUserAlreadyHasThisRole()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "TestUser1",
@@ -259,12 +249,11 @@ public class UserRoleServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_RoleToUpdateIsNotFound()
+    public async Task UpdateRoleForUserAsync_NonExistentToRoleId_ReturnsRoleToUpdateIsNotFound()
     {
         //Arrange
-        var userRoleService = new UserRoleServiceFactory().GetService();
+        var userRoleService = new UserRoleServiceSut().GetService();
         var dto = new UpdateUserRoleDto
         {
             Username = "TestUser2",

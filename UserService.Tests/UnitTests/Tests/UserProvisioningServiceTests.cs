@@ -1,20 +1,21 @@
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
-using UserService.Tests.Configurations;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.Mocks;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UserProvisioningServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_Success()
+    public async Task InitAsync_NewUser_ReturnsSuccess()
     {
         //Arrange
-        var provisioningService = new UserProvisioningServiceFactory().GetService();
+        var provisioningService = new UserProvisioningServiceSut().GetService();
         var dto = new InitUserDto("TestUser4", "TestsUser4@test.com", "test-identity-id-4");
 
         //Act
@@ -25,12 +26,11 @@ public class UserProvisioningServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_EmailNotValid()
+    public async Task InitAsync_InvalidEmail_ReturnsInvalidEmail()
     {
         //Arrange
-        var provisioningService = new UserProvisioningServiceFactory().GetService();
+        var provisioningService = new UserProvisioningServiceSut().GetService();
         var dto = new InitUserDto("TestUser4", "NotEmail", "test-identity-id-4");
 
         //Act
@@ -42,12 +42,11 @@ public class UserProvisioningServiceTests
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_Success_With_UserAlreadyExists()
+    public async Task InitAsync_ExistingUser_ReturnsSuccess()
     {
         //Arrange
-        var provisioningService = new UserProvisioningServiceFactory().GetService();
+        var provisioningService = new UserProvisioningServiceSut().GetService();
         var dto = new InitUserDto("TestUser1", "TestsUser1@test.com", "test-identity-id-1");
 
         //Act
@@ -58,14 +57,12 @@ public class UserProvisioningServiceTests
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task InitUser_ShouldBe_RoleNotFound()
+    public async Task InitAsync_NoRolesInRepository_ReturnsRoleNotFound()
     {
         //Arrange
         var provisioningService =
-            new UserProvisioningServiceFactory(
-                    roleRepository: MockRepositoriesGetters.GetEmptyMockRepository<Role>().Object)
+            new UserProvisioningServiceSut(roleRepository: RepositoryMocks.GetEmptyMockRepository<Role>().Object)
                 .GetService();
         var dto = new InitUserDto("TestUser4", "TestsUser4@test.com", "test-identity-id-4");
 
@@ -79,15 +76,14 @@ public class UserProvisioningServiceTests
     }
 
     [Theory]
-    [Trait("Category", "Unit")]
     [InlineData("!@#$%^", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser_LongNameToo", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser1", "TestsUser4@test.com", "test-identity-id-4")]
     [InlineData("TestUser4", "TestsUser4@test.com", "test-identity-id-4")]
-    public async Task InitUser_ShouldBe_Success_Username_Variations(string username, string email, string identityId)
+    public async Task InitAsync_UsernameVariations_ReturnsSuccess(string username, string email, string identityId)
     {
         //Arrange
-        var provisioningService = new UserProvisioningServiceFactory().GetService();
+        var provisioningService = new UserProvisioningServiceSut().GetService();
         var dto = new InitUserDto(username, email, identityId);
 
         //Act

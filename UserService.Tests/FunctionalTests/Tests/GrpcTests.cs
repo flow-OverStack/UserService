@@ -3,14 +3,15 @@ using Grpc.Net.Client;
 using UserService.Application.Resources;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserWithRolesById_ShouldBe_Ok()
+    public async Task GetUserWithRolesById_ExistingUserId_ReturnsOk()
     {
         //Arrange
         const long userId = 1;
@@ -26,9 +27,8 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.NotNull(user.Roles);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserWithRolesById_ShouldBe_UserNotFound()
+    public async Task GetUserWithRolesById_NonExistentUserId_ThrowsRpcException()
     {
         //Arrange
         const long userId = 0;
@@ -46,9 +46,8 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(ErrorMessage.UserNotFound, exception.Status.Detail);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_Ok()
+    public async Task GetUsersByIds_MixedExistingAndNonExistentIds_ReturnsOk()
     {
         //Arrange
         var userIds = new List<long> { 1, 2, 0 };
@@ -67,9 +66,8 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(2, response.Users.Count);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_UserNotFound()
+    public async Task GetUsersByIds_SingleNonExistentId_ThrowsRpcException()
     {
         //Arrange
         var userIds = new List<long> { 0 };
@@ -89,9 +87,8 @@ public class GrpcTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest
         Assert.Equal(ErrorMessage.UserNotFound, exception.Status.Detail);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUsersByIds_ShouldBe_UsersNotFound()
+    public async Task GetUsersByIds_MultipleNonExistentIds_ThrowsRpcException()
     {
         //Arrange
         var userIds = new List<long> { 0, -1 };

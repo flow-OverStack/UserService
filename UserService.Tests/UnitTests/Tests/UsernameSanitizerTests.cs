@@ -1,12 +1,12 @@
-using UserService.Domain.Entities;
 using UserService.Domain.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UsernameSanitizerTests
 {
-    [Trait("Category", "Unit")]
     [Theory]
     [InlineData("TestUser", "testuser")]
     [InlineData("test@user", "test_user")]
@@ -16,7 +16,7 @@ public class UsernameSanitizerTests
     [InlineData("-test-", "test")]
     [InlineData("...test...", "test")]
     [InlineData("Test.User-1_2", "test.user-1_2")]
-    public void Sanitize_ShouldBe_ExpectedResult(string raw, string expected)
+    public void Sanitize_MixedInput_ReturnsNormalizedUsername(string raw, string expected)
     {
         //Act
         var result = UsernameSanitizer.Sanitize(raw);
@@ -25,12 +25,11 @@ public class UsernameSanitizerTests
         Assert.Equal(expected, result);
     }
 
-    [Trait("Category", "Unit")]
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
     [InlineData("!@#$%^")]
-    public void Sanitize_AllDisallowedOrBlank_ShouldBe_Empty(string raw)
+    public void Sanitize_AllDisallowedOrBlank_ReturnsEmpty(string raw)
     {
         //Act
         var result = UsernameSanitizer.Sanitize(raw);
@@ -39,9 +38,8 @@ public class UsernameSanitizerTests
         Assert.Equal(string.Empty, result);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public void Sanitize_OverLength_ShouldBe_TruncatedToMaxLength()
+    public void Sanitize_OverMaxLength_ReturnsTruncated()
     {
         //Arrange
         var raw = new string('a', 30);

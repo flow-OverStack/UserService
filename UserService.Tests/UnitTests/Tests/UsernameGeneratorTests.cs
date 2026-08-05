@@ -1,16 +1,17 @@
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UsernameGeneratorTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task ResolveUniqueUsernameAsync_SanitizedAndFree_ShouldBe_NotTemporary()
+    public async Task ResolveUniqueUsernameAsync_SanitizedAndFree_ReturnsNotTemporary()
     {
         //Arrange
-        var usernameGenerator = new UsernameGeneratorFactory().GetService();
+        var usernameGenerator = new UsernameGeneratorSut().GetService();
 
         //Act
         var (username, isTemporary) = await usernameGenerator.ResolveUniqueUsernameAsync("NewUniqueUser");
@@ -20,12 +21,11 @@ public class UsernameGeneratorTests
         Assert.False(isTemporary);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task ResolveUniqueUsernameAsync_SanitizedButTaken_ShouldBe_Temporary()
+    public async Task ResolveUniqueUsernameAsync_SanitizedButTaken_ReturnsTemporary()
     {
         //Arrange
-        var usernameGenerator = new UsernameGeneratorFactory().GetService();
+        var usernameGenerator = new UsernameGeneratorSut().GetService();
 
         //Act
         var (username, isTemporary) = await usernameGenerator.ResolveUniqueUsernameAsync("testuser1");
@@ -35,12 +35,11 @@ public class UsernameGeneratorTests
         Assert.True(isTemporary);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task ResolveUniqueUsernameAsync_Blank_ShouldBe_DefaultTemporary()
+    public async Task ResolveUniqueUsernameAsync_Blank_ReturnsDefaultTemporary()
     {
         //Arrange
-        var usernameGenerator = new UsernameGeneratorFactory().GetService();
+        var usernameGenerator = new UsernameGeneratorSut().GetService();
 
         //Act
         var (username, isTemporary) = await usernameGenerator.ResolveUniqueUsernameAsync("!@#$%^");
