@@ -49,7 +49,7 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         await dbContext.Set<Role>().Where(x => x.Name == nameof(Roles.User)).ExecuteDeleteAsync();
         var initialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
 
-        var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com", TestConstants.TestPassword + "4");
+        var dto = new RegisterUserDto("TestUser6", "TestsUser6@test.com", TestConstants.TestPassword + "6");
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
