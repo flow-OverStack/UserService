@@ -91,6 +91,14 @@ OpenTelemetry, CORS, Kestrel ports, resilience).
   `BaseRepository`, `UnitOfWork`). `DateInterceptor` stamps `IAuditable` entities.
   Entity config lives in `DAL/Configurations`.
 
+- **Test doubles: fixture vs inline.** A fixture in `UserService.Tests/UnitTests/Fixtures`
+  exists to hold configuration - an empty (no-`Setup`) mock has none, so a fixture around
+  it is indirection with no payload. Empty mocks are declared inline where used (normally
+  as a `Sut` field, e.g. `public readonly Mock<IUserSyncQueue> UserSyncQueue = new();`).
+  A fixture is for a *configured* double (has `Setup` calls, e.g. `IdentityServerFixture`,
+  `RedisDatabaseFixture`) or a real object needing assembly (e.g. `MapperFixture`). Don't
+  add a one-line fixture that just wraps `new Mock<X>()`.
+
 - **Messaging is idempotent.** Kafka consumed via MassTransit (`BaseEventConsumer`).
   `ProcessedEventFilter` dedupes by persisted `ProcessedEvent`; `ResilientConsumeFilter`
   adds retry/circuit-breaker; failures route to a dead-letter topic. Inbound events drive

@@ -17,8 +17,7 @@ internal class UserServiceSut
 {
     private readonly IUserService _userService;
 
-    public readonly Mock<IIdentityCompensationQueue> CompensationQueue =
-        IdentityCompensationQueueFixture.GetMockIdentityCompensationQueue();
+    public readonly IIdentityCompensationQueue CompensationQueue = new Mock<IIdentityCompensationQueue>().Object;
 
     public readonly IIdentityServer IdentityServer = IdentityServerFixture.GetIdentityServerConfiguration();
 
@@ -33,8 +32,8 @@ internal class UserServiceSut
     {
         UnitOfWork = RepositoryMocks.GetMockUnitOfWork(userRepository).Object;
 
-        _userService = new Application.Services.UserService(Mapper, IdentityServer, UnitOfWork,
-            CompensationQueue.Object, UpdateUsernameValidator);
+        _userService = new Application.Services.UserService(Mapper, IdentityServer, UnitOfWork, CompensationQueue,
+            UpdateUsernameValidator);
     }
 
     public IUserService GetService()

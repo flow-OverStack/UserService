@@ -19,29 +19,28 @@ internal class AuthServiceSut
 {
     private readonly IAuthService _authService;
 
-    public readonly Mock<IIdentityCompensationQueue> CompensationQueue =
-        IdentityCompensationQueueFixture.GetMockIdentityCompensationQueue();
+    public readonly IIdentityCompensationQueue CompensationQueue = new Mock<IIdentityCompensationQueue>().Object;
 
     public readonly IIdentityServer IdentityServer = IdentityServerFixture.GetIdentityServerConfiguration();
 
     public readonly IMapper Mapper = MapperFixture.GetMapperConfiguration();
 
-    public readonly Mock<IUserProvisioningService> ProvisioningService = new();
+    public readonly IUserProvisioningService ProvisioningService = new Mock<IUserProvisioningService>().Object;
 
     public readonly IValidator<RegisterUserDto> RegisterValidator =
         ValidatorFixture<RegisterUserDto>.GetValidator(new RegisterUserDtoValidator());
 
     public readonly IUnitOfWork UnitOfWork;
 
-    public readonly Mock<IUserSyncQueue> UserSyncQueue = UserSyncQueueFixture.GetMockUserSyncQueue();
+    public readonly IUserSyncQueue UserSyncQueue = new Mock<IUserSyncQueue>().Object;
 
     public AuthServiceSut(IBaseRepository<User>? userRepository = null,
         IBaseRepository<Role>? roleRepository = null)
     {
         UnitOfWork = RepositoryMocks.GetMockUnitOfWork(userRepository, roleRepository).Object;
 
-        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, CompensationQueue.Object,
-            UserSyncQueue.Object, ProvisioningService.Object, RegisterValidator);
+        _authService = new AuthService(Mapper, IdentityServer, UnitOfWork, CompensationQueue, UserSyncQueue,
+            ProvisioningService, RegisterValidator);
     }
 
     public IAuthService GetService()

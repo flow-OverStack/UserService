@@ -8,7 +8,7 @@ internal static class MapperFixture
 {
     public static IMapper GetMapperConfiguration()
     {
-        var mockMapper = new AutoMapper.MapperConfiguration(cfg =>
+        var mockMapper = new MapperConfiguration(cfg =>
         {
             cfg.AddMaps(typeof(UserMapping));
             cfg.AddMaps(typeof(KeycloakUserMapping));

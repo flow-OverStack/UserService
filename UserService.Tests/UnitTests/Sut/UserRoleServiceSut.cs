@@ -15,13 +15,13 @@ internal class UserRoleServiceSut
 
     public readonly IMapper Mapper = MapperFixture.GetMapperConfiguration();
 
-    public readonly Mock<IIdentityRoleSynchronizer> Synchronizer = new();
+    public readonly IIdentityRoleSynchronizer Synchronizer = new Mock<IIdentityRoleSynchronizer>().Object;
 
     public readonly IUnitOfWork UnitOfWork = RepositoryMocks.GetMockUnitOfWork().Object;
 
     public UserRoleServiceSut()
     {
-        _userRoleService = new UserRoleService(Mapper, UnitOfWork, Synchronizer.Object);
+        _userRoleService = new UserRoleService(Mapper, UnitOfWork, Synchronizer);
     }
 
     public IUserRoleService GetService()
