@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Results;
+using UserService.GraphQl.DataLoaders.Base;
 
 namespace UserService.GraphQl.DataLoaders;
 
@@ -8,23 +10,11 @@ public class RoleDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<long, Role>(batchScheduler, options)
+    : EntityBatchDataLoader<Role, long>(batchScheduler, options, scopeFactory)
 {
-    protected override async Task<IReadOnlyDictionary<long, Role>> LoadBatchAsync(IReadOnlyList<long> keys,
-        CancellationToken cancellationToken)
-    {
-        await using var scope = scopeFactory.CreateAsyncScope();
-        var roleService = scope.ServiceProvider.GetRequiredService<IGetRoleService>();
+    protected override Task<CollectionResult<Role>> FetchAsync(IServiceProvider scopedProvider,
+        IReadOnlyList<long> keys, CancellationToken cancellationToken) =>
+        scopedProvider.GetRequiredService<IGetRoleService>().GetByIdsAsync(keys, cancellationToken);
 
-        var result = await roleService.GetByIdsAsync(keys, cancellationToken);
-
-        var dictionary = new Dictionary<long, Role>();
-
-        if (!result.IsSuccess)
-            return dictionary.AsReadOnly();
-
-        dictionary = result.Data.ToDictionary(x => x.Id, x => x);
-
-        return dictionary.AsReadOnly();
-    }
+    protected override long GetId(Role entity) => entity.Id;
 }

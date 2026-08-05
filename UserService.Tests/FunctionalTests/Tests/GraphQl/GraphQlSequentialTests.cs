@@ -20,7 +20,7 @@ namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
     [Fact]
-    public async Task GetAllRoles_NoRoles_ReturnsNotFoundError()
+    public async Task GetAllRoles_EmptyTable_ReturnsEmptyCollection()
     {
         //Arrange
         await DeleteRolesAsync();
@@ -29,13 +29,12 @@ public class GraphQlSequentialTests(FunctionalTestWebAppFactory factory) : Seque
         //Act
         var response = await HttpClient.PostAsJsonAsync(GraphQlHelper.GraphQlEndpoint, requestBody);
         var body = await response.Content.ReadAsStringAsync();
-        var result = JsonConvert.DeserializeObject<GraphQlErrorResponse>(body);
-
-        var areRolesNotFound = result!.Errors.Exists(x => x.Message == ErrorMessage.RolesNotFound);
+        var result = JsonConvert.DeserializeObject<GraphQlGetAllResponse>(body);
 
         //Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(areRolesNotFound);
+        Assert.Empty(result!.Data.Roles.Items);
+        Assert.Equal(0, result.Data.Roles.TotalCount);
     }
 
     [Fact]

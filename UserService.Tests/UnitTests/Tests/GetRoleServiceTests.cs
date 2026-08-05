@@ -1,3 +1,4 @@
+using Moq;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Tests.Mocks;
@@ -25,7 +26,7 @@ public class GetRoleServiceTests
     }
 
     [Fact]
-    public async Task GetAllRoles_EmptyRepository_ReturnsRolesNotFound()
+    public async Task GetAllRoles_EmptyRepository_ReturnsEmptyCollection()
     {
         //Arrange
         var getRoleService =
@@ -36,9 +37,9 @@ public class GetRoleServiceTests
         var result = await getRoleService.GetAllAsync();
 
         //Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal(ErrorMessage.RolesNotFound, result.ErrorMessage);
-        Assert.Null(result.Data);
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Data);
+        Assert.Empty(result.Data);
     }
 
     [Fact]

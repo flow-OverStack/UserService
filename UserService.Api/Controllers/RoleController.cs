@@ -16,7 +16,7 @@ namespace UserService.Api.Controllers;
 ///     Role controller
 /// </summary>
 [Authorize(Roles = nameof(Roles.Admin))]
-public class RoleController(IRoleService roleService) : BaseController
+public class RoleController(IRoleService roleService, IUserRoleService userRoleService) : BaseController
 {
     /// <summary>
     ///     Creates role
@@ -142,7 +142,7 @@ public class RoleController(IRoleService roleService) : BaseController
             RoleId = roleId
         };
 
-        var result = await roleService.AddRoleForUserAsync(dto, cancellationToken);
+        var result = await userRoleService.AddRoleForUserAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
     }
@@ -177,7 +177,7 @@ public class RoleController(IRoleService roleService) : BaseController
             RoleId = roleId
         };
 
-        var result = await roleService.DeleteRoleForUserAsync(dto, cancellationToken);
+        var result = await userRoleService.DeleteRoleForUserAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
     }
@@ -219,7 +219,7 @@ public class RoleController(IRoleService roleService) : BaseController
             ToRoleId = requestDto.ToRoleId
         };
 
-        var result = await roleService.UpdateRoleForUserAsync(dto, cancellationToken);
+        var result = await userRoleService.UpdateRoleForUserAsync(dto, cancellationToken);
 
         return HandleBaseResult(result);
     }

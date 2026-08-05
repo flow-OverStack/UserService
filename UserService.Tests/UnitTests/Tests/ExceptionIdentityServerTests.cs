@@ -1,6 +1,5 @@
 using UserService.Application.Exceptions.IdentityServer;
 using UserService.Domain.Dtos.Identity;
-using UserService.Domain.Entities;
 using UserService.Tests.Constants;
 using UserService.Tests.UnitTests.Sut;
 using Xunit;
@@ -17,7 +16,7 @@ public class ExceptionIdentityServerTests
         //Arrange
         var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityRegisterUserDto(1, "testuser1", "TestsUser1@test.com",
-            [new Role { Id = 1, Name = "User" }])
+            [new IdentityRoleDto("User")])
         {
             Password = TestConstants.TestPassword + "1"
         };
@@ -49,7 +48,7 @@ public class ExceptionIdentityServerTests
         //Arrange
         var identityServer = new ExceptionIdentityServerSut().GetService();
         var dto = new IdentityUpdateUserDto(Guid.NewGuid().ToString(), "TestUser1", 1, "NotAEmail",
-            [new Role { Id = 1, Name = "User" }, new Role { Id = 2, Name = "Admin" }]);
+            [new IdentityRoleDto("User"), new IdentityRoleDto("Admin")]);
 
         //Act
         var action = async () => await identityServer.UpdateUserAsync(dto);

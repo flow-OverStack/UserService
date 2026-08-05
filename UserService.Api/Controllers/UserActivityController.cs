@@ -1,7 +1,7 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
+using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 
@@ -34,7 +34,7 @@ public class UserActivityController(IUserActivityService activityService) : Base
     public async Task<ActionResult<BaseResult>> RegisterHeartbeat(
         CancellationToken cancellationToken)
     {
-        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = User.GetUserId();
 
         var result = await activityService.RegisterHeartbeatAsync(userId, cancellationToken);
 

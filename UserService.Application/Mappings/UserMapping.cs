@@ -15,6 +15,9 @@ public class UserMapping : Profile
         CreateMap<IdentityUpdateUserDto, User>().ReverseMap()
             .ForCtorParam(nameof(IdentityUpdateUserDto.UserId), x => x.MapFrom(y => y.Id))
             .ForCtorParam(nameof(IdentityUpdateUserDto.Roles), x => x.MapFrom(y => y.Roles));
+        CreateMap<User, IdentitySyncSourceDto>();
+        CreateMap<IdentitySyncSourceDto, IdentityUpdateUserDto>()
+            .ForCtorParam(nameof(IdentityUpdateUserDto.UserId), x => x.MapFrom(y => y.Id));
         CreateMap<User, UserActivityDto>()
             .ForMember(x => x.UserId, x => x.MapFrom(y => y.Id))
             .ReverseMap();

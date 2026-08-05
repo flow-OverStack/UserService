@@ -12,7 +12,7 @@ public interface IGetReputationRecordService : IGetService<ReputationRecord>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersOwnedRecordsAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -22,7 +22,7 @@ public interface IGetReputationRecordService : IGetService<ReputationRecord>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetUsersInitiatedRecordsAsync(
-        IEnumerable<long> userIds,
+        IReadOnlyCollection<long> userIds,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -32,5 +32,5 @@ public interface IGetReputationRecordService : IGetService<ReputationRecord>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<CollectionResult<KeyValuePair<long, IEnumerable<ReputationRecord>>>> GetRecordsWithReputationRulesAsync(
-        IEnumerable<long> ruleIds, CancellationToken cancellationToken = default);
+        IReadOnlyCollection<long> ruleIds, CancellationToken cancellationToken = default);
 }

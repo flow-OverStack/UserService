@@ -17,6 +17,9 @@ public class BaseController : ControllerBase
     {
         // Reputation
         { (int)ErrorCodes.ReputationRuleNotFound, StatusCodes.Status404NotFound },
+        { (int)ErrorCodes.ReputationRulesNotFound, StatusCodes.Status404NotFound },
+        { (int)ErrorCodes.ReputationRecordNotFound, StatusCodes.Status404NotFound },
+        { (int)ErrorCodes.ReputationRecordsNotFound, StatusCodes.Status404NotFound },
 
         // User
         { (int)ErrorCodes.UserNotFound, StatusCodes.Status404NotFound },

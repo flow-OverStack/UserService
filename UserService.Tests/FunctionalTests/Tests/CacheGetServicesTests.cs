@@ -94,7 +94,7 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
         // Inner service is not in the DI
         var inner = ActivatorUtilities.CreateInstance<GetRoleService>(scope.ServiceProvider);
         var fetch = async (IEnumerable<long> idsToFetch, CancellationToken ct) =>
-            (await inner.GetUsersRolesAsync(idsToFetch, ct)).Data ?? [];
+            (await inner.GetUsersRolesAsync(idsToFetch.ToArray(), ct)).Data ?? [];
 
         //Act
         // The first call marks the user as null in the cache

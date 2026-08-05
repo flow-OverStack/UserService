@@ -1,6 +1,6 @@
 using StackExchange.Redis;
 using UserService.Cache.Helpers;
-using UserService.Domain.Interfaces.Provider;
+using UserService.Cache.Interfaces;
 using UserService.Tests.TestData;
 
 namespace UserService.Tests.FunctionalTests.Helpers;

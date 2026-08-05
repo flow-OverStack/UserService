@@ -60,27 +60,30 @@ public static class Startup
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            var keycloakSettings =
-                services.BuildServiceProvider().GetRequiredService<IOptions<KeycloakSettings>>().Value;
+        }).AddJwtBearer();
 
-            options.RequireHttpsMetadata = false;
-            options.MetadataAddress = keycloakSettings.MetadataAddress;
-            options.Audience = keycloakSettings.Audience;
-
-            // Maintains original OAuth2 claims for reliable microservice communication.
-            options.MapInboundClaims = false;
-
-            options.TokenValidationParameters = new TokenValidationParameters
+        services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+            .Configure<IOptions<KeycloakSettings>>((options, keycloakOptions) =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                NameClaimType = JwtRegisteredClaimNames.PreferredUsername
-            };
-        });
+                var keycloakSettings = keycloakOptions.Value;
+
+                options.RequireHttpsMetadata = false;
+                options.MetadataAddress = keycloakSettings.MetadataAddress;
+                options.Audience = keycloakSettings.Audience;
+
+                // Maintains original OAuth2 claims for reliable microservice communication.
+                options.MapInboundClaims = false;
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    NameClaimType = JwtRegisteredClaimNames.PreferredUsername
+                };
+            });
+
         services.AddAuthorization();
     }
 

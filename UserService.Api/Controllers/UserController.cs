@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
 using UserService.Api.Dtos.User;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Enums;
+using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 
@@ -43,7 +43,7 @@ public class UserController(IUserService userService) : BaseController
     public async Task<ActionResult<BaseResult<UserDto>>> UpdateMyUsername(
         [FromBody] RequestUpdateUsernameDto dto, CancellationToken cancellationToken)
     {
-        var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = User.GetUserId();
 
         var serviceDto = new UpdateUsernameDto(userId, dto.Username);
         var result = await userService.UpdateUsernameAsync(serviceDto, cancellationToken);
