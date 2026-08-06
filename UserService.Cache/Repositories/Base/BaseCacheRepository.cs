@@ -110,7 +110,7 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
         try
         {
-            string[] outerEntityKeys = [..idsList.Select(getOuterEntityKey), ..idsList.Select(getOuterKey)];
+            string[] outerEntityKeys = [.. idsList.Select(getOuterEntityKey), .. idsList.Select(getOuterKey)];
             var nullOuterEntityKeys = await _cache.GetNullKeysAsync(outerEntityKeys, cancellationToken);
             var aliveIds = idsList.Except(nullOuterEntityKeys.Select(parseOuterIdFromKey)).ToArray();
 
@@ -126,14 +126,14 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             var entityKeys = outerToEntityIds.SelectMany(x => x.Value.Select(_mapping.GetKey)).Distinct();
             var allEntities = (await _cache.GetJsonParsedAsync<TEntity>(entityKeys, cancellationToken)).ToArray();
-            var entitiesById = allEntities.DistinctBy(_mapping.GetId).ToDictionary(_mapping.GetId);
 
             var grouped = outerToEntityIds.Select(kvp =>
                 new KeyValuePair<TOuterId, IEnumerable<TEntity>>(
                     kvp.Key,
                     kvp.Value
-                        .Select(id => entitiesById.GetValueOrDefault(id))
-                        .Where(e => e is not null)!)).ToArray();
+                        .Select(id => allEntities.FirstOrDefault(e =>
+                            EqualityComparer<TEntityId>.Default.Equals(_mapping.GetId(e), id)))
+                        .Where(e => !Equals(e, default(TEntity)))!)).ToArray();
 
             var missingOuterIds = aliveIds.Except(outerToEntityIds.Select(x => x.Key)).ToList();
             var cached = new List<KeyValuePair<TOuterId, IEnumerable<TEntity>>>();
