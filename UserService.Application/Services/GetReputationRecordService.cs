@@ -14,7 +14,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
 {
     public QueryableResult<ReputationRecord> GetAll()
     {
-        var records = recordsRepository.GetAll();
+        var records = recordsRepository.GetAll().AsNoTracking();
 
         return QueryableResult<ReputationRecord>.Success(records);
     }
@@ -22,7 +22,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
     public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var records = await recordsRepository.GetAll().Where(x => ids.Contains(x.Id))
+        var records = await recordsRepository.GetAll().AsNoTracking().Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
         if (records.Length == 0) return CollectionResult<ReputationRecord>.ReputationRecordsNotFound(ids.Count);
@@ -35,6 +35,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => userIds.Contains(x.ReputationTargetId))
                 .GroupBy(x => x.ReputationTargetId)
                 .ToArrayAsync(cancellationToken))
@@ -53,6 +54,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
             IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => userIds.Contains(x.InitiatorId))
                 .GroupBy(x => x.InitiatorId)
                 .ToArrayAsync(cancellationToken))
@@ -71,6 +73,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
             CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => ruleIds.Contains(x.ReputationRuleId))
                 .GroupBy(x => x.ReputationRuleId)
                 .ToArrayAsync(cancellationToken))

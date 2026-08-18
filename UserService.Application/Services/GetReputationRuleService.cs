@@ -13,7 +13,7 @@ public class GetReputationRuleService(IBaseRepository<ReputationRule> ruleReposi
 {
     public QueryableResult<ReputationRule> GetAll()
     {
-        var rules = ruleRepository.GetAll();
+        var rules = ruleRepository.GetAll().AsNoTracking();
 
         return QueryableResult<ReputationRule>.Success(rules);
     }
@@ -21,7 +21,8 @@ public class GetReputationRuleService(IBaseRepository<ReputationRule> ruleReposi
     public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var rules = await ruleRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
+        var rules = await ruleRepository.GetAll().AsNoTracking().Where(x => ids.Contains(x.Id))
+            .ToArrayAsync(cancellationToken);
 
         if (rules.Length == 0) return CollectionResult<ReputationRule>.ReputationRulesNotFound(ids.Count);
 

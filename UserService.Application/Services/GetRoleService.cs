@@ -16,13 +16,14 @@ public class GetRoleService(
 {
     public QueryableResult<Role> GetAll()
     {
-        return QueryableResult<Role>.Success(roleRepository.GetAll());
+        return QueryableResult<Role>.Success(roleRepository.GetAll().AsNoTracking());
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var roles = await roleRepository.GetAll()
+            .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
@@ -35,6 +36,7 @@ public class GetRoleService(
         IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var groupedRoles = await userRepository.GetAll()
+            .AsNoTracking()
             .Where(x => userIds.Contains(x.Id))
             .Include(x => x.Roles)
             .Select(x => new KeyValuePair<long, IEnumerable<Role>>(x.Id, x.Roles.ToArray()))

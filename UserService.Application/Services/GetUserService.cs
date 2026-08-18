@@ -18,7 +18,7 @@ public class GetUserService(
 {
     public QueryableResult<User> GetAll()
     {
-        var users = userRepository.GetAll();
+        var users = userRepository.GetAll().AsNoTracking();
 
         return QueryableResult<User>.Success(users);
     }
@@ -26,7 +26,8 @@ public class GetUserService(
     public async Task<CollectionResult<User>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var users = await userRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
+        var users = await userRepository.GetAll().AsNoTracking().Where(x => ids.Contains(x.Id))
+            .ToArrayAsync(cancellationToken);
 
         if (users.Length == 0) return CollectionResult<User>.UsersNotFound(ids.Count);
 
@@ -37,6 +38,7 @@ public class GetUserService(
         IReadOnlyCollection<long> roleIds, CancellationToken cancellationToken = default)
     {
         var groupedUsers = await roleRepository.GetAll()
+            .AsNoTracking()
             .Where(x => roleIds.Contains(x.Id))
             .Include(x => x.Users)
             .Select(x => new KeyValuePair<long, IEnumerable<User>>(x.Id, x.Users.ToArray()))
@@ -55,6 +57,7 @@ public class GetUserService(
         var idsArray = ids.ToArray();
 
         var reputations = await reputationRecordRepository.GetAll()
+            .AsNoTracking()
             .Where(x => idsArray.Contains(x.ReputationTargetId))
             .Include(x => x.ReputationRule)
             .GroupBy(x => new { UserId = x.ReputationTargetId, x.CreatedAt.Date })
@@ -68,6 +71,7 @@ public class GetUserService(
         KeyValuePair<long, int>[] missingReputations = [];
         if (missingIds.Length > 0)
             missingReputations = await userRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => missingIds.Contains(x.Id))
                 .Select(x => new KeyValuePair<long, int>(x.Id, BusinessRules.MinReputation))
                 .ToArrayAsync(cancellationToken);
@@ -86,6 +90,7 @@ public class GetUserService(
     {
         var idsArray = ids.ToArray();
         var reputations = await reputationRecordRepository.GetAll()
+            .AsNoTracking()
             .Include(x => x.ReputationRule)
             .Where(x => idsArray.Contains(x.ReputationTargetId) && x.CreatedAt.Date == DateTime.UtcNow.Date &&
                         x.ReputationRule.ReputationChange > 0)
@@ -98,6 +103,7 @@ public class GetUserService(
         KeyValuePair<long, int>[] missingReputations = [];
         if (missingIds.Length > 0)
             missingReputations = await userRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => missingIds.Contains(x.Id))
                 .Select(x => new KeyValuePair<long, int>(x.Id, BusinessRules.MaxDailyReputation))
                 .ToArrayAsync(cancellationToken);
