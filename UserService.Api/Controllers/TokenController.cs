@@ -14,17 +14,6 @@ public class TokenController(ITokenService tokenService) : BaseController
     /// <summary>
     ///     Refreshes user's token
     /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <remarks>
-    /// Request for token refresh:
-    ///
-    ///     POST refresh
-    ///     {
-    ///         "refreshToken":"string"
-    ///     }
-    /// </remarks>
     /// <response code="200">If the token was refreshed successfully</response>
     /// <response code="400">If the token is invalid</response>
     [HttpPost("refresh")]

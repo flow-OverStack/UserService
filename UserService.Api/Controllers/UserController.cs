@@ -19,16 +19,6 @@ public class UserController(IUserService userService) : BaseController
     /// <summary>
     ///     Updates the username of the currently authenticated user
     /// </summary>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     Request to update username:
-    ///     PATCH me/username
-    ///     {
-    ///     "username":"string"
-    ///     }
-    /// </remarks>
     /// <response code="200">If the username was updated successfully</response>
     /// <response code="400">If the username is invalid</response>
     /// <response code="401">If required claims are missing</response>
@@ -55,17 +45,6 @@ public class UserController(IUserService userService) : BaseController
     ///     Updates the username of the specified user.
     ///     Requires Admin or Moderator role.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="dto"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     Request to update username:
-    ///     PATCH {id}/username
-    ///     {
-    ///     "username":"string"
-    ///     }
-    /// </remarks>
     /// <response code="200">If the username was updated successfully</response>
     /// <response code="400">If the username is invalid</response>
     /// <response code="401">If the user is not authenticated</response>
