@@ -1,4 +1,5 @@
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository.Cache;
@@ -22,12 +23,7 @@ public class CacheGetRoleService(IRoleCacheRepository cacheRepository, IGetRoleS
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (roles.Length == 0)
-            return idsArray.Length switch
-            {
-                <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
-                > 1 => CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound)
-            };
+        if (roles.Length == 0) return CollectionResult<Role>.RolesNotFound(idsArray.Length);
 
         return CollectionResult<Role>.Success(roles);
     }

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
@@ -27,13 +28,7 @@ public class GetRoleService(
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (roles.Length == 0)
-            return ids.Count switch
-            {
-                <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
-                > 1 => CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound)
-            };
-
+        if (roles.Length == 0) return CollectionResult<Role>.RolesNotFound(ids.Count);
 
         return CollectionResult<Role>.Success(roles);
     }

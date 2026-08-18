@@ -1,4 +1,5 @@
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository.Cache;
@@ -22,14 +23,7 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserS
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (users.Length == 0)
-            return idsArray.Length switch
-            {
-                <= 1 => CollectionResult<User>.Failure(ErrorMessage.UserNotFound,
-                    (int)ErrorCodes.UserNotFound),
-                > 1 => CollectionResult<User>.Failure(ErrorMessage.UsersNotFound,
-                    (int)ErrorCodes.UsersNotFound)
-            };
+        if (users.Length == 0) return CollectionResult<User>.UsersNotFound(idsArray.Length);
 
         return CollectionResult<User>.Success(users);
     }
@@ -59,13 +53,7 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserS
             .ToArray();
 
         if (reputations.Length == 0)
-            return idsArray.Length switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UserNotFound,
-                    (int)ErrorCodes.UserNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
-                    (int)ErrorCodes.UsersNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, int>>.UsersNotFound(idsArray.Length);
 
         return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }
@@ -81,13 +69,7 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserS
             .ToArray();
 
         if (reputations.Length == 0)
-            return idsArray.Length switch
-            {
-                <= 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UserNotFound,
-                    (int)ErrorCodes.UserNotFound),
-                > 1 => CollectionResult<KeyValuePair<long, int>>.Failure(ErrorMessage.UsersNotFound,
-                    (int)ErrorCodes.UsersNotFound)
-            };
+            return CollectionResult<KeyValuePair<long, int>>.UsersNotFound(idsArray.Length);
 
         return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }

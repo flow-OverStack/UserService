@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
@@ -24,14 +25,7 @@ public class GetReputationRuleService(IBaseRepository<ReputationRule> ruleReposi
     {
         var rules = await ruleRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
 
-        if (rules.Length == 0)
-            return ids.Count switch
-            {
-                <= 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRuleNotFound,
-                    (int)ErrorCodes.ReputationRuleNotFound),
-                > 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRulesNotFound,
-                    (int)ErrorCodes.ReputationRulesNotFound)
-            };
+        if (rules.Length == 0) return CollectionResult<ReputationRule>.ReputationRulesNotFound(ids.Count);
 
         return CollectionResult<ReputationRule>.Success(rules);
     }

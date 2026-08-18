@@ -1,4 +1,5 @@
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository.Cache;
@@ -24,14 +25,7 @@ public class CacheGetReputationRuleService(
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (rules.Length == 0)
-            return idsArray.Length switch
-            {
-                <= 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRuleNotFound,
-                    (int)ErrorCodes.ReputationRuleNotFound),
-                > 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRulesNotFound,
-                    (int)ErrorCodes.ReputationRulesNotFound)
-            };
+        if (rules.Length == 0) return CollectionResult<ReputationRule>.ReputationRulesNotFound(idsArray.Length);
 
         return CollectionResult<ReputationRule>.Success(rules);
     }

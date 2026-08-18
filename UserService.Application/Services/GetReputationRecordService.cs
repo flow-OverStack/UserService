@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
@@ -26,14 +27,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         var records = await recordsRepository.GetAll().Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (records.Length == 0)
-            return ids.Count switch
-            {
-                <= 1 => CollectionResult<ReputationRecord>.Failure(ErrorMessage.ReputationRecordNotFound,
-                    (int)ErrorCodes.ReputationRecordNotFound),
-                > 1 => CollectionResult<ReputationRecord>.Failure(ErrorMessage.ReputationRecordsNotFound,
-                    (int)ErrorCodes.ReputationRecordsNotFound)
-            };
+        if (records.Length == 0) return CollectionResult<ReputationRecord>.ReputationRecordsNotFound(ids.Count);
 
         return CollectionResult<ReputationRecord>.Success(records);
     }
