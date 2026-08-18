@@ -16,17 +16,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.CreatedAt).IsRequired();
         builder.Property(x => x.LastLoginAt);
 
-        //Email constraint
+        //Email and username constraints
         const string regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         builder.ToTable(t =>
+        {
             t.HasCheckConstraint("CK_User_Email", $"""
-                                                   "{nameof(User.Email)}" ~ '{regex}'
-                                                   """));
+                                                    "{nameof(User.Email)}" ~ '{regex}'
+                                                    """);
 
-        //Username constraint
-        builder.ToTable(t => t.HasCheckConstraint("CK_User_Username_Format", $"""
-                                                                              "{nameof(User.Username)}" ~ '^[a-z0-9_.\\-]+$'
-                                                                              """));
+            t.HasCheckConstraint("CK_User_Username_Format", $"""
+                                                              "{nameof(User.Username)}" ~ '^[a-z0-9_.\\-]+$'
+                                                              """);
+        });
         //Unique fields
         builder.HasIndex(x => x.Username).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
