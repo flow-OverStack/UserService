@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
+using UserService.Api.Extensions;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -24,6 +25,6 @@ public class TokenController(ITokenService tokenService) : BaseController
     {
         var result = await tokenService.RefreshTokenAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 }

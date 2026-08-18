@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using UserService.Api.Controllers.Base;
+using UserService.Api.Extensions;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Interfaces.Service;
@@ -33,7 +34,7 @@ public class AuthController(IAuthService authService) : BaseController
     {
         var result = await authService.RegisterAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result, HttpStatusCode.Created);
+        return result.ToActionResult(HttpStatusCode.Created);
     }
 
     /// <summary>
@@ -49,7 +50,7 @@ public class AuthController(IAuthService authService) : BaseController
     {
         var result = await authService.LoginAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -77,6 +78,6 @@ public class AuthController(IAuthService authService) : BaseController
 
         var result = await authService.InitAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 }

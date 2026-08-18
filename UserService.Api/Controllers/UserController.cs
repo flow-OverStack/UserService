@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
 using UserService.Api.Dtos.User;
+using UserService.Api.Extensions;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Enums;
 using UserService.Domain.Extensions;
@@ -38,7 +39,7 @@ public class UserController(IUserService userService) : BaseController
         var serviceDto = new UpdateUsernameDto(userId, dto.Username);
         var result = await userService.UpdateUsernameAsync(serviceDto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -60,6 +61,6 @@ public class UserController(IUserService userService) : BaseController
         var serviceDto = new UpdateUsernameDto(id, dto.Username);
         var result = await userService.UpdateUsernameAsync(serviceDto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 }

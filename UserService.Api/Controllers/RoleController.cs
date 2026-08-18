@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
 using UserService.Api.Dtos.Role;
 using UserService.Api.Dtos.UserRole;
+using UserService.Api.Extensions;
 using UserService.Domain.Dtos.Role;
 using UserService.Domain.Dtos.UserRole;
 using UserService.Domain.Enums;
@@ -35,7 +36,7 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     {
         var result = await roleService.CreateRoleAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result, HttpStatusCode.Created);
+        return result.ToActionResult(HttpStatusCode.Created);
     }
 
     /// <summary>
@@ -53,7 +54,7 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     {
         var result = await roleService.DeleteRoleAsync(roleId, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -73,7 +74,7 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
 
         var result = await roleService.UpdateRoleAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -99,7 +100,7 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
 
         var result = await userRoleService.AddRoleForUserAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -123,7 +124,7 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
 
         var result = await userRoleService.DeleteRoleForUserAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -150,6 +151,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
 
         var result = await userRoleService.UpdateRoleForUserAsync(dto, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 }

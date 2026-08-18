@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
+using UserService.Api.Extensions;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -32,6 +33,6 @@ public class UserActivityController(IUserActivityService activityService) : Base
 
         var result = await activityService.RegisterHeartbeatAsync(userId, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 }

@@ -70,7 +70,7 @@ OpenTelemetry, CORS, Kestrel ports, resilience).
 - **Result pattern, not exceptions for business outcomes.** Services return
   `BaseResult` / `BaseResult<T>` / `CollectionResult<T>` / `QueryableResult<T>`
   (`UserService.Domain/Results`). Success/failure is data; `ErrorMessage` + `ErrorCode`
-  carry failures. Controllers translate via `HandleBaseResult` in `BaseController`.
+  carry failures. Controllers translate via `ToActionResult` (`Api/Extensions/BaseResultExtensions.cs`).
   `ErrorCodes` enum + localized `ErrorMessage.resx` are the source of error identity.
 
 - **Caching = Decorator pattern.** Read services have a plain implementation
