@@ -18,12 +18,11 @@ public class CacheGetRoleService(IRoleCacheRepository cacheRepository, IGetRoleS
     public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var idsArray = ids.ToArray();
-        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
+        var roles = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(ids,
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (roles.Length == 0) return CollectionResult<Role>.RolesNotFound(idsArray.Length);
+        if (roles.Length == 0) return CollectionResult<Role>.RolesNotFound(ids.Count);
 
         return CollectionResult<Role>.Success(roles);
     }

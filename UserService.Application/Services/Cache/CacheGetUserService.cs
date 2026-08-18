@@ -18,12 +18,11 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserS
     public async Task<CollectionResult<User>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var idsArray = ids.ToArray();
-        var users = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
+        var users = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(ids,
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (users.Length == 0) return CollectionResult<User>.UsersNotFound(idsArray.Length);
+        if (users.Length == 0) return CollectionResult<User>.UsersNotFound(ids.Count);
 
         return CollectionResult<User>.Success(users);
     }
@@ -46,14 +45,13 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserS
     public async Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(
         IReadOnlyCollection<long> ids, CancellationToken cancellationToken = default)
     {
-        var idsArray = ids.ToArray();
-        var reputations = (await cacheRepository.GetCurrentReputationsOrFetchAndCacheAsync(idsArray,
+        var reputations = (await cacheRepository.GetCurrentReputationsOrFetchAndCacheAsync(ids,
                 async (idsToFetch, ct) => (await inner.GetCurrentReputationsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
                 cancellationToken))
             .ToArray();
 
         if (reputations.Length == 0)
-            return CollectionResult<KeyValuePair<long, int>>.UsersNotFound(idsArray.Length);
+            return CollectionResult<KeyValuePair<long, int>>.UsersNotFound(ids.Count);
 
         return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }
@@ -61,15 +59,14 @@ public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserS
     public async Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(
         IReadOnlyCollection<long> ids, CancellationToken cancellationToken = default)
     {
-        var idsArray = ids.ToArray();
         var reputations =
-            (await cacheRepository.GetRemainingReputationsOrFetchAndCacheAsync(idsArray,
+            (await cacheRepository.GetRemainingReputationsOrFetchAndCacheAsync(ids,
                 async (idsToFetch, ct) => (await inner.GetRemainingReputationsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
                 cancellationToken))
             .ToArray();
 
         if (reputations.Length == 0)
-            return CollectionResult<KeyValuePair<long, int>>.UsersNotFound(idsArray.Length);
+            return CollectionResult<KeyValuePair<long, int>>.UsersNotFound(ids.Count);
 
         return CollectionResult<KeyValuePair<long, int>>.Success(reputations);
     }

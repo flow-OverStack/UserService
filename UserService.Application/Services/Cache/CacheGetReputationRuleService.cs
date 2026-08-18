@@ -20,12 +20,11 @@ public class CacheGetReputationRuleService(
     public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var idsArray = ids.ToArray();
-        var rules = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(idsArray,
+        var rules = (await cacheRepository.GetByIdsOrFetchAndCacheAsync(ids,
             async (idsToFetch, ct) => (await inner.GetByIdsAsync(idsToFetch.ToArray(), ct)).Data ?? [],
             cancellationToken)).ToArray();
 
-        if (rules.Length == 0) return CollectionResult<ReputationRule>.ReputationRulesNotFound(idsArray.Length);
+        if (rules.Length == 0) return CollectionResult<ReputationRule>.ReputationRulesNotFound(ids.Count);
 
         return CollectionResult<ReputationRule>.Success(rules);
     }
