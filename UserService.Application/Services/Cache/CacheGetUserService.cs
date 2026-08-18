@@ -10,9 +10,9 @@ namespace UserService.Application.Services.Cache;
 
 public class CacheGetUserService(IUserCacheRepository cacheRepository, IGetUserService inner) : IGetUserService
 {
-    public Task<QueryableResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<User> GetAll()
     {
-        return inner.GetAllAsync(cancellationToken);
+        return inner.GetAll();
     }
 
     public async Task<CollectionResult<User>> GetByIdsAsync(IReadOnlyCollection<long> ids,

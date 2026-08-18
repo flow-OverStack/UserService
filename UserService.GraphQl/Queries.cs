@@ -31,10 +31,9 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<User>> GetUsers([Service] IGetUserService userService,
-        CancellationToken cancellationToken)
+    public IQueryable<User> GetUsers([Service] IGetUserService userService)
     {
-        var result = await userService.GetAllAsync(cancellationToken);
+        var result = userService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -58,10 +57,9 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<Role>> GetRoles([Service] IGetRoleService roleService,
-        CancellationToken cancellationToken)
+    public IQueryable<Role> GetRoles([Service] IGetRoleService roleService)
     {
-        var result = await roleService.GetAllAsync(cancellationToken);
+        var result = roleService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -84,10 +82,10 @@ public class Queries
     [UsePaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<ReputationRecord>> GetReputationRecords(
-        [Service] IGetReputationRecordService recordService, CancellationToken cancellationToken)
+    public IQueryable<ReputationRecord> GetReputationRecords(
+        [Service] IGetReputationRecordService recordService)
     {
-        var result = await recordService.GetAllAsync(cancellationToken);
+        var result = recordService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);
@@ -111,10 +109,10 @@ public class Queries
     [UseOffsetPaging]
     [UseFiltering]
     [UseSorting]
-    public async Task<IQueryable<ReputationRule>> GetReputationRules(
-        [Service] IGetReputationRuleService ruleService, CancellationToken cancellationToken)
+    public IQueryable<ReputationRule> GetReputationRules(
+        [Service] IGetReputationRuleService ruleService)
     {
-        var result = await ruleService.GetAllAsync(cancellationToken);
+        var result = ruleService.GetAll();
 
         if (!result.IsSuccess)
             throw GraphQlExceptionHelper.GetException(result.ErrorMessage!);

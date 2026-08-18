@@ -10,9 +10,9 @@ namespace UserService.Application.Services.Cache;
 
 public class CacheGetRoleService(IRoleCacheRepository cacheRepository, IGetRoleService inner) : IGetRoleService
 {
-    public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<Role> GetAll()
     {
-        return inner.GetAllAsync(cancellationToken);
+        return inner.GetAll();
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,

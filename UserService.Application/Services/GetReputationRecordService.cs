@@ -12,13 +12,11 @@ namespace UserService.Application.Services;
 public class GetReputationRecordService(IBaseRepository<ReputationRecord> recordsRepository)
     : IGetReputationRecordService
 {
-    public Task<QueryableResult<ReputationRecord>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<ReputationRecord> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         var records = recordsRepository.GetAll();
 
-        return Task.FromResult(QueryableResult<ReputationRecord>.Success(records));
+        return QueryableResult<ReputationRecord>.Success(records);
     }
 
     public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IReadOnlyCollection<long> ids,

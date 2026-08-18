@@ -11,13 +11,11 @@ namespace UserService.Application.Services;
 
 public class GetReputationRuleService(IBaseRepository<ReputationRule> ruleRepository) : IGetReputationRuleService
 {
-    public Task<QueryableResult<ReputationRule>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<ReputationRule> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         var rules = ruleRepository.GetAll();
 
-        return Task.FromResult(QueryableResult<ReputationRule>.Success(rules));
+        return QueryableResult<ReputationRule>.Success(rules);
     }
 
     public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,

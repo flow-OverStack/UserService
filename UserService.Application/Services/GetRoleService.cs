@@ -14,11 +14,9 @@ public class GetRoleService(
     IBaseRepository<Role> roleRepository)
     : IGetRoleService
 {
-    public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<Role> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return Task.FromResult(QueryableResult<Role>.Success(roleRepository.GetAll()));
+        return QueryableResult<Role>.Success(roleRepository.GetAll());
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,

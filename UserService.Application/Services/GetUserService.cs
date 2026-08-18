@@ -16,13 +16,11 @@ public class GetUserService(
     IBaseRepository<ReputationRecord> reputationRecordRepository)
     : IGetUserService
 {
-    public Task<QueryableResult<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<User> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
         var users = userRepository.GetAll();
 
-        return Task.FromResult(QueryableResult<User>.Success(users));
+        return QueryableResult<User>.Success(users);
     }
 
     public async Task<CollectionResult<User>> GetByIdsAsync(IReadOnlyCollection<long> ids,

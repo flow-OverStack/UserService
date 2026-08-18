@@ -12,13 +12,13 @@ namespace UserService.Tests.UnitTests.Tests;
 public class GetRoleServiceTests
 {
     [Fact]
-    public async Task GetAllRoles_NoFilter_ReturnsSuccess()
+    public void GetAllRoles_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getRoleService = new GetRoleServiceSut().GetService();
 
         //Act
-        var result = await getRoleService.GetAllAsync();
+        var result = getRoleService.GetAll();
 
         //Assert
         Assert.True(result.IsSuccess);
@@ -26,7 +26,7 @@ public class GetRoleServiceTests
     }
 
     [Fact]
-    public async Task GetAllRoles_EmptyRepository_ReturnsEmptyCollection()
+    public void GetAllRoles_EmptyRepository_ReturnsEmptyCollection()
     {
         //Arrange
         var getRoleService =
@@ -34,7 +34,7 @@ public class GetRoleServiceTests
                 .GetService();
 
         //Act
-        var result = await getRoleService.GetAllAsync();
+        var result = getRoleService.GetAll();
 
         //Assert
         Assert.True(result.IsSuccess);

@@ -12,9 +12,9 @@ public class CacheGetReputationRuleService(
     IReputationRuleCacheRepository cacheRepository,
     IGetReputationRuleService inner) : IGetReputationRuleService
 {
-    public Task<QueryableResult<ReputationRule>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<ReputationRule> GetAll()
     {
-        return inner.GetAllAsync(cancellationToken);
+        return inner.GetAll();
     }
 
     public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,

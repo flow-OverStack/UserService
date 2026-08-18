@@ -12,9 +12,9 @@ public class CacheGetReputationRecordService(
     IReputationRecordCacheRepository cacheRepository,
     IGetReputationRecordService inner) : IGetReputationRecordService
 {
-    public Task<QueryableResult<ReputationRecord>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<ReputationRecord> GetAll()
     {
-        return inner.GetAllAsync(cancellationToken);
+        return inner.GetAll();
     }
 
     public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IReadOnlyCollection<long> ids,
