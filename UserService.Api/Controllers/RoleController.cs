@@ -16,6 +16,8 @@ namespace UserService.Api.Controllers;
 ///     Role controller
 /// </summary>
 [Authorize(Roles = nameof(Roles.Admin))]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status403Forbidden)]
 public class RoleController(IRoleService roleService, IUserRoleService userRoleService) : BaseController
 {
     /// <summary>
@@ -27,8 +29,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     /// <response code="409">If a role with this name already exists</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<RoleDto>>> Create([FromBody] CreateRoleDto dto,
         CancellationToken cancellationToken)
@@ -48,8 +48,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     /// <response code="404">If the role was not found</response>
     [HttpDelete("{roleId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<RoleDto>>> Delete(long roleId, CancellationToken cancellationToken)
     {
@@ -67,8 +65,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     /// <response code="404">If the role was not found</response>
     [HttpPut("{roleId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<RoleDto>>> Update(long roleId, [FromBody] RequestRoleDto requestDto,
         CancellationToken cancellationToken)
@@ -90,8 +86,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     /// <response code="409">If the user already has this role</response>
     [HttpPost("{username}/{roleId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<UserRoleDto>>> AddRoleForUser(string username, long roleId,
@@ -117,8 +111,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     /// <response code="404">If the user or role was not found</response>
     [HttpDelete("{username}/{roleId:long}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BaseResult<UserRoleDto>>> DeleteRoleForUser(string username, long roleId,
         CancellationToken cancellationToken)
@@ -144,8 +136,6 @@ public class RoleController(IRoleService roleService, IUserRoleService userRoleS
     /// <response code="409">If the user already has the target role</response>
     [HttpPut("{username}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<UserRoleDto>>> UpdateRoleForUser(string username,

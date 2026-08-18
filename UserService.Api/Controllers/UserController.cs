@@ -14,6 +14,11 @@ namespace UserService.Api.Controllers;
 ///     User management controller
 /// </summary>
 [Authorize]
+[ProducesResponseType(StatusCodes.Status200OK)]
+[ProducesResponseType(StatusCodes.Status400BadRequest)]
+[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+[ProducesResponseType(StatusCodes.Status404NotFound)]
+[ProducesResponseType(StatusCodes.Status409Conflict)]
 public class UserController(IUserService userService) : BaseController
 {
     /// <summary>
@@ -25,11 +30,6 @@ public class UserController(IUserService userService) : BaseController
     /// <response code="404">If the user was not found</response>
     /// <response code="409">If the username is already taken</response>
     [HttpPatch("me/username")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<UserDto>>> UpdateMyUsername(
         [FromBody] RequestUpdateUsernameDto dto, CancellationToken cancellationToken)
     {
@@ -53,12 +53,7 @@ public class UserController(IUserService userService) : BaseController
     /// <response code="409">If the username is already taken</response>
     [HttpPatch("{id:long}/username")]
     [Authorize(Roles = $"{nameof(Roles.Admin)},{nameof(Roles.Moderator)}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<BaseResult<UserDto>>> UpdateUsernameById(long id,
         [FromBody] RequestUpdateUsernameDto dto, CancellationToken cancellationToken)
     {
