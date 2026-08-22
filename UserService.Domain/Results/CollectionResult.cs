@@ -5,17 +5,17 @@ namespace UserService.Domain.Results;
 
 /// <summary>
 ///     Represents the result of an operation returning a collection of items of type <typeparamref name="T" />.
-///     Inherits from <see cref="BaseResult{T}" /> where <typeparamref name="T" /> is <see cref="IEnumerable{T}" />>.
+///     Inherits from <see cref="BaseResult{T}" /> where <typeparamref name="T" /> is <see cref="IReadOnlyCollection{T}" />>.
 /// </summary>
 /// <typeparam name="T">The type of items in the returned collection.</typeparam>
-public class CollectionResult<T> : BaseResult<IEnumerable<T>>
+public class CollectionResult<T> : BaseResult<IReadOnlyCollection<T>>
 {
     [JsonConstructor]
     protected CollectionResult()
     {
     }
 
-    protected CollectionResult(IEnumerable<T> data) : base(data)
+    protected CollectionResult(IReadOnlyCollection<T> data) : base(data)
     {
     }
 
@@ -28,13 +28,13 @@ public class CollectionResult<T> : BaseResult<IEnumerable<T>>
     public new bool IsSuccess => base.IsSuccess;
 
     /// <inheritdoc cref="BaseResult{T}.Data" />
-    public new IEnumerable<T>? Data => base.Data;
+    public new IReadOnlyCollection<T>? Data => base.Data;
 
     /// <summary>
     ///     The number of items returned in the current collection.
     ///     Returns <c>0</c> if the <see cref="BaseResult{T}.Data" /> collection is <c>null</c>.
     /// </summary>
-    public int Count => Data?.Count() ?? 0;
+    public int Count => Data?.Count ?? 0;
 
     /// <summary>
     ///     Creates a successful <see cref="CollectionResult{T}" /> with the specified collection of <typeparamref name="T" />
@@ -43,7 +43,7 @@ public class CollectionResult<T> : BaseResult<IEnumerable<T>>
     /// <param name="data">The collection of <typeparamref name="T" /> items to return. Cannot be <c>null</c>.</param>
     /// <returns>A successful <see cref="CollectionResult{T}" /> containing the data.</returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="data" /> is <c>null</c>.</exception>
-    public new static CollectionResult<T> Success(IEnumerable<T> data)
+    public new static CollectionResult<T> Success(IReadOnlyCollection<T> data)
     {
         return new CollectionResult<T>(data);
     }

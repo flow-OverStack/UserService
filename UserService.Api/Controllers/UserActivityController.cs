@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Api.Controllers.Base;
+using UserService.Api.Extensions;
 using UserService.Domain.Extensions;
 using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
@@ -10,7 +11,6 @@ namespace UserService.Api.Controllers;
 /// <summary>
 ///     User activity controller
 /// </summary>
-/// <param name="activityService"></param>
 [Authorize]
 public class UserActivityController(IUserActivityService activityService) : BaseController
 {
@@ -21,11 +21,6 @@ public class UserActivityController(IUserActivityService activityService) : Base
     ///     For example, if called weekly, the accuracy will be up to one week;
     ///     if called daily, the accuracy will be up to one day, and so on.
     /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    /// <remarks>
-    ///     POST heartbeat
-    /// </remarks>
     /// <response code="204">If the heartbeat was registered successfully</response>
     /// <response code="401">If the user identifier in JWT is invalid</response>
     [HttpPost("heartbeat")]
@@ -38,6 +33,6 @@ public class UserActivityController(IUserActivityService activityService) : Base
 
         var result = await activityService.RegisterHeartbeatAsync(userId, cancellationToken);
 
-        return HandleBaseResult(result);
+        return result.ToActionResult();
     }
 }

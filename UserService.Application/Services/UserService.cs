@@ -2,7 +2,7 @@ using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
-using UserService.Application.Helpers;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Dtos.Identity;
 using UserService.Domain.Dtos.User;

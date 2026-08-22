@@ -8,8 +8,9 @@ using UserService.Domain.Interfaces.Repository.Cache;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
-using Xunit;
 using UserService.Tests.Traits;
+using Xunit;
+using Role = UserService.Domain.Entities.Role;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
@@ -93,8 +94,8 @@ public class CacheGetServicesTests(FunctionalTestWebAppFactory factory) : BaseFu
         var repository = scope.ServiceProvider.GetRequiredService<IRoleCacheRepository>();
         // Inner service is not in the DI
         var inner = ActivatorUtilities.CreateInstance<GetRoleService>(scope.ServiceProvider);
-        var fetch = async (IEnumerable<long> idsToFetch, CancellationToken ct) =>
-            (await inner.GetUsersRolesAsync(idsToFetch.ToArray(), ct)).Data ?? [];
+        Func<IEnumerable<long>, CancellationToken, Task<IEnumerable<KeyValuePair<long, IEnumerable<Role>>>>> fetch =
+            async (idsToFetch, ct) => (await inner.GetUsersRolesAsync(idsToFetch.ToArray(), ct)).Data ?? [];
 
         //Act
         // The first call marks the user as null in the cache

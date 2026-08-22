@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace UserService.Application.Helpers;
+namespace UserService.Application.Extensions;
 
 public static class ValidationExtensions
 {

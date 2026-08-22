@@ -9,13 +9,13 @@ namespace UserService.Tests.UnitTests.Tests;
 public class GetReputationRecordServiceTests
 {
     [Fact]
-    public async Task GetAllAsync_NoFilter_ReturnsSuccess()
+    public void GetAll_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getReputationRecordService = new CacheGetReputationRecordServiceSut().GetService();
 
         //Act
-        var result = await getReputationRecordService.GetAllAsync();
+        var result = getReputationRecordService.GetAll();
 
         //Assert
         Assert.True(result.IsSuccess);

@@ -67,7 +67,25 @@ namespace UserService.Application.Resources {
                 return ResourceManager.GetString("CannotDeleteDefaultRole", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; contains a null element..
+        /// </summary>
+        public static string CollectionContainsNullElement {
+            get {
+                return ResourceManager.GetString("CollectionContainsNullElement", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to You must specify either &apos;{0}&apos; (optionally with &apos;{1}&apos;), without &apos;{2}&apos; and &apos;{3}&apos;, or &apos;{2}&apos; (optionally with &apos;{3}&apos;), without &apos;{0}&apos; and &apos;{1}&apos;..
+        /// </summary>
+        public static string ConflictingPaginationArguments {
+            get {
+                return ResourceManager.GetString("ConflictingPaginationArguments", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Identity server error.
         /// </summary>
@@ -103,7 +121,16 @@ namespace UserService.Application.Resources {
                 return ResourceManager.GetString("InvalidCredentials", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; must be a valid base64 string..
+        /// </summary>
+        public static string InvalidCursorFormat {
+            get {
+                return ResourceManager.GetString("InvalidCursorFormat", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Email is invalid.
         /// </summary>
@@ -112,16 +139,43 @@ namespace UserService.Application.Resources {
                 return ResourceManager.GetString("InvalidEmail", resourceCulture);
             }
         }
-        
+
         /// <summary>
-        ///   Looks up a localized string similar to Pagination parametrs are invalid.
+        ///   Looks up a localized string similar to &apos;{0}&apos; must be greater than or equal to {1}..
+        /// </summary>
+        public static string InvalidMinValue {
+            get {
+                return ResourceManager.GetString("InvalidMinValue", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Order direction must be a valid enum value..
+        /// </summary>
+        public static string InvalidOrderDirection {
+            get {
+                return ResourceManager.GetString("InvalidOrderDirection", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Pagination parameters are invalid.
         /// </summary>
         public static string InvalidPagination {
             get {
                 return ResourceManager.GetString("InvalidPagination", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; must be between 0 and {1}..
+        /// </summary>
+        public static string InvalidRange {
+            get {
+                return ResourceManager.GetString("InvalidRange", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid token.
         /// </summary>
@@ -139,7 +193,25 @@ namespace UserService.Application.Resources {
                 return ResourceManager.GetString("InvalidUsername", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Order direction must be specified..
+        /// </summary>
+        public static string OrderDirectionRequired {
+            get {
+                return ResourceManager.GetString("OrderDirectionRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Order field must not be empty..
+        /// </summary>
+        public static string OrderFieldRequired {
+            get {
+                return ResourceManager.GetString("OrderFieldRequired", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Password is wrong.
         /// </summary>
@@ -184,7 +256,25 @@ namespace UserService.Application.Resources {
                 return ResourceManager.GetString("ReputationRulesNotFound", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; must be provided..
+        /// </summary>
+        public static string Required {
+            get {
+                return ResourceManager.GetString("Required", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; must not be empty..
+        /// </summary>
+        public static string RequiredNonEmpty {
+            get {
+                return ResourceManager.GetString("RequiredNonEmpty", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Role already exists.
         /// </summary>

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
@@ -10,28 +11,20 @@ namespace UserService.Application.Services;
 
 public class GetReputationRuleService(IBaseRepository<ReputationRule> ruleRepository) : IGetReputationRuleService
 {
-    public Task<QueryableResult<ReputationRule>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<ReputationRule> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        var rules = ruleRepository.GetAll().AsNoTracking();
 
-        var rules = ruleRepository.GetAll();
-
-        return Task.FromResult(QueryableResult<ReputationRule>.Success(rules));
+        return QueryableResult<ReputationRule>.Success(rules);
     }
 
     public async Task<CollectionResult<ReputationRule>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var rules = await ruleRepository.GetAll().Where(x => ids.Contains(x.Id)).ToArrayAsync(cancellationToken);
+        var rules = await ruleRepository.GetAll().AsNoTracking().Where(x => ids.Contains(x.Id))
+            .ToArrayAsync(cancellationToken);
 
-        if (rules.Length == 0)
-            return ids.Count switch
-            {
-                <= 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRuleNotFound,
-                    (int)ErrorCodes.ReputationRuleNotFound),
-                > 1 => CollectionResult<ReputationRule>.Failure(ErrorMessage.ReputationRulesNotFound,
-                    (int)ErrorCodes.ReputationRulesNotFound)
-            };
+        if (rules.Length == 0) return CollectionResult<ReputationRule>.ReputationRulesNotFound(ids.Count);
 
         return CollectionResult<ReputationRule>.Success(rules);
     }

@@ -12,8 +12,8 @@ using UserService.DAL;
 namespace UserService.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260107072323_InitiatorIdAddedToReputationRecord")]
-    partial class InitiatorIdAddedToReputationRecord
+    [Migration("20260818080923_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,14 +144,17 @@ namespace UserService.DAL.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("IdentityId")
                         .IsUnique();
 
                     b.HasIndex("LastLoginAt");
@@ -163,7 +166,7 @@ namespace UserService.DAL.Migrations
                         {
                             t.HasCheckConstraint("CK_User_Email", "\"Email\" ~ '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'");
 
-                            t.HasCheckConstraint("CK_User_Username_LowerCase", "\"Username\" = LOWER(\"Username\")");
+                            t.HasCheckConstraint("CK_User_Username_Format", "\"Username\" ~ '^[a-z0-9_.\\\\-]+$'");
                         });
                 });
 
@@ -177,8 +180,7 @@ namespace UserService.DAL.Migrations
 
                     b.HasKey("RoleId", "UserId");
 
-                    b.HasIndex("UserId", "RoleId")
-                        .IsUnique();
+                    b.HasIndex("UserId", "RoleId");
 
                     b.ToTable("UserRole");
                 });

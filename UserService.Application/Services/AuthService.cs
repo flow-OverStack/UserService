@@ -4,7 +4,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
 using UserService.Application.Exceptions.IdentityServer.Base;
-using UserService.Application.Helpers;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Application.Services.Provisioning;
 using UserService.Domain.Dtos.Identity;

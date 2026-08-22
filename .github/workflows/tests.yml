@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - master
-  pull_request:
+  pull_request_target:
+
+permissions:
+  contents: read
 
 jobs:
   unit-tests:
@@ -13,7 +16,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          allow-unsafe-pr-checkout: true
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4.1.0
@@ -58,7 +66,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          allow-unsafe-pr-checkout: true
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4.1.0
@@ -96,22 +109,16 @@ jobs:
         with:
           name: coverage-functional
           path: coverage/coverage-functional.xml
-  
-  trigger-sonarqube:
+
+  sonarqube:
     name: Trigger SonarQube Analysis
     needs: [ unit-tests, functional-tests ]
     uses: ./.github/workflows/sonarqube.yml
     secrets: inherit
-  
-  trigger-qodana:
-    name: Trigger Qodana Analysis
-    needs: [ unit-tests, functional-tests ]
-    uses: ./.github/workflows/qodana_code_quality.yml
-    secrets: inherit
-  
+
   trigger-docker:
     name: Trigger Docker Build and Push
     needs: [ unit-tests, functional-tests ]
-    if: github.ref == 'refs/heads/master'
+    if: github.event_name == 'push'
     uses: ./.github/workflows/docker.yml
     secrets: inherit

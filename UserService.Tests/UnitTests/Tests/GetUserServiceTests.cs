@@ -10,13 +10,13 @@ namespace UserService.Tests.UnitTests.Tests;
 public class GetUserServiceTests
 {
     [Fact]
-    public async Task GetAllUsers_NoFilter_ReturnsSuccess()
+    public void GetAllUsers_NoFilter_ReturnsSuccess()
     {
         //Arrange
         var getUserService = new CacheGetUserServiceSut().GetService();
 
         //Act
-        var result = await getUserService.GetAllAsync();
+        var result = getUserService.GetAll();
 
         //Assert
         Assert.True(result.IsSuccess);

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
@@ -11,29 +12,20 @@ namespace UserService.Application.Services;
 public class GetReputationRecordService(IBaseRepository<ReputationRecord> recordsRepository)
     : IGetReputationRecordService
 {
-    public Task<QueryableResult<ReputationRecord>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<ReputationRecord> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        var records = recordsRepository.GetAll().AsNoTracking();
 
-        var records = recordsRepository.GetAll();
-
-        return Task.FromResult(QueryableResult<ReputationRecord>.Success(records));
+        return QueryableResult<ReputationRecord>.Success(records);
     }
 
     public async Task<CollectionResult<ReputationRecord>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
-        var records = await recordsRepository.GetAll().Where(x => ids.Contains(x.Id))
+        var records = await recordsRepository.GetAll().AsNoTracking().Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (records.Length == 0)
-            return ids.Count switch
-            {
-                <= 1 => CollectionResult<ReputationRecord>.Failure(ErrorMessage.ReputationRecordNotFound,
-                    (int)ErrorCodes.ReputationRecordNotFound),
-                > 1 => CollectionResult<ReputationRecord>.Failure(ErrorMessage.ReputationRecordsNotFound,
-                    (int)ErrorCodes.ReputationRecordsNotFound)
-            };
+        if (records.Length == 0) return CollectionResult<ReputationRecord>.ReputationRecordsNotFound(ids.Count);
 
         return CollectionResult<ReputationRecord>.Success(records);
     }
@@ -43,6 +35,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
         CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => userIds.Contains(x.ReputationTargetId))
                 .GroupBy(x => x.ReputationTargetId)
                 .ToArrayAsync(cancellationToken))
@@ -61,6 +54,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
             IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => userIds.Contains(x.InitiatorId))
                 .GroupBy(x => x.InitiatorId)
                 .ToArrayAsync(cancellationToken))
@@ -79,6 +73,7 @@ public class GetReputationRecordService(IBaseRepository<ReputationRecord> record
             CancellationToken cancellationToken = default)
     {
         var records = (await recordsRepository.GetAll()
+                .AsNoTracking()
                 .Where(x => ruleIds.Contains(x.ReputationRuleId))
                 .GroupBy(x => x.ReputationRuleId)
                 .ToArrayAsync(cancellationToken))

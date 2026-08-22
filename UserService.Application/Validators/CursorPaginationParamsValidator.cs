@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.Extensions.Options;
+using UserService.Application.Resources;
 using UserService.Application.Settings;
 using UserService.Domain.Dtos.Pagination;
 using UserService.Domain.Extensions;
@@ -12,49 +13,53 @@ public class CursorPaginationParamsValidator : AbstractValidator<CursorPaginatio
     {
         RuleFor(x => x.First)
             .InclusiveBetween(0, pagination.Value.MaxPageSize)
-            .WithMessage($"'{nameof(CursorPaginationParams.First)}' must be between 0 and {pagination.Value.MaxPageSize}.")
+            .WithMessage(_ => string.Format(ErrorMessage.InvalidRange, nameof(CursorPaginationParams.First),
+                pagination.Value.MaxPageSize))
             .When(x => x.First.HasValue);
 
         RuleFor(x => x.Last)
             .InclusiveBetween(0, pagination.Value.MaxPageSize)
-            .WithMessage($"'{nameof(CursorPaginationParams.Last)}' must be between 0 and {pagination.Value.MaxPageSize}.")
+            .WithMessage(_ => string.Format(ErrorMessage.InvalidRange, nameof(CursorPaginationParams.Last),
+                pagination.Value.MaxPageSize))
             .When(x => x.Last.HasValue);
 
         RuleFor(x => x.After)
             .Must(x => x!.IsBase64())
-            .WithMessage($"'{nameof(CursorPaginationParams.After)}' must be a valid base64 string.")
+            .WithMessage(_ => string.Format(ErrorMessage.InvalidCursorFormat, nameof(CursorPaginationParams.After)))
             .When(x => x.After != null);
 
         RuleFor(x => x.Before)
             .Must(x => x!.IsBase64())
-            .WithMessage($"'{nameof(CursorPaginationParams.Before)}' must be a valid base64 string.")
+            .WithMessage(_ => string.Format(ErrorMessage.InvalidCursorFormat, nameof(CursorPaginationParams.Before)))
             .When(x => x.Before != null);
 
         RuleFor(x => x.Order).NotEmpty()
-            .WithMessage($"'{nameof(CursorPaginationParams.Order)}' must not be empty.")
+            .WithMessage(_ => string.Format(ErrorMessage.RequiredNonEmpty, nameof(CursorPaginationParams.Order)))
             .ForEach(eachOrder =>
             {
                 eachOrder.NotNull()
-                    .WithMessage($"'{nameof(CursorPaginationParams.Order)}' contains a null element.")
+                    .WithMessage(_ => string.Format(ErrorMessage.CollectionContainsNullElement,
+                        nameof(CursorPaginationParams.Order)))
                     .ChildRules(order =>
                     {
                         order.RuleFor(o => o.Field)
                             .NotEmpty()
-                            .WithMessage("Order field must not be empty.");
+                            .WithMessage(ErrorMessage.OrderFieldRequired);
 
                         order.RuleFor(o => o.Direction)
                             .NotNull()
-                            .WithMessage("Order direction must be specified.")
+                            .WithMessage(ErrorMessage.OrderDirectionRequired)
                             .IsInEnum()
-                            .WithMessage("Order direction must be a valid enum value.");
+                            .WithMessage(ErrorMessage.InvalidOrderDirection);
                     });
             });
 
         var errorMessage = string.Format(
-            "You must specify either '{0}' (optionally with '{1}'), without '{2}' and '{3}', " +
-            "or '{2}' (optionally with '{3}'), without '{1}' and '{2}'.",
-            nameof(CursorPaginationParams.First).LowercaseFirstLetter(), nameof(CursorPaginationParams.After).LowercaseFirstLetter(),
-            nameof(CursorPaginationParams.Last).LowercaseFirstLetter(), nameof(CursorPaginationParams.Before).LowercaseFirstLetter());
+            ErrorMessage.ConflictingPaginationArguments,
+            nameof(CursorPaginationParams.First).LowercaseFirstLetter(),
+            nameof(CursorPaginationParams.After).LowercaseFirstLetter(),
+            nameof(CursorPaginationParams.Last).LowercaseFirstLetter(),
+            nameof(CursorPaginationParams.Before).LowercaseFirstLetter());
         RuleFor(x => x)
             .Must(x =>
                 x is { First: not null, Last: null, Before: null }

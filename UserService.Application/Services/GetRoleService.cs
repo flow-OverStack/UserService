@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserService.Application.Enums;
+using UserService.Application.Extensions;
 using UserService.Application.Resources;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Repository;
@@ -13,27 +14,20 @@ public class GetRoleService(
     IBaseRepository<Role> roleRepository)
     : IGetRoleService
 {
-    public Task<QueryableResult<Role>> GetAllAsync(CancellationToken cancellationToken = default)
+    public QueryableResult<Role> GetAll()
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return Task.FromResult(QueryableResult<Role>.Success(roleRepository.GetAll()));
+        return QueryableResult<Role>.Success(roleRepository.GetAll().AsNoTracking());
     }
 
     public async Task<CollectionResult<Role>> GetByIdsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default)
     {
         var roles = await roleRepository.GetAll()
+            .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync(cancellationToken);
 
-        if (roles.Length == 0)
-            return ids.Count switch
-            {
-                <= 1 => CollectionResult<Role>.Failure(ErrorMessage.RoleNotFound, (int)ErrorCodes.RoleNotFound),
-                > 1 => CollectionResult<Role>.Failure(ErrorMessage.RolesNotFound, (int)ErrorCodes.RolesNotFound)
-            };
-
+        if (roles.Length == 0) return CollectionResult<Role>.RolesNotFound(ids.Count);
 
         return CollectionResult<Role>.Success(roles);
     }
@@ -42,6 +36,7 @@ public class GetRoleService(
         IReadOnlyCollection<long> userIds, CancellationToken cancellationToken = default)
     {
         var groupedRoles = await userRepository.GetAll()
+            .AsNoTracking()
             .Where(x => userIds.Contains(x.Id))
             .Include(x => x.Roles)
             .Select(x => new KeyValuePair<long, IEnumerable<Role>>(x.Id, x.Roles.ToArray()))
