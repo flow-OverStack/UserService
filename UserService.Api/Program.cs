@@ -54,7 +54,7 @@ var app = builder.Build();
 
 app.UseStatusCodePages();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<WarningHandlingMiddleware>();
+app.UseRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
