@@ -8,6 +8,6 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 {
     public void Configure(EntityTypeBuilder<UserRole> builder)
     {
-        builder.HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
+        builder.HasIndex(x => new { x.UserId, x.RoleId });
     }
 }

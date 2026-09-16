@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.Application.Mappings;
 using UserService.Application.Services;
 using UserService.Application.Services.Cache;
+using UserService.Application.Services.Identity;
+using UserService.Application.Services.Provisioning;
 using UserService.Domain.Interfaces.Service;
 
 namespace UserService.Application.DependencyInjection;
@@ -20,6 +22,16 @@ public static class DependencyInjection
     {
         services.Scan(scan => scan.FromAssemblyOf<AuthService>()
             .AddClasses(c => c.InExactNamespaceOf<AuthService>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
+        services.Scan(scan => scan.FromAssemblyOf<AuthService>()
+            .AddClasses(c => c.InExactNamespaceOf<IdentityRoleSynchronizer>())
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
+        services.Scan(scan => scan.FromAssemblyOf<AuthService>()
+            .AddClasses(c => c.InExactNamespaceOf<UserProvisioningService>())
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 

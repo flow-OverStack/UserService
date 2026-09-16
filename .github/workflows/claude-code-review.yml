@@ -19,6 +19,7 @@ jobs:
     #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
 
     runs-on: ubuntu-latest
+    environment: pr-checks
     permissions:
       contents: read
       pull-requests: read
@@ -29,6 +30,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
 
       - name: Run Claude Code Review
@@ -47,4 +49,3 @@ jobs:
             file(s)/line(s), and the PR branch (head ref). Do not push or commit changes.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-

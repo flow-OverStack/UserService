@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain.Entities;
 using UserService.Domain.Interfaces.Service;
+using UserService.Domain.Results;
+using UserService.GraphQl.DataLoaders.Base;
 
 namespace UserService.GraphQl.DataLoaders;
 
@@ -8,23 +10,11 @@ public class UserDataLoader(
     IBatchScheduler batchScheduler,
     DataLoaderOptions options,
     IServiceScopeFactory scopeFactory)
-    : BatchDataLoader<long, User>(batchScheduler, options)
+    : EntityBatchDataLoader<User, long>(batchScheduler, options, scopeFactory)
 {
-    protected override async Task<IReadOnlyDictionary<long, User>> LoadBatchAsync(IReadOnlyList<long> keys,
-        CancellationToken cancellationToken)
-    {
-        await using var scope = scopeFactory.CreateAsyncScope();
-        var userService = scope.ServiceProvider.GetRequiredService<IGetUserService>();
+    protected override Task<CollectionResult<User>> FetchAsync(IServiceProvider scopedProvider,
+        IReadOnlyList<long> keys, CancellationToken cancellationToken) =>
+        scopedProvider.GetRequiredService<IGetUserService>().GetByIdsAsync(keys, cancellationToken);
 
-        var result = await userService.GetByIdsAsync(keys, cancellationToken);
-
-        var dictionary = new Dictionary<long, User>();
-
-        if (!result.IsSuccess)
-            return dictionary;
-
-        dictionary = result.Data.ToDictionary(x => x.Id, x => x);
-
-        return dictionary.AsReadOnly();
-    }
+    protected override long GetId(User entity) => entity.Id;
 }

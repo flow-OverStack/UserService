@@ -2,11 +2,23 @@ using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.BackgroundJobs.Jobs;
+using UserService.BackgroundJobs.Queues;
+using UserService.Domain.Interfaces.Provider;
 
 namespace UserService.BackgroundJobs.DependencyInjection;
 
 public static class DependencyInjection
 {
+    /// <summary>
+    ///     Registers the Hangfire-backed adapters for the identity-compensation and user-sync ports.
+    /// </summary>
+    /// <param name="services"></param>
+    public static void AddBackgroundQueues(this IServiceCollection services)
+    {
+        services.AddScoped<IIdentityCompensationQueue, HangfireIdentityCompensationQueue>();
+        services.AddScoped<IUserSyncQueue, HangfireUserSyncQueue>();
+    }
+
     /// <summary>
     ///     Sets up hangfire jobs
     /// </summary>

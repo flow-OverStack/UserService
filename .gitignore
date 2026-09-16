@@ -3,3 +3,7 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+.env
+UserService.Api/Logs/
+replay_pid*.log
+*.DotSettings.user

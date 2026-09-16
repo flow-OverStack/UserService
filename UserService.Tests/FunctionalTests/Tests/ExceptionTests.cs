@@ -18,15 +18,17 @@ using UserService.Domain.Interfaces.Service;
 using UserService.Domain.Results;
 using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
-using UserService.Tests.Configurations;
+using UserService.Tests.Support;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base.Exception;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class ExceptionTests : ExceptionBaseFunctionalTest
 {
     public ExceptionTests(ExceptionFunctionalTestWebAppFactory factory) : base(factory)
@@ -35,9 +37,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_InternalServerError()
+    public async Task RegisterUser_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
@@ -55,9 +56,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_InternalServerError()
+    public async Task InitUser_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         var accessToken =
@@ -77,9 +77,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRole_ShouldBe_InternalServerError()
+    public async Task DeleteRole_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         const long roleId = 3;
@@ -96,9 +95,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRole_ShouldBe_InternalServerError()
+    public async Task UpdateRole_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         const long roleId = 3;
@@ -116,9 +114,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task AddRoleForUser_ShouldBe_InternalServerError()
+    public async Task AddRoleForUser_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         const string username = "TestUser1";
@@ -136,9 +133,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task DeleteRoleForUser_ShouldBe_InternalServerError()
+    public async Task DeleteRoleForUser_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         const string username = "TestUser2";
@@ -158,9 +154,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateRoleForUser_ShouldBe_InternalServerError()
+    public async Task UpdateRoleForUser_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         const string username = "TestUser2";
@@ -182,9 +177,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetUserById_ShouldBe_Ok()
+    public async Task GetUserById_SimulatedCacheFailure_ReturnsOk()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUserByIdQuery(1) };
@@ -203,9 +197,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.NotNull(result.Data.User.Roles);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task ApplyReputationEvent_ShouldBe_Exception()
+    public async Task ApplyReputationEvent_SimulatedDbFailure_ThrowsTestException()
     {
         //Arrange
         var dto = new ReputationEventDto(1, 1, 1, EntityType.Answer, BaseEventType.EntityAccepted);
@@ -220,9 +213,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         await Assert.ThrowsAsync<TestException>(action);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task UpdateMyUsername_ShouldBe_InternalServerError()
+    public async Task UpdateMyUsername_SimulatedDbFailure_ReturnsInternalServerError()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken();
@@ -242,9 +234,8 @@ public class ExceptionTests : ExceptionBaseFunctionalTest
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Exception()
+    public async Task Send_SimulatedDbFailure_ThrowsTestException()
     {
         //Arrange
         const long userId = 1;

@@ -1,8 +1,8 @@
 using Newtonsoft.Json.Linq;
 using UserService.Application.Resources;
 using UserService.Cache.Helpers;
+using UserService.Cache.Interfaces;
 using UserService.Domain.Dtos.User;
-using UserService.Domain.Interfaces.Provider;
 using UserService.Domain.Interfaces.Repository.Cache;
 
 namespace UserService.Cache.Repositories;

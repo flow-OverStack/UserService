@@ -177,8 +177,7 @@ namespace UserService.DAL.Migrations
 
                     b.HasKey("RoleId", "UserId");
 
-                    b.HasIndex("UserId", "RoleId")
-                        .IsUnique();
+                    b.HasIndex("UserId", "RoleId");
 
                     b.ToTable("UserRole");
                 });

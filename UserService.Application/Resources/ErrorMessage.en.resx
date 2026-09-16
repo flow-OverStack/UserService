@@ -61,7 +61,7 @@
         <value>Cannot delete default role</value>
     </data>
     <data name="InvalidPagination" xml:space="preserve">
-        <value>Pagination parametrs are invalid</value>
+        <value>Pagination parameters are invalid</value>
     </data>
     <data name="InvalidCacheDataFormat" xml:space="preserve">
         <value>Received from cache data is of invalid format</value>
@@ -86,5 +86,35 @@
     </data>
     <data name="UsernameAlreadyTaken" xml:space="preserve">
         <value>Username already taken</value>
+    </data>
+    <data name="CollectionContainsNullElement" xml:space="preserve">
+        <value>'{0}' contains a null element.</value>
+    </data>
+    <data name="ConflictingPaginationArguments" xml:space="preserve">
+        <value>You must specify either '{0}' (optionally with '{1}'), without '{2}' and '{3}', or '{2}' (optionally with '{3}'), without '{0}' and '{1}'.</value>
+    </data>
+    <data name="InvalidCursorFormat" xml:space="preserve">
+        <value>'{0}' must be a valid base64 string.</value>
+    </data>
+    <data name="InvalidMinValue" xml:space="preserve">
+        <value>'{0}' must be greater than or equal to {1}.</value>
+    </data>
+    <data name="InvalidOrderDirection" xml:space="preserve">
+        <value>Order direction must be a valid enum value.</value>
+    </data>
+    <data name="InvalidRange" xml:space="preserve">
+        <value>'{0}' must be between 0 and {1}.</value>
+    </data>
+    <data name="OrderDirectionRequired" xml:space="preserve">
+        <value>Order direction must be specified.</value>
+    </data>
+    <data name="OrderFieldRequired" xml:space="preserve">
+        <value>Order field must not be empty.</value>
+    </data>
+    <data name="Required" xml:space="preserve">
+        <value>'{0}' must be provided.</value>
+    </data>
+    <data name="RequiredNonEmpty" xml:space="preserve">
+        <value>'{0}' must not be empty.</value>
     </data>
 </root>

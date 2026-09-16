@@ -87,4 +87,34 @@
     <data name="UsernameAlreadyTaken" xml:space="preserve">
         <value>Имя пользователя уже занаято</value>
     </data>
+    <data name="CollectionContainsNullElement" xml:space="preserve">
+        <value>'{0}' содержит пустой элемент.</value>
+    </data>
+    <data name="ConflictingPaginationArguments" xml:space="preserve">
+        <value>Вы должны указать либо '{0}' (опционально с '{1}'), без '{2}' и '{3}', либо '{2}' (опционально с '{3}'), без '{0}' и '{1}'.</value>
+    </data>
+    <data name="InvalidCursorFormat" xml:space="preserve">
+        <value>'{0}' должен быть валидной строкой base64.</value>
+    </data>
+    <data name="InvalidMinValue" xml:space="preserve">
+        <value>'{0}' должен быть больше или равен {1}.</value>
+    </data>
+    <data name="InvalidOrderDirection" xml:space="preserve">
+        <value>Направление сортировки должно быть валидным значением перечисления.</value>
+    </data>
+    <data name="InvalidRange" xml:space="preserve">
+        <value>'{0}' должен быть в диапазоне от 0 до {1}.</value>
+    </data>
+    <data name="OrderDirectionRequired" xml:space="preserve">
+        <value>Направление сортировки должно быть указано.</value>
+    </data>
+    <data name="OrderFieldRequired" xml:space="preserve">
+        <value>Поле сортировки не должно быть пустым.</value>
+    </data>
+    <data name="Required" xml:space="preserve">
+        <value>'{0}' должен быть указан.</value>
+    </data>
+    <data name="RequiredNonEmpty" xml:space="preserve">
+        <value>'{0}' не должен быть пустым.</value>
+    </data>
 </root>

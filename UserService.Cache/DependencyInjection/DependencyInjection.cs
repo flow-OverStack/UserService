@@ -4,7 +4,7 @@ using StackExchange.Redis;
 using UserService.Cache.Providers;
 using UserService.Cache.Repositories;
 using UserService.Cache.Settings;
-using UserService.Domain.Interfaces.Provider;
+using UserService.Cache.Interfaces;
 
 namespace UserService.Cache.DependencyInjection;
 

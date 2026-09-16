@@ -11,8 +11,8 @@ public interface IGetUserService : IGetService<User>
     /// <param name="roleIds"></param>
     /// <returns></returns>
     /// <param name="cancellationToken"></param>
-    Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(IEnumerable<long> roleIds,
-        CancellationToken cancellationToken = default);
+    Task<CollectionResult<KeyValuePair<long, IEnumerable<User>>>> GetUsersWithRolesAsync(
+        IReadOnlyCollection<long> roleIds, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Gets the current reputation of a user by its id
@@ -20,7 +20,7 @@ public interface IGetUserService : IGetService<User>
     /// <param name="ids"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(IEnumerable<long> ids,
+    Task<CollectionResult<KeyValuePair<long, int>>> GetCurrentReputationsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -29,6 +29,6 @@ public interface IGetUserService : IGetService<User>
     /// <param name="ids"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(IEnumerable<long> ids,
+    Task<CollectionResult<KeyValuePair<long, int>>> GetRemainingReputationsAsync(IReadOnlyCollection<long> ids,
         CancellationToken cancellationToken = default);
 }

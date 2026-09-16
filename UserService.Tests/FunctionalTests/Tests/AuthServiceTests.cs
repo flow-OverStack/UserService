@@ -9,19 +9,21 @@ using UserService.DAL;
 using UserService.Domain.Dtos.Token;
 using UserService.Domain.Dtos.User;
 using UserService.Domain.Entities;
+using UserService.Domain.Enums;
 using UserService.Domain.Results;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_Created()
+    public async Task RegisterUser_ValidData_ReturnsCreated()
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser4", "TestsUser4@test.com",
@@ -38,9 +40,34 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task RegisterUser_ShouldBe_BadRequest()
+    public async Task RegisterUser_DefaultRoleMissing_ReturnsNotFoundAndCreatesNoUser()
+    {
+        //Arrange
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Set<Role>().Where(x => x.Name == nameof(Roles.User)).ExecuteDeleteAsync();
+        var initialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+
+        var dto = new RegisterUserDto("TestUser6", "TestsUser6@test.com", TestConstants.TestPassword + "6");
+
+        //Act
+        var response = await HttpClient.PostAsJsonAsync("/api/v1/auth/register", dto);
+        var body = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<BaseResult<UserDto>>(body);
+
+        //Assert
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.False(result!.IsSuccess);
+        Assert.Equal(ErrorMessage.RoleNotFound, result.ErrorMessage);
+        Assert.Null(result.Data);
+
+        var finalCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+        Assert.Equal(initialCount, finalCount);
+    }
+
+    [Fact]
+    public async Task RegisterUser_InvalidEmail_ReturnsBadRequest()
     {
         //Arrange
         var dto = new RegisterUserDto("TestUser1", "NotEmail", TestConstants.TestPassword);
@@ -57,9 +84,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_Ok()
+    public async Task InitUser_ValidClaims_ReturnsOk()
     {
         //Arrange
         var accessToken =
@@ -78,9 +104,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_BadRequest()
+    public async Task InitUser_InvalidEmail_ReturnsBadRequest()
     {
         //Arrange
         var accessToken =
@@ -99,9 +124,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task InitUser_ShouldBe_Unauthorized()
+    public async Task InitUser_EmptyEmailClaim_ReturnsForbidden()
     {
         //Arrange
         var accessToken = TokenHelper.GetRsaToken(username: "testuser1", email: "", identityId: "test-identity-id-1");
@@ -116,9 +140,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Equal("Invalid claims", body);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithUsername_ShouldBe_Ok()
+    public async Task LoginUser_ValidUsername_ReturnsOk()
     {
         //Arrange
         var dto = new LoginUserDto("TestUser3", TestConstants.TestPassword + "3");
@@ -134,9 +157,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithEmail_ShouldBe_Ok()
+    public async Task LoginUser_ValidEmail_ReturnsOk()
     {
         //Arrange
         var dto = new LoginUserDto("TestUser1@test.com", TestConstants.TestPassword + "1");
@@ -152,16 +174,15 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUser_ShouldBe_Ok_With_CreatedInDatabase()
+    public async Task LoginUser_NewKeycloakUser_ReturnsOkAndCreatesUser()
     {
         //Arrange
         var dto = new LoginUserDto(TestConstants.ExistingUsername,
             TestConstants.TestPassword + TestConstants.ExistingUsername);
         await using var scope = ServiceProvider.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var intialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
+        var initialCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
 
         //Act
         var response = await HttpClient.PostAsJsonAsync("/api/v1.0/Auth/login", dto);
@@ -170,15 +191,14 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
 
         //Assert
         var finalCount = await dbContext.Set<User>().AsNoTracking().CountAsync();
-        Assert.Equal(intialCount + 1, finalCount); //New user should be created
+        Assert.Equal(initialCount + 1, finalCount); //New user should be created
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(result!.IsSuccess);
         Assert.NotNull(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUserWithUsername_ShouldBe_Unauthorized()
+    public async Task LoginUser_WrongPassword_ReturnsUnauthorized()
     {
         //Arrange
         var dto = new LoginUserDto("TestUser1", TestConstants.WrongPassword);
@@ -195,9 +215,8 @@ public class AuthServiceTests(FunctionalTestWebAppFactory factory) : SequentialF
         Assert.Null(result.Data);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task LoginUser_ShouldBe_Unauthorized_When_UserNotFound()
+    public async Task LoginUser_NonExistentUser_ReturnsUnauthorized()
     {
         //Arrange
         var dto = new LoginUserDto("NonExistentUser", TestConstants.TestPassword);

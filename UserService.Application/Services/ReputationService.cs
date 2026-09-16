@@ -35,53 +35,38 @@ public class ReputationService(IUnitOfWork unitOfWork) : IReputationService
         string entityType, string eventType, CancellationToken cancellationToken = default)
     {
         await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            // Finding rules for the current entity
-            var rules = await unitOfWork.ReputationRules.GetAll()
-                .Where(x => x.EventType == eventType && x.EntityType == entityType)
-                .ToArrayAsync(cancellationToken);
 
-            if (rules.Length == 0)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
-                return BaseResult.Failure(ErrorMessage.ReputationRulesNotFound,
-                    (int)ErrorCodes.ReputationRulesNotFound);
-            }
+        // Finding rules for the current entity
+        var rules = await unitOfWork.ReputationRules.GetAll()
+            .Where(x => x.EventType == eventType && x.EntityType == entityType)
+            .ToArrayAsync(cancellationToken);
 
+        if (rules.Length == 0)
+            return BaseResult.Failure(ErrorMessage.ReputationRulesNotFound, (int)ErrorCodes.ReputationRulesNotFound);
 
-            // Domain rule: for a given EventType + EntityType, Group is either NULL or identical across all ReputationRule records.
-            var group = rules.Select(x => x.Group).Distinct().Single();
+        // Domain rule: for a given EventType + EntityType, Group is either NULL or identical across all ReputationRule records.
+        var group = rules.Select(x => x.Group).Distinct().Single();
 
-            // Disabling all records for both the initiator and the author if the records are in the same group as the rule 
-            await DisableReputationRecordsAsync(x =>
-                x.InitiatorId == initiatorId
-                && x.ReputationRule.EntityType == entityType
-                && x.EntityId == entityId
-                && x.ReputationRule.Group != null
-                && x.ReputationRule.Group == group, cancellationToken);
+        // Disabling all records for both the initiator and the author if the records are in the same group as the rule
+        await DisableReputationRecordsAsync(x =>
+            x.InitiatorId == initiatorId
+            && x.ReputationRule.EntityType == entityType
+            && x.EntityId == entityId
+            && x.ReputationRule.Group != null
+            && x.ReputationRule.Group == group, cancellationToken);
 
-            // Applying a reputation rule for the author
-            var authorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Author);
-            var authorResult =
-                await ApplyReputationRuleAsync(authorRule, authorId, initiatorId, entityId, cancellationToken);
-            if (!authorResult.IsSuccess)
-            {
-                await transaction.RollbackAsync(CancellationToken.None);
-                return authorResult;
-            }
+        // Applying a reputation rule for the author
+        var authorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Author);
+        var authorResult =
+            await ApplyReputationRuleAsync(authorRule, authorId, initiatorId, entityId, cancellationToken);
+        if (!authorResult.IsSuccess)
+            return authorResult;
 
-            // There can be no rules for initiator
-            var initiatorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Initiator);
-            await ApplyReputationRuleAsync(initiatorRule, initiatorId, initiatorId, entityId, cancellationToken);
+        // There can be no rules for initiator
+        var initiatorRule = rules.FirstOrDefault(x => x.ReputationTarget == ReputationTarget.Initiator);
+        await ApplyReputationRuleAsync(initiatorRule, initiatorId, initiatorId, entityId, cancellationToken);
 
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(CancellationToken.None);
-            throw;
-        }
+        await transaction.CommitAsync(cancellationToken);
 
         return BaseResult.Success();
     }

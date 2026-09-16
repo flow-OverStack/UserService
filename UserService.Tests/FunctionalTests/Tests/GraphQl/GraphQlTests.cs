@@ -7,14 +7,15 @@ using UserService.Tests.FunctionalTests.Base;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
+[FunctionalTest]
 public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_Success()
+    public async Task GetAll_ValidRequest_ReturnsSuccess()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllQuery };
@@ -36,9 +37,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal(8, result.Data.ReputationRules.TotalCount);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_InvalidPaginationError()
+    public async Task GetAll_InvalidPagination_ReturnsInvalidPaginationError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestUsersWithInvalidPaginationQuery };
@@ -54,9 +54,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.All(result.Errors, x => Assert.StartsWith(ErrorMessage.InvalidPagination, x.Message));
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task RequestWithWrongArgument_ShouldBe_Error()
+    public async Task Request_WrongArgument_ReturnsBadRequest()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestWithWrongArgument };
@@ -72,9 +71,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.NotNull(result.Errors[0].Extensions?.Code);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllByIds_ShouldBe_Success()
+    public async Task GetAllByIds_ExistingIds_ReturnsSuccess()
     {
         //Arrange
         const long userId = 1, roleId = 1, reputationRuleId = 1, reputationRecordId = 1;
@@ -94,9 +92,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.NotNull(result.Data.ReputationRecord);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_Success()
+    public async Task GetMe_AuthenticatedUser_ReturnsSuccess()
     {
         //Arrange
         var token = TokenHelper.GetRsaToken(1, "testuser1");
@@ -116,9 +113,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Equal("testuser1", result.Data.Me.Username);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_Unauthorized()
+    public async Task GetMe_NoAuthToken_ReturnsUnauthorizedError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestMeQuery };
@@ -134,9 +130,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Contains(result.Errors, x => x.Extensions?.Code == "AUTH_NOT_AUTHENTICATED");
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetMe_ShouldBe_Null()
+    public async Task GetMe_NonExistentUserId_ReturnsNull()
     {
         //Arrange
         var token = TokenHelper.GetRsaToken(0, "testuser1");
@@ -154,9 +149,8 @@ public class GraphQlTests(FunctionalTestWebAppFactory factory) : BaseFunctionalT
         Assert.Null(result!.Data.Me);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAllByIds_ShouldBe_Null()
+    public async Task GetAllByIds_NonExistentIds_ReturnsNull()
     {
         //Arrange
         const long userId = 0, roleId = 0, reputationRuleId = 0, reputationRecordId = 0;

@@ -1,18 +1,19 @@
-using UserService.Tests.UnitTests.Configurations;
-using UserService.Tests.UnitTests.Factories;
+using UserService.Tests.UnitTests.Fixtures;
+using UserService.Tests.UnitTests.Sut;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.UnitTests.Tests;
 
+[UnitTest]
 public class UserActivityServiceTests
 {
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task RegisterHeartbeat_ShouldBe_Success()
+    public async Task RegisterHeartbeatAsync_ExistingUserId_ReturnsSuccess()
     {
         //Arrange
         const long id = 1;
-        var activityService = new UserActivityServiceFactory().GetService();
+        var activityService = new UserActivityServiceSut().GetService();
 
         //Act
         var result = await activityService.RegisterHeartbeatAsync(id);
@@ -21,12 +22,11 @@ public class UserActivityServiceTests
         Assert.True(result.IsSuccess);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_Success()
+    public async Task SyncHeartbeatsToDatabaseAsync_PendingHeartbeats_ReturnsSuccess()
     {
         //Arrange
-        var activityService = new UserActivityServiceFactory().GetDatabaseService();
+        var activityService = new UserActivityServiceSut().GetDatabaseService();
 
         //Act
         var result = await activityService.SyncHeartbeatsToDatabaseAsync();
@@ -36,13 +36,12 @@ public class UserActivityServiceTests
         Assert.Equal(2, result.Data.SyncedHeartbeatsCount); // There are 2 new heartbeats in total
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_NoSyncedHeartbeats()
+    public async Task SyncHeartbeatsToDatabaseAsync_EmptyHeartbeats_ReturnsNoSyncedHeartbeats()
     {
         //Arrange
         var activityService =
-            new UserActivityServiceFactory(RedisDatabaseConfiguration.GetEmptyRedisDatabaseConfiguration())
+            new UserActivityServiceSut(RedisDatabaseFixture.GetEmptyRedisDatabaseConfiguration())
                 .GetDatabaseService();
 
         //Act
@@ -53,13 +52,12 @@ public class UserActivityServiceTests
         Assert.Equal(0, result.Data.SyncedHeartbeatsCount);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_NoSyncedHeartbeats_With_KeysInvalid()
+    public async Task SyncHeartbeatsToDatabaseAsync_InvalidKeys_ReturnsNoSyncedHeartbeats()
     {
         //Arrange
         var activityService =
-            new UserActivityServiceFactory(RedisDatabaseConfiguration.GetRedisDatabaseConfigurationWithInvalidKeys())
+            new UserActivityServiceSut(RedisDatabaseFixture.GetRedisDatabaseConfigurationWithInvalidKeys())
                 .GetDatabaseService();
 
         //Act
@@ -70,13 +68,12 @@ public class UserActivityServiceTests
         Assert.Equal(0, result.Data.SyncedHeartbeatsCount);
     }
 
-    [Trait("Category", "Unit")]
     [Fact]
-    public async Task SyncHeartbeatsToDatabase_ShouldBe_NoSyncedHeartbeats_With_ValuesInvalid()
+    public async Task SyncHeartbeatsToDatabaseAsync_InvalidValues_ReturnsNoSyncedHeartbeats()
     {
         //Arrange
         var activityService =
-            new UserActivityServiceFactory(RedisDatabaseConfiguration.GetRedisDatabaseConfigurationWithInvalidValues())
+            new UserActivityServiceSut(RedisDatabaseFixture.GetRedisDatabaseConfigurationWithInvalidValues())
                 .GetDatabaseService();
 
         //Act

@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using UserService.DAL;
 using UserService.Domain.Entities;
 using UserService.Messaging.Events;
-using UserService.Tests.Configurations;
 using UserService.Tests.Constants;
 using UserService.Tests.FunctionalTests.Configurations.Keycloak;
+using UserService.Tests.TestData;
 
 namespace UserService.Tests.FunctionalTests.Configurations;
 
@@ -13,7 +13,7 @@ internal static class PrepDb
 {
     public static void PrepPopulation(this IServiceScope serviceScope)
     {
-        var users = MockRepositoriesGetters.GetUsers()
+        var users = UserMother.GetUsers()
             //Real user always has at least 1 role
             .Where(x => x.Roles.Count >= 1)
             .Select(x => new User
@@ -37,10 +37,10 @@ internal static class PrepDb
         dbContext.Database.EnsureDeleted();
         dbContext.Database.Migrate();
 
-        var userRoles = MockRepositoriesGetters.GetUserRoles();
-        var processedEvents = MockRepositoriesGetters.GetProcessedEvents();
-        var reputationRecords = MockRepositoriesGetters.GetReputationRecords();
-        var superRule = MockRepositoriesGetters.GetReputationRules().First(x => x.Id == 8);
+        var userRoles = RoleMother.GetUserRoles();
+        var processedEvents = ProcessedEventMother.GetProcessedEvents();
+        var reputationRecords = ReputationRecordMother.GetReputationRecords();
+        var superRule = ReputationRuleMother.GetReputationRules().First(x => x.Id == 8);
         superRule.Id = 0;
 
         reputationRecords.ToList().ForEach(x =>

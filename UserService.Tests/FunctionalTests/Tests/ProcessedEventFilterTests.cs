@@ -8,14 +8,15 @@ using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Probe_ShouldBe_Ok()
+    public async Task Probe_ValidProbeContext_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
@@ -30,9 +31,8 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Ok()
+    public async Task Send_NewEvent_ReturnsOk()
     {
         //Arrange
         const long authorId = 1;
@@ -63,9 +63,8 @@ public class ProcessedEventFilterTests(FunctionalTestWebAppFactory factory) : Ba
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_EventAlreadyProcessed()
+    public async Task Send_DuplicateEvent_ReturnsSkippedDuplicate()
     {
         //Arrange
         const long authorId = 1;

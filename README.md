@@ -9,52 +9,21 @@ UserService is a microservice responsible for all user-related operations within
 
 ## 🚀 Quick Start a ready-made API
 
-1. Install [Docker Desktop](https://www.docker.com/)
-2. Copy [docker-compose.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) and [docker-compose.common.yml](https://github.com/flow-OverStack/UserService/blob/master/docker-compose.common.yml) files into one directory
-3. Copy (and reconfigure if needed) [logstash.conf](https://github.com/flow-OverStack/UserService/blob/master/logstash.conf) and [prometheus.yml](https://github.com/flow-OverStack/UserService/blob/master/prometheus.yml) files in the same directory
-4. Create and configure `.env` file in the same directory:
-   ```env
-   USERS_DB_PASSWORD=db_password
-   PGADMIN_EMAIL=pg_email@email.com
-   PGADMIN_PASSWORD=pg_password
-   KC_BOOTSTRAP_ADMIN_USERNAME=kc_admin_username
-   KC_BOOTSTRAP_ADMIN_PASSWORD=kc_admin_password
-   KC_DB_USERNAME=kc_username
-   KC_DB_PASSWORD=kc_password
-   KC_ADMIN_TOKEN=kc_token
-   GF_SECURITY_ADMIN_USER=gf_user
-   GF_SECURITY_ADMIN_PASSWORD=gf_password
-   REDIS_PASSWORD=redis_password
-   ```
-5. On the first run (or after updating migrations), apply EF Core migrations to the database:
+The entire flow OverStack platform - all five services plus Keycloak, Kafka, Postgres, Redis
+and the observability stack - comes up with one command via
+[flow-OverStack/Setup](https://github.com/flow-OverStack/Setup), pre-seeded with mock data:
 
-   **Option A — Automatic ✅ Recommended for Quick Start**
+```bash
+git clone --recurse-submodules --shallow-submodules https://github.com/flow-OverStack/Setup.git
+cd Setup
+./setup.sh
+```
 
-   In `docker-compose.yml`, temporarily add `ASPNETCORE_ENVIRONMENT: Development` to the `user-service` environment:
-   ```yaml
-   user-service:
-      # ... other variables
-      environment:
-        # ... other variables
-        ASPNETCORE_ENVIRONMENT: Development
-   ```
-   Start the services — migrations will be applied automatically on startup.
-   > ⚠️ After the first run, **remove** `ASPNETCORE_ENVIRONMENT: Development` from `docker-compose.yml` and restart the container.
+The [Setup README](https://github.com/flow-OverStack/Setup#readme) covers prerequisites,
+flags (`--lite`, `--reseed`, `--migrate`, `--reset`), teardown, and the published endpoints.
 
-   **Option B — Manual SQL script (Production)**
-
-   Generate a SQL script with `dotnet ef migrations script` and apply it to the database
-      manually ([Production approach](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#sql-scripts))
-
-6. Start services
-    ```bash
-   docker-compose -p flowoverstack -f docker-compose.common.yml up -d
-   docker-compose -p userservice -f docker-compose.yml up -d
-   ```
-7. Configure the [Keycloak](https://www.keycloak.org/) identity server with
-   my [configuration](https://docs.google.com/document/d/1LTFL4mZwN1-Y8lZyZLealjHX2HKZkry9yW52EQIAQcg/edit?usp=sharing).
-   After that, pass the admin token to the `.env` file and restart the `user-service` container.
-8. Explore endpoints at `/swagger/v1/swagger.json` endpoint.
+To run UserService from source instead, see
+[Getting Started for developers](#getting-started-for-developers).
 
 ## Technologies and Patterns Used
 
@@ -100,7 +69,7 @@ Full system design on Miro: [Application Structure Board](https://miro.com/app/b
 ### Installation
 
 1. Clone the repo
-2. Start dependencies (you can use [Quick Start](#-quick-start-a-ready-made-api) without running the `user-service` container or run your own services)
+2. Start dependencies with [Quick Start](#-quick-start-a-ready-made-api), then `docker compose stop user-service` before running from source (or run your own services)
 3. Reconfigure if needed `appsettings.json` and `.NET User Secrets` in `UserService.Api` with your database, Redis, and
    Keycloak settings.
    `.NET User Secrets` example:

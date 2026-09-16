@@ -6,15 +6,16 @@ using UserService.Tests.FunctionalTests.Base.Exception.GraphQl;
 using UserService.Tests.FunctionalTests.Configurations.GraphQl.Responses;
 using UserService.Tests.FunctionalTests.Helpers;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests.GraphQl;
 
+[FunctionalTest]
 public class GraphQlExceptionTests(ExceptionGraphQlFunctionalTestWebAppFactory factory)
     : ExceptionGraphQlFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task GetAll_ShouldBe_ServerError()
+    public async Task GetAll_RepositoryThrows_ReturnsServerError()
     {
         //Arrange
         var requestBody = new { query = GraphQlHelper.RequestAllQuery };

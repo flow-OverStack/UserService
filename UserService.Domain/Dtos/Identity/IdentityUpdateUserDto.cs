@@ -5,4 +5,4 @@ public record IdentityUpdateUserDto(
     string Username,
     long UserId,
     string Email,
-    List<Entities.Role> Roles);
+    List<IdentityRoleDto> Roles);

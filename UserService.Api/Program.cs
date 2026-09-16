@@ -37,6 +37,7 @@ builder.Services.AddGraphQl();
 builder.Services.AddGrpcServices();
 builder.Services.AddMassTransitServices();
 builder.Services.AddHangfire(builder.Configuration);
+builder.Services.AddBackgroundQueues();
 
 builder.Host.AddLogging(builder.Configuration);
 
@@ -53,7 +54,7 @@ var app = builder.Build();
 
 app.UseStatusCodePages();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<WarningHandlingMiddleware>();
+app.UseRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

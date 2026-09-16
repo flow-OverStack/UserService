@@ -3,25 +3,27 @@ using MassTransit;
 using MassTransit.Transports;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Serilog;
 using UserService.Domain.Enums;
 using UserService.Messaging.Events;
 using UserService.Messaging.Filters;
-using UserService.Tests.Configurations;
+using UserService.Tests.Support;
 using UserService.Tests.FunctionalTests.Base;
 using Xunit;
+using UserService.Tests.Traits;
 
 namespace UserService.Tests.FunctionalTests.Tests;
 
+[FunctionalTest]
 public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : BaseFunctionalTest(factory)
 {
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Probe_ShouldBe_Ok()
+    public async Task Probe_ValidProbeContext_ReturnsOk()
     {
         //Arrange
         await using var scope = ServiceProvider.CreateAsyncScope();
         var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob, new Mock<ILogger>().Object);
         var probeContext = new Mock<ProbeContext>();
         probeContext.Setup(x => x.CreateScope(It.IsAny<string>())).Returns(new Mock<ProbeContext>().Object);
 
@@ -32,9 +34,8 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Ok()
+    public async Task Send_SuccessfulPipe_ReturnsOk()
     {
         //Arrange
         const long userId = 1;
@@ -52,7 +53,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         };
         await using var scope = ServiceProvider.CreateAsyncScope();
         var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob, new Mock<ILogger>().Object);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -68,9 +69,8 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Exception()
+    public async Task Send_PipeThrowsRepeatedly_ThrowsTestException()
     {
         //Arrange
         const long userId = 1;
@@ -89,7 +89,8 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
         await using var scope = ServiceProvider.CreateAsyncScope();
         var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
+        var loggerMock = new Mock<ILogger>();
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob, loggerMock.Object);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -104,11 +105,12 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
 
         //Assert
         await Assert.ThrowsAsync<TestException>(action);
+        // Every failed immediate retry attempt must be logged, not silently swallowed.
+        Assert.Equal(4, loggerMock.Invocations.Count(i => i.Method.Name == nameof(ILogger.Warning)));
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_Exception_With_SuccessfulRetry()
+    public async Task Send_PipeThrowsOnceThenSucceeds_ReturnsOk()
     {
         //Arrange
         const long userId = 1;
@@ -126,7 +128,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         };
         await using var scope = ServiceProvider.CreateAsyncScope();
         var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob, new Mock<ILogger>().Object);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
@@ -152,9 +154,8 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         Assert.True(true);
     }
 
-    [Trait("Category", "Functional")]
     [Fact]
-    public async Task Send_ShouldBe_MovedToDLQ()
+    public async Task Send_MaxRedeliveryCountExceeded_ThrowsTestException()
     {
         //Arrange
         const long userId = 1;
@@ -172,7 +173,7 @@ public class ResilientConsumeFilterTests(FunctionalTestWebAppFactory factory) : 
         };
         await using var scope = ServiceProvider.CreateAsyncScope();
         var backgroundJob = scope.ServiceProvider.GetRequiredService<IBackgroundJobClient>();
-        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob);
+        var filter = new ResilientConsumeFilter<BaseEvent>(backgroundJob, new Mock<ILogger>().Object);
 
         var contextMock = new Mock<ConsumeContext<BaseEvent>>();
         contextMock.Setup(x => x.Message).Returns(message);
