@@ -18,7 +18,7 @@ internal static class ReputationRuleMother
             new ReputationRule
             {
                 Id = 2, EventType = nameof(BaseEventType.EntityDownvoted),
-                ReputationTarget = ReputationTarget.Initiator, EntityType = nameof(EntityType.Answer), Group = null,
+                ReputationTarget = ReputationTarget.Initiator, EntityType = nameof(EntityType.Answer), Group = "Vote",
                 ReputationChange = -1
             },
             new ReputationRule

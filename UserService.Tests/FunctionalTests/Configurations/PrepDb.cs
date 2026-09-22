@@ -37,27 +37,29 @@ internal static class PrepDb
         dbContext.Database.EnsureDeleted();
         dbContext.Database.Migrate();
 
+        var roles = RoleMother.GetRoles();
         var userRoles = RoleMother.GetUserRoles();
         var processedEvents = ProcessedEventMother.GetProcessedEvents();
+        var reputationRules = ReputationRuleMother.GetReputationRules();
         var reputationRecords = ReputationRecordMother.GetReputationRecords();
-        var superRule = ReputationRuleMother.GetReputationRules().First(x => x.Id == 8);
-        superRule.Id = 0;
 
+        roles.ToList().ForEach(x => x.Id = 0);
         reputationRecords.ToList().ForEach(x =>
         {
             x.Id = 0;
             x.ReputationRule = null!;
         });
 
+        dbContext.Set<Role>().AddRange(roles);
+        dbContext.SaveChanges();
+
         dbContext.Set<User>().AddRange(users);
         dbContext.Set<UserRole>().AddRange(userRoles);
         dbContext.Set<ProcessedEvent>().AddRange(processedEvents);
-        dbContext.Set<ReputationRule>().Add(superRule);
-
+        dbContext.Set<ReputationRule>().AddRange(reputationRules);
         dbContext.SaveChanges();
 
         dbContext.Set<ReputationRecord>().AddRange(reputationRecords);
-
         dbContext.SaveChanges();
     }
 
