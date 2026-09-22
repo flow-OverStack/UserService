@@ -43,14 +43,15 @@ internal static class PrepDb
         var reputationRules = ReputationRuleMother.GetReputationRules();
         var reputationRecords = ReputationRecordMother.GetReputationRecords();
 
-        dbContext.Set<Role>().AddRange(roles);
-        dbContext.SaveChanges();
-
+        roles.ToList().ForEach(x => x.Id = 0);
         reputationRecords.ToList().ForEach(x =>
         {
             x.Id = 0;
             x.ReputationRule = null!;
         });
+
+        dbContext.Set<Role>().AddRange(roles);
+        dbContext.SaveChanges();
 
         dbContext.Set<User>().AddRange(users);
         dbContext.Set<UserRole>().AddRange(userRoles);
