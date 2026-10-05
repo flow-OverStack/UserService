@@ -6,7 +6,6 @@ namespace UserService.Cache.Providers;
 
 public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
 {
-    private const string RedisErrorMessage = "An exception occurred while executing the Redis command.";
     private const string EntityNullKeyPattern = "{0}:null";
     private static readonly object NullValue = 1;
 
@@ -38,7 +37,8 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         var keyExpiresResult = await Task.WhenAll(keyExpiresTasks);
 
         if (!fireAndForget && keyExpiresResult.Any(x => !x))
-            throw new RedisException(RedisErrorMessage);
+            throw new RedisException(
+                $"EXPIRE returned false for keys: {string.Join(", ", keyValuePairs.Where((_, i) => !keyExpiresResult[i]).Select(x => x.Key))}");
 
         return setAddResult.Sum();
     }
@@ -79,7 +79,7 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
             var value = x.Value as string ?? JsonConvert.SerializeObject(x.Value);
 
             return new KeyValuePair<RedisKey, RedisValue>(x.Key, new RedisValue(value));
-        });
+        }).ToArray();
 
         var commandFlags = fireAndForget
             ? CommandFlags.FireAndForget
@@ -96,7 +96,8 @@ public class RedisCacheProvider(IDatabase redisDatabase) : ICacheProvider
         var result = await Task.WhenAll(tasks);
 
         if (!fireAndForget && result.Any(x => !x))
-            throw new RedisException(RedisErrorMessage);
+            throw new RedisException(
+                $"SET returned false for keys: {string.Join(", ", redisKeyWithValues.Where((_, i) => !result[i]).Select(x => x.Key))}");
     }
 
     public Task StringSetAsync<TValue>(KeyValuePair<string, TValue> keyWithValue, int? timeToLiveInSeconds = null,
