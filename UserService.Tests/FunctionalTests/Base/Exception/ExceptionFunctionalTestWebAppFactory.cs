@@ -57,6 +57,9 @@ public class ExceptionFunctionalTestWebAppFactory : FunctionalTestWebAppFactory
                 x.GetJsonParsedAsync<It.IsAnyType>(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new RedisException(TestException.ErrorMessage));
 
+        mockDatabase.Setup(x => x.StringGetAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new RedisException(TestException.ErrorMessage));
+
         return mockDatabase;
     }
 
