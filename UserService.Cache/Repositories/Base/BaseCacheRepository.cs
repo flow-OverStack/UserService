@@ -1,5 +1,5 @@
 using Serilog;
-using StackExchange.Redis;
+using UserService.Cache.Extensions;
 using UserService.Cache.Interfaces;
 using UserService.Domain.Interfaces.Repository.Cache;
 
@@ -38,10 +38,10 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
         ArgumentNullException.ThrowIfNull(fetch);
 
         var idsList = ids.ToArray();
+        var keys = idsList.Select(_mapping.GetKey).ToArray();
 
         try
         {
-            var keys = idsList.Select(_mapping.GetKey).ToArray();
             var nullKeys = await _cache.GetNullKeysAsync(keys, cancellationToken);
 
             var aliveKeys = keys.Except(nullKeys).ToArray();
@@ -56,9 +56,9 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             return cached;
         }
-        catch (RedisException e)
+        catch (Exception e) when (e.IsRedisFailure())
         {
-            _logger.Warning(e, "Cache unavailable, falling back to source");
+            _logger.LogRedisFailure(e, keys);
             return await GetFromInnerAndCacheAsync(idsList, []);
         }
 
@@ -70,20 +70,20 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             var fetchedData = (await fetch(missingIdsArray, cancellationToken)).ToArray();
 
+            var notFoundIds = missingIdsArray.Except(fetchedData.Select(_mapping.GetId)).ToArray();
+            var notFoundKeys = notFoundIds.Select(_mapping.GetKey).ToArray();
+            var keyValues = fetchedData.Select(x =>
+                new KeyValuePair<string, TEntity>(_mapping.GetKey(_mapping.GetId(x)), x)).ToArray();
+
             try
             {
-                var notFoundIds = missingIdsArray.Except(fetchedData.Select(_mapping.GetId)).ToArray();
-                var notFoundKeys = notFoundIds.Select(_mapping.GetKey);
                 await _cache.MarkAsNullAsync(notFoundKeys, _nullTimeToLiveInSeconds, true, CancellationToken.None);
-
-                var keyValues = fetchedData.Select(x =>
-                    new KeyValuePair<string, TEntity>(_mapping.GetKey(_mapping.GetId(x)), x));
                 await _cache.StringSetAsync(keyValues, _timeToLiveInSeconds, true, CancellationToken.None);
             }
-            catch (RedisException e)
+            catch (Exception e) when (e.IsRedisFailure())
             {
                 // If caching fails, we still return the fetched data without caching it.
-                _logger.Warning(e, "Cache unavailable, could not write back fetched data");
+                _logger.LogRedisFailure(e, [.. notFoundKeys, .. keyValues.Select(x => x.Key)]);
             }
 
             var allEntities = fetchedData.UnionBy(cachedData, _mapping.GetId).ToArray();
@@ -108,9 +108,10 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
         var idsList = outerIds.ToArray();
 
+        string[] outerEntityKeys = [.. idsList.Select(getOuterEntityKey), .. idsList.Select(getOuterKey)];
+
         try
         {
-            string[] outerEntityKeys = [.. idsList.Select(getOuterEntityKey), .. idsList.Select(getOuterKey)];
             var nullOuterEntityKeys = await _cache.GetNullKeysAsync(outerEntityKeys, cancellationToken);
             var aliveIds = idsList.Except(nullOuterEntityKeys.Select(parseOuterIdFromKey)).ToArray();
 
@@ -154,9 +155,9 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             return grouped;
         }
-        catch (RedisException e)
+        catch (Exception e) when (e.IsRedisFailure())
         {
-            _logger.Warning(e, "Cache unavailable, falling back to source");
+            _logger.LogRedisFailure(e, outerEntityKeys);
             return await GetFromInnerAndCacheAsync(idsList, []);
         }
 
@@ -168,28 +169,29 @@ public class BaseCacheRepository<TEntity, TEntityId> : IBaseCacheRepository<TEnt
 
             var fetchedData = (await fetch(missingIdsArray, cancellationToken)).ToArray();
 
+            var notFoundIds = missingIdsArray.Except(fetchedData.Select(x => x.Key)).ToArray();
+            var notFoundKeys = notFoundIds.Select(getOuterKey).ToArray();
+
+            var outerSetToCache = fetchedData.Select(kvp =>
+                new KeyValuePair<string, IEnumerable<string>>(
+                    getOuterKey(kvp.Key),
+                    kvp.Value.Select(_mapping.GetValue))).ToArray();
+
+            var entities = fetchedData.SelectMany(x => x.Value);
+            var entityToCache = entities.Select(e =>
+                new KeyValuePair<string, TEntity>(_mapping.GetKey(_mapping.GetId(e)), e)).ToArray();
+
             try
             {
-                var notFoundIds = missingIdsArray.Except(fetchedData.Select(x => x.Key)).ToArray();
-                var notFoundKeys = notFoundIds.Select(getOuterKey);
                 await _cache.MarkAsNullAsync(notFoundKeys, _nullTimeToLiveInSeconds, true, CancellationToken.None);
-
-                var outerSetToCache = fetchedData.Select(kvp =>
-                    new KeyValuePair<string, IEnumerable<string>>(
-                        getOuterKey(kvp.Key),
-                        kvp.Value.Select(_mapping.GetValue)));
-
-                var entities = fetchedData.SelectMany(x => x.Value);
-                var entityToCache = entities.Select(e =>
-                    new KeyValuePair<string, TEntity>(_mapping.GetKey(_mapping.GetId(e)), e));
-
                 await _cache.StringSetAsync(entityToCache, _timeToLiveInSeconds, true, CancellationToken.None);
                 await _cache.SetsAddAsync(outerSetToCache, _timeToLiveInSeconds, true, CancellationToken.None);
             }
-            catch (RedisException e)
+            catch (Exception e) when (e.IsRedisFailure())
             {
                 // If caching fails, we still return the fetched data without caching it.
-                _logger.Warning(e, "Cache unavailable, could not write back fetched data");
+                _logger.LogRedisFailure(e,
+                    [.. notFoundKeys, .. entityToCache.Select(x => x.Key), .. outerSetToCache.Select(x => x.Key)]);
             }
 
             var allData = fetchedData.UnionBy(cachedData, x => x.Key).ToArray();

@@ -25,7 +25,7 @@ internal static class RedisDatabaseFixture
             .ReturnsAsync((RedisKey[] keys, CommandFlags _) =>
                 keys.All(x => x.ToString().StartsWith(CacheKeyHelper.GetUserActivityKey(0)[..^1]))
                     ? activities.Values
-                    : []);
+                    : keys.Select(_ => RedisValue.Null).ToArray());
 
         return mockDatabase.Object;
     }
@@ -48,7 +48,7 @@ internal static class RedisDatabaseFixture
             .ReturnsAsync((RedisKey[] keys, CommandFlags _) =>
                 keys.All(x => x.ToString().StartsWith(CacheKeyHelper.GetUserActivityKey(0)[..^1]))
                     ? activities.Values
-                    : []);
+                    : keys.Select(_ => RedisValue.Null).ToArray());
 
         return mockDatabase.Object;
     }
@@ -71,7 +71,7 @@ internal static class RedisDatabaseFixture
             .ReturnsAsync((RedisKey[] keys, CommandFlags _) =>
                 keys.All(x => x.ToString().StartsWith(CacheKeyHelper.GetUserActivityKey(0)[..^1]))
                     ? activities.Values
-                    : []);
+                    : keys.Select(_ => RedisValue.Null).ToArray());
 
         return mockDatabase.Object;
     }
@@ -94,7 +94,7 @@ internal static class RedisDatabaseFixture
             .ReturnsAsync((RedisKey[] keys, CommandFlags _) =>
                 keys.All(x => x.ToString().StartsWith(CacheKeyHelper.GetUserActivityKey(0)[..^1]))
                     ? activities.Values
-                    : []);
+                    : keys.Select(_ => RedisValue.Null).ToArray());
 
         return mockDatabase.Object;
     }

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Serilog;
+using UserService.Cache.Extensions;
 using UserService.Cache.Helpers;
 using UserService.Cache.Interfaces;
 using UserService.Cache.Repositories.Base;
@@ -12,6 +13,7 @@ namespace UserService.Cache.Repositories;
 public class UserCacheRepository : IUserCacheRepository
 {
     private readonly ICacheProvider _cacheProvider;
+    private readonly ILogger _logger;
     private readonly RedisSettings _redisSettings;
     private readonly IBaseCacheRepository<User, long> _repository;
 
@@ -27,6 +29,7 @@ public class UserCacheRepository : IUserCacheRepository
             logger
         );
         _cacheProvider = cacheProvider;
+        _logger = logger;
         _redisSettings = settings;
     }
 
@@ -58,10 +61,10 @@ public class UserCacheRepository : IUserCacheRepository
         CancellationToken cancellationToken = default)
     {
         var idsList = ids.ToArray();
+        var keys = idsList.Select(CacheKeyHelper.GetUserCurrentReputationKey).ToArray();
 
         try
         {
-            var keys = idsList.Select(CacheKeyHelper.GetUserCurrentReputationKey).ToArray();
             var cached = await _cacheProvider.StringGetAsync(keys, cancellationToken);
 
             var parsedCached = cached.Select(x =>
@@ -74,8 +77,9 @@ public class UserCacheRepository : IUserCacheRepository
 
             return parsedCached;
         }
-        catch (Exception)
+        catch (Exception e) when (e.IsRedisFailure())
         {
+            _logger.LogRedisFailure(e, keys);
             return await GetFromInnerAndCacheAsync(idsList, []);
         }
 
@@ -91,17 +95,19 @@ public class UserCacheRepository : IUserCacheRepository
                     ? cachedData
                     : [];
 
+            var keyValues = fetchedData.Select(x =>
+                new KeyValuePair<string, string>(CacheKeyHelper.GetUserCurrentReputationKey(x.Key),
+                    x.Value.ToString())).ToArray();
+
             try
             {
-                var keyValues = fetchedData.Select(x =>
-                    new KeyValuePair<string, string>(CacheKeyHelper.GetUserCurrentReputationKey(x.Key),
-                        x.Value.ToString()));
                 await _cacheProvider.StringSetAsync(keyValues, _redisSettings.TimeToLiveInSeconds, true,
                     cancellationToken);
             }
-            catch (Exception)
+            catch (Exception e) when (e.IsRedisFailure())
             {
                 // If caching fails, we still return the fetched data without caching it.
+                _logger.LogRedisFailure(e, keyValues.Select(x => x.Key));
             }
 
             var allReputations = fetchedData.UnionBy(cachedData, x => x.Key);
@@ -115,10 +121,10 @@ public class UserCacheRepository : IUserCacheRepository
         CancellationToken cancellationToken = default)
     {
         var idsList = ids.ToArray();
+        var keys = idsList.Select(CacheKeyHelper.GetUserRemainingReputationKey).ToArray();
 
         try
         {
-            var keys = idsList.Select(CacheKeyHelper.GetUserRemainingReputationKey).ToArray();
             var cached = await _cacheProvider.StringGetAsync(keys, cancellationToken);
 
             var parsedCached = cached.Select(x =>
@@ -131,8 +137,9 @@ public class UserCacheRepository : IUserCacheRepository
 
             return parsedCached;
         }
-        catch (Exception)
+        catch (Exception e) when (e.IsRedisFailure())
         {
+            _logger.LogRedisFailure(e, keys);
             return await GetFromInnerAndCacheAsync(idsList, []);
         }
 
@@ -148,17 +155,19 @@ public class UserCacheRepository : IUserCacheRepository
                     ? cachedData
                     : [];
 
+            var keyValues = fetchedData.Select(x =>
+                new KeyValuePair<string, string>(CacheKeyHelper.GetUserRemainingReputationKey(x.Key),
+                    x.Value.ToString())).ToArray();
+
             try
             {
-                var keyValues = fetchedData.Select(x =>
-                    new KeyValuePair<string, string>(CacheKeyHelper.GetUserRemainingReputationKey(x.Key),
-                        x.Value.ToString()));
                 await _cacheProvider.StringSetAsync(keyValues, _redisSettings.TimeToLiveInSeconds, true,
                     cancellationToken);
             }
-            catch (Exception)
+            catch (Exception e) when (e.IsRedisFailure())
             {
                 // If caching fails, we still return the fetched data without caching it.
+                _logger.LogRedisFailure(e, keyValues.Select(x => x.Key));
             }
 
             var allReputations = fetchedData.UnionBy(cachedData, x => x.Key);
